@@ -1,3 +1,3 @@
-# squarepine_core
+# SquarePine JUCE Modules
 
-An assortment of modules that make a great addition to your app and plugin development tool belt.
+An assortment of modules that make a great addition to your JUCE app and plugin development tool belt.
