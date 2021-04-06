@@ -17,7 +17,10 @@
     ClassName() = delete;
 
 //==============================================================================
-/** Prevents std::unique_ptr<> creation of the specified class. */
+/** Prevents std::unique_ptr<> creation of the specified class.
+
+    @warning You will need to call this in the global namespace for it to work!
+*/
 #define SQUAREPINE_PREVENT_UNIQUE_PTR(ClassName) \
     namespace std \
     { \
@@ -28,7 +31,10 @@
         }; \
     }
 
-/** Prevents std::shared_ptr<> creation of the specified class. */
+/** Prevents std::shared_ptr<> creation of the specified class.
+
+    @warning You will need to call this in the global namespace for it to work!
+*/
 #define SQUAREPINE_PREVENT_SHARED_PTR(ClassName) \
     namespace std \
     { \

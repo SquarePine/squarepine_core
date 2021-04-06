@@ -1,4 +1,4 @@
-/** A base-class for designing stop-watches
+/** A base-class for designing stop-watches.
 
     @see MillisecondStopWatch, TickStopWatch
 */
@@ -7,25 +7,16 @@ class StopWatch
 {
 public:
     /** Constructor */
-    StopWatch() :
-        startTime (Type()),
-        stopTime (Type()),
-        running (false)
-    {
-    }
+    StopWatch() = default;
 
     /** Destructor */
-    virtual ~StopWatch()
-    {
-    }
+    virtual ~StopWatch() = default;
 
     //==============================================================================
-    /** Starts the stop-watch */
-    void start()
+    /** Starts the stop-watch. */
+    void start (bool forceReset = false)
     {
-        jassert (! running);
-
-        if (! running)
+        if (! running || forceReset)
         {
             startTime = getCurrentTime();
             running = true;
@@ -61,28 +52,28 @@ protected:
 
 private:
     //==============================================================================
-    Type startTime, stopTime;
-    bool running;
+    Type startTime = {}, stopTime = {};
+    bool running = false;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StopWatch)
 };
 
 //==============================================================================
-/** A handy RAII-based stop-watch starter/stopper */
+/** A handy RAII-based stop-watch starter/stopper. */
 template<class StopWatchType>
-class ScopedStartStop
+class ScopedStartStop final
 {
 public:
-    /** Constructor, which will start the stop-watch */
-    inline ScopedStartStop (StopWatchType& owner) :
+    /** Constructor, which will automatically start the stop-watch */
+    ScopedStartStop (StopWatchType& owner) :
         sw (owner)
     {
-        sw.start();
+        sw.start (true);
     }
 
-    /** Destructor, which will stop the stop-watch */
-    inline ~ScopedStartStop()
+    /** Destructor, which will automatically stop the stop-watch. */
+    ~ScopedStartStop()
     {
         sw.stop();
     }
@@ -94,4 +85,50 @@ private:
     //==============================================================================
     ScopedStartStop() = delete;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ScopedStartStop)
+};
+
+//==============================================================================
+/** A simple class that can be used for precise timing, in milliseconds.
+
+    @see StopWatch, TickStopWatch
+*/
+class MillisecondStopWatch final : public StopWatch<double>
+{
+public:
+    /** Constructor. */
+    MillisecondStopWatch() noexcept = default;
+
+    //==============================================================================
+    /** @internal */
+    double getCurrentTime() const override
+    {
+        return Time::getMillisecondCounterHiRes();
+    }
+
+private:
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MillisecondStopWatch)
+};
+
+//==============================================================================
+/** A simple class that can be used for precise timing, in CPU ticks.
+
+    @see StopWatch, TickStopWatch
+*/
+class TickStopWatch final : public StopWatch<int64>
+{
+public:
+    /** Constructor */
+    TickStopWatch() noexcept = default;
+
+    //==============================================================================
+    /** @internal */
+    int64 getCurrentTime() const override
+    {
+        return Time::getHighResolutionTicks();
+    }
+
+private:
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TickStopWatch)
 };

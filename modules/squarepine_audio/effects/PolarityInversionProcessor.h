@@ -39,7 +39,7 @@ public:
 private:
     //==============================================================================
     class InvertParameter;
-    InvertParameter* invertParameter;
+    InvertParameter* invertParameter = nullptr;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PolarityInversionProcessor)

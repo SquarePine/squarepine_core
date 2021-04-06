@@ -40,7 +40,7 @@
 	Note: if you're using MinGW, you're SOL.
 */
 #ifndef SQUAREPINE_USE_CUESDK
-    #define SQUAREPINE_USE_CUESDK 1
+    #define SQUAREPINE_USE_CUESDK 0
 #endif
 
 #undef SQUAREPINE_USE_AVIR_RESIZER // Not yet supported...
@@ -116,26 +116,57 @@ namespace sp
         drawFittedText (g, text, area.toFloat(), justification, maximumNumberOfLines, minimumHorizontalScale);
     }
 
+    /** */
+    class ValidPathCompatibleInputFilter : public TextEditor::InputFilter
+    {
+    public:
+        /** */
+        ValidPathCompatibleInputFilter (int maxStringLength = 128) :
+            maxLength (maxStringLength)
+        {
+        }
+
+        /** @internal */
+        String filterNewText (TextEditor& ed, const String& newInput) override
+        {
+            auto t = newInput;
+
+            // Anything but path-related stuff listed here:
+            // https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file
+            // And no escape char junk, nor path dividers.
+            for (const auto c : U"<>:/|?*\"\\\'\?\a\b\f\n\r\t\v")
+                t = t.replaceCharacter (c, ' ');
+
+            return t.substring (0, maxLength - (ed.getTotalNumChars() - ed.getHighlightedRegion().getLength()));
+        }
+
+    private:
+        const int maxLength = 128;
+
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ValidPathCompatibleInputFilter)
+    };
+
     #include "application/SimpleApplication.h"
+    //#include "audio/Automation.h"
     #include "components/ColourPropertyComponent.h"
     #include "components/ComponentViewer.h"
+    #include "components/ComponentWindow.h"
+    #include "components/Easing.h"
     #include "components/GoogleAnalyticsAttachment.h"
-    #include "geometry/Ellipse.h"
-    #include "geometry/Line.h"
-    #include "images/BMPImageFormat.h"
+    #include "components/JavascriptEditor.h"
+    #include "components/HighPerformanceRendererConfigurator.h"
+    #include "components/ValueTreeEditor.h"
     #include "images/BlendingEffects.h"
+    #include "images/BMPImageFormat.h"
     #include "images/ImageEffects.h"
     #include "images/ImageFormatManager.h"
     #include "images/SVGParser.h"
     #include "images/TGAImageFormat.h"
     //#include "images/WebPImageFormat.h"
     #include "linkers/CueSDKIncluder.h"
-    #include "utilities/Curves.h"
-    #include "utilities/Easing.h"
-    #include "utilities/Spline.h"
-    #include "valuetree/ValueTreeEditor.h"
-    #include "windowing/ComponentWindow.h"
-    #include "windowing/HighPerformanceRendererConfigurator.h"
+    #include "lookandfeels/Windows10LookAndFeel.h"
+    //#include "tokenisers/JavascriptCodeTokeniser.h"
+    #include "utilities/Particles.h"
 }
 
 #endif //SQUAREPINE_GRAPHICS_H

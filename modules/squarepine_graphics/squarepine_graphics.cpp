@@ -29,8 +29,11 @@ namespace sp
     }
 
     #include "application/SimpleApplication.cpp"
+    //#include "audio/Automation.cpp"
     #include "components/ComponentViewer.cpp"
     #include "components/GoogleAnalyticsAttachment.cpp"
+    #include "components/HighPerformanceRendererConfigurator.cpp"
+    #include "components/ValueTreeEditor.cpp"
     #include "images/BlendingEffects.cpp"
     #include "images/BMPImageFormat.cpp"
     #include "images/ImageEffects.cpp"
@@ -40,6 +43,6 @@ namespace sp
     #include "images/TGAImageFormat.cpp"
     //#include "images/WebPImageFormat.cpp"
     #include "linkers/CueSDKLinker.cpp"
-    #include "valuetree/ValueTreeEditor.cpp"
-    #include "windowing/HighPerformanceRendererConfigurator.cpp"
+    #include "lookandfeels/Windows10LookAndFeel.cpp"
+   // #include "tokenisers/JavascriptCodeTokeniser.cpp"
 }

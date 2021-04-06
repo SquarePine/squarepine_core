@@ -2,7 +2,7 @@
 template<typename Type>
 constexpr Type channelBlendAdd (Type a, Type b) noexcept                
 {
-    return jmin (static_cast<Type> (255), static_cast<Type> (a + b));
+    return std::min (static_cast<Type> (255), static_cast<Type> (a + b));
 }
 
 /** */
@@ -30,21 +30,21 @@ constexpr Type channelBlendAverage (Type a, Type b) noexcept
 template<typename Type>
 constexpr Type channelBlendColorBurn (Type a, Type b) noexcept         
 {
-    return static_cast<Type> ((b == 0) ? b : jmax (0, (255 - ((255 - a) << 8) / b)));
+    return static_cast<Type> ((b == 0) ? b : std::max (0, (255 - ((255 - a) << 8) / b)));
 }
 
 /** */
 template<typename Type>
 constexpr Type channelBlendColorDodge (Type a, Type b) noexcept        
 {
-    return static_cast<Type> ((b == 255) ? b : jmin (255, ((a << 8) / (255 - b))));
+    return static_cast<Type> ((b == 255) ? b : std::min (255, ((a << 8) / (255 - b))));
 }
 
 /** */
 template<typename Type>
 constexpr Type channelBlendDarken (Type a, Type b) noexcept            
 {
-    return jmax (a, b);
+    return std::max (a, b);
 }
 
 /** */
@@ -65,7 +65,7 @@ constexpr Type channelBlendExclusion (Type a, Type b) noexcept
 template<typename Type>
 constexpr Type channelBlendLighten (Type a, Type b) noexcept           
 {
-    return jmax (a, b);
+    return std::max (a, b);
 }
 
 /** */
@@ -109,14 +109,14 @@ constexpr Type channelBlendHardLight (Type a, Type b) noexcept
 template<typename Type>
 constexpr Type channelBlendPhoenix (Type a, Type b) noexcept           
 {
-    return static_cast<Type> (jmin (a, b) - jmax (a, b) + 255);
+    return static_cast<Type> (std::min (a, b) - std::max (a, b) + 255);
 }
 
 /** */
 template<typename Type>
 constexpr Type channelBlendReflect (Type a, Type b) noexcept           
 {
-    return static_cast<Type> (b == 255 ? b : jmin (255, (a * a / (255 - b))));
+    return static_cast<Type> (b == 255 ? b : std::min (255, (a * a / (255 - b))));
 }
 
 /** */

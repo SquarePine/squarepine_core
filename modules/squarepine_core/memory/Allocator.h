@@ -38,7 +38,7 @@ public:
     /** @returns */
     size_t getSize() const noexcept                 { return sizeBytes; }
     /** @returns */
-    size_t getRemainingSpace() const noexcept       { return sizeBytes; }
+    size_t getRemainingSpace() const noexcept       { return getSize() - getCurrentPosition(); }
 
     //==============================================================================
     /** Manually allocate a certain amount of memory
@@ -65,7 +65,7 @@ public:
             return newAddress;
         }
 
-        Logger::writeToLog ("Error: Ran out of memory!");
+        Logger::writeToLog ("Error: not enough memory!");
         jassertfalse;
         return nullptr;
     }
@@ -109,7 +109,7 @@ public:
     float* allocateObject (float value) const               { return allocateObject<float> (value); }
     /** @returns a newly allocated double. */
     double* allocateObject (double value) const             { return allocateObject<double> (value); }
-    /** @returns a newly allocated double. */
+    /** @returns a newly allocated long double. */
     long double* allocateObject (long double value) const   { return allocateObject<long double> (value); }
 
     //==============================================================================

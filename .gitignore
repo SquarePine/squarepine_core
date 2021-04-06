@@ -1,26 +1,22 @@
 # Prerequisites
 *.d
 
-# Compiled Object files
+# Compiled object files
 *.slo
 *.lo
 *.o
 *.obj
 
-# Precompiled Headers
+# Precompiled headers
 *.gch
 *.pch
 
-# Compiled Dynamic libraries
+# Compiled dynamic libraries
 *.so
 *.dylib
 *.dll
 
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
+# Compiled static libraries
 *.lai
 *.la
 *.a
@@ -30,3 +26,36 @@
 *.exe
 *.out
 *.app
+
+# Windows temp cache Files
+[Tt]humbs.db
+
+# macOS Finder and whatnot
+.DS_Store
+*.DS_Store
+*.swp
+*~
+
+# IDE stuff
+.vscode
+
+# Fortran module files
+*.mod
+*.smod
+
+# Other source repository archive directories (protects when importing)
+.hg
+.svn
+CVS
+
+# Various other file types
+*.pkg
+*.zip
+*.exe
+*.app
+*.msi
+*.vst3
+*.component
+*.vst
+*.aax
+*.aaxplugin

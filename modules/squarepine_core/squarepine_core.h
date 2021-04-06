@@ -177,7 +177,7 @@
     #pragma clang diagnostic warning "-Woverloaded-virtual"
     #pragma clang diagnostic warning "-Wunused-variable"
 
-    #pragma GCC diagnostic ignored "-Wswitch-enum" // Fairly useless warning...
+    #pragma clang diagnostic ignored "-Wswitch-enum" // Fairly useless warning...
 #elif JUCE_MSVC
     #pragma warning (default: 4242 4254 4264 4265 4287 4296 4302 4342 4350 4355)
 #endif
@@ -195,7 +195,6 @@
 
 //==============================================================================
 #include "valuetree/VariantConverters.h"
-#include "behaviours/CreationControl.h"
 
 //==============================================================================
 namespace sp
@@ -204,34 +203,39 @@ namespace sp
 
     //==============================================================================
     #include "misc/Macros.h"
-    #include "misc/Maths.h"
+    #include "maths/Maths.h"
     #include "valuetree/ValueTreeHelpers.h"
-    #include "debugging/CrashStackTracer.h"
+
+    #include "behaviours/CreationControl.h"
     #include "behaviours/DeletionNotifier.h"
     #include "behaviours/Identifiable.h"
     #include "behaviours/Lockable.h"
+    #include "cryptography/SHA1.h"
+    #include "cryptography/SHA2.h"
+    #include "debugging/CrashStackTracer.h"
+    #include "maths/Algebra.h"
+    #include "maths/Interpolation.h"
+    #include "maths/Transforms.h"
+    #include "maths/Trigonometry.h"
+    #include "maths/Angle.h"
+    #include "maths/Curves.h"
+    #include "maths/Easing.h"
+    #include "maths/Ellipse.h"
+    #include "maths/Line.h"
+    #include "maths/MovingAccumulator.h"
+    #include "maths/Polynomials.h"
+    #include "maths/Spline.h"
+    #include "maths/Steps.h"
+    #include "maths/Vector4D.h"
+    #include "memory/Allocator.h"
     #include "misc/Amalgamator.h"
-    #include "misc/Angle.h"
-    #include "misc/MovingAccumulator.h"
-    #include "misc/Threading.h"
     #include "misc/ArrayIterationUnroller.h"
     #include "misc/BooleanTools.h"
     #include "misc/CodeBeautifiers.h"
     #include "misc/CommandHelpers.h"
     #include "misc/FPUFlags.h"
+    #include "misc/Threading.h"
     #include "misc/Utilities.h"
-    #include "memory/Allocator.h"
-    #include "cryptography/SHA1.h"
-    //#include "cryptography/SHA2.h"
-    #include "rng/BlumBlumShub.h"
-    #include "rng/ISAAC.h"
-    #include "rng/Xorshift.h"
-    #include "text/LanguageHandler.h"
-    #include "text/Utilities.h"
-    #include "time/StopWatch.h"
-    #include "time/MillisecondStopWatch.h"
-    #include "time/TickStopWatch.h"
-    #include "unittests/SquarePineCoreUnitTestGatherer.h"
     #include "networking/GoogleAnalyticsReporter.h"
     #include "networking/NetworkCache.h"
     #include "networking/NetworkConnectivityChecker.h"
@@ -241,6 +245,14 @@ namespace sp
     #include "networking/Utilities.h"
     #include "networking/WebServiceUtilities.h"
     #include "networking/WooCommerce.h"
+    #include "rng/BlumBlumShub.h"
+    #include "rng/ISAAC.h"
+    #include "rng/Xorshift.h"
+    #include "squarepine_core.h"
+    #include "text/LanguageHandler.h"
+    #include "text/Utilities.h"
+    #include "time/StopWatch.h"
+    #include "unittests/SquarePineCoreUnitTestGatherer.h"
     #include "valuetree/JSONToValueTree.h"
     #include "valuetree/PropertyContainer.h"
 }

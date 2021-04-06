@@ -1,8 +1,8 @@
 /** Solves for the slope and intercept of a line. */
-template<typename ValueType>
-inline bool solveLine (ValueType x1, ValueType y1,
-                       ValueType x2, ValueType y2,
-                       ValueType& m, ValueType& b) noexcept
+template<typename Type>
+inline bool solveLine (Type x1, Type y1,
+                       Type x2, Type y2,
+                       Type& m, Type& b) noexcept
 {
     if (x2 != x1)
     {
@@ -11,13 +11,13 @@ inline bool solveLine (ValueType x1, ValueType y1,
         return true;
     }
 
-    m = b = static_cast<ValueType> (0);
+    m = b = static_cast<Type> (0);
     return false;
 }
 
 /** Solves for the slope and intercept of a line. */
-template<typename ValueType>
-inline bool solveLine (Line<ValueType> l, ValueType& m, ValueType& b) noexcept
+template<typename Type>
+inline bool solveLine (Line<Type> l, Type& m, Type& b) noexcept
 {
     return solveLine (l.getStartX(), l.getEndX(),
                       l.getStartY(), l.getEndY(),

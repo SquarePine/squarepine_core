@@ -1,6 +1,6 @@
 //==============================================================================
 /** This is the default website WordPress access point. */
-class WordPressAccessPoint final : public OAuth2AccessPoint
+class WordPressAccessPoint : public OAuth2AccessPoint
 {
 public:
     /** Constructs a basic access point to WordPress. */
@@ -20,7 +20,7 @@ private:
 
 //==============================================================================
 /** This is the default website WooCommerce access point. */
-class WooCommerceAccessPoint final : public OAuth2AccessPoint
+class WooCommerceAccessPoint : public OAuth2AccessPoint
 {
 public:
     /** Constructs a basic access point to WooCommerce. */

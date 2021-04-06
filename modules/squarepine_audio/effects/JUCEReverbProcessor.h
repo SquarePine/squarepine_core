@@ -10,15 +10,13 @@ public:
     /** @internal */
     void releaseResources() override;
     /** @internal */
-    const String getName() const override;
+    const String getName() const override { return NEEDS_TRANS ("Simple Reverb"); }
     /** @internal */
-    Identifier getIdentifier() const override;
+    Identifier getIdentifier() const override { return "SimpleReverb"; }
     /** @internal */
     void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
 private:
-    void updateReverbParameters();
-
     //==============================================================================
     Reverb reverb;
 
@@ -28,6 +26,8 @@ private:
     AudioParameterFloat* dryLevel = nullptr;
     AudioParameterFloat* width = nullptr;
     AudioParameterBool* freezeMode = nullptr;
+
+    void updateReverbParameters();
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JUCEReverbProcessor)

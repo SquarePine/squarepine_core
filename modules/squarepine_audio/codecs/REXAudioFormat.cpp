@@ -483,7 +483,7 @@ private:
 
     static REXError::ErrorCode checkLibraryVersion (const File& libraryToCheck)
     {
-        auto v = getVersion (libraryToCheck);
+        const auto v = getVersion (libraryToCheck);
         const auto revision = parseVersion (v, 0);
 
         if (revision != rexMajorCompatibilityVersion)

@@ -35,7 +35,7 @@
     Only available with MSVC (not MinGW) and macOS.
 */
 #ifndef SQUAREPINE_USE_ELASTIQUE
-    #define SQUAREPINE_USE_ELASTIQUE 1
+    #define SQUAREPINE_USE_ELASTIQUE 0
 #endif
 
 /** Config: SQUAREPINE_USE_AUFTAKT
@@ -44,7 +44,7 @@
     Only available with MSVC (not MinGW) and macOS.
 */
 #ifndef SQUAREPINE_USE_AUFTAKT
-    #define SQUAREPINE_USE_AUFTAKT 1
+    #define SQUAREPINE_USE_AUFTAKT 0
 #endif
 
 /** Config: SQUAREPINE_USE_REX_AUDIO_FORMAT

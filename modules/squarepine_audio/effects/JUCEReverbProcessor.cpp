@@ -1,10 +1,10 @@
 JUCEReverbProcessor::JUCEReverbProcessor()
 {
-    addParameter (roomSize = new AudioParameterFloat ("roomSize", "Room Size", 0.f, 1.f, 0.5f));
-    addParameter (damping = new AudioParameterFloat ("damping", "Damping", 0.f, 1.f, 0.5f));
-    addParameter (wetLevel = new AudioParameterFloat ("wetLevel", "Wet Level", 0.f, 1.f, 0.33f));
-    addParameter (dryLevel = new AudioParameterFloat ("dryLevel", "Dry Level", 0.f, 1.f, 0.4f));
-    addParameter (width = new AudioParameterFloat ("width", "Width", 0.f, 1.f, 1.0f));
+    addParameter (roomSize = new AudioParameterFloat ("roomSize", "Room Size", 0.0f, 1.0f, 0.5f));
+    addParameter (damping = new AudioParameterFloat ("damping", "Damping", 0.0f, 1.0f, 0.5f));
+    addParameter (wetLevel = new AudioParameterFloat ("wetLevel", "Wet Level", 0.0f, 1.0f, 0.33f));
+    addParameter (dryLevel = new AudioParameterFloat ("dryLevel", "Dry Level", 0.0f, 1.0f, 0.4f));
+    addParameter (width = new AudioParameterFloat ("width", "Width", 0.0f, 1.0f, 1.0f));
     addParameter (freezeMode = new AudioParameterBool ("freezeMode", "Freeze Mode", false));
 }
 
@@ -41,57 +41,34 @@ void JUCEReverbProcessor::updateReverbParameters()
     }
 }
 
-void JUCEReverbProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& /*midiMessages*/)
+void JUCEReverbProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&)
 {
+    const auto numChannels = buffer.getNumChannels();
+    const auto numSamples = buffer.getNumSamples();
 
-    if (! buffer.hasBeenCleared())
+    if (isBypassed()
+        || buffer.hasBeenCleared()
+        || numChannels <= 0
+        || numSamples <= 0)
+        return;
+
+    updateReverbParameters();
+
+    auto** chans = buffer.getArrayOfWritePointers();
+
+    const ScopedLock sl (getCallbackLock());
+
+    switch (numChannels)
     {
-        updateReverbParameters();
+        case 1:
+            reverb.processMono (chans[0], numSamples);
+        break;
 
-        const int numChannels = buffer.getNumChannels();
-        const int numSamples = buffer.getNumSamples();
-        float** chans = buffer.getArrayOfWritePointers();
+        case 2:
+            reverb.processStereo (chans[0], chans[1], numSamples);
+        break;
 
-        const ScopedLock sl (getCallbackLock());
-
-        switch (numChannels)
-        {
-            case 1:
-                reverb.processMono (chans[0], numSamples);
-            break;
-
-            case 2:
-                reverb.processStereo (chans[0], chans[1], numSamples);
-            break;
-
-            default:
-            break;
-        }
+        default:
+        break;
     }
-}
-
-//==============================================================================
-
-//@todo
-//int JUCEReverbProcessor::getParameterNumSteps (const int parameterIndex)
-//{
-//    switch (parameterIndex)
-//    {
-//        case 5: return 2; //Freeze mode
-//
-//        default:
-//        break;
-//    };
-//
-//    return AudioProcessor::getDefaultNumParameterSteps();
-//}
-
-const String JUCEReverbProcessor::getName() const
-{
-    return NEEDS_TRANS ("Simple Reverb");
-}
-
-Identifier JUCEReverbProcessor::getIdentifier() const
-{
-    return "SimpleReverb";
 }

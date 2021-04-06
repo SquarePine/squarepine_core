@@ -21,6 +21,14 @@ struct Angle final
     constexpr Angle (const Angle&) noexcept = default;
 
     //==============================================================================
+    /** @returns an angle (in radians) between two 2D points. */
+    template<typename FirstType, typename SecondType>
+    static Angle betweenPoints (Point<FirstType> a, Point<SecondType> ba) noexcept
+    {
+        return Angle (static_cast<Type> (a.toDouble().getAngleToPoint (b.toDouble())));
+    }
+
+    //==============================================================================
     /** @returns an angle in radians from a value in degrees. */
     static Angle fromDegrees (Type degrees) noexcept            { return Angle (degreesToRadians (degrees)); }
 
@@ -98,16 +106,16 @@ struct Angle final
     Angle& operator= (const Angle&) noexcept = default;
 
     /** Adds two angles together */
-    constexpr Angle operator+ (Angle other) const noexcept      { return Angle (radians + other.radians); }
+    constexpr Angle operator+ (Angle other) const noexcept              { return Angle (radians + other.radians); }
 
     /** Adds another angle's coordinates to this one */
-    Angle& operator+= (Angle other) noexcept                    { radians += other.radians; return *this; }
+    Angle& operator+= (Angle other) noexcept                            { radians += other.radians; return *this; }
 
     /** Subtracts one angle from another */
-    constexpr Angle operator- (Angle other) const noexcept      { return Angle (radians - other.radians); }
+    constexpr Angle operator- (Angle other) const noexcept              { return Angle (radians - other.radians); }
 
     /** Subtracts another angle's coordinates to this one */
-    Angle& operator-= (Angle other) noexcept                    { radians -= other.radians; return *this; }
+    Angle& operator-= (Angle other) noexcept                            { radians -= other.radians; return *this; }
 
     /** Multiplies two angles together */
     template<typename OtherType>
@@ -166,7 +174,7 @@ struct Angle final
     constexpr bool operator>= (Angle other) const noexcept      { return radians >= other.radians; }
 
     /** @returns */
-    constexpr operator double() const noexcept                  { return radians; }
+    constexpr operator Type() const noexcept                    { return radians; }
 
     //==============================================================================
     /** @returns a casted version of this angle as an Angle<float>. */

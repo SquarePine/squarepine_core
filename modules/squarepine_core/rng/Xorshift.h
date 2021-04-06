@@ -29,49 +29,7 @@ public:
 
 private:
     //==============================================================================
-    struct Vector4D
-    {
-        Vector4D() noexcept :
-            x (0),
-            y (0),
-            z (0),
-            w (0)
-        {
-        }
-
-        Vector4D (uint32 a, uint32 b, uint32 c, uint32 d) noexcept :
-            x (a),
-            y (b),
-            z (c),
-            w (d)
-        {
-        }
-
-        Vector4D (const Vector4D& other) noexcept :
-            x (other.x),
-            y (other.y),
-            z (other.z),
-            w (other.w)
-        {
-        }
-
-        ~Vector4D() noexcept
-        {
-        }
-
-        Vector4D& operator= (const Vector4D& other) noexcept
-        {
-            x = other.x;
-            y = other.y;
-            z = other.z;
-            w = other.w;
-            return *this;
-        }
-
-        uint32 x, y, z, w;
-    };
-
-    Vector4D components;
+    Vector4D<uint32> components;
 
     //==============================================================================
     void seed (uint32 seed) noexcept;

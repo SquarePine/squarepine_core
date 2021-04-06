@@ -1,6 +1,6 @@
 //==============================================================================
 /** The global crash tracer that caches all the callsites. */
-class GlobalCrashTracer
+class GlobalCrashTracer final
 {
 public:
     GlobalCrashTracer()

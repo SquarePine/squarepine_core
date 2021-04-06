@@ -429,7 +429,8 @@ namespace ProductFinder
         spa.minimiseStorageOverheads();
     }
 
-    int findProducts (ReferenceCountedArray<Product>& dest,
+    int findProducts (WooCommerceAccessPoint& wc,
+                      ReferenceCountedArray<Product>& dest,
                       const SearchParameters& sp)
     {
         if (! NetworkConnectivityChecker().isConnectedToInternet())
@@ -448,7 +449,6 @@ namespace ProductFinder
         auto stm = std::make_unique<ScopedTimeMeasurement> (elapsedTimeSec);
        #endif
 
-        WooCommerceAccessPoint wc;
         const auto url = wc.createDomainAccessURLWithPath (woocommerce::get::products);
 
         if (auto s = createEndpointStream (url, HTTPRequest::GET))

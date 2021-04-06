@@ -36,7 +36,7 @@ private:
 };
 
 //==============================================================================
-/** Derive from this to create a lockable class that uses a std::recursive_mutex. */
+/** Derive from this to create a lockable class that uses an std::recursive_mutex. */
 template<>
 class LockableBase<std::recursive_mutex>
 {

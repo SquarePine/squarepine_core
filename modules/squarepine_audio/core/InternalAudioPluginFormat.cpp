@@ -192,10 +192,9 @@ FileSearchPath InternalAudioPluginFormat::getDefaultLocationsToSearch()         
 void InternalAudioPluginFormat::findAllTypesForFile (OwnedArray<PluginDescription>& result,
                                                      const String& fileOrIdentifier)
 {
-    for (int i = descriptions.size(); --i >= 0;)
-        if (auto* const pd = descriptions.getUnchecked (i))
-            if (pd->fileOrIdentifier == fileOrIdentifier)
-                CreationHelpers::addCopy (result, *pd);
+    for (auto* pd : descriptions)
+        if (pd->fileOrIdentifier == fileOrIdentifier)
+            CreationHelpers::addCopy (result, *pd);
 }
 
 void InternalAudioPluginFormat::createPluginInstance (const PluginDescription& description, double initialSampleRate,
@@ -207,7 +206,7 @@ void InternalAudioPluginFormat::createPluginInstance (const PluginDescription& d
     if (it != pluginCreationMap.end())
     {
         //N.B.: We are calling a specialised version of createInstance() here!
-        if (AudioPluginInstance* result = it->second())
+        if (auto* result = it->second())
         {
             if (auto* ioProc = dynamic_cast<AudioProcessorGraph::AudioGraphIOProcessor*> (result))
                 ioProc->setParentGraph (&graph);
