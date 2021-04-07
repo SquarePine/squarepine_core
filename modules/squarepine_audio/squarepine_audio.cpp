@@ -13,6 +13,8 @@
 
 namespace sp
 {
+    using namespace juce;
+
     String getInternalProcessorTypeName()
     {
         return ProjectInfo::projectName;

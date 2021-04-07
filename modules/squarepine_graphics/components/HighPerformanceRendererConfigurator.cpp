@@ -1,5 +1,5 @@
 //==============================================================================
-#if JUCE_MODULE_AVAILABLE_juce_opengl && JUCE_OPENGL
+#if SQUAREPINE_OPENGL
 
 String getGLString (GLenum value)
 {
@@ -79,7 +79,7 @@ public:
 
     void messageCallback() override
     {
-       #if JUCE_MODULE_AVAILABLE_juce_opengl && JUCE_OPENGL
+       #if SQUAREPINE_OPENGL
         if (auto* c = configurator.get())
             c->context = nullptr;
        #endif
@@ -94,7 +94,7 @@ private:
 //==============================================================================
 void HighPerformanceRendererConfigurator::configureWithOpenGLIfAvailable (Component& component)
 {
-   #if JUCE_MODULE_AVAILABLE_juce_opengl && JUCE_OPENGL
+   #if SQUAREPINE_OPENGL
     context.reset (new OpenGLContext());
     configureContextWithModernGL (*context.get());
     context->attachTo (component);
@@ -106,7 +106,7 @@ void HighPerformanceRendererConfigurator::configureWithOpenGLIfAvailable (Compon
 
 void HighPerformanceRendererConfigurator::paintCallback()
 {
-   #if JUCE_MODULE_AVAILABLE_juce_opengl && JUCE_OPENGL
+   #if SQUAREPINE_OPENGL
     if (! hasContextBeenForciblyDetached
         && context != nullptr
         && context->isActive()

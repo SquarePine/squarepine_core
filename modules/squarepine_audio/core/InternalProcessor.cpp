@@ -87,7 +87,7 @@ void InternalProcessor::fillInPluginDescription (PluginDescription& description)
     description.version             = getVersion();
     description.fileOrIdentifier    = getIdentifier().toString();
     description.lastFileModTime     = Time::getCurrentTime();
-    description.uid                 = description.name.hashCode();
+    description.uniqueId            = description.name.hashCode();
     description.isInstrument        = isInstrument();
     description.numInputChannels    = getTotalNumInputChannels();
     description.numOutputChannels   = getTotalNumOutputChannels();

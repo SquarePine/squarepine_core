@@ -1,5 +1,13 @@
 //==============================================================================
-#if JUCE_MODULE_AVAILABLE_juce_opengl && JUCE_OPENGL
+#undef SQUAREPINE_OPENGL
+#define SQUAREPINE_OPENGL JUCE_MODULE_AVAILABLE_juce_opengl && JUCE_OPENGL
+
+#if SQUAREPINE_OPENGL && SQUAREPINE_IS_DESKTOP && ! JUCE_OPENGL3
+    #error "Please define JUCE_OPENGL3=1 in your AppConfig.h or at a top-most project level."
+#endif
+
+//==============================================================================
+#if SQUAREPINE_OPENGL
    #ifndef GL_VENDOR
     #define GL_VENDOR 0x1F00
    #endif
@@ -75,7 +83,7 @@ public:
     void paintCallback();
 
     //==============================================================================
-   #if JUCE_MODULE_AVAILABLE_juce_opengl && JUCE_OPENGL
+   #if SQUAREPINE_OPENGL
     std::unique_ptr<OpenGLContext> context;
    #endif
 

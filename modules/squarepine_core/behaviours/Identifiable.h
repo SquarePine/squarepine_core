@@ -1,4 +1,7 @@
-/** */
+/** Inherit from this to be able to uniquely identify your class instance (using a juce::Uuid),
+    as well as identifying your class instance with a standard juce::Identifier
+    which is juce::ValueTree and generally juce::var compatible.
+*/
 class Identifiable
 {
 public:
@@ -10,10 +13,10 @@ public:
 
     //==============================================================================
     /** */
-    squarepine_nodiscard const Identifier& getIdentifier() const noexcept { return identifier; }
+    sp_nodiscard const Identifier& getIdentifier() const noexcept { return identifier; }
 
     /** */
-    squarepine_nodiscard const Uuid& getUuid() const noexcept { return uuid; }
+    sp_nodiscard const Uuid& getUuid() const noexcept { return uuid; }
 
     //==============================================================================
     /** */

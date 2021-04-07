@@ -1,4 +1,4 @@
-/** */
+/** Inherit from this to notify listeners of a deletion happening. */
 class DeletionNotifier
 {
 public:

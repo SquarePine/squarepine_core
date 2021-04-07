@@ -22,6 +22,7 @@
 #include <limits>
 
 #include <random>
+#include <regex>
 
 //==============================================================================
 #include <juce_audio_utils/juce_audio_utils.h>
@@ -44,7 +45,9 @@
     #include <unistd.h>
 #endif
 
-#include <regex>
+#if JUCE_MINGW
+    #error "MinGW is too outdated and crappy. Use Visual Studio - it's literally free."
+#endif
 
 //==============================================================================
 /** Config: SQUAREPINE_COMPILE_UNIT_TESTS
@@ -119,7 +122,7 @@
 #endif
 
 //==============================================================================
-#undef squarepine_nodiscard
+#undef sp_nodiscard
 #undef SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE
 
 #if JUCE_CXX17_IS_AVAILABLE
@@ -128,33 +131,28 @@
     #define SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE(Type) \
         std::optional<Type>
 
-    #define squarepine_nodiscard [[nodiscard]]
+    #define sp_nodiscard [[nodiscard]]
 #else
     #define SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE(Type) \
         Type
 
-    #define squarepine_nodiscard
+    #define sp_nodiscard
 
     namespace std
     {
         template<class T>
-        squarepine_nodiscard constexpr const T& clamp (const T& v, const T& lo, const T& hi) noexcept
+        sp_nodiscard constexpr const T& clamp (const T& v, const T& lo, const T& hi) noexcept
         {
             return (v < lo) ? lo : (hi < v) ? hi : v;
         }
 
         template<class T, class Predicate>
-        squarepine_nodiscard constexpr const T& clamp (const T& v, const T& lo, const T& hi, Predicate predicate) noexcept
+        sp_nodiscard constexpr const T& clamp (const T& v, const T& lo, const T& hi, Predicate predicate) noexcept
         {
             return predicate (v, lo) ? lo : predicate (hi, v) ? hi : v;
         }
     }
 
-#endif
-
-#if ! JUCE_CXX20_IS_AVAILABLE
-    #undef char8_t
-    using char8_t = std::int_least8_t;
 #endif
 
 //==============================================================================

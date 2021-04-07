@@ -48,6 +48,8 @@
 //==============================================================================
 namespace sp
 {
+    using namespace juce;
+
     /** */
     std::unique_ptr<Drawable> createDrawableFromSVG (const File& file);
     /** */
