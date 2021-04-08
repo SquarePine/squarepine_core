@@ -1,4 +1,3 @@
-
 #ifndef SQUAREPINE_SQLITE_H
 #define SQUAREPINE_SQLITE_H
 
@@ -22,10 +21,57 @@
 
 namespace sqlite
 {
-    extern "C"
-    {
-        #include "core/sqlite3.h"
-    }
+    #undef SQLITE_64BIT_STATS
+    #if JUCE_64BIT
+        #define SQLITE_64BIT_STATS 1
+    #endif
+
+    #undef SQLITE_DEBUG
+    #if JUCE_DEBUG
+        #define SQLITE_DEBUG 1
+    #endif
+
+    #undef SQLITE_CDECL
+    #define SQLITE_CDECL __cdecl
+
+    #undef SQLITE_STDCALL
+    #if JUCE_WINDOWS
+        #define SQLITE_STDCALL __stdcall
+    #endif
+
+    #undef SQLITE_OMIT_AUTOINIT
+    #define SQLITE_OMIT_AUTOINIT 1
+
+    #undef SQLITE_THREADSAFE
+    #define SQLITE_THREADSAFE 1
+
+    #undef SQLITE_OMIT_LOAD_EXTENSION
+    #define SQLITE_OMIT_LOAD_EXTENSION 1
+
+    // Gotta love C programmers...
+    #undef MIN
+    #undef MAX
+    #undef min
+    #undef max
+    #undef _min
+    #undef _max
+    #undef __min
+    #undef __max
+    #undef offsetof
+    #undef SWAP
+
+    #include "core/sqlite3ext.h"
+
+    #undef MIN
+    #undef MAX
+    #undef min
+    #undef max
+    #undef _min
+    #undef _max
+    #undef __min
+    #undef __max
+    #undef offsetof
+    #undef SWAP
 }
 
 #endif //SQUAREPINE_SQLITE_H
