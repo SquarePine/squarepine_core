@@ -1,5 +1,5 @@
 /** Use this processor to scale volumes of incoming audio samples! */
-class VolumeProcessor : public InternalProcessor
+class VolumeProcessor final : public InternalProcessor
 {
 public:
     /** Constructor */

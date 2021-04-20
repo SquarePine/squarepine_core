@@ -1,5 +1,5 @@
 /** Use this processor to add periodic hissing over the provided audio. */
-class HissingProcessor : public InternalProcessor
+class HissingProcessor final : public InternalProcessor
 {
 public:
     /** Constructor */

@@ -90,6 +90,11 @@ namespace sp
     /** Shorthand for creating weak pointers to AudioProcessor instances. */
     using AudioProcessorWeakPtr = std::weak_ptr<AudioProcessor>;
 
+    /** Shorthand for creating shared AudioDeviceManager instances. */
+    using AudioDeviceManagerPtr = std::shared_ptr<AudioDeviceManager>;
+    /** Shorthand for creating weak pointers to AudioDeviceManager instances. */
+    using AudioDeviceManagerWeakPtr = std::shared_ptr<AudioDeviceManager>;
+
     //==============================================================================
     /** */
     String getInternalProcessorTypeName();
@@ -246,11 +251,24 @@ namespace juce
                         PluginDescription pd;
                         if (pd.loadFromXml (*xml))
                             return pd;
+
+                        jassertfalse;
+                    }
+                    else
+                    {
+                        jassertfalse;
                     }
                 }
+                else
+                {
+                    jassertfalse;
+                }
+            }
+            else
+            {
+                jassertfalse;
             }
 
-            jassertfalse;
             return {};
         }
 

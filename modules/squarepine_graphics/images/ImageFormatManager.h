@@ -22,19 +22,25 @@ public:
     void clearFormats();
 
     /** @returns the number of currently registered image formats. */
-    int getNumKnownFormats() const noexcept                     { return knownFormats.size(); }
+    int getNumKnownFormats() const noexcept                                 { return knownFormats.size(); }
 
     /** @returns one of the registered file formats. */
-    ImageFileFormat* getKnownFormat (int index) const           { return knownFormats[index]; }
+    ImageFileFormat* getKnownFormat (int index) const noexcept              { return knownFormats[index]; }
 
     /** @returns one of the registered file formats. */
-    ImageFileFormat* getKnownFormatUnchecked (int index) const  { return knownFormats.getUnchecked (index); }
+    ImageFileFormat* getKnownFormatUnchecked (int index) const noexcept     { return knownFormats.getUnchecked (index); }
 
     /** Iterator access to the list of known formats. */
-    ImageFileFormat* const* begin() const noexcept              { return knownFormats.begin(); }
+    ImageFileFormat* const* begin() const noexcept                          { return knownFormats.begin(); }
 
     /** Iterator access to the list of known formats. */
-    ImageFileFormat* const* end() const noexcept                { return knownFormats.end(); }
+    ImageFileFormat* const* end() const noexcept                            { return knownFormats.end(); }
+
+    /** Iterator access to the list of known formats. */
+    ImageFileFormat* const* cbegin() const noexcept                         { return knownFormats.begin(); }
+
+    /** Iterator access to the list of known formats. */
+    ImageFileFormat* const* cend() const noexcept                           { return knownFormats.end(); }
 
     //==============================================================================
     /** Looks for a format that can handle the given stream.

@@ -56,22 +56,22 @@ public:
     //==============================================================================
     /** @returns a Unicode sharp symbol.
 
-        @warning Not all fonts support this glyph, so be careful when using this
-                 for display purposes!
+        @warning Not all fonts support this glyph, so be careful
+                 when using this for display purposes!
     */
     static juce_wchar getSharpSymbol() noexcept   { return *CharPointer_UTF8 ("\xe2\x99\xaf"); }
 
     /** @returns a Unicode flat symbol.
 
-        @warning Not all fonts support this glyph, so be careful when using this
-                 for display purposes!
+        @warning Not all fonts support this glyph, so be careful
+                 when using this for display purposes!
     */
     static juce_wchar getFlatSymbol() noexcept    { return *CharPointer_UTF8 ("\xe2\x99\xad"); }
 
     /** @returns a Unicode natural symbol.
 
-        @warning Not all fonts support this glyph, so be careful when using this
-                 for display purposes!
+        @warning Not all fonts support this glyph, so be careful
+                 when using this for display purposes!
     */
     static juce_wchar getNaturalSymbol() noexcept { return *CharPointer_UTF8 ("\xe2\x99\xae"); }
 

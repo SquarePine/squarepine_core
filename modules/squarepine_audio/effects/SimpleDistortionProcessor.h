@@ -1,5 +1,5 @@
 /** */
-class SimpleDistortionProcessor : public InternalProcessor
+class SimpleDistortionProcessor final : public InternalProcessor
 {
 public:
     /** Constructor */

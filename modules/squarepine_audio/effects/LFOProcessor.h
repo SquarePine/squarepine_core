@@ -1,5 +1,5 @@
 /** */
-class LFOProcessor : public InternalProcessor
+class LFOProcessor final : public InternalProcessor
 {
 public:
     /** Constructor */
@@ -9,9 +9,12 @@ public:
     /** */
     void setLFOType (LFO* newLfo);
 
+    /** */
     void setFrequency (double newFrequency);
+    /** */
     void setFrequencyFromMidiNote (int midiNote);
 
+    /** */
     double getFrequency() const noexcept { return configuration.frequency; }
 
     //==============================================================================

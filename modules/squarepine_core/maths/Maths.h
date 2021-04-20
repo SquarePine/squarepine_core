@@ -530,13 +530,14 @@ inline double midiNoteToFrequency (int midiNoteNumber) noexcept
 }
 
 //============================================================================
-/** Creates a unique SHA-256 hash based on the contents of the provided source file.
+/** Creates a unique hash based on the contents of the provided source file.
 
     @param source   The source file to hash.
     @param hash     The destination hash, which will be empty if anything failed.
 
     @returns ok if the file could be hashed.
 */
+template<typename HasherType = juce::SHA256>
 inline Result createUniqueFileHash (const File& source, String& hash)
 {
     hash.clear();
@@ -551,12 +552,17 @@ inline Result createUniqueFileHash (const File& source, String& hash)
     if (fis.failedToOpen())
         return fis.getStatus();
 
-    const auto s = Time::getCurrentTime();
-    hash = SHA256 (fis).toHexString();
-    const auto e = Time::getCurrentTime();
+    constexpr auto oneMiB = 1 << 20;
 
-    auto millis = (e - s).inMilliseconds();
-    Logger::writeToLog (String (millis));
+    if (fis.getTotalLength() < (oneMiB * 2))
+    {
+        hash = HasherType (fis).toHexString();
+    }
+    else
+    {
+        BufferedInputStream bis (&fis, oneMiB, false);
+        hash = HasherType (bis).toHexString();
+    }
 
     return Result::ok();
 }

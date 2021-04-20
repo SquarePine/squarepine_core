@@ -1,4 +1,5 @@
 //==============================================================================
+/** Call this on an audio buffer to invert its polarity. */
 template<typename FloatType>
 inline void invertPolarity (AudioBuffer<FloatType>& buffer)
 {
@@ -11,7 +12,7 @@ inline void invertPolarity (AudioBuffer<FloatType>& buffer)
 
 //==============================================================================
 /** A simple processor that will flip the polarity to all incoming audio channels! */
-class PolarityInversionProcessor : public InternalProcessor
+class PolarityInversionProcessor final : public InternalProcessor
 {
 public:
     /** Constructor */
@@ -40,6 +41,20 @@ private:
     //==============================================================================
     class InvertParameter;
     InvertParameter* invertParameter = nullptr;
+
+    template<typename FloatType>
+    void process (AudioBuffer<FloatType>& buffer, MidiBuffer&)
+    {
+        bool localActive = false;
+
+        {
+            const ScopedLock sl (getCallbackLock());
+            localActive = isActive();
+        }
+
+        if (localActive)
+            invertPolarity (buffer);
+    }
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PolarityInversionProcessor)

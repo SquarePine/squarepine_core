@@ -1,5 +1,5 @@
 /** Use this processor to apply stereo-width! */
-class StereoWidthProcessor : public InternalProcessor
+class StereoWidthProcessor final : public InternalProcessor
 {
 public:
     /** Constructor */

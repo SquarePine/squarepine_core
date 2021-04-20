@@ -77,7 +77,7 @@ Image ImageFormatManager::loadFrom (const File& file)
 
     if (stream.openedOk())
     {
-        BufferedInputStream bis (stream, 8192);
+        BufferedInputStream bis (stream, 1 << 20);
         return loadFrom (stream);
     }
 

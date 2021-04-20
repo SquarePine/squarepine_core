@@ -40,28 +40,12 @@ bool PolarityInversionProcessor::isActive() const
 }
 
 //==============================================================================
-void PolarityInversionProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&)
+void PolarityInversionProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiBuffer)
 {
-    bool localActive = false;
-
-    {
-        const ScopedLock sl (getCallbackLock());
-        localActive = invertParameter->get();
-    }
-
-    if (localActive)
-        invertPolarity (buffer);
+    process (buffer, midiBuffer);
 }
 
-void PolarityInversionProcessor::processBlock (AudioBuffer<double>& buffer, MidiBuffer&)
+void PolarityInversionProcessor::processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiBuffer)
 {
-    bool localActive = false;
-
-    {
-        const ScopedLock sl (getCallbackLock());
-        localActive = invertParameter->get();
-    }
-
-    if (localActive)
-        invertPolarity (buffer);
+    process (buffer, midiBuffer);
 }

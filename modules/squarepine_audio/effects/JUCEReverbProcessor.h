@@ -1,4 +1,5 @@
-class JUCEReverbProcessor : public InternalProcessor
+/** */
+class JUCEReverbProcessor final : public InternalProcessor
 {
 public:
     /** Constructor */
