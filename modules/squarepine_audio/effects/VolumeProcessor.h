@@ -33,13 +33,17 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override;
+    const String getName() const override { return TRANS ("Volume"); }
     /** @internal */
     Identifier getIdentifier() const override { return volumeId; }
+    /** @internal */
+    bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     /** @internal */
     void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    /** @internal */
+    void processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override;
 
 private:
     //==============================================================================
@@ -47,6 +51,24 @@ private:
 
     // We must track gain separately to the parameter so that we can ramp to the new parameter value
     float currentGain = 1.0f;
+
+    template<typename FloatType>
+    void process (AudioBuffer<FloatType>& buffer, MidiBuffer&)
+    {
+        const ScopedLock sl (getCallbackLock());
+
+        if (isBypassed())
+            return;
+
+        const auto localGain = volumeParameter->get();
+
+        if (! approximatelyEqual (currentGain, localGain))
+            buffer.applyGainRamp (0, buffer.getNumSamples(), (FloatType) currentGain, (FloatType) localGain);
+        else
+            buffer.applyGain ((FloatType) localGain);
+
+        currentGain = localGain;
+    }
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VolumeProcessor)

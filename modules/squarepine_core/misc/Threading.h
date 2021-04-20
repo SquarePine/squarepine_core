@@ -12,13 +12,16 @@ inline void shutdownThreadSafely (Thread& thread, std::chrono::milliseconds time
     thread.signalThreadShouldExit();
     thread.notify();
 
-    while (! thread.waitForThreadToExit ((int) timeout.count()))
+    while (! thread.waitForThreadToExit (static_cast<int> (timeout.count())))
     {
         int startPriority = 5;
         while (! thread.setPriority (startPriority--))
         {
             thread.signalThreadShouldExit();
             thread.notify();
+
+            if (startPriority < 0)
+                break;
         }
     }
 }
