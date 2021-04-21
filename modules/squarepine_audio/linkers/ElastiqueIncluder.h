@@ -118,7 +118,7 @@
         }
 
         //==============================================================================
-        inline void logInfo()
+        inline void logElastiqueInfo()
         {
             auto newLine = juce::newLine;
 

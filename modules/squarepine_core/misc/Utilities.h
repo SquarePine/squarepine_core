@@ -329,3 +329,23 @@ inline String getDemangledName (ObjectType* c)
 
     return "nullptr";
 }
+
+//==============================================================================
+/** */
+inline int getMaxPathLength()
+{
+    int maxLength = 128;
+
+   #if JUCE_WINDOWS
+    const auto v = WindowsRegistry::getValue ("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\FileSystem\\LongPathsEnabled").trim();
+
+    if (v == "1")
+        maxLength = 256;
+   #elif defined (NAME_MAX)
+    maxLength = roundToInt ((double) NAME_MAX / 3.0) - 1;
+   #elif defined (PATH_MAX)
+    maxLength = roundToInt ((double) PATH_MAX / 3.0) - 1;
+   #endif
+
+    return jmax (128, maxLength);
+}
