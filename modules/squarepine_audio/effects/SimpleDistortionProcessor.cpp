@@ -42,7 +42,7 @@ Identifier SimpleDistortionProcessor::getIdentifier() const
 }
 
 //==============================================================================
-void SimpleDistortionProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&)
+void SimpleDistortionProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
     auto localAmount = 1.0f;
 

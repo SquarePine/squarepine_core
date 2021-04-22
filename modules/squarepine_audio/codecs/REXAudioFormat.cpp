@@ -522,9 +522,6 @@ private:
 
         return SystemStats::getOperatingSystemType() >= SystemStats::Windows7;
        #elif JUCE_MAC
-        if (isProbablyV170 (libraryToCheck))
-            return SystemStats::getOperatingSystemType() >= SystemStats::MacOSX_10_5;
-
         return SystemStats::getOperatingSystemType() >= SystemStats::MacOSX_10_7;
        #else
         ignoreUnused (libraryToCheck);

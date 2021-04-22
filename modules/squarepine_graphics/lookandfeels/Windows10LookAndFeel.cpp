@@ -449,7 +449,6 @@ void Windows10LookAndFeel::drawButtonText (Graphics& g, TextButton& button, bool
                        .withMultipliedAlpha (button.isEnabled() ? 1.0f : 0.5f));
 
     const auto yIndent      = jmin (4.0f, (float) button.getHeight() * 0.3f);
-    const auto fontHeight   = font.getHeight() * 0.75f;
     const auto textWidth    = (float) button.getWidth();
 
     if (textWidth > 0.0f)

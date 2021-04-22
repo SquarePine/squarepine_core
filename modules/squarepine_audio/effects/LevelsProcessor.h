@@ -40,9 +40,9 @@ public:
     /** @internal */
     void prepareToPlay (double sampleRate, int maximumExpectedSamplesPerBlock) override;
     /** @internal */
-    void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
     /** @internal */
-    void processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override;
 
 private:
     //==============================================================================
@@ -76,7 +76,7 @@ private:
     }
 
     template<typename FloatType>
-    void process (AudioBuffer<FloatType>& buffer, ChannelDetails<FloatType>& details)
+    void process (juce::AudioBuffer<FloatType>& buffer, ChannelDetails<FloatType>& details)
     {
         const auto numChannels = jmin (buffer.getNumChannels(), getTotalNumInputChannels(), getTotalNumOutputChannels());
 

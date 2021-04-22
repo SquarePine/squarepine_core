@@ -21,7 +21,7 @@ public:
     /** @internal */
     void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock) override;
     /** @internal */
-    void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
     /** @internal */
     void releaseResources() override;
     /** @internal */
@@ -31,7 +31,7 @@ private:
     //==============================================================================
     OptionalScopedPointer<AudioSource> audioSource;
     AudioSourceChannelInfo info;
-    AudioBuffer<float> intermittentBuffer;
+    juce::AudioBuffer<float> intermittentBuffer;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioSourceProcessor)

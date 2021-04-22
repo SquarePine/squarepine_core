@@ -74,7 +74,7 @@ void InternalProcessor::setCurrentProgram (int)                         { }
 const String InternalProcessor::getProgramName (int)                    { return TRANS ("Default"); }
 void InternalProcessor::changeProgramName (int, const String&)          { }
 bool InternalProcessor::isInstrument() const                            { return false; }
-String InternalProcessor::getVersion() const                            { return ProjectInfo::versionString; }
+String InternalProcessor::getVersion() const                            { return "1.0"; }
 
 //==============================================================================
 void InternalProcessor::fillInPluginDescription (PluginDescription& description) const
@@ -83,7 +83,7 @@ void InternalProcessor::fillInPluginDescription (PluginDescription& description)
     description.descriptiveName     = description.name;
     description.pluginFormatName    = getInternalProcessorTypeName();
     description.category            = isInstrument() ? TRANS ("Synth") : TRANS ("Effect");
-    description.manufacturerName    = ProjectInfo::companyName;
+    description.manufacturerName    = "";
     description.version             = getVersion();
     description.fileOrIdentifier    = getIdentifier().toString();
     description.lastFileModTime     = Time::getCurrentTime();

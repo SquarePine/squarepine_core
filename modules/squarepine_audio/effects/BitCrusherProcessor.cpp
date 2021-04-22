@@ -88,7 +88,7 @@ int BitCrusherProcessor::getBitDepth() const noexcept
 }
 
 //==============================================================================
-void BitCrusherProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&)
+void BitCrusherProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
     int localBitDepth = 32;
 

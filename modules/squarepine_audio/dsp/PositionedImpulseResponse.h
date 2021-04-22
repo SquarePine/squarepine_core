@@ -13,14 +13,14 @@
 struct PositionedImpulseResponse final
 {
     /** */
-    PositionedImpulseResponse (const AudioBuffer<float>& buffer, Point<float> pos) :
+    PositionedImpulseResponse (const juce::AudioBuffer<float>& buffer, juce::Point<float> pos) :
         impulseResponse (buffer),
         position (pos)
     {
     }
 
     /** */
-    PositionedImpulseResponse (const AudioBuffer<float>& buffer, float x, float y) :
+    PositionedImpulseResponse (const juce::AudioBuffer<float>& buffer, float x, float y) :
         PositionedImpulseResponse (buffer, { x, y })
     {
     }
@@ -67,13 +67,13 @@ struct PositionedImpulseResponse final
     }
 
     /** */
-    float distanceFrom (Point<float> pos) const
+    float distanceFrom (juce::Point<float> pos) const
     {
         return distanceFrom (pos.x, pos.y);
     }
 
-    AudioBuffer<float> impulseResponse;
-    Point<float> position;
+    juce::AudioBuffer<float> impulseResponse;
+    juce::Point<float> position;
 
 private:
     JUCE_LEAK_DETECTOR (PositionedImpulseResponse)

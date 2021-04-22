@@ -280,7 +280,7 @@ SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (float) EffectProcessorChain::getMixLevel (i
     return {};
 }
 
-SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (Point<int>) EffectProcessorChain::getLastUIPosition (int index) const
+SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (juce::Point<int>) EffectProcessorChain::getLastUIPosition (int index) const
 {
     const ScopedLock sl (getCallbackLock());
 
@@ -371,7 +371,7 @@ void EffectProcessorChain::updateChannelCount()
 
 //==============================================================================
 template<typename FloatType>
-void EffectProcessorChain::processInternal (AudioBuffer<FloatType>& source,
+void EffectProcessorChain::processInternal (juce::AudioBuffer<FloatType>& source,
                                             MidiBuffer& midiMessages,
                                             BufferPackage<FloatType>& bufferPackage,
                                             const int numChannels,
@@ -430,7 +430,7 @@ bool EffectProcessorChain::isWholeChainBypassed() const
 }
 
 template<typename FloatType>
-void EffectProcessorChain::process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, BufferPackage<FloatType>& package)
+void EffectProcessorChain::process (juce::AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, BufferPackage<FloatType>& package)
 {
     if (InternalProcessor::isBypassed())
         return;
@@ -449,8 +449,8 @@ void EffectProcessorChain::process (AudioBuffer<FloatType>& buffer, MidiBuffer& 
     }
 }
 
-void EffectProcessorChain::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)  { process<float> (buffer, midiMessages, floatBuffers); }
-void EffectProcessorChain::processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages) { process<double> (buffer, midiMessages, doubleBuffers); }
+void EffectProcessorChain::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages)  { process<float> (buffer, midiMessages, floatBuffers); }
+void EffectProcessorChain::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiMessages) { process<double> (buffer, midiMessages, doubleBuffers); }
 
 //==============================================================================
 double EffectProcessorChain::getTailLengthSeconds() const

@@ -40,12 +40,12 @@ bool PolarityInversionProcessor::isActive() const
 }
 
 //==============================================================================
-void PolarityInversionProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiBuffer)
+void PolarityInversionProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiBuffer)
 {
     process (buffer, midiBuffer);
 }
 
-void PolarityInversionProcessor::processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiBuffer)
+void PolarityInversionProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiBuffer)
 {
     process (buffer, midiBuffer);
 }

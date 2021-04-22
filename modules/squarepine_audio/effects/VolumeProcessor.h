@@ -41,9 +41,9 @@ public:
     /** @internal */
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     /** @internal */
-    void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
     /** @internal */
-    void processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override;
 
 private:
     //==============================================================================
@@ -53,7 +53,7 @@ private:
     float currentGain = 1.0f;
 
     template<typename FloatType>
-    void process (AudioBuffer<FloatType>& buffer, MidiBuffer&)
+    void process (juce::AudioBuffer<FloatType>& buffer, MidiBuffer&)
     {
         const ScopedLock sl (getCallbackLock());
 

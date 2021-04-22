@@ -172,10 +172,10 @@ void DummyAudioIODevice::run()
             {
                 const int numChans = numChannels;
 
-                AudioBuffer<float> input (numChans, numSamples);
+                juce::AudioBuffer<float> input (numChans, numSamples);
                 input.clear();
 
-                AudioBuffer<float> output (numChans, numSamples);
+                juce::AudioBuffer<float> output (numChans, numSamples);
                 output.clear();
 
                 callback->audioDeviceIOCallback (input.getArrayOfReadPointers(), numChans,

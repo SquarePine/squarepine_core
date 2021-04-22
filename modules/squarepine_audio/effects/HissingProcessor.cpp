@@ -13,7 +13,7 @@ void HissingProcessor::prepareToPlay (const double newSampleRate, const int esti
     level = 0.001;
 }
 
-void HissingProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&)
+void HissingProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
     if (isBypassed())
         return;

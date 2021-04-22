@@ -108,7 +108,7 @@ public:
     /** @internal */
     Identifier getIdentifier() const override { return "Dummy"; }
     /** @internal */
-    void processBlock (AudioBuffer<float>&, MidiBuffer&) override { }
+    void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override { }
 
 private:
     //==============================================================================

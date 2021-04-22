@@ -33,7 +33,7 @@ public:
     String name;                                    //<
     std::atomic<bool> isBypassed;                   //<
     LinearSmoothedValue<float> mixLevel;            //< The mix level, which is normalised.
-    Point<int> lastUIPosition;                      //<
+    juce::Point<int> lastUIPosition;                //<
     std::shared_ptr<AudioPluginInstance> plugin;    //<
     const PluginDescription description;            //<
     MemoryBlock defaultState;                       //<

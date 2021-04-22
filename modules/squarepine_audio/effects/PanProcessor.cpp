@@ -121,7 +121,7 @@ void PanProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     panner.prepare ({ sampleRate, (uint32) samplesPerBlock, (uint32) maxChans });
 }
 
-void PanProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&)
+void PanProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
     panner.setPan (getPan());
     panner.setRule (getPannerRule());

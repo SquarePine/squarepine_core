@@ -20,8 +20,8 @@ public:
     int getInputLength (int newOutputLength) override;
     int getMaxInputLength() const override;
     void reset (double sampleRate, int outBufferSize) override;
-    void process (AudioBuffer<float>& buffer) override;
-    int getRemainingSamples (AudioBuffer<float>& buffer) override;
+    void process (juce::AudioBuffer<float>& buffer) override;
+    int getRemainingSamples (juce::AudioBuffer<float>& buffer) override;
 
 private:
     CElastiqueProV3If* elastiqueInstance = nullptr;

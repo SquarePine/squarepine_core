@@ -10,30 +10,29 @@
 //==============================================================================
 #if SQUAREPINE_USE_AUFTAKT || SQUAREPINE_USE_ELASTIQUE
 
-    JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Weverything", "-Wall", "-Wpedantic", "-Wno-eof-newline")
-
-    #if SQUAREPINE_USE_AUFTAKT && ! defined (SQUAREPINE_AUFTAKT_PATH)
-        #define SQUAREPINE_AUFTAKT_PATH    ../../../../sdks/auftakt/
-    #endif
-
-    #if SQUAREPINE_USE_ELASTIQUE && ! defined (SQUAREPINE_ELASTIQUE_PATH)
-        #define SQUAREPINE_ELASTIQUE_PATH  ../../../../sdks/elastique/
-    #endif
-
-    #if JUCE_WINDOWS && _MSC_VER < 1800
-    #error "Please update your tools."
-    #error "Get over to https://visualstudio.microsoft.com/vs/community/"
-    #endif
-
-    #undef ZPLANE_MAKE_INCLUDE
-    #define ZPLANE_MAKE_INCLUDE(x) \
-            <x>
-
-    #undef ZPLANE_INCLUDE
-    #define ZPLANE_INCLUDE(a, b) \
-            ZPLANE_MAKE_INCLUDE (JUCE_CONCAT (a, b))
+    JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Weverything", "-Wall", "-Wpedantic", "-Wno-eof-newline", "-Wnon-virtual-dtor")
 
     #if JUCE_WINDOWS && ! JUCE_MINGW
+        #if SQUAREPINE_USE_AUFTAKT && ! defined (SQUAREPINE_AUFTAKT_PATH)
+            #define SQUAREPINE_AUFTAKT_PATH    ../../../../sdks/auftakt/
+        #endif
+
+        #if SQUAREPINE_USE_ELASTIQUE && ! defined (SQUAREPINE_ELASTIQUE_PATH)
+            #define SQUAREPINE_ELASTIQUE_PATH  ../../../../sdks/elastique/
+        #endif
+
+        #if JUCE_WINDOWS && _MSC_VER < 1800
+            #error "Please update your tools."
+            #error "Get over to https://visualstudio.microsoft.com/vs/community/"
+        #endif
+
+        #undef ZPLANE_MAKE_INCLUDE
+        #define ZPLANE_MAKE_INCLUDE(x) \
+                <x>
+
+        #undef ZPLANE_INCLUDE
+        #define ZPLANE_INCLUDE(a, b) \
+                ZPLANE_MAKE_INCLUDE (JUCE_CONCAT (a, b))
 
         #if SQUAREPINE_USE_AUFTAKT
             #include ZPLANE_INCLUDE (SQUAREPINE_AUFTAKT_PATH, win/incl/aufTAKT_If.h)
@@ -50,15 +49,15 @@
     #elif JUCE_MAC
 
         #if SQUAREPINE_USE_AUFTAKT
-            #include ZPLANE_INCLUDE (SQUAREPINE_AUFTAKT_PATH, macos/incl/aufTAKT_If.h)
-            #include ZPLANE_INCLUDE (SQUAREPINE_AUFTAKT_PATH, macos/incl/aufTAKTResultIf.h)
-            #include ZPLANE_INCLUDE (SQUAREPINE_AUFTAKT_PATH, macos/incl/zplAudioFile.h)
+            #include "auftakt/macos/incl/aufTAKT_If.h"
+            #include "auftakt/macos/incl/aufTAKTResultIf.h"
+            #include "auftakt/macos/incl/zplAudioFile.h"
         #endif
 
         #if SQUAREPINE_USE_ELASTIQUE
-            #include ZPLANE_INCLUDE (SQUAREPINE_ELASTIQUE_PATH, macos/incl/elastiqueProV3API.h)
-            #include ZPLANE_INCLUDE (SQUAREPINE_ELASTIQUE_PATH, macos/incl/elastiqueProV3DirectAPI.h)
-            #include ZPLANE_INCLUDE (SQUAREPINE_ELASTIQUE_PATH, macos/incl/zplAudioFile.h)
+            #include "elastique/macos/incl/elastiqueProV3API.h"
+            #include "elastique/macos/incl/elastiqueProV3DirectAPI.h"
+            #include "elastique/macos/incl/zplAudioFile.h"
         #endif
 
     #endif

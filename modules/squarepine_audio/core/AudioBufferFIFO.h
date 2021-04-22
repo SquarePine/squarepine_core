@@ -3,7 +3,7 @@
     You can add samples from the various kind of formats,
     like float pointers or AudioBuffers.
 
-    Then you can read into float arrays, AudioBuffers or even AudioSourceChannelInf
+    Then you can read into float arrays, juce::AudioBuffers or even AudioSourceChannelInf
     to be used directly in AudioSources.
 */
 template<typename FloatType>
@@ -55,7 +55,7 @@ public:
     }
 
     /** Push samples into the FIFO from an AudioBuffer. */
-    void push (const AudioBuffer<FloatType>& samples, int numSamples = -1)
+    void push (const juce::AudioBuffer<FloatType>& samples, int numSamples = -1)
     {
         push (samples.getArrayOfReadPointers(),
               numSamples < 0 ? samples.getNumSamples() : numSamples);
@@ -108,7 +108,7 @@ public:
     }
 
     /** Read samples from the FIFO into an AudioBuffer. */
-    void readTo (AudioBuffer<FloatType>& samples, int numSamples = -1)
+    void readTo (juce::AudioBuffer<FloatType>& samples, int numSamples = -1)
     {
         readTo (samples.getArrayOfWritePointers(),
                 numSamples < 0 ? samples.getNumSamples() : numSamples);
@@ -118,7 +118,7 @@ public:
     void readTo (const AudioSourceChannelInfo &info, int numSamples = -1)
     {
         if (auto* buff = info.buffer)
-            readTo (*buff, numSamples, gain);
+            readTo (*buff, numSamples);
     }
 
     //==============================================================================
@@ -150,7 +150,7 @@ public:
     }
 
     /** Read samples from the FIFO adding it to the AudioBuffers */
-    void readToAdding (AudioBuffer<FloatType>& samples, int numSamples = -1, FloatType gain = FloatType (1))
+    void readToAdding (juce::AudioBuffer<FloatType>& samples, int numSamples = -1, FloatType gain = FloatType (1))
     {
         readFromFifoAdding (samples.getArrayOfWritePointers(),
                             numSamples < 0 ? samples.getNumSamples() : numSamples,
@@ -188,7 +188,8 @@ public:
 
 private:
     /** The actual audio buffer */
-    AudioBuffer<FloatType> buffer;
+    juce::AudioBuffer<FloatType> buffer;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioBufferFIFO)
 };
+

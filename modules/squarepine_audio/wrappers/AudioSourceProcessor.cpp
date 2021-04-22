@@ -37,7 +37,7 @@ void AudioSourceProcessor::releaseResources()
         audioSource->releaseResources();
 }
 
-void AudioSourceProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&)
+void AudioSourceProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
     const ScopedLock lock (getCallbackLock());
 

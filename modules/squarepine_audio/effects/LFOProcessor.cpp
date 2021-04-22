@@ -63,7 +63,7 @@ bool LFOProcessor::isInstrument() const
     return true;
 }
 
-void LFOProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void LFOProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     MidiMessage result;
     for (const MidiMessageMetadata metadata : midiMessages)

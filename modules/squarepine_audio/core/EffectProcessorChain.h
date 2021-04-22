@@ -214,7 +214,7 @@ public:
     /** @returns the last known top-left position of an effect's editor.
                  This will return (0, 0) if the index is out of range.
     */
-    SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (Point<int>) getLastUIPosition (int index) const;
+    SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (juce::Point<int>) getLastUIPosition (int index) const;
 
     //==============================================================================
     /** @returns true if the effect's plugin is missing.
@@ -247,9 +247,9 @@ public:
     /** @internal */
     void releaseResources() override;
     /** @internal */
-    void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
     /** @internal */
-    void processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override;
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
@@ -288,7 +288,7 @@ private:
             lastBuffer.clear();
         }
 
-        AudioBuffer<FloatType> mixingBuffer, effectBuffer, lastBuffer;
+        juce::AudioBuffer<FloatType> mixingBuffer, effectBuffer, lastBuffer;
 
     private:
         JUCE_DECLARE_NON_COPYABLE (BufferPackage)
@@ -312,10 +312,10 @@ private:
     EffectProcessor::Ptr createEffectProcessorFromXML (XmlElement* state);
 
     template<typename FloatType>
-    void process (AudioBuffer<FloatType>&, MidiBuffer&, BufferPackage<FloatType>&);
+    void process (juce::AudioBuffer<FloatType>&, MidiBuffer&, BufferPackage<FloatType>&);
 
     template<typename FloatType>
-    void processInternal (AudioBuffer<FloatType>& source, MidiBuffer& midiMessages,
+    void processInternal (juce::AudioBuffer<FloatType>& source, MidiBuffer& midiMessages,
                           BufferPackage<FloatType>& bufferPackage, int numChannels, int numSamples);
 
     enum class InsertionStyle

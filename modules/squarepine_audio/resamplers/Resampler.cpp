@@ -9,7 +9,7 @@ void R8brainResampler::prepare (int channels, int numSamples, double)
     updateRatio();
 }
 
-void R8brainResampler::process (AudioBuffer<float>& source, AudioBuffer<float>& dest)
+void R8brainResampler::process (juce::AudioBuffer<float>& source, juce::AudioBuffer<float>& dest)
 {
     const auto r = getRatio();
     const auto numInSamples = source.getNumSamples();

@@ -6,7 +6,7 @@ DummyAudioIODeviceCallback::DummyAudioIODeviceCallback()
 void DummyAudioIODeviceCallback::audioDeviceIOCallback (const float** const, const int, float** const outputChannelData,
                                                         const int numOutputChannels, const int numSamples)
 {
-    AudioBuffer<float> buffer;
+    juce::AudioBuffer<float> buffer;
     buffer.setDataToReferTo (outputChannelData, numOutputChannels, numSamples);
     buffer.clear();
 }

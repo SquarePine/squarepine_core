@@ -32,12 +32,12 @@ void LevelsProcessor::prepareToPlay (double newSampleRate, int bufferSize)
 }
 
 //==============================================================================
-void LevelsProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&)
+void LevelsProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
     process (buffer, floatChannelDetails);
 }
 
-void LevelsProcessor::processBlock (AudioBuffer<double>& buffer, MidiBuffer&)
+void LevelsProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer&)
 {
     process (buffer, doubleChannelDetails);
 }

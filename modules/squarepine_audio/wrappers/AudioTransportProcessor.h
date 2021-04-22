@@ -48,7 +48,7 @@ public:
     /** @internal */
     void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock) override;
     /** @internal */
-    void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
     /** @internal */
     void releaseResources() override;
     /** @internal */

@@ -53,7 +53,7 @@ public:
         void prepare (double sampleRate, double frequency);
 
         //==============================================================================
-        double getPhasePerSample() const noexcept { return (double_Pi * 2.0) / (sampleRate / frequency); }
+        double getPhasePerSample() const noexcept { return MathConstants<double>::twoPi / (sampleRate / frequency); }
 
         //==============================================================================
         double sampleRate = 44100.0,
@@ -68,7 +68,7 @@ public:
 
     //==============================================================================
     /** @returns Last phase, to keep track of where the wave is */
-    double process (AudioBuffer<float>& buffer, const Configuration& configuration);
+    double process (juce::AudioBuffer<float>& buffer, const Configuration& configuration);
 
 protected:
     //==============================================================================

@@ -97,7 +97,7 @@ void ElastiqueStretcher::update (const bool exactStretch)
     }
 }
 
-void ElastiqueStretcher::process (AudioBuffer<float>& buffer)
+void ElastiqueStretcher::process (juce::AudioBuffer<float>& buffer)
 {
     SQUAREPINE_CRASH_TRACER;
 
@@ -109,7 +109,7 @@ void ElastiqueStretcher::process (AudioBuffer<float>& buffer)
     logElastiqueError (elastiqueInstance->ProcessData (internalBuffer.getArrayOfWritePointers(), getInputLength(), buffer.getArrayOfWritePointers()));
 }
 
-int ElastiqueStretcher::getRemainingSamples (AudioBuffer<float>& buffer)
+int ElastiqueStretcher::getRemainingSamples (juce::AudioBuffer<float>& buffer)
 {
     const int numOfSamples = elastiqueInstance->GetFramesBuffered();
     elastiqueInstance->FlushBuffer (buffer.getArrayOfWritePointers());

@@ -8,7 +8,7 @@ ISAAC::ISAAC (bool preseedResults) :
     {
         std::random_device device;
         std::mt19937 engine (device());
-        std::uniform_int_distribution<uint32> dist (0, (int) std::numeric_limits<uint32>::max() - (int) 1);
+        std::uniform_int_distribution<uint32> dist (0, (uint32) std::numeric_limits<uint32>::max() - (uint32) 1);
 
         for (auto& r : results)
             r = dist (engine);

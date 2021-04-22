@@ -17,10 +17,10 @@ public:
         The buffer should be allocated by the caller. Only the first getInputLength()
         will be read, and the buffer should be at least outputLength samples long.
     */
-    virtual void process (AudioBuffer<float>& buffer) = 0;
+    virtual void process (juce::AudioBuffer<float>& buffer) = 0;
 
     /** Gets samples remaining in the stretcher engine */
-    virtual int getRemainingSamples (AudioBuffer<float>& buffer) = 0;
+    virtual int getRemainingSamples (juce::AudioBuffer<float>& buffer) = 0;
 
     //==============================================================================
     /** Set pitch and stretch simultaneously.

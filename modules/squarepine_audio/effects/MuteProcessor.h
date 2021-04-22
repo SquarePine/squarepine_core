@@ -18,7 +18,7 @@ public:
     /** @internal */
     Identifier getIdentifier() const override { return "muteId"; }
     /** @internal */
-    void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
 private:
     //==============================================================================

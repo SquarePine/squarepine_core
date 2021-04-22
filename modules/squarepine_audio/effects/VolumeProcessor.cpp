@@ -27,12 +27,12 @@ void VolumeProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 }
 
 //==============================================================================
-void VolumeProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void VolumeProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     process (buffer, midiMessages);
 }
 
-void VolumeProcessor::processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages)
+void VolumeProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiMessages)
 {
     process (buffer, midiMessages);
 }

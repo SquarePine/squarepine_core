@@ -43,7 +43,7 @@ public:
         @param amount
     */
     template<typename FloatType>
-    static void performSimple (AudioBuffer<FloatType>& buffer, FloatType amount) noexcept
+    static void performSimple (juce::AudioBuffer<FloatType>& buffer, FloatType amount) noexcept
     {
         performSingleParameter<FloatType, &simple> (buffer, amount);
     }
@@ -245,7 +245,7 @@ public:
         @param threshold
     */
     template<typename FloatType>
-    static void performFoldBack (AudioBuffer<FloatType>& buffer, FloatType threshold) noexcept
+    static void performFoldBack (juce::AudioBuffer<FloatType>& buffer, FloatType threshold) noexcept
     {
         performSingleParameter<FloatType, &foldBack> (buffer, threshold);
     }
@@ -270,7 +270,7 @@ public:
         @param threshold
     */
     template<typename FloatType>
-    static void performHardClipping (AudioBuffer<FloatType>& buffer, float threshold) noexcept
+    static void performHardClipping (juce::AudioBuffer<FloatType>& buffer, float threshold) noexcept
     {
         performSingleParameter<FloatType, &hardClipping> (buffer, threshold);
     }
@@ -319,7 +319,7 @@ public:
         @param threshold
     */
     template<typename FloatType>
-    static void performSoftClipping (AudioBuffer<FloatType>& buffer,
+    static void performSoftClipping (juce::AudioBuffer<FloatType>& buffer,
                                      Range<FloatType> threshold) noexcept
     {
         performDualParameter<FloatType, &softClipping> (buffer, threshold.getStart(), threshold.getEnd());
@@ -330,7 +330,7 @@ public:
         @param buffer
     */
     template<typename FloatType>
-    static void performDefaultSoftClipping (AudioBuffer<FloatType>& buffer) noexcept
+    static void performDefaultSoftClipping (juce::AudioBuffer<FloatType>& buffer) noexcept
     {
         performSoftClipping (buffer, Range<FloatType> (static_cast<FloatType> (1.0 / 3.0), static_cast<FloatType> (2.0 / 3.0)));
     }
@@ -356,7 +356,7 @@ public:
         @param buffer
     */
     template<typename FloatType>
-    static void performSoftClippingExp (AudioBuffer<FloatType>& buffer) noexcept
+    static void performSoftClippingExp (juce::AudioBuffer<FloatType>& buffer) noexcept
     {
         perform<FloatType, &softClippingExp> (buffer);
     }
@@ -379,7 +379,7 @@ public:
         @param buffer
     */
     template<typename FloatType>
-    static void performHalfWaveRectification (AudioBuffer<FloatType>& buffer) noexcept
+    static void performHalfWaveRectification (juce::AudioBuffer<FloatType>& buffer) noexcept
     {
         perform<FloatType, &halfWaveRectification> (buffer);
     }
@@ -402,7 +402,7 @@ public:
         @param buffer
     */
     template<typename FloatType>
-    static void performFullWaveRectification (AudioBuffer<FloatType>& buffer) noexcept
+    static void performFullWaveRectification (juce::AudioBuffer<FloatType>& buffer) noexcept
     {
         perform<FloatType, &fullWaveRectification> (buffer);
     }
@@ -410,7 +410,7 @@ public:
 private:
     //==============================================================================
     template<typename FloatType, FloatType (*function) (FloatType)>
-    static void perform (AudioBuffer<FloatType>& buffer) noexcept
+    static void perform (juce::AudioBuffer<FloatType>& buffer) noexcept
     {
         const auto numChannels = buffer.getNumChannels();
         const auto numSamples = buffer.getNumSamples();
@@ -422,7 +422,7 @@ private:
     }
 
     template<typename FloatType, FloatType (*function) (FloatType, FloatType)>
-    static void performSingleParameter (AudioBuffer<FloatType>& buffer, FloatType value) noexcept
+    static void performSingleParameter (juce::AudioBuffer<FloatType>& buffer, FloatType value) noexcept
     {
         const auto numChannels = buffer.getNumChannels();
         const auto numSamples = buffer.getNumSamples();
@@ -434,7 +434,7 @@ private:
     }
 
     template<typename FloatType, FloatType (*function) (FloatType, FloatType, FloatType)>
-    static void performDualParameter (AudioBuffer<FloatType>& buffer, FloatType valueA, FloatType valueB) noexcept
+    static void performDualParameter (juce::AudioBuffer<FloatType>& buffer, FloatType valueA, FloatType valueB) noexcept
     {
         const auto numChannels = buffer.getNumChannels();
         const auto numSamples = buffer.getNumSamples();

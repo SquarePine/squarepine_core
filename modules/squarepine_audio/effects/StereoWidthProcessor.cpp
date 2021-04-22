@@ -30,7 +30,7 @@ float StereoWidthProcessor::getWidth() const
 }
 
 //==============================================================================
-void StereoWidthProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&)
+void StereoWidthProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
     const auto numSamples = buffer.getNumSamples();
 

@@ -41,7 +41,7 @@ void JUCEReverbProcessor::updateReverbParameters()
     }
 }
 
-void JUCEReverbProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&)
+void JUCEReverbProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
     const auto numChannels = buffer.getNumChannels();
     const auto numSamples = buffer.getNumSamples();

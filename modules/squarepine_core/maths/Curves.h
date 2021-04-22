@@ -1,4 +1,4 @@
-﻿//==============================================================================
+//==============================================================================
 /** */
 template<typename ValueType>
 struct ControlPoint3D final
@@ -53,7 +53,7 @@ public:
     /** */
     using Type = double;
     /** */
-    using Point = Point<Type>;
+    using Point = juce::Point<Type>;
     /** */
     using ControlPoint = ControlPoint3D<Type>;
 

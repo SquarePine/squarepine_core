@@ -47,7 +47,7 @@ bool MuteProcessor::isMuted() const
 }
 
 //==============================================================================
-void MuteProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void MuteProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     auto appendAllNotesOff = [&]()
     {

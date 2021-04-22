@@ -23,7 +23,7 @@ struct Angle final
     //==============================================================================
     /** @returns an angle (in radians) between two 2D points. */
     template<typename FirstType, typename SecondType>
-    static Angle betweenPoints (Point<FirstType> a, Point<SecondType> ba) noexcept
+    static Angle betweenPoints (juce::Point<FirstType> a, juce::Point<SecondType> b) noexcept
     {
         return Angle (static_cast<Type> (a.toDouble().getAngleToPoint (b.toDouble())));
     }

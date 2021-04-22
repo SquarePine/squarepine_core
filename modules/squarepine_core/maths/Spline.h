@@ -8,7 +8,7 @@ struct Spline final
     /** */
     using Type = ValueType;
     /** */
-    using Point = Point<Type>;
+    using Point = juce::Point<Type>;
     /** */
     using ArrayType = Array<Point, TypeOfCriticalSectionToUse, minimumAllocatedSize>;
 

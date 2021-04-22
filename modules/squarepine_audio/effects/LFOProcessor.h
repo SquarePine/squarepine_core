@@ -27,7 +27,7 @@ public:
     /** @internal */
     bool isInstrument() const override;
     /** @internal */
-    void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
 private:
     //==============================================================================

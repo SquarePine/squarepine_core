@@ -142,7 +142,7 @@ public:
     }
 
     /** */
-    AudioBufferView (AudioBuffer<FloatType>& buffer) noexcept :
+    AudioBufferView (juce::AudioBuffer<FloatType>& buffer) noexcept :
         channels (buffer.getArrayOfWritePointers()),
         numChannels (buffer.getNumChannels()),
         numSamples (buffer.getNumSamples())

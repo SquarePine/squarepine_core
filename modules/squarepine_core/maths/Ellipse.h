@@ -43,7 +43,7 @@ public:
     }
 
     /** @returns the cross-product. */
-    constexpr FloatType getCrossProduct (Point<Type> other) const noexcept
+    constexpr FloatType getCrossProduct (juce::Point<Type> other) const noexcept
     {
         return getCrossProduct (other.x, other.y);
     }
@@ -56,7 +56,7 @@ public:
     }
 
     /** */
-    bool isPointOn (Point<Type> point, FloatType accuracy = defaultAccuracy) const noexcept
+    bool isPointOn (juce::Point<Type> point, FloatType accuracy = defaultAccuracy) const noexcept
     {
         return isPointOn (point.x, point.y, accuracy);
     }
@@ -69,7 +69,7 @@ public:
     }
 
     /** */
-    bool isPointOutside (Point<Type> point) const noexcept
+    bool isPointOutside (juce::Point<Type> point) const noexcept
     {
         return isPointOutside (point.x, point.y);
     }
@@ -82,14 +82,14 @@ public:
     }
 
     /** */
-    bool isPointInside (Point<Type> point) const noexcept
+    bool isPointInside (juce::Point<Type> point) const noexcept
     {
         return isPointInside (point.x, point.y);
     }
 
     //==============================================================================
     /** */
-    Point<FloatType> getPointAtAngle (FloatType angle) const
+    juce::Point<FloatType> getPointAtAngle (FloatType angle) const
     {
         constexpr auto zero = static_cast<FloatType> (0);
         constexpr auto three = static_cast<FloatType> (3);

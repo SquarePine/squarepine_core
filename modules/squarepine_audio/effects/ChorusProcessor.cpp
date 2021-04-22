@@ -123,12 +123,12 @@ void ChorusProcessor::releaseResources()
     doubleChorus.reset();
 }
 
-void ChorusProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&)
+void ChorusProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
     process (buffer, floatChorus);
 }
 
-void ChorusProcessor::processBlock (AudioBuffer<double>& buffer, MidiBuffer&)
+void ChorusProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer&)
 {
     process (buffer, doubleChorus);
 }

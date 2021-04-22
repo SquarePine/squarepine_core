@@ -1,5 +1,5 @@
 /** */
-class GraphObserver final : public Component,
+class GraphObserver final : public juce::Component,
                             public ChangeListener
 {
 public:
@@ -19,7 +19,7 @@ public:
 private:
     //==============================================================================
     /** */
-    class NodeView final : public Component
+    class NodeView final : public juce::Component
     {
     public:
         /** */
@@ -39,7 +39,7 @@ private:
     };
 
     AudioProcessorGraph& graph;
-    Component house;
+    juce::Component house;
     Viewport viewport;
     OwnedArray<NodeView> nodeViews;
 

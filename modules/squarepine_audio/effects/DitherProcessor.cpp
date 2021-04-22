@@ -8,7 +8,7 @@ void DitherProcessor::prepareToPlay (const double newSampleRate, const int estim
         dithers.add (new BasicDither());
 }
 
-void DitherProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&)
+void DitherProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
     if (isBypassed())
         return;

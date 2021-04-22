@@ -1,8 +1,10 @@
-#include "JuceHeader.h"
+#undef JUCE_CORE_INCLUDE_NATIVE_HEADERS
+#define JUCE_CORE_INCLUDE_NATIVE_HEADERS 1
 
-#if JUCE_DONT_DECLARE_PROJECTINFO
-    #error "We need the project info..."
-#endif
+#undef JUCE_CORE_INCLUDE_OBJC_HELPERS
+#define JUCE_CORE_INCLUDE_OBJC_HELPERS 1
+
+#include "squarepine_audio.h"
 
 #if SQUAREPINE_USE_R8BRAIN
     #include <r8brain/r8bbase.cpp>
@@ -17,7 +19,7 @@ namespace sp
 
     String getInternalProcessorTypeName()
     {
-        return ProjectInfo::projectName;
+        return "Internal";
     }
     
     #include "codecs/REXAudioFormat.cpp"

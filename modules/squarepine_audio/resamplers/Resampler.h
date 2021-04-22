@@ -12,7 +12,7 @@ public:
     virtual void prepare (int numChannels, double sampleRate, int numSamples) = 0;
 
     /**  */
-    virtual void process (AudioBuffer<float>& source, AudioBuffer<float>& dest) = 0;
+    virtual void process (juce::AudioBuffer<float>& source, juce::AudioBuffer<float>& dest) = 0;
 
     /** Sets the ratio directly. */
     void setRatio (double newRatio)
@@ -77,7 +77,7 @@ public:
     }
 
     /** @internal */
-    void process (AudioBuffer<float>& source, AudioBuffer<float>& dest) override
+    void process (juce::AudioBuffer<float>& source, juce::AudioBuffer<float>& dest) override
     {
         const auto r = getRatio();
         const auto numOutSamples = dest.getNumSamples();
@@ -119,7 +119,7 @@ public:
     /** @internal */
     void prepare (int numChannels, int numSamples, double sampleRate) override;
     /** @internal */
-    void process (AudioBuffer<float>& source, AudioBuffer<float>& dest) override;
+    void process (juce::AudioBuffer<float>& source, juce::AudioBuffer<float>& dest) override;
     /** @internal */
     void updateRatio() override;
 

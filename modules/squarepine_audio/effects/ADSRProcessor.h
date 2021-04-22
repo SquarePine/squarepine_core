@@ -15,16 +15,16 @@ public:
     /** @internal */
     void prepareToPlay (double, int) override;
     /** @internal */
-    void processBlock (AudioBuffer<float>&, MidiBuffer&) override;
+    void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
     /** @internal */
-    void processBlock (AudioBuffer<double>&, MidiBuffer&) override;
+    void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
 
 private:
     //==============================================================================
     ADSR adsr;
 
     template<typename FloatType>
-    void process (AudioBuffer<FloatType>& buffer)
+    void process (juce::AudioBuffer<FloatType>& buffer)
     {
         const auto& params = getParameters();
 

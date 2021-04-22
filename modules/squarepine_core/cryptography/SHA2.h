@@ -250,8 +250,9 @@ private:
 
     State state;
     size_t size = 0;
-    typename ArrayType overflow;
-    typename ArrayType::iterator overflowIter;
+
+    ArrayType overflow;
+    ArrayType::iterator overflowIter = {};
 
     //==============================================================================
     /** */

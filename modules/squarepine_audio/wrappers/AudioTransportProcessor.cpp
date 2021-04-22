@@ -148,7 +148,7 @@ void AudioTransportProcessor::prepareToPlay (const double newSampleRate, const i
     audioSourceProcessor.prepareToPlay (newSampleRate, estimatedSamplesPerBlock);
 }
 
-void AudioTransportProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void AudioTransportProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     audioSourceProcessor.processBlock (buffer, midiMessages);
 }

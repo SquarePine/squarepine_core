@@ -48,7 +48,7 @@ void ResamplingProcessor::prepareToPlay (double newSampleRate, int estimatedSamp
     result.setSize (numChans, estimatedSamplesPerBlock, false, true, true);
 }
 
-void ResamplingProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&)
+void ResamplingProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
     const int numSamples = buffer.getNumSamples();
     const auto r = getRatio();

@@ -44,6 +44,10 @@ inline AffineTransform createTranslationAndScale (float x, float y, float scale)
 }
 
 //==============================================================================
+/** @returns true if the given value number is odd. */
+template<typename Type>
+constexpr bool isOdd (Type value) noexcept      { return (value % 2) != 0; }
+
 #if ! DOXYGEN
 
 namespace detail
@@ -71,9 +75,6 @@ inline bool isOdd (float value) noexcept        { return detail::isFloatOdd (val
 inline bool isOdd (double value) noexcept       { return detail::isFloatOdd (value); }
 /** @returns true if the given value number is odd. */
 inline bool isOdd (long double value) noexcept  { return detail::isFloatOdd (value); }
-/** @returns true if the given value number is odd. */
-template<typename Type>
-constexpr bool isOdd (Type value) noexcept      { return (value % 2) != 0; }
 
 //==============================================================================
 /** @returns true if the given value is even. */
@@ -284,12 +285,14 @@ inline FloatingPointType findMedian (const FloatingPointType* samples, IndexType
 template<typename Iterator>
 inline typename std::iterator_traits<Iterator>::value_type findMean (Iterator beginIter, Iterator endIter)
 {
-    auto sum = static_cast<typename std::iterator_traits<Iterator>::value_type> (0);
+    using Type = typename std::iterator_traits<Iterator>::value_type;
+
+    auto sum = static_cast<Type> (0);
 
     for (auto iter = beginIter; iter != endIter; ++iter)
         sum += *iter;
 
-    return sum / std::distance (beginIter, endIter);
+    return sum / (Type) std::distance (beginIter, endIter);
 }
 
 /** @returns the Mean for a set of values. */

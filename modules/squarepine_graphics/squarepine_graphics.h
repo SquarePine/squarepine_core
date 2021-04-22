@@ -137,7 +137,7 @@ namespace sp
             // https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file
             // And no escape char junk, nor path dividers.
             for (const auto c : U"<>:/|?*\"\\\'\?\a\b\f\n\r\t\v")
-                t = t.replaceCharacter (c, ' ');
+                t = t.replaceCharacter ((juce_wchar) c, ' ');
 
             return t.substring (0, maxLength - (ed.getTotalNumChars() - ed.getHighlightedRegion().getLength()));
         }

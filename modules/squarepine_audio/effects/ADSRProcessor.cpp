@@ -16,5 +16,5 @@ void ADSRProcessor::prepareToPlay (double sampleRate, int bufferSize)
     adsr.reset();
 }
 
-void ADSRProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&)  { process (buffer); }
-void ADSRProcessor::processBlock (AudioBuffer<double>& buffer, MidiBuffer&) { process (buffer); }
+void ADSRProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)  { process (buffer); }
+void ADSRProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer&) { process (buffer); }

@@ -34,7 +34,7 @@ public:
 
 private:
     //==============================================================================
-    AudioBuffer<float> outputBuffer;
+    juce::AudioBuffer<float> outputBuffer;
 
     std::shared_ptr<AudioFormatReader> reader;
     std::shared_ptr<TimeSliceThread> timeSliceThread;

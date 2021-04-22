@@ -56,9 +56,9 @@ public:
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
-    void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
     /** @internal */
-    void processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override;
 
 private:
     //==============================================================================
@@ -71,7 +71,7 @@ private:
                mix = nullptr;
 
     template<typename FloatType>
-    void process (AudioBuffer<FloatType>& buffer, dsp::Chorus<FloatType>& chorus)
+    void process (juce::AudioBuffer<FloatType>& buffer, dsp::Chorus<FloatType>& chorus)
     {
         const ScopedLock sl (getCallbackLock());
 

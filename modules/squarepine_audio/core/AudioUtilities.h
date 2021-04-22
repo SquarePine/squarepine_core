@@ -18,7 +18,7 @@ inline void resetBuses (AudioProcessor& processor,
     @see FPUFlags
 */
 template<typename FloatType>
-inline void zeroIfDenormalisationOccurred (AudioBuffer<FloatType>& buffer)
+inline void zeroIfDenormalisationOccurred (juce::AudioBuffer<FloatType>& buffer)
 {
     if (! FPUFlags::hasDenormalisationOccurred() || buffer.hasBeenCleared())
         return;
@@ -45,7 +45,7 @@ inline void zeroIfDenormalisationOccurred (AudioBuffer<FloatType>& buffer)
     @see FPUFlags, zeroIfDenormalisationOccurred
 */
 template<typename FloatType>
-inline void processSafely (AudioProcessor& proc, AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages)
+inline void processSafely (AudioProcessor& proc, juce::AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages)
 {
     FPUFlags::clearIfDenormalised();
     proc.processBlock (buffer, midiMessages);
@@ -54,7 +54,7 @@ inline void processSafely (AudioProcessor& proc, AudioBuffer<FloatType>& buffer,
 
 //==============================================================================
 template<typename FloatType>
-inline void fadeOutBuffers (AudioBuffer<FloatType>& buffer, MidiBuffer&)
+inline void fadeOutBuffers (juce::AudioBuffer<FloatType>& buffer, MidiBuffer&)
 {
     const auto numSamples = buffer.getNumSamples();
 
@@ -63,14 +63,14 @@ inline void fadeOutBuffers (AudioBuffer<FloatType>& buffer, MidiBuffer&)
 }
 
 template<typename FloatType>
-inline void clearBuffers (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages)
+inline void clearBuffers (juce::AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages)
 {
     buffer.clear();
     midiMessages.clear();
 }
 
 template<typename FloatType>
-static void addFrom (AudioBuffer<FloatType>& destination, AudioBuffer<FloatType>& source,
+static void addFrom (juce::AudioBuffer<FloatType>& destination, juce::AudioBuffer<FloatType>& source,
                      int numChannels, int numSamples, float gainFactor = 1.0f)
 {
     // NB: This first bit is for copying mono to stereo.
@@ -87,7 +87,7 @@ static void addFrom (AudioBuffer<FloatType>& destination, AudioBuffer<FloatType>
 }
 
 template<typename FloatType>
-static void addFrom (AudioBuffer<FloatType>& destination, AudioBuffer<FloatType>& source, float gainFactor = 1.0f)
+static void addFrom (juce::AudioBuffer<FloatType>& destination, juce::AudioBuffer<FloatType>& source, float gainFactor = 1.0f)
 {
     addFrom (destination, source,
              jmin (source.getNumChannels(), destination.getNumChannels()),

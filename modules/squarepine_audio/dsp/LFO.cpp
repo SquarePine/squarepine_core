@@ -90,7 +90,7 @@ void LFO::processInternal (double& sample, const double phase)
         operation->perform (sample, phase);
 }
 
-double LFO::process (AudioBuffer<float>& buffer,
+double LFO::process (juce::AudioBuffer<float>& buffer,
                      const Configuration& configuration)
 {
     //double phasePerSample = configuration.currentPhase;
