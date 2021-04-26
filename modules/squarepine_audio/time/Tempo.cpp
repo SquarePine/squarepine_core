@@ -1,5 +1,18 @@
+//==============================================================================
+namespace details
+{
+    double snapValue (double t) noexcept
+    {
+        if (std::isnan (t) || std::isinf (t))
+            return Tempo::defaultTempo;
+
+        return std::clamp (t, Tempo::minimumTempo, Tempo::maximumTempo);
+    }
+}
+
+//==============================================================================
 Tempo::Tempo (double tempo) noexcept :
-    value (snapValue (tempo))
+    value (details::snapValue (tempo))
 {
 }
 

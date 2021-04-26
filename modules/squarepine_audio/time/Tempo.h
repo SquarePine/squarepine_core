@@ -69,11 +69,4 @@ public:
 
     //==============================================================================
     double value = defaultTempo; //< The tempo value, in beats per minute.
-
-private:
-    //==============================================================================
-    constexpr double snapValue (double t) noexcept
-    {
-        return std::clamp (t, minimumTempo, maximumTempo);
-    }
 };
