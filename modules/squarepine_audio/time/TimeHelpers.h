@@ -91,7 +91,7 @@ inline double ticksToSeconds (double time, const MidiMessageSequence& tempoAndTS
     if (timeFormat > 0)
     {
         const auto tickLen  = 1.0 / (timeFormat & 0x7fff);
-        const int numEvents = tempoAndTSEvents.getNumEvents();
+        const auto numEvents = tempoAndTSEvents.getNumEvents();
         auto lastTime       = 0.0;
         auto correctedTime  = 0.0;
         auto secsPerTick    = 0.5 * tickLen;
@@ -99,7 +99,7 @@ inline double ticksToSeconds (double time, const MidiMessageSequence& tempoAndTS
         for (int i = 0; i < numEvents; ++i)
         {
             const auto& m = tempoAndTSEvents.getEventPointer (i)->message;
-            const double eventTime = m.getTimeStamp();
+            const auto eventTime = m.getTimeStamp();
 
             if (eventTime >= time)
                 break;
