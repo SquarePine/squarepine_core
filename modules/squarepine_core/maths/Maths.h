@@ -541,31 +541,25 @@ inline double midiNoteToFrequency (int midiNoteNumber) noexcept
     @returns ok if the file could be hashed.
 */
 template<typename HasherType = juce::SHA256>
-inline Result createUniqueFileHash (const File& source, String& hash)
+inline String createUniqueFileHash (const File& source)
 {
-    hash.clear();
-
     if (! source.existsAsFile())
     {
         jassertfalse;
-        return Result::fail (TRANS ("File does not exist."));
+        return {};
     }
 
     FileInputStream fis (source);
     if (fis.failedToOpen())
-        return fis.getStatus();
+    {
+        jassertfalse;
+        return {};
+    }
 
     constexpr auto oneMiB = 1 << 20;
-
     if (fis.getTotalLength() < (oneMiB * 2))
-    {
-        hash = HasherType (fis).toHexString();
-    }
-    else
-    {
-        BufferedInputStream bis (&fis, oneMiB, false);
-        hash = HasherType (bis).toHexString();
-    }
+        return HasherType (fis).toHexString();
 
-    return Result::ok();
+    BufferedInputStream bis (&fis, oneMiB, false);
+    return HasherType (bis).toHexString();
 }

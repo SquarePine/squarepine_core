@@ -41,14 +41,14 @@ public:
     size_t getRemainingSpace() const noexcept       { return getSize() - getCurrentPosition(); }
 
     //==============================================================================
-    /** Manually allocate a certain amount of memory
+    /** Manually allocate some number of bytes.
 
         @returns An address where an object can be initialised using placement-new,
                  or nullptr if there is not enough memory left.
     */
     void* allocate (size_t bytes) const
     {
-        const typename LockableBase<TypeOfCriticalSectionToUse>::ScopedLock sl (this->lock);
+        const typename LockableBase<TypeOfCriticalSectionToUse>::ScopedLock sl (lock);
 
         // Determine an allocation size that will align to our requested byte alignment:
         const auto remainder = static_cast<size_t> (bytes % alignmentBytes);
@@ -75,13 +75,11 @@ public:
         @returns A new object placed within the allocator,
                  or nullptr if there wasn't enough space to put it.
     */
-    template<typename Type, typename... Args>
-    typename std::remove_cv<Type>::type* allocateObject (Args... args) const
+    template<typename ObjectType, typename... Args, typename Type = typename std::remove_cv<Type>::type>
+    Type* allocateObject (Args... args) const
     {
-        using ObjectType = typename std::remove_cv<Type>::type;
-
-        if (auto* address = allocate (sizeof (ObjectType)))
-            return new (address) ObjectType (args...);
+        if (auto* address = allocate (sizeof (Type)))
+            return new (address) Type (args...);
 
         return nullptr;
     }
@@ -120,13 +118,11 @@ public:
 
         @returns A copy of the object. If there is not enough memory left, nullptr is returned.
     */
-    template<typename Type>
-    typename std::remove_cv<Type>::type* createCopy (Type& object) const
+    template<typename SourceType, typename Type = typename std::remove_cv<SourceType>::type>
+    Type* createCopy (SourceType& object) const
     {
-        using ObjectType = typename std::remove_cv<Type>::type;
-
-        if (auto* const address = allocateObject<ObjectType>())
-            return new (address) ObjectType (object);
+        if (auto* const address = allocateObject<Type>())
+            return new (address) Type (object);
 
         return nullptr;
     }
@@ -138,8 +134,8 @@ public:
 
         @returns A copy of the object. If there is not enough memory left, nullptr is returned.
     */
-    template<typename Type>
-    typename std::remove_cv<Type>::type* createCopy (Type* object) const
+    template<typename SourceType, typename Type = typename std::remove_cv<SourceType>::type>
+    Type* createCopy (SourceType* object) const
     {
         if (object != nullptr)
             return createCopy<Type> (*object);
@@ -155,13 +151,11 @@ public:
 
         @returns A copy of the object. If there is not enough memory left, nullptr is returned.
     */
-    template<typename Type>
-    typename std::remove_cv<Type>::type* createCopy (Type&& object) const
+    template<typename SourceType, typename Type = typename std::remove_cv<SourceType>::type>
+    Type* createCopy (SourceType&& object) const
     {
-        using ObjectType = typename std::remove_cv<Type>::type;
-
-        if (auto* const address = allocateObject<ObjectType>())
-            return new (address) ObjectType ((ObjectType) object);
+        if (auto* const address = allocateObject<Type>())
+            return new (address) Type (object);
 
         return nullptr;
     }
@@ -170,7 +164,7 @@ public:
     /** Resets the marker to the base memory location of the allocated memory. */
     void reset (bool clearMemory = false)
     {
-        const typename LockableBase<TypeOfCriticalSectionToUse>::ScopedLock sl (this->lock);
+        const typename LockableBase<TypeOfCriticalSectionToUse>::ScopedLock sl (lock);
 
         if (clearMemory)
             base.clear (sizeBytes);

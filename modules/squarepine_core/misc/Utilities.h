@@ -265,7 +265,7 @@ inline Value removeAndReturn (Container<Value, Allocator>& container, Predicate 
         return predicate (result, value);
     });
 
-    container.erase (iter, container.end());
+    container.erase (iter, container.cend());
 
     return result;
 }
@@ -276,7 +276,7 @@ template<template<typename, typename> class Container,
          typename Allocator = std::allocator<Value>>
 inline void removeAllInstancesOf (Container<Value, Allocator>& container, const Value& value)
 {
-    container.erase (std::remove (container.begin(), container.end(), value), container.end());
+    container.erase (std::remove (container.begin(), container.end(), value), container.cend());
 }
 
 /** */
