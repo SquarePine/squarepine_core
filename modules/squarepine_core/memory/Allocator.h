@@ -16,7 +16,10 @@ public:
     static constexpr auto defaultAlignmentBytes = static_cast<size_t> (4);
 
     //==============================================================================
-    /** Constructor
+    /** Constructor, which allocates an internal heap to use as a memory pool.
+
+        If for any reason this fails to allocate, it will just leave the internal heap with a null pointer;
+        of course this is assuming that the system's malloc() function doesn't throw.
 
         @param sizeInBytes      The amount of bytes to allocate for use.
         @param alignmentInBytes The alignment to use when an object is allocated.
@@ -24,35 +27,39 @@ public:
     Allocator (size_t sizeInBytes = defaultAllocationSizeBytes,
                size_t alignmentInBytes = defaultAlignmentBytes) :
         base (sizeInBytes, true),
+        marker (base),
         sizeBytes (sizeInBytes),
         alignmentBytes (alignmentInBytes)
     {
-        marker = base;
     }
 
     //==============================================================================
-    /** @returns */
-    size_t getAlignment() const noexcept            { return alignmentBytes; }
-    /** @returns */
-    intptr_t getCurrentPosition() const noexcept    { return (intptr_t) marker; }
-    /** @returns */
+    /** @returns the total size of the allocator's heap. */
     size_t getSize() const noexcept                 { return sizeBytes; }
-    /** @returns */
+    /** @returns the byte of alignment of the allocations.
+        By default, this is 4 bytes which you can configure on construction of an Allocator.
+    */
+    size_t getAlignment() const noexcept            { return alignmentBytes; }
+    /** @returns the current pointer position within the allocator's heap. */
+    intptr_t getCurrentPosition() const noexcept    { return (intptr_t) marker; }
+    /** @returns the remaining space available for allocations. */
     size_t getRemainingSpace() const noexcept       { return getSize() - getCurrentPosition(); }
 
     //==============================================================================
     /** Manually allocate some number of bytes.
 
+        @param numBytesToAllocate The number of bytes to allocate for an object.
+
         @returns An address where an object can be initialised using placement-new,
                  or nullptr if there is not enough memory left.
     */
-    void* allocate (size_t bytes) const
+    void* allocate (size_t numBytesToAllocate) const
     {
-        const typename LockableBase<TypeOfCriticalSectionToUse>::ScopedLock sl (lock);
+        const ScopedLock sl (this->lock);
 
         // Determine an allocation size that will align to our requested byte alignment:
-        const auto remainder = static_cast<size_t> (bytes % alignmentBytes);
-        auto allocationSize = bytes;
+        const auto remainder = static_cast<size_t> (numBytesToAllocate % alignmentBytes);
+        auto allocationSize = numBytesToAllocate;
 
         if (remainder != 0)
             allocationSize += alignmentBytes - remainder;
@@ -75,7 +82,7 @@ public:
         @returns A new object placed within the allocator,
                  or nullptr if there wasn't enough space to put it.
     */
-    template<typename ObjectType, typename... Args, typename Type = typename std::remove_cv<Type>::type>
+    template<typename ObjectType, typename... Args, typename Type = typename std::remove_cv<ObjectType>::type>
     Type* allocateObject (Args... args) const
     {
         if (auto* address = allocate (sizeof (Type)))
@@ -147,7 +154,7 @@ public:
     /** Attempt creating a copy of a specified object whilst allocating it
         within the instance of this class.
 
-        @note This will fail at compile-time if the object passed in does not have a copy-move-constructor!
+        @note This will fail at compile-time if the object passed in does not have a move constructor!
 
         @returns A copy of the object. If there is not enough memory left, nullptr is returned.
     */
@@ -164,7 +171,7 @@ public:
     /** Resets the marker to the base memory location of the allocated memory. */
     void reset (bool clearMemory = false)
     {
-        const typename LockableBase<TypeOfCriticalSectionToUse>::ScopedLock sl (lock);
+        const ScopedLock sl (this->lock);
 
         if (clearMemory)
             base.clear (sizeBytes);
