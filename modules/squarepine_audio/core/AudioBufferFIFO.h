@@ -3,8 +3,7 @@
     You can add samples from the various kind of formats,
     like float pointers or AudioBuffers.
 
-    Then you can read into float arrays, juce::AudioBuffers or even AudioSourceChannelInf
-    to be used directly in AudioSources.
+    @see juce::AudioBuffer, juce::AudioSourceChannelInfo, juce::AudioSource
 */
 template<typename FloatType>
 class AudioBufferFIFO final : public AbstractFifo
@@ -16,9 +15,6 @@ public:
     {
         setSize (channels, buffersize);
     }
-
-    /** Destructor. */
-    virtual ~AudioBufferFIFO() = default;
 
     //==============================================================================
     /** @returns the number of channels of the underlying buffer. */
@@ -115,7 +111,7 @@ public:
     }
 
     /** Read samples from the FIFO into AudioSourceChannelInfo buffers to be used in AudioSources getNextAudioBlock */
-    void readTo (const AudioSourceChannelInfo &info, int numSamples = -1)
+    void readTo (const juce::AudioSourceChannelInfo &info, int numSamples = -1)
     {
         if (auto* buff = info.buffer)
             readTo (*buff, numSamples);
