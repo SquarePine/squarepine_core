@@ -80,10 +80,18 @@ public:
     void process (juce::AudioBuffer<float>& source, juce::AudioBuffer<float>& dest) override
     {
         const auto r = getRatio();
-        const auto numOutSamples = dest.getNumSamples();
 
-        for (int i = jmin (source.getNumChannels(), dest.getNumChannels(), resamplers.size()); --i >= 0;)
-            resamplers.getUnchecked (i)->process (r, source.getReadPointer (i), dest.getWritePointer (i), numOutSamples);
+        if (approximatelyEqual (r, 1.0))
+        {
+            dest = source;
+        }
+        else
+        {
+            const auto numOutSamples = dest.getNumSamples();
+
+            for (int i = jmin (source.getNumChannels(), dest.getNumChannels(), resamplers.size()); --i >= 0;)
+                resamplers.getUnchecked (i)->process (r, source.getReadPointer (i), dest.getWritePointer (i), numOutSamples);
+        }
     }
 
 private:
