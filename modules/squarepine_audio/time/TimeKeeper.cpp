@@ -7,9 +7,8 @@ TimeKeeper::TimeKeeper (const AudioPlayHead::CurrentPositionInfo& info, double s
     TimeKeeper (sr)
 {
     timeSeconds = info.timeInSeconds;
-    tempo.value = info.bpm;
-    timeSignature.numerator = info.timeSigNumerator;
-    timeSignature.denominator = info.timeSigDenominator;
+    tempo = Tempo (info.bpm);
+    timeSignature = TimeSignature (info.timeSigNumerator, info.timeSigDenominator);
     setFrameRate (info.frameRate);
 }
 

@@ -163,7 +163,7 @@ public:
     /** @returns how long a beat will be in milliseconds. */
     static constexpr double toMilliseconds (const Tempo& tempo, const TimeSignature& timeSignature) noexcept
     {
-        return 60000.0 / tempo.value / timeSignature.denominator;
+        return 60000.0 / tempo.get() / timeSignature.denominator;
     }
 
     /** @returns how long a beat will be in seconds. */

@@ -1,28 +1,30 @@
 //==============================================================================
-namespace details
-{
-    double snapValue (double t) noexcept
-    {
-        if (std::isnan (t) || std::isinf (t))
-            return Tempo::defaultTempo;
-
-        return std::clamp (t, Tempo::minimumTempo, Tempo::maximumTempo);
-    }
-}
-
-//==============================================================================
 Tempo::Tempo (double tempo) noexcept :
-    value (details::snapValue (tempo))
+    value (snapValue (tempo))
 {
 }
 
 //==============================================================================
-bool Tempo::operator== (const Tempo& other) const noexcept { return value == other.value; }
-bool Tempo::operator!= (const Tempo& other) const noexcept { return ! operator== (other); }
-bool Tempo::operator< (const Tempo& other) const noexcept  { return value < other.value; }
-bool Tempo::operator<= (const Tempo& other) const noexcept { return value <= other.value; }
-bool Tempo::operator> (const Tempo& other) const noexcept  { return value > other.value; }
-bool Tempo::operator>= (const Tempo& other) const noexcept { return value >= other.value; }
+bool Tempo::operator== (const Tempo& other) const noexcept  { return approximatelyEqual (value, other.value); }
+bool Tempo::operator!= (const Tempo& other) const noexcept  { return ! operator== (other); }
+bool Tempo::operator< (const Tempo& other) const noexcept   { return value < other.value; }
+bool Tempo::operator<= (const Tempo& other) const noexcept  { return value <= other.value; }
+bool Tempo::operator> (const Tempo& other) const noexcept   { return value > other.value; }
+bool Tempo::operator>= (const Tempo& other) const noexcept  { return value >= other.value; }
+
+//==============================================================================
+Tempo Tempo::operator+ (const Tempo& other) const noexcept  { return Tempo (value + other.value); }
+Tempo Tempo::operator- (const Tempo& other) const noexcept  { return Tempo (value - other.value); }
+Tempo Tempo::operator* (const Tempo& other) const noexcept  { return Tempo (value * other.value); }
+Tempo Tempo::operator/ (const Tempo& other) const noexcept  { return Tempo (value / other.value); }
+Tempo Tempo::operator* (double multiplier) const noexcept   { return Tempo (value * multiplier); }
+Tempo Tempo::operator/ (double divisor) const noexcept      { return Tempo (value / divisor); }
+Tempo& Tempo::operator+= (const Tempo& other) noexcept      { value = snapValue (value + other.value); return *this; }
+Tempo& Tempo::operator-= (const Tempo& other) noexcept      { value = snapValue (value - other.value); return *this; }
+Tempo& Tempo::operator*= (const Tempo& other) noexcept      { value = snapValue (value * other.value); return *this; }
+Tempo& Tempo::operator*= (double multiplier) noexcept       { value = snapValue (value * multiplier); return *this; }
+Tempo& Tempo::operator/= (const Tempo& other) noexcept      { value = snapValue (value / other.value); return *this; }
+Tempo& Tempo::operator/= (double divisor) noexcept          { value = snapValue (value / divisor); return *this; }
 
 //==============================================================================
 Tempo Tempo::fromReader (const AudioFormatReader& reader)

@@ -219,7 +219,7 @@ namespace juce
         /** */
         static Tempo fromVar (const var& v) noexcept { return Tempo (static_cast<double> (v)); }
         /** */
-        static var toVar (const Tempo& t) noexcept   { return t.value; }
+        static var toVar (const Tempo& t) noexcept   { return t.get(); }
     };
 
     //==============================================================================

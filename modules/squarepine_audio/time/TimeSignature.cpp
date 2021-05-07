@@ -54,7 +54,7 @@ double TimeSignature::getNumSecondsPerMeasure (double tempo) const noexcept
 
 double TimeSignature::getNumSecondsPerMeasure (const Tempo& tempo) const noexcept
 {
-    return getNumSecondsPerMeasure (tempo.value);
+    return getNumSecondsPerMeasure (tempo.get());
 }
 
 //==============================================================================
