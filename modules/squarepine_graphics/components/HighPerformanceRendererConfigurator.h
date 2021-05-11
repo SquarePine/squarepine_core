@@ -34,7 +34,7 @@
     /** Attemps configuring an OpenGL context with version 3.1 and fancy things
         like continuous repainting.
 
-        By default, this attempts enabling multisampling.
+        By default, this attempts to enable multisampling.
     */
     void configureContextWithModernGL (OpenGLContext& context, bool shouldEnableMultisampling = true);
 
