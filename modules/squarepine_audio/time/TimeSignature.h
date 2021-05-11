@@ -148,16 +148,32 @@ private:
 };
 
 //==============================================================================
-/** Use the methods of this class to help calculate beat related information.
+/** Use the methods provided to help calculate beat related information.
 
     @see Tempo, TimeSignature
 */
-class Beat final
+class Beats final
 {
 public:
     //==============================================================================
     /** The tempo interval in beats, which is in 8192th notes. */
     static constexpr double resolution = 1.0 / 8192.0;
+
+    /** A default number of pixels per beat which can be used to place items on a grid. */
+    static constexpr auto pixelsPerBeat = 64.0;
+
+    //==============================================================================
+    /** @returns what time a beat will be in pixels (and subpixels). */
+    static constexpr double toPixelsAccurate (double beats, double ppb = pixelsPerBeat) noexcept
+    {
+        return beats * ppb;
+    }
+
+    /** @returns what time a beat will be in pixels, rounded or snapped to the nearest pixel. */
+    static int toPixels (double beats, double ppb = pixelsPerBeat) noexcept
+    {
+        return (int) std::round (toPixelsAccurate (beats, ppb));
+    }
 
     //==============================================================================
     /** @returns how long a beat will be in milliseconds. */
@@ -166,18 +182,57 @@ public:
         return 60000.0 / tempo.get() / timeSignature.denominator;
     }
 
+    /** @returns what time a beat will be in milliseconds. */
+    static constexpr double toMilliseconds (double beats, const Tempo& tempo, const TimeSignature& timeSignature) noexcept
+    {
+        return beats * toMilliseconds (tempo, timeSignature);
+    }
+
+    /** @returns a "beat" corresponding to the provided milliseconds. */
+    static constexpr double fromMilliseconds (double milliseconds, const Tempo& tempo) noexcept
+    {
+        return fromSeconds (milliseconds / 1000.0, tempo);
+    }
+
+    //==============================================================================
     /** @returns how long a beat will be in seconds. */
     static constexpr double toSeconds (const Tempo& tempo, const TimeSignature& timeSignature) noexcept
     {
         return toMilliseconds (tempo, timeSignature) / 1000.0;
     }
 
+    /** @returns what time a will would be in seconds. */
+    static constexpr double toSeconds (double beats, const Tempo& tempo, const TimeSignature& timeSignature) noexcept
+    {
+        return beats * toSeconds (tempo, timeSignature);
+    }
+
+    /** @returns a "beat" corresponding to the provided seconds. */
+    static constexpr double fromSeconds (double seconds, const Tempo& tempo) noexcept
+    {
+        return seconds / (60.0 / tempo.get());
+    }
+
+    //==============================================================================
     /** @returns how long a beat will be in audio samples. */
     static constexpr int64 toSamples (const Tempo& tempo, const TimeSignature& timeSignature, double sampleRate) noexcept
     {
         return timeSecondsToSamples<int64> (toSeconds (tempo, timeSignature), sampleRate);
     }
 
+    /** @returns what time a beat will be in audio samples. */
+    static constexpr int64 toSamples (double beats, const Tempo& tempo, const TimeSignature& timeSignature, double sampleRate) noexcept
+    {
+        return timeSecondsToSamples<int64> (toSeconds (beats, tempo, timeSignature), sampleRate);
+    }
+
+    /** @returns a "beat" corresponding to the provided samples. */
+    static constexpr double fromSamples (int64 samples, const Tempo& tempo, double sampleRate) noexcept
+    {
+        return fromSeconds (timeSamplesToSeconds (samples, sampleRate), tempo);
+    }
+
 private:
-    SQUAREPINE_DECLARE_TOOL_CLASS (Beat)
+    //==============================================================================
+    SQUAREPINE_DECLARE_TOOL_CLASS (Beats)
 };

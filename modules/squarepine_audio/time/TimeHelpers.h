@@ -133,7 +133,9 @@ inline double ticksToSeconds (double time, const MidiMessageSequence& tempoAndTS
 template<typename Type = int64>
 constexpr double timeSamplesToSeconds (Type samplePos, double sampleRate) noexcept
 {
-    return (double) samplePos / jmax (1.0, sampleRate);
+    return sampleRate <= 0.0
+            ? 0.0
+            : static_cast<double> (samplePos) / sampleRate;
 }
 
 constexpr double timeSamplesToSeconds (const AudioFormatReader& reader) noexcept
@@ -144,7 +146,9 @@ constexpr double timeSamplesToSeconds (const AudioFormatReader& reader) noexcept
 template<typename Type = int64>
 constexpr Type timeSecondsToSamples (double timeSeconds, double sampleRate) noexcept
 {
-    return static_cast<Type> (timeSeconds * jmax (1.0, sampleRate));
+    return sampleRate <= 0.0
+            ? 0.0
+            : static_cast<Type> (timeSeconds * sampleRate);
 }
 
 constexpr double millisecondsToPpq (double timeMs, double tempo) noexcept
