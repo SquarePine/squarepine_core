@@ -206,8 +206,7 @@ namespace juce
         */
         static var toVar (const TimeSignature& t)
         {
-            Array<var> vals = { t.numerator, t.denominator };
-            return vals;
+            return Array<var> { t.numerator, t.denominator };
         }
     };
 
