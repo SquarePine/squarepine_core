@@ -6,6 +6,20 @@ String getGLString (GLenum value)
     return reinterpret_cast<const char*> (glGetString (value));
 }
 
+String getGLString (GLenum value, GLuint index)
+{
+   #if JUCE_WINDOWS
+    typedef const GLubyte* (*getGLStringiPtr) (GLenum, GLuint);
+
+    if (auto extFunc = (getGLStringiPtr) OpenGLHelpers::getExtensionFunction ("getGLStringi"))
+        return reinterpret_cast<const char*> (extFunc (value, index));
+
+    return {};
+   #else
+    return reinterpret_cast<const char*> (glGetStringi (value, index));
+   #endif
+}
+
 void configureContextWithModernGL (OpenGLContext& context, bool shouldEnableMultisampling)
 {
     // NB: On failure, JUCE will backtrack to an earlier version of OpenGL.
@@ -46,10 +60,10 @@ void logOpenGLInfoCallback (OpenGLContext&)
     << "OpenGL Extensions:" << newLine
     << newLine;
 
-    auto extensionsFromGL = getGLString (GL_EXTENSIONS);
-    if (extensionsFromGL.isEmpty() && numExtensions > 0)
+    auto extensionsFromGL = getGLString (GL_EXTENSIONS).trim();
+    if (extensionsFromGL.isEmpty())
         for (GLuint i = 0; i < (GLuint) numExtensions; ++i)
-            extensionsFromGL << (char*) glGetStringi (GL_EXTENSIONS, i) << " ";
+            extensionsFromGL << getGLString (GL_EXTENSIONS, i) << " ";
 
     auto ext = StringArray::fromTokens (extensionsFromGL, " ", "");
     ext.trim();
@@ -108,7 +122,6 @@ void HighPerformanceRendererConfigurator::configureWithOpenGLIfAvailable (Compon
     context.reset (new OpenGLContext());
     configureContextWithModernGL (*context.get());
     context->attachTo (component);
-    context->setSwapInterval (1); // Make sure vsync is active
    #else
     ignoreUnused (component);
    #endif
