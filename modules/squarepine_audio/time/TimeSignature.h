@@ -156,9 +156,47 @@ class Beats final
 {
 public:
     //==============================================================================
-    /** The tempo interval in beats, which is in 8192th notes. */
-    static constexpr double resolution = 1.0 / 8192.0;
+    /** The suggested lowest interval in beats, which is in 8192th notes. */
+    static constexpr auto resolution = 1.0 / 8192.0;
 
+    //==============================================================================
+    /** A convenient value describing a large note. */
+    static constexpr auto largeNote = 8.0;
+
+    /** A convenient value describing a long note. */
+    static constexpr auto longNote = 4.0;
+
+    /** A convenient value describing a double whole note. */
+    static constexpr auto doubleWholeNote = 2.0;
+
+    /** A convenient value describing a whole note. */
+    static constexpr auto wholeNote = 1.0;
+
+    /** A convenient value describing a half note. */
+    static constexpr auto halfNote = wholeNote / 2.0;
+
+    /** A convenient value describing a quarter note. */
+    static constexpr auto quarterNote = wholeNote / 4.0;
+
+    /** A convenient value describing an 8th note. */
+    static constexpr auto eighthNote = wholeNote / 8.0;
+
+    /** A convenient value describing a 16th note. */
+    static constexpr auto sixteenthNote = wholeNote / 16.0;
+
+    /** A convenient value describing a 32nd note. */
+    static constexpr auto thirtySecondNote = wholeNote / 32.0;
+
+    /** A convenient value describing a 64th note. */
+    static constexpr auto sixtyFourthNote = wholeNote / 64.0;
+
+    /** A convenient value describing a 128th note. */
+    static constexpr auto oneHundredTwentyEighthNote = wholeNote / 128.0;
+
+    /** A convenient value describing a 256th note. */
+    static constexpr auto twoHundredFiftySixthNote = wholeNote / 256.0;
+
+    //==============================================================================
     /** A default number of pixels per beat which can be used to place items on a grid. */
     static constexpr auto pixelsPerBeat = 64.0;
 
