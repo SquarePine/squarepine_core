@@ -5,6 +5,15 @@ Tempo::Tempo (double tempo) noexcept :
 }
 
 //==============================================================================
+double Tempo::snapValue (double t) noexcept
+{
+    if (std::isnan (t) || std::isinf (t))
+        return Tempo::defaultTempo;
+
+    return std::clamp (t, Tempo::minimumTempo, Tempo::maximumTempo);
+}
+
+//==============================================================================
 bool Tempo::operator== (const Tempo& other) const noexcept  { return approximatelyEqual (value, other.value); }
 bool Tempo::operator!= (const Tempo& other) const noexcept  { return ! operator== (other); }
 bool Tempo::operator< (const Tempo& other) const noexcept   { return value < other.value; }
@@ -65,4 +74,10 @@ Tempo Tempo::fromMIDIFile (const MidiFile& midiFile)
 
     jassertfalse;
     return {};
+}
+
+//==============================================================================
+void Tempo::writeAsJSON (OutputStream& out, int, bool, int)
+{
+    out << value;
 }

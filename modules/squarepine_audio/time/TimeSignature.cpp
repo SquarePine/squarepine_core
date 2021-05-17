@@ -31,6 +31,57 @@ bool TimeSignature::operator> (const TimeSignature& other) const noexcept   { re
 bool TimeSignature::operator>= (const TimeSignature& other) const noexcept  { return numerator >= other.numerator && denominator >= other.denominator; }
 
 //==============================================================================
+TimeSignature TimeSignature::getTimeSignature (const MidiFile& midiFile)
+{
+    for (int i = 0; i < midiFile.getNumTracks(); ++i)
+    {
+        auto track = *midiFile.getTrack (i);
+        track.sort();
+
+        for (auto* meh : track)
+        {
+            const auto& msg = meh->message;
+            if (msg.isTimeSignatureMetaEvent())
+            {
+                int n = 0, d = 0;
+                msg.getTimeSignatureInfo (n, d);
+                return { n, d };
+            }
+        }
+    }
+
+    return {};
+}
+
+TimeSignature TimeSignature::getTimeSignature (const AudioFormatReader& reader)
+{
+    TimeSignature timeSig;
+
+    const auto& metadata = reader.metadataValues;
+
+    if (reader.getFormatName().containsIgnoreCase ("WAV"))
+    {
+        if (metadata.containsKey (WavAudioFormat::acidNumerator))   timeSig.numerator = metadata[WavAudioFormat::acidNumerator].getIntValue();
+        if (metadata.containsKey (WavAudioFormat::acidDenominator)) timeSig.denominator = metadata[WavAudioFormat::acidDenominator].getIntValue();
+    }
+   #if SQUAREPINE_USE_REX_AUDIO_FORMAT
+    else if (reader.getFormatName().containsIgnoreCase ("REX"))
+    {
+        if (metadata.containsKey (REXAudioFormat::rexNumerator))    timeSig.numerator = metadata[REXAudioFormat::rexNumerator].getIntValue();
+        if (metadata.containsKey (REXAudioFormat::rexDenominator))  timeSig.denominator = metadata[REXAudioFormat::rexDenominator].getIntValue();
+    }
+   #endif
+   #if JUCE_MAC
+    else if (reader.getFormatName().containsIgnoreCase ("CoreAudio"))
+    {
+        if (metadata.containsKey (CoreAudioFormat::timeSig))        timeSig = TimeSignature::fromString (metadata[CoreAudioFormat::timeSig]);
+    }
+   #endif
+
+    return timeSig;
+}
+
+//==============================================================================
 void TimeSignature::snapToRange()
 {
     numerator = std::clamp (numerator, mininumNumerator, maximumNumerator);
@@ -69,4 +120,10 @@ TimeSignature TimeSignature::fromString (const String& s)
     const auto d = s.fromLastOccurrenceOf (":", false, true).trim().getIntValue();
 
     return { n, d };
+}
+
+//==============================================================================
+void TimeSignature::writeAsJSON (OutputStream& out, int, bool, int)
+{
+    out << "[" << numerator << ", " << denominator << "]";
 }

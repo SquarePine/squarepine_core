@@ -1,9 +1,9 @@
 //==============================================================================
 /** Use an instance of this to track a time-signature.
 
-    @see Tempo, Beat
+    @see Tempo, Beats
 */
-class TimeSignature final
+class TimeSignature final : public DynamicObject
 {
 public:
     //==============================================================================
@@ -16,6 +16,7 @@ public:
     /** The maximum numerator. */
     static constexpr int maximumNumerator = 256;
 
+    //==============================================================================
     /** The default denominator in beats. */
     static constexpr int defaultDenominator = 4;
 
@@ -28,26 +29,39 @@ public:
     static constexpr int maximumDenominator = 65536;
 
     //==============================================================================
-    /** */
+    /** Creates a default time signature of 4:4. */
     TimeSignature() noexcept = default;
 
-    /** */
+    /** Creates a time signature using provided values.
+
+        @warning This will snap the values into range if you're up to something funky!
+
+        @see defaultNumerator, defaultDenominator
+    */
     TimeSignature (int numerator, int denominator) noexcept;
 
-    /** */
+    /** Creates a copy of another time signature. */
     TimeSignature (const TimeSignature&) noexcept = default;
 
-    /** */
+    /** Creates a copy of another time signature. */
     TimeSignature (TimeSignature&&) noexcept = default;
 
     /** Destructor. */
-    ~TimeSignature() noexcept = default;
+    ~TimeSignature() override = default;
 
     //==============================================================================
-    /** */
+    /** Creates a copy of this time signature swapping out
+        its numerator for the provided one.
+
+        @warning The provided numerator will be snapped if it's out of range!
+    */
     TimeSignature withNumerator (int n) const;
 
-    /** */
+    /** Creates a copy of this time signature swapping out
+        its denominator for the provided one.
+
+        @warning The provided denominator will be snapped if it's out of range!
+    */
     TimeSignature withDenominator (int d) const;
 
     //==============================================================================
@@ -55,70 +69,24 @@ public:
     double getNumQuarterNotesPerMeasure() const noexcept;
 
     /** */
-    double getNumSecondsPerMeasure (const Tempo& tempo) const noexcept;
+    double getNumSecondsPerMeasure (const Tempo&) const noexcept;
 
     /** */
     double getNumSecondsPerMeasure (double tempo) const noexcept;
 
     //==============================================================================
-    /** */
-    static TimeSignature getTimeSignature (const MidiFile& midiFile)
-    {
-        for (int i = 0; i < midiFile.getNumTracks(); ++i)
-        {
-            auto track = *midiFile.getTrack (i);
-            track.sort();
+    /** Tries to find a global time signature from the provided MidiFile. */
+    static TimeSignature getTimeSignature (const MidiFile&);
 
-            for (auto* meh : track)
-            {
-                const auto& msg = meh->message;
-                if (msg.isTimeSignatureMetaEvent())
-                {
-                    int n = 0, d = 0;
-                    msg.getTimeSignatureInfo (n, d);
-                    return { n, d };
-                }
-            }
-        }
-
-        return {};
-    }
-
-    /** */
-    static TimeSignature getTimeSignature (const AudioFormatReader& reader)
-    {
-        TimeSignature timeSig;
-
-        const auto& metadata = reader.metadataValues;
-
-        if (reader.getFormatName().containsIgnoreCase ("WAV"))
-        {
-            if (metadata.containsKey (WavAudioFormat::acidNumerator))   timeSig.numerator = metadata[WavAudioFormat::acidNumerator].getIntValue();
-            if (metadata.containsKey (WavAudioFormat::acidDenominator)) timeSig.denominator = metadata[WavAudioFormat::acidDenominator].getIntValue();
-        }
-       #if SQUAREPINE_USE_REX_AUDIO_FORMAT
-        else if (reader.getFormatName().containsIgnoreCase ("REX"))
-        {
-            if (metadata.containsKey (REXAudioFormat::rexNumerator))    timeSig.numerator = metadata[REXAudioFormat::rexNumerator].getIntValue();
-            if (metadata.containsKey (REXAudioFormat::rexDenominator))  timeSig.denominator = metadata[REXAudioFormat::rexDenominator].getIntValue();
-        }
-       #endif
-       #if JUCE_MAC
-        else if (reader.getFormatName().containsIgnoreCase ("CoreAudio"))
-        {
-            if (metadata.containsKey (CoreAudioFormat::timeSig))        timeSig = TimeSignature::fromString (metadata[CoreAudioFormat::timeSig]);
-        }
-       #endif
-
-        return timeSig;
-    }
+    /** Tries to find a global time signature from the provided AudioFormatReader. */
+    static TimeSignature getTimeSignature (const AudioFormatReader&);
 
     //==============================================================================
     /** */
     String toString() const;
 
     /** */
-    static TimeSignature fromString (const String& possibleString);
+    static TimeSignature fromString (const String&);
 
     //==============================================================================
     /** */
@@ -126,21 +94,25 @@ public:
     /** */
     TimeSignature& operator= (TimeSignature&&) noexcept = default;
     /** */
-    bool operator== (const TimeSignature& other) const noexcept;
+    bool operator== (const TimeSignature&) const noexcept;
     /** */
-    bool operator!= (const TimeSignature& other) const noexcept;
+    bool operator!= (const TimeSignature&) const noexcept;
     /** */
-    bool operator< (const TimeSignature& other) const noexcept;
+    bool operator< (const TimeSignature&) const noexcept;
     /** */
-    bool operator<= (const TimeSignature& other) const noexcept;
+    bool operator<= (const TimeSignature&) const noexcept;
     /** */
-    bool operator> (const TimeSignature& other) const noexcept;
+    bool operator> (const TimeSignature&) const noexcept;
     /** */
-    bool operator>= (const TimeSignature& other) const noexcept;
+    bool operator>= (const TimeSignature&) const noexcept;
 
     //==============================================================================
-    int numerator = defaultNumerator;       //< The '7' of '7:8'.
-    int denominator = defaultDenominator;   //< The '8' of '7:8'.
+    /** @internal */
+    void writeAsJSON (OutputStream&, int, bool, int) override;
+
+    //==============================================================================
+    int numerator = defaultNumerator,       //< The '7' of '7:8'.
+        denominator = defaultDenominator;   //< The '8' of '7:8'.
 
 private:
     //==============================================================================

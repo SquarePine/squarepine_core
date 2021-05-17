@@ -1,8 +1,8 @@
 /** Use an instance of this to track a tempo, in beats per minute.
 
-    @see TimeSignature
+    @see TimeSignature, Beats
 */
-class Tempo final
+class Tempo final : public DynamicObject
 {
 public:
     //==============================================================================
@@ -21,8 +21,10 @@ public:
 
     /** Attemps creating a tempo with the provided starting value.
 
-        If this provided value is out of range, NaN, or Inf,
-        the resulting tempo will be `defaultTempo`.
+        @warning If this provided value is out of range, or is NaN or Inf,
+                 the resulting tempo will be `defaultTempo`.
+
+        @see defaultTempo, minimumTempo, maximumTempo
     */
     explicit Tempo (double startingTempo) noexcept;
 
@@ -33,7 +35,7 @@ public:
     Tempo (Tempo&&) noexcept = default;
 
     /** Destructor. */
-    ~Tempo() noexcept = default;
+    ~Tempo() override = default;
 
     //==============================================================================
     /** */
@@ -42,7 +44,7 @@ public:
     constexpr double get() const noexcept         { return value; }
 
     //==============================================================================
-    /** @returns the first tempo message metadata found the
+    /** @returns the first tempo message metadata found inside the
         provided reader, or the default tempo.
     */
     static Tempo fromReader (const AudioFormatReader&);
@@ -55,48 +57,29 @@ public:
     static Tempo fromMIDIFile (const MidiFile&);
 
     //==============================================================================
-    /** */
-    Tempo& operator= (const Tempo&) noexcept = default;
-    /** */
-    Tempo& operator= (Tempo&&) noexcept = default;
-
-    /** */
-    bool operator== (const Tempo& other) const noexcept;
-    /** */
-    bool operator!= (const Tempo& other) const noexcept;
-    /** */
-    bool operator< (const Tempo& other) const noexcept;
-    /** */
-    bool operator<= (const Tempo& other) const noexcept;
-    /** */
-    bool operator> (const Tempo& other) const noexcept;
-    /** */
-    bool operator>= (const Tempo& other) const noexcept;
-
-    //==============================================================================
     /** Adds two tempos together */
-    Tempo operator+ (const Tempo& other) const noexcept;
+    Tempo operator+ (const Tempo&) const noexcept;
 
     /** Adds another tempo to this one. */
-    Tempo& operator+= (const Tempo& other) noexcept;
+    Tempo& operator+= (const Tempo&) noexcept;
 
     /** Subtracts one tempo from another. */
-    Tempo operator- (const Tempo& other) const noexcept;
+    Tempo operator- (const Tempo&) const noexcept;
 
     /** Subtracts another value to this one. */
-    Tempo& operator-= (const Tempo& other) noexcept;
+    Tempo& operator-= (const Tempo&) noexcept;
 
     /** Multiplies two tempos together. */
-    Tempo operator* (const Tempo& other) const noexcept;
+    Tempo operator* (const Tempo&) const noexcept;
 
     /** Multiplies another tempo to this one. */
-    Tempo& operator*= (const Tempo& other) noexcept;
+    Tempo& operator*= (const Tempo&) noexcept;
 
     /** Divides one tempo by another. */
-    Tempo operator/ (const Tempo& other) const noexcept;
+    Tempo operator/ (const Tempo&) const noexcept;
 
     /** Divides this tempo by another. */
-    Tempo& operator/= (const Tempo& other) noexcept;
+    Tempo& operator/= (const Tempo&) noexcept;
 
     /** @returns a tempo multiplied by a given scalar value. */
     Tempo operator* (double multiplier) const noexcept;
@@ -110,18 +93,38 @@ public:
     /** Divides the point's coordinates by a scalar value. */
     Tempo& operator/= (double divisor) noexcept;
 
+    //==============================================================================
+    /** */
+    Tempo& operator= (const Tempo&) noexcept = default;
+    /** */
+    Tempo& operator= (Tempo&&) noexcept = default;
+    /** */
+    bool operator== (const Tempo&) const noexcept;
+    /** */
+    bool operator!= (const Tempo&) const noexcept;
+    /** */
+    bool operator< (const Tempo&) const noexcept;
+    /** */
+    bool operator<= (const Tempo&) const noexcept;
+    /** */
+    bool operator> (const Tempo&) const noexcept;
+    /** */
+    bool operator>= (const Tempo&) const noexcept;
+
+    //==============================================================================
+    /** @internal */
+    void writeAsJSON (OutputStream&, int, bool, int) override;
+
 private:
     //==============================================================================
     double value = defaultTempo; //< The tempo value, in beats per minute.
 
     //==============================================================================
+    /** You can't negate a tempo... This library isn't meant to be a time machine. */
     Tempo operator-() const = delete;
 
-    static double snapValue (double t) noexcept
-    {
-        if (std::isnan (t) || std::isinf (t))
-            return Tempo::defaultTempo;
+    static double snapValue (double t) noexcept;
 
-        return std::clamp (t, Tempo::minimumTempo, Tempo::maximumTempo);
-    }
+    //==============================================================================
+    JUCE_LEAK_DETECTOR (Tempo)
 };
