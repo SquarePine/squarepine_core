@@ -130,6 +130,7 @@ inline double ticksToSeconds (double time, const MidiMessageSequence& tempoAndTS
     return time / (((timeFormat & 0x7fff) >> 8) * (timeFormat & 0xff));
 }
 
+/** */
 template<typename Type = int64>
 constexpr double timeSamplesToSeconds (Type samplePos, double sampleRate) noexcept
 {
@@ -138,24 +139,28 @@ constexpr double timeSamplesToSeconds (Type samplePos, double sampleRate) noexce
             : static_cast<double> (samplePos) / sampleRate;
 }
 
+/** */
 constexpr double timeSamplesToSeconds (const AudioFormatReader& reader) noexcept
 {
     return timeSamplesToSeconds (reader.lengthInSamples, reader.sampleRate);
 }
 
+/** */
 template<typename Type = int64>
 constexpr Type timeSecondsToSamples (double timeSeconds, double sampleRate) noexcept
 {
     return sampleRate <= 0.0
-            ? 0.0
+            ? static_cast<Type> (0)
             : static_cast<Type> (timeSeconds * sampleRate);
 }
 
+/** */
 constexpr double millisecondsToPpq (double timeMs, double tempo) noexcept
 {
     return tempo / 60.0 * (timeMs / 1000.0);
 }
 
+/** */
 constexpr double ppqToSeconds (double ppq, double tempo) noexcept
 {
     return ppq / (tempo / 60.0);
