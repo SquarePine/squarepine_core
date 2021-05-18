@@ -120,7 +120,8 @@ private:
 };
 
 //==============================================================================
-/** Use the methods provided to help calculate beat related information.
+/** Use the methods provided to help calculate beat related information,
+    as well as mapping to various units of time like seconds, and even pixels.
 
     @see Tempo, TimeSignature
 */
@@ -183,6 +184,12 @@ public:
     static int toPixels (double beats, double ppb = pixelsPerBeat) noexcept
     {
         return (int) std::round (toPixelsAccurate (beats, ppb));
+    }
+
+    /** @returns a beat representing a position in pixels. */
+    static double fromPixels (double pixels, double ppb = pixelsPerBeat) noexcept
+    {
+        return static_cast<double> (pixels) / toPixelsAccurate (1.0, ppb);
     }
 
     //==============================================================================
