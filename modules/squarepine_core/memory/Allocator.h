@@ -55,7 +55,7 @@ public:
     */
     void* allocate (size_t numBytesToAllocate) const
     {
-        const ScopedLock sl (this->lock);
+        const typename LockableBase<TypeOfCriticalSectionToUse>::ScopedLock sl (this->lock);
 
         // Determine an allocation size that will align to our requested byte alignment:
         const auto remainder = static_cast<size_t> (numBytesToAllocate % alignmentBytes);
@@ -171,7 +171,7 @@ public:
     /** Resets the marker to the base memory location of the allocated memory. */
     void reset (bool clearMemory = false)
     {
-        const ScopedLock sl (this->lock);
+        const typename LockableBase<TypeOfCriticalSectionToUse>::ScopedLock sl (this->lock);
 
         if (clearMemory)
             base.clear (sizeBytes);

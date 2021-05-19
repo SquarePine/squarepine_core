@@ -36,7 +36,6 @@ private:
         allocator.allocateObject (bool());
         allocator.allocateObject (float());
         allocator.allocateObject (double());
-        allocator.allocateObject (long double());
 
         beginTest ("Complex Types - Default Constructible");
 

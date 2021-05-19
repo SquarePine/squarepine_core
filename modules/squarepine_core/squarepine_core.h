@@ -21,6 +21,8 @@
 #include <climits>
 #include <limits>
 
+#include <forward_list>
+#include <list>
 #include <random>
 #include <regex>
 

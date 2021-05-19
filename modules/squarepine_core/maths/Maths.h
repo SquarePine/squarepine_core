@@ -460,6 +460,23 @@ inline Type findStandardDeviation (const Type (&values)[arraySize])
 }
 
 //==============================================================================
+/** @returns the RMS for a set of raw values.
+    @warning This does very little validation so be careful!
+*/
+template<typename Type, typename SizeType = int>
+inline Type findRMS (Type* rawValues, SizeType numValues)
+{
+    constexpr auto zero = static_cast<Type> (0);
+    if (rawValues == nullptr || numValues <= 0)
+        return zero;
+
+    auto sum = zero;
+    for (SizeType i = 0; i < numValues; ++i)
+        sum += square (rawValues[i]);
+
+    return std::sqrt (sum / static_cast<Type> (numValues));
+}
+
 /** @returns the RMS for a set of values. */
 template<typename Iterator>
 inline typename std::iterator_traits<Iterator>::value_type findRMS (Iterator beginIter, Iterator endIter)
@@ -473,15 +490,36 @@ inline typename std::iterator_traits<Iterator>::value_type findRMS (Iterator beg
 }
 
 /** @returns the RMS for a set of values. */
-template<typename Type>
-inline Type findRMS (const juce::Array<Type>& values)
+template<typename Type, typename TypeOfCriticalSectionToUse>
+inline Type findRMS (const juce::Array<Type, TypeOfCriticalSectionToUse>& values)
 {
     return findRMS (std::cbegin (values), std::cend (values));
 }
 
 /** @returns the RMS for a set of values. */
-template<typename Type>
-inline Type findRMS (const std::vector<Type>& values)
+template<typename Type, typename TypeOfCriticalSectionToUse>
+inline Type findRMS (const juce::OwnedArray<Type, TypeOfCriticalSectionToUse>& values)
+{
+    return findRMS (std::cbegin (values), std::cend (values));
+}
+
+/** @returns the RMS for a set of values. */
+template<typename Type, typename AllocatorType>
+inline Type findRMS (const std::vector<Type, AllocatorType>& values)
+{
+    return findRMS (values.cbegin(), values.cend());
+}
+
+/** @returns the RMS for a set of values. */
+template<typename Type, typename AllocatorType>
+inline Type findRMS (const std::list<Type, AllocatorType>& values)
+{
+    return findRMS (values.cbegin(), values.cend());
+}
+
+/** @returns the RMS for a set of values. */
+template<typename Type, typename AllocatorType>
+inline Type findRMS (const std::forward_list<Type, AllocatorType>& values)
 {
     return findRMS (values.cbegin(), values.cend());
 }

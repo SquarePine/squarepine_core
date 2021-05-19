@@ -9,7 +9,7 @@ OwnedArray<UnitTest> SquarePineCoreUnitTestGatherer::createTests()
     tests.add (new MathsUnitTests());
     tests.add (new MovingAccumulatorTests());
     tests.add (new RandomUnitTests());
-    tests.add (new SHA1Tests());
+    //tests.add (new SHA1Tests());
     tests.add (new XorshiftUnitTests());
    #endif
 
