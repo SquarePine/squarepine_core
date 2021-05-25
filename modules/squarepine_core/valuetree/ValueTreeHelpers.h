@@ -229,30 +229,3 @@ inline void initialiseCachedValue (ValueTree& state, CachedValue<ValueType>& cv,
     cv.referTo (state, id, nullptr, defaultValue);
     state.setProperty (id, VariantConverter<ValueType>::toVar (defaultValue), nullptr);
 }
-
-//==============================================================================
-/** */
-inline void setterHelper (CachedValue<float>& cv, float v, UndoManager* undoManager)
-{
-    if (approximatelyEqual (v, 0.0f) || std::isnormal (v))
-    {
-        cv.setValue (v, undoManager);
-    }
-    else
-    {
-        jassertfalse;
-    }
-}
-
-/** */
-inline void setterHelper (CachedValue<double>& cv, double v, UndoManager* undoManager)
-{
-    if (approximatelyEqual (v, 0.0) || std::isnormal (v))
-    {
-        cv.setValue (v, undoManager);
-    }
-    else
-    {
-        jassertfalse;
-    }
-}
