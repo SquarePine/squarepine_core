@@ -74,23 +74,16 @@ public:
 
     /** Multiplies another tempo to this one. */
     Tempo& operator*= (const Tempo&) noexcept;
-
-    /** Divides one tempo by another. */
-    Tempo operator/ (const Tempo&) const noexcept;
-
-    /** Divides this tempo by another. */
-    Tempo& operator/= (const Tempo&) noexcept;
-
     /** @returns a tempo multiplied by a given scalar value. */
     Tempo operator* (double multiplier) const noexcept;
 
     /** @returns a tempo divided by a given scalar value. */
     Tempo operator/ (double divisor) const noexcept;
 
-    /** Multiplies the point's coordinates by a scalar value. */
+    /** Multiplies the tempo by a scalar value. */
     Tempo& operator*= (double multiplier) noexcept;
 
-    /** Divides the point's coordinates by a scalar value. */
+    /** Divides the tempo by a scalar value. */
     Tempo& operator/= (double divisor) noexcept;
 
     //==============================================================================
@@ -126,5 +119,8 @@ private:
     static double snapValue (double t) noexcept;
 
     //==============================================================================
+    Tempo operator/ (const Tempo&) const noexcept = delete;
+    Tempo& operator/= (const Tempo&) noexcept = delete;
+
     JUCE_LEAK_DETECTOR (Tempo)
 };

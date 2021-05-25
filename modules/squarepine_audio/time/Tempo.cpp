@@ -25,14 +25,12 @@ bool Tempo::operator>= (const Tempo& other) const noexcept  { return value >= ot
 Tempo Tempo::operator+ (const Tempo& other) const noexcept  { return Tempo (value + other.value); }
 Tempo Tempo::operator- (const Tempo& other) const noexcept  { return Tempo (value - other.value); }
 Tempo Tempo::operator* (const Tempo& other) const noexcept  { return Tempo (value * other.value); }
-Tempo Tempo::operator/ (const Tempo& other) const noexcept  { return Tempo (value / other.value); }
 Tempo Tempo::operator* (double multiplier) const noexcept   { return Tempo (value * multiplier); }
 Tempo Tempo::operator/ (double divisor) const noexcept      { return Tempo (value / divisor); }
 Tempo& Tempo::operator+= (const Tempo& other) noexcept      { value = snapValue (value + other.value); return *this; }
 Tempo& Tempo::operator-= (const Tempo& other) noexcept      { value = snapValue (value - other.value); return *this; }
 Tempo& Tempo::operator*= (const Tempo& other) noexcept      { value = snapValue (value * other.value); return *this; }
 Tempo& Tempo::operator*= (double multiplier) noexcept       { value = snapValue (value * multiplier); return *this; }
-Tempo& Tempo::operator/= (const Tempo& other) noexcept      { value = snapValue (value / other.value); return *this; }
 Tempo& Tempo::operator/= (double divisor) noexcept          { value = snapValue (value / divisor); return *this; }
 
 //==============================================================================
