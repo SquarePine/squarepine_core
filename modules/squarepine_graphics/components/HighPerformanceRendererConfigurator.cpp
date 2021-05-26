@@ -3,21 +3,15 @@
 
 String getGLString (GLenum value)
 {
-    return reinterpret_cast<const char*> (glGetString (value));
+    return reinterpret_cast<const char*> (juce::gl::glGetString (value));
 }
 
 String getGLString (GLenum value, GLuint index)
 {
-   #if JUCE_WINDOWS
-    typedef const GLubyte* (*getGLStringiPtr) (GLenum, GLuint);
-
-    if (auto extFunc = (getGLStringiPtr) OpenGLHelpers::getExtensionFunction ("getGLStringi"))
-        return reinterpret_cast<const char*> (extFunc (value, index));
+    if (juce::gl::glGetStringi != nullptr)
+        return reinterpret_cast<const char*> (juce::gl::glGetStringi (value, index));
 
     return {};
-   #else
-    return reinterpret_cast<const char*> (glGetStringi (value, index));
-   #endif
 }
 
 void configureContextWithModernGL (OpenGLContext& context, bool shouldEnableMultisampling)
@@ -39,6 +33,8 @@ void configureContextWithModernGL (OpenGLContext& context, bool shouldEnableMult
 
 void logOpenGLInfoCallback (OpenGLContext&)
 {
+    using namespace juce::gl;
+
     GLint major = 0, minor = 0, numExtensions = 0;
     glGetIntegerv (GL_MAJOR_VERSION, &major);
     glGetIntegerv (GL_MINOR_VERSION, &minor);
@@ -91,7 +87,7 @@ static inline void logGlInfoOnce (OpenGLContext& c)
 /** This is needed in order to deal with idiots that refuse to upgrade
     their hardware dated from the lower 2010s and below.
 
-    People being cheap bastards will always exist...
+    I suppose cheap bastards will always exist...
 */
 class HighPerformanceRendererConfigurator::DetachContextMessage final : public MessageManager::MessageBase
 {
@@ -136,9 +132,9 @@ void HighPerformanceRendererConfigurator::paintCallback()
         && context->isAttached())
     {
         GLint major = 0;
-        glGetIntegerv (GL_MAJOR_VERSION, &major);
+        juce::gl::glGetIntegerv (GL_MAJOR_VERSION, &major);
 
-        if (major < 3 || OpenGLHelpers::getExtensionFunction ("glBindVertexArray") == nullptr)
+        if (major < 3 || juce::gl::glBindVertexArray == nullptr)
         {
             (new DetachContextMessage (*this))->post();
             hasContextBeenForciblyDetached = true;

@@ -119,7 +119,7 @@ namespace sp
     }
 
     /** */
-    class ValidPathCompatibleInputFilter : public TextEditor::InputFilter
+    class ValidPathCompatibleInputFilter final : public TextEditor::InputFilter
     {
     public:
         /** */
@@ -148,6 +148,28 @@ namespace sp
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ValidPathCompatibleInputFilter)
     };
 
+    //==============================================================================
+    /** Why waste memory and cycles reallocating a RectangleList when you can just
+        forcibly set all of the rectangles to a new height instead?
+    */
+    template<typename ValueType>
+    inline void updateWithNewHeight (RectangleList<ValueType>& rectList, ValueType newHeight) noexcept
+    {
+        for (auto& r : rectList)
+            const_cast<Rectangle<ValueType>&> (r).setHeight (newHeight);
+    }
+
+    /** Why waste memory and cycles reallocating a RectangleList when you can just
+        forcibly set all of the rectangles to a new width instead?
+    */
+    template<typename ValueType>
+    inline void updateWithNewWidth (RectangleList<ValueType>& rectList, ValueType newWidth) noexcept
+    {
+        for (auto& r : rectList)
+            const_cast<Rectangle<ValueType>&> (r).setWidth (newWidth);
+    }
+
+    //==============================================================================
     #include "application/SimpleApplication.h"
     //#include "audio/Automation.h"
     #include "components/ColourPropertyComponent.h"
