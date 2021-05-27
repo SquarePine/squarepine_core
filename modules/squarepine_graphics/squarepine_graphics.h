@@ -165,7 +165,6 @@ namespace sp
 
     //==============================================================================
     #include "application/SimpleApplication.h"
-    //#include "audio/Automation.h"
     #include "components/ColourPropertyComponent.h"
     #include "components/ComponentViewer.h"
     #include "components/ComponentWindow.h"

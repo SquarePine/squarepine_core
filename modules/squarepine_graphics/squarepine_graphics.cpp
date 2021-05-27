@@ -31,7 +31,6 @@ namespace sp
     }
 
     #include "application/SimpleApplication.cpp"
-    //#include "audio/Automation.cpp"
     #include "components/ComponentViewer.cpp"
     #include "components/GoogleAnalyticsAttachment.cpp"
     #include "components/HighPerformanceRendererConfigurator.cpp"
