@@ -1,5 +1,7 @@
-#undef JUCE_CORE_INCLUDE_NATIVE_HEADERS
-#define JUCE_CORE_INCLUDE_NATIVE_HEADERS 1
+#if ! JUCE_MAC && ! JUCE_IOS
+    #undef JUCE_CORE_INCLUDE_NATIVE_HEADERS
+    #define JUCE_CORE_INCLUDE_NATIVE_HEADERS 1
+#endif
 
 #include "squarepine_core.h"
 
@@ -32,9 +34,16 @@ namespace sp
     #include "misc/FPUFlags.cpp"
     #include "networking/GoogleAnalyticsReporter.cpp"
     #include "networking/NetworkCache.cpp"
+
+    //==============================================================================
+    double getCurrentSystemRSSI();
+    NetworkConnectivityChecker::NetworkType getCurrentSystemNetworkType();
+
     #include "networking/NetworkConnectivityCheckerPosix.cpp"
     #include "networking/NetworkConnectivityCheckerWindows.cpp"
     #include "networking/NetworkConnectivityChecker.cpp"
+
+    //==============================================================================
     #include "networking/OAuth2.cpp"
     #include "networking/Product.cpp"
     #include "networking/User.cpp"

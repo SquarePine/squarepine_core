@@ -1,3 +1,4 @@
+//==============================================================================
 NetworkConnectivityChecker::NetworkConnectivityChecker()                { networkType = getCurrentNetworkType(); start(); }
 NetworkConnectivityChecker::~NetworkConnectivityChecker()               { }
 void NetworkConnectivityChecker::start()                                { startTimer (NetworkConnectivityChecker::defaultTimerIntervalMs); }

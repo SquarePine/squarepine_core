@@ -10,7 +10,7 @@
     description:        A grouping of reusable graphics classes, image formats, and other utilities.
     website:            https://www.squarepine.io
     license:            Proprietary
-    minimumCppStandard: 11
+    minimumCppStandard: 14
     dependencies:       squarepine_core juce_gui_extra
 
     END_JUCE_MODULE_DECLARATION
@@ -18,12 +18,6 @@
 //==============================================================================
 #include <squarepine_core/squarepine_core.h>
 #include <juce_gui_extra/juce_gui_extra.h>
-
-#if JUCE_MODULE_AVAILABLE_juce_opengl
-    #include <juce_opengl/juce_opengl.h>
-#else
-    #undef JUCE_OPENGL
-#endif
 
 //==============================================================================
 /** Config: SQUAREPINE_USE_AVIR_RESIZER

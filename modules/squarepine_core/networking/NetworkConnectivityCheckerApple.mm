@@ -1,15 +1,17 @@
-namespace
+namespace sp
 {
-    inline sp::NetworkConnectivityChecker::NetworkType getCurrentSystemNetworkType()
+    using namespace juce;
+
+    NetworkConnectivityChecker::NetworkType getCurrentSystemNetworkType()
     {
         Reachability* reachability = [Reachability reachabilityForInternetConnection];
         NetworkStatus status = [reachability currentReachabilityStatus];
 
-        if (status == NotReachable)             return sp::NetworkConnectivityChecker::NetworkType::none;
-        else if (status == ReachableViaWiFi)    return sp::NetworkConnectivityChecker::NetworkType::wifi;
-        else if (status == ReachableViaWWAN)    return sp::NetworkConnectivityChecker::NetworkType::mobile;
+        if (status == NotReachable)             return NetworkConnectivityChecker::NetworkType::none;
+        else if (status == ReachableViaWiFi)    return NetworkConnectivityChecker::NetworkType::wifi;
+        else if (status == ReachableViaWWAN)    return NetworkConnectivityChecker::NetworkType::mobile;
 
-        return sp::NetworkConnectivityChecker::NetworkType::wired;
+        return NetworkConnectivityChecker::NetworkType::wired;
     }
 
     double getCurrentSystemRSSI()

@@ -7,17 +7,17 @@
     vendor:             SquarePine
     version:            0.0.1
     name:               SquarePine Audio
-    description:        The audio backbone for any typical audio project.
+    description:        A great backbone for any typical audio project.
     website:            https://www.squarepine.io
     license:            Proprietary
     minimumCppStandard: 14
-    dependencies:       juce_dsp squarepine_core
+    dependencies:       squarepine_core juce_dsp
 
     END_JUCE_MODULE_DECLARATION
 */
 //==============================================================================
-#include <juce_dsp/juce_dsp.h>
 #include <squarepine_core/squarepine_core.h>
+#include <juce_dsp/juce_dsp.h>
 
 //==============================================================================
 /** Config: SQUAREPINE_USE_R8BRAIN
@@ -32,7 +32,7 @@
 
     Enable this to use zplane's Elastique.
 
-    Only available with MSVC (not MinGW) and macOS.
+    Only available with MSVC and macOS.
 */
 #ifndef SQUAREPINE_USE_ELASTIQUE
     #define SQUAREPINE_USE_ELASTIQUE 0
@@ -41,7 +41,7 @@
 /** Config: SQUAREPINE_USE_AUFTAKT
     Enable this to use zplane's auftakt.
 
-    Only available with MSVC (not MinGW) and macOS.
+    Only available with MSVC and macOS.
 */
 #ifndef SQUAREPINE_USE_AUFTAKT
     #define SQUAREPINE_USE_AUFTAKT 0

@@ -10,8 +10,10 @@
     description:        A decent backbone for any project.
     website:            https://www.squarepine.io
     license:            Proprietary
-    minimumCppStandard: 11
-    dependencies:       juce_audio_utils juce_cryptography
+    minimumCppStandard: 14
+    OSXFrameworks:      SystemConfiguration
+    iOSFrameworks:      SystemConfiguration
+    dependencies:       juce_audio_utils juce_cryptography juce_opengl
 
     END_JUCE_MODULE_DECLARATION
 */
@@ -27,28 +29,25 @@
 #include <regex>
 
 //==============================================================================
+#include <juce_opengl/juce_opengl.h>
 #include <juce_audio_utils/juce_audio_utils.h>
 #include <juce_cryptography/juce_cryptography.h>
 
-#if JUCE_MODULE_AVAILABLE_juce_opengl
-    #include <juce_opengl/juce_opengl.h>
-#else
-    #include <juce_opengl/geometry/juce_Vector3D.h>
-#endif
-
 #include <juce_core/unit_tests/juce_UnitTestCategories.h>
 
-#if JUCE_DEBUG && ! JUCE_WINDOWS
-    #include <cxxabi.h>
-#endif
-
 #if ! JUCE_WINDOWS
+   #if JUCE_DEBUG
+    #include <cxxabi.h>
+   #endif
+
     #include <fenv.h>
     #include <unistd.h>
 #endif
 
 #if JUCE_MINGW
-    #error "MinGW is too outdated and crappy. Use Visual Studio - it's literally free."
+    #error "First of all, you're on Windows, not Linux." \
+           "Secondly, MinGW is too outdated and crappy." \
+           "Seriously, just use Visual Studio Community - it's literally free."
 #endif
 
 //==============================================================================
