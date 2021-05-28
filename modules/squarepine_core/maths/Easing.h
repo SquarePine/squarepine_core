@@ -1,17 +1,42 @@
+
+#if JUCE_CXX14_IS_AVAILABLE
+    #define inlineconstexpr14 constexpr
+#else
+    #define inlineconstexpr14 inline
+#endif
+
 //==============================================================================
+/** This is an amalgamation of a variety of standard animation easing functions,
+    alongside some convenient standard audio waveform functions.
+
+    The said audio waveform functions are provided with
+    a similar API in mind in that the easing functions,
+    which are effectively complex interpolation functions,
+    require a weight to be provided instead of a phase.
+*/
 namespace ease
 {
+    /** This namespace provides an assortment of fairly standard easing functions. */
     namespace cubic
     {
+        /** */
         namespace in
         {
+            /** @returns */
             constexpr double quad (double weight) noexcept  { return square (weight); }
+            /** @returns */
             constexpr double cubic (double weight) noexcept { return cube (weight); }
+            /** @returns */
             constexpr double quart (double weight) noexcept { return biquadrate (weight); }
+            /** @returns */
             constexpr double quint (double weight) noexcept { return sursolid (weight); }
+            /** @returns */
             inline double expo (double weight)              { return approximatelyEqual (weight, 0.0) ? 0.0 : std::pow (2.0, 10.0 * weight - 10.0); }
+            /** @returns */
             inline double circ (double weight)              { return 1.0 - std::sqrt (1.0 - square (weight)); }
+            /** @returns */
             inline double sine (double weight)              { return 1.0 - std::cos ((weight * MathConstants<double>::pi) / 2.0); }
+            /** @returns */
             inline double back (double weight)              { return 2.70158 * cube (weight) - 1.70158 * square (weight); }
 
             /** @returns a value that may be negative! */
@@ -27,15 +52,24 @@ namespace ease
             }
         }
 
+        /** */
         namespace out
         {
+            /** @returns */
             constexpr double quad (double weight) noexcept  { return 1.0 - square (1.0 - weight); }
+            /** @returns */
             constexpr double cubic (double weight)          { return 1.0 - cube (1.0 - weight); }
+            /** @returns */
             constexpr double quart (double weight)          { return 1.0 - biquadrate (1.0 - weight); }
+            /** @returns */
             constexpr double quint (double weight)          { return 1.0 - sursolid (1.0 - weight); }
+            /** @returns */
             inline double expo (double weight)              { return approximatelyEqual (weight, 1.0) ? 1.0 : 1.0 - std::pow (2.0, -10.0 * weight); }
+            /** @returns */
             inline double circ (double weight)              { return std::sqrt (1.0 - square (weight - 1.0)); }
+            /** @returns */
             inline double sine (double weight)              { return std::sin ((weight * MathConstants<double>::pi) / 2.0); }
+            /** @returns */
             constexpr double back (double weight) noexcept  { return 1.0 + 2.70158 * cube (weight - 1.0) + 1.70158 * square (weight - 1.0); }
 
             /** @returns a value that may be negative! */
@@ -51,11 +85,8 @@ namespace ease
                         * std::sin ((weight * 10.0 - 10.75) * c5));
             }
 
-           #if JUCE_CXX14_IS_AVAILABLE
-            constexpr double bounce (double weight) noexcept
-           #else
-            inline double bounce (double weight) noexcept
-           #endif
+            /** @returns */
+            inlineconstexpr14 double bounce (double weight) noexcept
             {
                 constexpr auto n1 = 7.5625;
                 constexpr auto d1 = 2.75;
@@ -71,13 +102,19 @@ namespace ease
             }
         }
 
+        /** */
         namespace inOut
         {
+            /** @returns */
             constexpr double quad (double weight) noexcept  { return weight < 0.5 ? 2.0  * square (weight)     : 1.0 - square (-2.0 * weight + 2.0) / 2.0; }
+            /** @returns */
             constexpr double cubic (double weight) noexcept { return weight < 0.5 ? 4.0  * cube (weight)       : 1.0 - cube (-2.0 * weight + 2.0) / 2.0; }
+            /** @returns */
             constexpr double quart (double weight) noexcept { return weight < 0.5 ? 8.0  * biquadrate (weight) : 1.0 - biquadrate (-2.0 * weight + 2.0) / 2.0; }
+            /** @returns */
             constexpr double quint (double weight) noexcept { return weight < 0.5 ? 16.0 * sursolid (weight)   : 1.0 - sursolid (-2.0 * weight + 2.0) / 2.0; }
 
+            /** @returns */
             inline double expo (double weight)
             {
                 if (approximatelyEqual (weight, 0.0))   return 0.0;
@@ -88,6 +125,7 @@ namespace ease
                         : (2.0 - std::pow (2.0, -20.0 * weight + 10.0)) / 2.0;
             }
 
+            /** @returns */
             inline double circ (double weight)
             {
                 return weight < 0.5
@@ -95,16 +133,14 @@ namespace ease
                         : (1.0 + std::sqrt (1.0 - square (-2.0 * weight + 2.0))) / 2.0;
             }
 
+            /** @returns */
             inline double sine (double weight)
             {
                 return -(std::cos (MathConstants<double>::pi * weight) - 1.0) / 2.0;
             }
 
-           #if JUCE_CXX14_IS_AVAILABLE
-            constexpr double back (double weight) noexcept
-           #else
-            inline double back (double weight) noexcept
-           #endif
+            /** @returns */
+            inlineconstexpr14 double back (double weight) noexcept
             {
                 constexpr auto c1 = 1.70158;
                 constexpr auto c2 = c1 * 1.525;
@@ -127,11 +163,8 @@ namespace ease
                         :  (std::pow (2.0, -20.0 * weight + 10.0) * std::sin ((20.0 * weight - 11.125) * c5)) / 2.0 + 1.0;
             }
 
-           #if JUCE_CXX14_IS_AVAILABLE
-            constexpr double bounce (double weight) noexcept
-           #else
-            inline double bounce (double weight) noexcept
-           #endif
+            /** @returns */
+            inlineconstexpr14 double bounce (double weight) noexcept
             {
                  return weight < 0.5
                         ? (1.0 - ease::cubic::out::bounce (1.0 - 2.0 * weight)) / 2.0
@@ -141,38 +174,47 @@ namespace ease
 
         namespace in
         {
-           #if JUCE_CXX14_IS_AVAILABLE
-            constexpr double bounce (double weight) noexcept
-           #else
-            inline double bounce (double weight) noexcept
-           #endif
+            /** @returns */
+            inlineconstexpr14 double bounce (double weight) noexcept
             {
                 return 1.0 - ease::cubic::out::bounce (1.0 - std::clamp (weight, 0.0, 1.0));
             }
         }
     }
 
+    /** */
     namespace audio
     {
+        /** @returns */
         inline double convertWeightToRads (double weight, double frequencyHz = 1.0)
         {
             return weight * frequencyHz * MathConstants<double>::twoPi;
         }
 
+        /** @returns */
         inline double linear (double weight)            { return weight; }
+        /** @returns */
         inline double smoothstepEase (double weight)    { return smoothstep (0.0, 1.0, weight); }
+        /** @returns */
         inline double smootherstepEase (double weight)  { return smootherstep (0.0, 1.0, weight); }
+        /** @returns */
         inline double sgnEase (double weight)           { return sgn (weight); }
+        /** @returns */
         inline double sinEase (double weight)           { return std::sin (convertWeightToRads (weight)); }
+        /** @returns */
         inline double cosEase (double weight)           { return std::cos (convertWeightToRads (weight)); }
+        /** @returns */
         inline double sincEase (double weight)          { return sinc (convertWeightToRads (weight * 10.0)); }
+        /** @returns */
         inline double squareWave (double weight)        { return weight >= 0.5 ? 1.0 : 0.0; }
 
+        /** @returns */
         inline double sawtoothWave (double weight)
         {
             return std::acos (std::sin (convertWeightToRads (weight))) / 1.5708;
         }
 
+        /** @returns */
         inline double triangleWave (double weight)
         {
             constexpr auto frequencyHz = 1.0;
