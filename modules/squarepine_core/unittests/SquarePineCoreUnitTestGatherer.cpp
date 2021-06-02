@@ -1,3 +1,14 @@
+//==============================================================================
+void UnitTestGatherer::appendUnitTests (OwnedArray<UnitTest>& dest)
+{
+    auto newTests = createTests();
+    dest.ensureStorageAllocated (dest.size() + newTests.size());
+
+    for (int i = newTests.size(); --i >= 0;)
+        dest.add (newTests.removeAndReturn (i));
+}
+
+//==============================================================================
 OwnedArray<UnitTest> SquarePineCoreUnitTestGatherer::createTests()
 {
     OwnedArray<UnitTest> tests;
