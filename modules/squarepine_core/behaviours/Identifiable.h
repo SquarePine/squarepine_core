@@ -1,6 +1,8 @@
-/** Inherit from this to be able to uniquely identify your class instance (using a juce::Uuid),
+/** Inherit from this to be able to uniquely identify your class instance using a juce::Uuid,
     as well as identifying your class instance with a standard juce::Identifier
     which is juce::ValueTree and generally juce::var compatible.
+
+    @see juce::Uuid
 */
 class Identifiable
 {

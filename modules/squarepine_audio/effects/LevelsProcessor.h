@@ -3,7 +3,7 @@ class LevelsProcessor final : public InternalProcessor
 {
 public:
     /** */
-    LevelsProcessor();
+    LevelsProcessor() = default;
 
     //==============================================================================
     /** */
@@ -47,7 +47,7 @@ public:
 private:
     //==============================================================================
     template<typename FloatType>
-    struct ChannelDetails
+    struct ChannelDetails final
     {
         void prepare (int numChannels)
         {

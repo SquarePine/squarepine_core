@@ -1,7 +1,3 @@
-LevelsProcessor::LevelsProcessor()
-{
-}
-
 void LevelsProcessor::setMode (Mode newMode)
 {
     mode.store (newMode, std::memory_order_relaxed);
