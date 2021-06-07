@@ -3,7 +3,7 @@
 
     @see Tempo, Beats
 */
-class TimeSignature final : public DynamicObject
+class TimeSignature final
 {
 public:
     //==============================================================================
@@ -47,7 +47,7 @@ public:
     TimeSignature (TimeSignature&&) noexcept = default;
 
     /** Destructor. */
-    ~TimeSignature() override = default;
+    ~TimeSignature() noexcept = default;
 
     //==============================================================================
     /** Creates a copy of this time signature swapping out
@@ -107,16 +107,12 @@ public:
     bool operator>= (const TimeSignature&) const noexcept;
 
     //==============================================================================
-    /** @internal */
-    void writeAsJSON (OutputStream&, int, bool, int) override;
-
-    //==============================================================================
     int numerator = defaultNumerator,       //< The '7' of '7:8'.
         denominator = defaultDenominator;   //< The '8' of '7:8'.
 
 private:
     //==============================================================================
-    void snapToRange();
+    void snapToRange() noexcept;
 };
 
 //==============================================================================

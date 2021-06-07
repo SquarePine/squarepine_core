@@ -73,9 +73,3 @@ Tempo Tempo::fromMIDIFile (const MidiFile& midiFile)
     jassertfalse;
     return {};
 }
-
-//==============================================================================
-void Tempo::writeAsJSON (OutputStream& out, int, bool, int)
-{
-    out << value;
-}

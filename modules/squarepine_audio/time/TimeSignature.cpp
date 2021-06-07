@@ -82,14 +82,14 @@ TimeSignature TimeSignature::getTimeSignature (const AudioFormatReader& reader)
 }
 
 //==============================================================================
-void TimeSignature::snapToRange()
+void TimeSignature::snapToRange() noexcept
 {
-    numerator = std::clamp (numerator, mininumNumerator, maximumNumerator);
+    numerator = jlimit (mininumNumerator, maximumNumerator, numerator);
 
     if (! isPowerOfTwo (denominator))
         denominator = previousPowerOfTwo (denominator);
 
-    denominator = std::clamp (denominator, mininumDenominator, maximumDenominator);
+    denominator = jlimit (mininumDenominator, maximumDenominator, denominator);
 }
 
 //==============================================================================3
@@ -120,10 +120,4 @@ TimeSignature TimeSignature::fromString (const String& s)
     const auto d = s.fromLastOccurrenceOf (":", false, true).trim().getIntValue();
 
     return { n, d };
-}
-
-//==============================================================================
-void TimeSignature::writeAsJSON (OutputStream& out, int, bool, int)
-{
-    out << "[" << numerator << ", " << denominator << "]";
 }

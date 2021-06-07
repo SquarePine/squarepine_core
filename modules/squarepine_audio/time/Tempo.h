@@ -2,7 +2,7 @@
 
     @see TimeSignature, Beats
 */
-class Tempo final : public DynamicObject
+class Tempo final
 {
 public:
     //==============================================================================
@@ -35,7 +35,7 @@ public:
     Tempo (Tempo&&) noexcept = default;
 
     /** Destructor. */
-    ~Tempo() override = default;
+    ~Tempo() = default;
 
     //==============================================================================
     /** */
@@ -103,10 +103,6 @@ public:
     bool operator> (const Tempo&) const noexcept;
     /** */
     bool operator>= (const Tempo&) const noexcept;
-
-    //==============================================================================
-    /** @internal */
-    void writeAsJSON (OutputStream&, int, bool, int) override;
 
 private:
     //==============================================================================
