@@ -51,6 +51,13 @@ public:
     }
 
     //==============================================================================
+    /** @returns true if this font family is loaded with a normal typeface. */
+    bool isValid() const { return regular.normal != nullptr; }
+
+    /** @returns true if this font family is not loaded with a normal typeface. */
+    bool isNull() const { return ! isValid(); }
+
+    //==============================================================================
     const String name;
     FontWeight regular, italic;
 
