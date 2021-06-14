@@ -81,15 +81,18 @@ public:
     {
         const auto r = getRatio();
 
-        if (approximatelyEqual (r, 1.0))
+        if (approximatelyEqual (r, 1.0) || source.hasBeenCleared())
         {
             dest = source;
         }
         else
         {
             const auto numOutSamples = dest.getNumSamples();
+            const auto numChans = jmin (source.getNumChannels(), dest.getNumChannels(), resamplers.size());
+            if (numChans <= 0)
+                dest.clear();
 
-            for (int i = jmin (source.getNumChannels(), dest.getNumChannels(), resamplers.size()); --i >= 0;)
+            for (int i = numChans; --i >= 0;)
                 resamplers.getUnchecked (i)->process (r, source.getReadPointer (i), dest.getWritePointer (i), numOutSamples);
         }
     }
