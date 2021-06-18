@@ -63,12 +63,12 @@ private:
             return coefficient * (envelope_ - sample) + sample;
         }
 
-        FloatType timeMs = 1.0f;
-        FloatType coefficient = 1.0f;
+        FloatType timeMs = (FloatType) 1,
+                  coefficient = (FloatType) 1;
     };
 
-    FloatType sampleRate = (FloatType) 48000.0;
-    FloatType envelope = (FloatType) 0.0;
+    FloatType sampleRate = (FloatType) 48000,
+              envelope = (FloatType) 0;
     EnvelopeComponent attack, release;
 
     JUCE_DECLARE_NON_COPYABLE (EnvelopeFollower)

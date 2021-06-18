@@ -6,15 +6,15 @@ public:
     StereoWidthProcessor();
 
     //==============================================================================
-    /** Change the width
+    /** Changes the stereo width.
 
-        @param newWidth New width amount.
+        @param newWidth New stereo width amount.
 
         @see getMinimum, getNormal, getMaximum
     */
     void setWidth (float newWidth);
 
-    /** Obtain the current stereo width */
+    /** @returns the current stereo width. */
     float getWidth() const;
 
     //==============================================================================
@@ -28,17 +28,17 @@ public:
     static constexpr float getMaximum() noexcept    { return 1.0f; }
 
     //==============================================================================
+    CREATE_INLINE_CLASS_IDENTIFIER (stereoWidth)
+
+    //==============================================================================
     /** @internal */
-    const String getName() const override { return NEEDS_TRANS ("Stereo Width"); }
+    Identifier getIdentifier() const override { return NEEDS_TRANS ("Stereo Width"); }
     /** @internal */
-    Identifier getIdentifier() const override { return "StereoWidth"; }
-    /** @internal */
-    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
 
 private:
     //==============================================================================
-    class WidthParameter;
-    WidthParameter* widthParameter = nullptr;
+    AudioParameterFloat* widthParameter = nullptr;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StereoWidthProcessor)

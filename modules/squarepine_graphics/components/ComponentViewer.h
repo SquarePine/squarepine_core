@@ -11,7 +11,7 @@ public:
     /** @internal */
     void lookAndFeelChanged() override;
     /** @internal */
-    void paint (Graphics& g) override;
+    void paint (Graphics&) override;
     /** @internal */
     void resized() override;
 

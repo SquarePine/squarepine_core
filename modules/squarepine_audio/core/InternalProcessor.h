@@ -11,8 +11,11 @@ public:
     InternalProcessor();
 
     //==============================================================================
+    /** */
     virtual bool isInstrument() const;
+    /** */
     virtual String getVersion() const;
+    /** */
     virtual Identifier getIdentifier() const = 0;
 
     //==============================================================================
@@ -46,13 +49,13 @@ public:
 
     //==============================================================================
     /** @internal */
+    const String getName() const override { return TRANS (getIdentifier().toString()); }
+    /** @internal */
     bool acceptsMidi() const override;
     /** @internal */
     bool producesMidi() const override;
     /** @internal */
-    const String getName() const override;
-    /** @internal */
-    void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock) override;
+    void prepareToPlay (double, int) override;
     /** @internal */
     void releaseResources() override;
     /** @internal */
@@ -66,17 +69,17 @@ public:
     /** @internal */
     int getCurrentProgram() override;
     /** @internal */
-    void setCurrentProgram (int index) override;
+    void setCurrentProgram (int) override;
     /** @internal */
-    const String getProgramName (int index) override;
+    const String getProgramName (int) override;
     /** @internal */
-    void changeProgramName (int index, const String& newName) override;
+    void changeProgramName (int, const String&) override;
     /** @internal */
-    void fillInPluginDescription (PluginDescription& description) const final;
+    void fillInPluginDescription (PluginDescription&) const final;
     /** @internal */
-    void getStateInformation (MemoryBlock& destData) override;
+    void getStateInformation (MemoryBlock&) override;
     /** @internal */
-    void setStateInformation (const void* data, int sizeInBytes) override;
+    void setStateInformation (const void*, int) override;
     /** @internal */
     AudioProcessorParameter* getBypassParameter() const override;
 

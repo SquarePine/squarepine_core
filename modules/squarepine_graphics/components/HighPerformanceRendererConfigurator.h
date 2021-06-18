@@ -1,9 +1,5 @@
 //==============================================================================
-#undef SQUAREPINE_USE_OPENGL
-#define SQUAREPINE_USE_OPENGL JUCE_MODULE_AVAILABLE_juce_opengl && JUCE_OPENGL3
-
-//==============================================================================
-#if SQUAREPINE_USE_OPENGL
+#if JUCE_MODULE_AVAILABLE_juce_opengl
    #ifndef GL_VENDOR
     #define GL_VENDOR 0x1F00
    #endif
@@ -79,7 +75,7 @@ public:
     void paintCallback();
 
     //==============================================================================
-   #if SQUAREPINE_USE_OPENGL
+   #if JUCE_MODULE_AVAILABLE_juce_opengl
     std::unique_ptr<OpenGLContext> context;
    #endif
 

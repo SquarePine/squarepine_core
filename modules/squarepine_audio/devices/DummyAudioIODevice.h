@@ -52,14 +52,13 @@ public:
     /** @internal */
     int getDefaultBufferSize() override;
     /** @internal */
-    String open (const BigInteger& inputChannels, const BigInteger& outputChannels,
-                 double sampleRate, int bufferSizeSamples) override;
+    String open (const BigInteger&, const BigInteger&, double, int) override;
     /** @internal */
     void close() override;
     /** @internal */
     bool isOpen() override;
     /** @internal */
-    void start (AudioIODeviceCallback* callback) override;
+    void start (AudioIODeviceCallback*) override;
     /** @internal */
     void stop() override;
     /** @internal */

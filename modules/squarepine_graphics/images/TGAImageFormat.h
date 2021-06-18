@@ -14,11 +14,11 @@ public:
     /** @internal */
     bool usesFileExtension (const File& possibleFile) override { return possibleFile.hasFileExtension ("tga"); }
     /** @internal */
-    bool canUnderstand (InputStream& stream) override;
+    bool canUnderstand (InputStream&) override;
     /** @internal */
-    Image decodeImage (InputStream& stream) override;
+    Image decodeImage (InputStream&) override;
     /** @internal */
-    bool writeImageToStream (const Image& image, OutputStream& stream) override;
+    bool writeImageToStream (const Image&, OutputStream&) override;
 
 private:
     //==============================================================================

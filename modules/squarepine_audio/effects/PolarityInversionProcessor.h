@@ -27,15 +27,13 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return NEEDS_TRANS ("Polarity Inverter"); }
-    /** @internal */
-    Identifier getIdentifier() const override { return "PolarityInverter"; }
+    Identifier getIdentifier() const override { return NEEDS_TRANS ("Polarity Inverter"); }
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
-    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
     /** @internal */
-    void processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
 
 private:
     //==============================================================================
@@ -45,14 +43,7 @@ private:
     template<typename FloatType>
     void process (juce::AudioBuffer<FloatType>& buffer, MidiBuffer&)
     {
-        bool localActive = false;
-
-        {
-            const ScopedLock sl (getCallbackLock());
-            localActive = isActive();
-        }
-
-        if (localActive)
+        if (isActive())
             invertPolarity (buffer);
     }
 

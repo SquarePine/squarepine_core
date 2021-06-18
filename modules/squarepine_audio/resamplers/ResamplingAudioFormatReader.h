@@ -26,7 +26,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    bool readSamples (int** destSamples, int numDestChannels, int startOffsetInDestBuffer, int64 startSampleInFile, int numSamples) override;
+    bool readSamples (int**, int, int, int64, int) override;
 
     //==============================================================================
     /** The original sample rate of the stream. */

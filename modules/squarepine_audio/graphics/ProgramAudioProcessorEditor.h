@@ -7,7 +7,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    void paint (Graphics& g) override;
+    void paint (Graphics&) override;
     /** @internal */
     void resized() override;
 

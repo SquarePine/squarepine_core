@@ -38,17 +38,6 @@ void LFOProcessor::setFrequencyFromMidiNote (const int midiNote)
 }
 
 //==============================================================================
-const String LFOProcessor::getName() const
-{
-    return "LFO";
-}
-
-Identifier LFOProcessor::getIdentifier() const
-{
-    return "LFO";
-}
-
-//==============================================================================
 void LFOProcessor::prepareToPlay (const double newSampleRate, const int estimatedSamplesPerBlock)
 {
     setRateAndBufferSizeDetails (newSampleRate, estimatedSamplesPerBlock);
@@ -56,11 +45,6 @@ void LFOProcessor::prepareToPlay (const double newSampleRate, const int estimate
     const ScopedLock sl (getCallbackLock());
     setRateAndBufferSizeDetails (newSampleRate, estimatedSamplesPerBlock);
     configuration.prepare (newSampleRate, configuration.frequency);
-}
-
-bool LFOProcessor::isInstrument() const
-{
-    return true;
 }
 
 void LFOProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages)

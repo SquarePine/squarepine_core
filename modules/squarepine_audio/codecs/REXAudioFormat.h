@@ -72,11 +72,9 @@ public:
     /** @internal */
     bool isCompressed() override;
     /** @internal */
-    AudioFormatReader* createReaderFor (InputStream*, bool deleteStreamIfOpeningFails) override;
+    AudioFormatReader* createReaderFor (InputStream*, bool) override;
     /** @internal */
-    AudioFormatWriter* createWriterFor (OutputStream*, double sampleRateToUse,
-                                        unsigned int numberOfChannels, int bitsPerSample,
-                                        const StringPairArray& metadataValues, int qualityOptionIndex) override;
+    AudioFormatWriter* createWriterFor (OutputStream*, double, unsigned int, int, const StringPairArray&, int) override;
 
 private:
     //==============================================================================

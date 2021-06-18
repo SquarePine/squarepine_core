@@ -14,11 +14,9 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return TRANS ("Mute"); }
+    Identifier getIdentifier() const override { return NEEDS_TRANS ("Mute"); }
     /** @internal */
-    Identifier getIdentifier() const override { return "muteId"; }
-    /** @internal */
-    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
 
 private:
     //==============================================================================

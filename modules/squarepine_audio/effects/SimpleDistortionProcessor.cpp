@@ -1,5 +1,5 @@
 //==============================================================================
-class SimpleDistortionProcessor::AmountParameter : public AudioParameterFloat
+class SimpleDistortionProcessor::AmountParameter final : public AudioParameterFloat
 {
 public:
     AmountParameter() noexcept :
@@ -8,11 +8,7 @@ public:
     }
 
     int getNumSteps() const override { return 100; }
-
-    String getLabel() const override
-    {
-        return "%";
-    }
+    String getLabel() const override { return "%"; }
 
     String getText (float v, int maximumStringLength) const override
     {
@@ -28,17 +24,6 @@ SimpleDistortionProcessor::SimpleDistortionProcessor() :
     amountParam (new AmountParameter())
 {
     addParameter (amountParam);
-}
-
-//==============================================================================
-const String SimpleDistortionProcessor::getName() const
-{
-    return TRANS ("Simple Distortion");
-}
-
-Identifier SimpleDistortionProcessor::getIdentifier() const
-{
-    return "Simple Distortion";
 }
 
 //==============================================================================

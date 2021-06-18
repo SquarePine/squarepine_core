@@ -25,7 +25,8 @@ private:
 class FilePropertyComponent final : public PropertyComponentBase
 {
 public:
-    FilePropertyComponent (const Value& valueToControl, const String& propertyName, const String& title_ = "Open", const String pattern_ = "*.*") :
+    FilePropertyComponent (const Value& valueToControl, const String& propertyName,
+                           const String& title_ = "Open", const String pattern_ = "*.*") :
         PropertyComponentBase (valueToControl, propertyName),
         title (title_),
         pattern (pattern_)

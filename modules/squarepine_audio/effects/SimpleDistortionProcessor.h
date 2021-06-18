@@ -7,9 +7,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override;
-    /** @internal */
-    Identifier getIdentifier() const override;
+    Identifier getIdentifier() const override { return NEEDS_TRANS ("Simple Distortion"); }
     /** @internal */
     void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 

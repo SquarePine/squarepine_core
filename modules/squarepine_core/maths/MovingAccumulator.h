@@ -3,7 +3,7 @@
     This can be used when you don't know the total number of values that need to be averaged.
  */
 template<typename ValueType, typename IndexType = int>
-class MovingAccumulator
+class MovingAccumulator final
 {
 public:
     //==============================================================================

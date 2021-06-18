@@ -1,19 +1,6 @@
-//==============================================================================
-class StereoWidthProcessor::WidthParameter final : public AudioParameterFloat
-{
-public:
-    WidthParameter() :
-        AudioParameterFloat ("stereoWidthId", TRANS ("Width"), {}, StereoWidthProcessor::getNormal())
-    {
-    }
-
-private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WidthParameter)
-};
-
-//==============================================================================
 StereoWidthProcessor::StereoWidthProcessor() :
-    widthParameter (new WidthParameter())
+    widthParameter (new AudioParameterFloat ("stereoWidthId", TRANS ("Width"),
+                                             0.0f, 1.0f, StereoWidthProcessor::getNormal()))
 {
     addParameter (widthParameter);
 }

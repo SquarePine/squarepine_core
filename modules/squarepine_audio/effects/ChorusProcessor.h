@@ -50,15 +50,13 @@ public:
     /** @internal */
     void releaseResources() override;
     /** @internal */
-    const String getName() const override { return "Chorus"; }
-    /** @internal */
-    Identifier getIdentifier() const override { return "Chorus"; }
+    Identifier getIdentifier() const override { return NEEDS_TRANS ("Chorus"); }
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
-    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
     /** @internal */
-    void processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
 
 private:
     //==============================================================================

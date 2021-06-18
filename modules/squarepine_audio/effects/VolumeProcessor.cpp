@@ -1,7 +1,7 @@
 //==============================================================================
 VolumeProcessor::VolumeProcessor()
 {
-    volumeParameter = new AudioParameterFloat (volumeId.toString(), getName(),
+    volumeParameter = new AudioParameterFloat (getIdentifier().toString(), getName(),
                                                NormalisableRange<float> (0.0f, maximumVolume, 0.0001f),
                                                1.0f, getName(), AudioProcessorParameter::outputGain);
     addParameter (volumeParameter);

@@ -71,11 +71,10 @@ private:
 };
 
 //==============================================================================
-PanProcessor::PanProcessor()
+PanProcessor::PanProcessor() :
+    panParam (new PanParameter()),
+    panRuleParam (new PanRuleParameter())
 {
-    panParam = new PanParameter();
-    panRuleParam = new PanRuleParameter();
-
     addParameter (panParam);
     addParameter (panRuleParam);
 }
@@ -102,16 +101,6 @@ dsp::PannerRule PanProcessor::getPannerRule() const noexcept
 }
 
 //==============================================================================
-const String PanProcessor::getName() const
-{
-    return TRANS ("Stereophonic Panner");
-}
-
-Identifier PanProcessor::getIdentifier() const
-{
-    return "StereophonicPanner";
-}
-
 void PanProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     setRateAndBufferSizeDetails (sampleRate, samplesPerBlock);

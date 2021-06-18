@@ -11,6 +11,7 @@ public:
 
     /** */
     void setFrequency (double newFrequency);
+
     /** */
     void setFrequencyFromMidiNote (int midiNote);
 
@@ -19,15 +20,13 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override;
+    Identifier getIdentifier() const override { return "LFO"; }
     /** @internal */
-    Identifier getIdentifier() const override;
+    void prepareToPlay (double, int) override;
     /** @internal */
-    void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock) override;
+    bool isInstrument() const override { return true; }
     /** @internal */
-    bool isInstrument() const override;
-    /** @internal */
-    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
 
 private:
     //==============================================================================

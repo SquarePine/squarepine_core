@@ -13,7 +13,7 @@ public:
     /** */
     CodeEditorComponent::ColourScheme getDefaultColourScheme() override;
     /** */
-    int readNextToken (CodeDocument::Iterator& source) override;
+    int readNextToken (CodeDocument::Iterator&) override;
 
     //==============================================================================
     /** */

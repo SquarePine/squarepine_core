@@ -9,16 +9,15 @@ public:
     /** @internal */
     void scanForDevices() override;
     /** @internal */
-    StringArray getDeviceNames (bool wantInputNames) const override;
+    StringArray getDeviceNames (bool) const override;
     /** @internal */
-    int getDefaultDeviceIndex (bool forInput) const override;
+    int getDefaultDeviceIndex (bool) const override;
     /** @internal */
-    int getIndexOfDevice (AudioIODevice* device, bool asInput) const override;
+    int getIndexOfDevice (AudioIODevice*, bool) const override;
     /** @internal */
     bool hasSeparateInputsAndOutputs() const override;
     /** @internal */
-    AudioIODevice* createDevice (const String& outputDeviceName,
-                                 const String& inputDeviceName) override;
+    AudioIODevice* createDevice (const String&, const String&) override;
 
     //==============================================================================
     /** Creates a DummyAudioIODeviceType. */

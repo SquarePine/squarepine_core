@@ -243,13 +243,13 @@ public:
     /** @internal */
     void processorLayoutsChanged() override;
     /** @internal */
-    void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock) override;
+    void prepareToPlay (double, int) override;
     /** @internal */
     void releaseResources() override;
     /** @internal */
-    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
     /** @internal */
-    void processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
@@ -263,9 +263,9 @@ public:
     /** @internal */
     bool producesMidi() const override;
     /** @internal */
-    void getStateInformation (MemoryBlock& destData) override;
+    void getStateInformation (MemoryBlock&) override;
     /** @internal */
-    void setStateInformation (const void* data, int sizeInBytes) override;
+    void setStateInformation (const void*, int) override;
 
 private:
     //==============================================================================

@@ -28,9 +28,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    Identifier getIdentifier() const override { return "Levels"; }
-    /** @internal */
-    const String getName() const override { return NEEDS_TRANS ("Levels"); }
+    Identifier getIdentifier() const override { return NEEDS_TRANS ("Levels"); }
     /** @internal */
     bool acceptsMidi() const override { return true; }
     /** @internal */
@@ -38,11 +36,11 @@ public:
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
-    void prepareToPlay (double sampleRate, int maximumExpectedSamplesPerBlock) override;
+    void prepareToPlay (double, int) override;
     /** @internal */
-    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
     /** @internal */
-    void processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
 
 private:
     //==============================================================================

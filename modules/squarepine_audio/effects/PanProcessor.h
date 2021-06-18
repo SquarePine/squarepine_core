@@ -37,13 +37,11 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override;
+    Identifier getIdentifier() const override { return NEEDS_TRANS ("Stereophonic Panner"); }
     /** @internal */
-    Identifier getIdentifier() const override;
+    void prepareToPlay (double, int) override;
     /** @internal */
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
-    /** @internal */
-    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
     /** @internal */
     bool acceptsMidi() const override { return true; }
     /** @internal */

@@ -7,8 +7,6 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return "ADSR"; }
-    /** @internal */
     Identifier getIdentifier() const override { return "ADSR"; }
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }

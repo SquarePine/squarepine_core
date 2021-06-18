@@ -2,7 +2,7 @@
 
     Simply call setAudioSource() to change the source!
 */
-class AudioSourceProcessor : public InternalProcessor
+class AudioSourceProcessor final : public InternalProcessor
 {
 public:
     /** Constructor */
@@ -17,11 +17,11 @@ public:
 
     //==============================================================================
     /** @internal */
-    virtual Identifier getIdentifier() const override;
+    Identifier getIdentifier() const override;
     /** @internal */
-    void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock) override;
+    void prepareToPlay (double, int) override;
     /** @internal */
-    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
     /** @internal */
     void releaseResources() override;
     /** @internal */

@@ -15,13 +15,13 @@ public:
     /** @internal */
     String getFormatName() override;
     /** @internal */
-    bool canUnderstand (InputStream& input) override;
+    bool canUnderstand (InputStream&) override;
     /** @internal */
-    bool usesFileExtension (const File& possibleFile) override;
+    bool usesFileExtension (const File&) override;
     /** @internal */
-    Image decodeImage (InputStream& input) override;
+    Image decodeImage (InputStream&) override;
     /** @internal */
-    bool writeImageToStream (const Image& sourceImage, OutputStream& destStream) override;
+    bool writeImageToStream (const Image&, OutputStream&) override;
 
 private:
     //==============================================================================

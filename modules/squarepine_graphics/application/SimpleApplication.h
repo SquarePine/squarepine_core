@@ -22,11 +22,11 @@ public:
 
     //==============================================================================
     /** @internal */
-    void initialise (const String& commandLine) override;
+    void initialise (const String&) override;
     /** @internal */
     void shutdown() override;
     /** @internal */
-    void anotherInstanceStarted (const String& commandLine) override;
+    void anotherInstanceStarted (const String&) override;
     /** @internal */
     bool moreThanOneInstanceAllowed() override                  { return true; }
     /** @internal */

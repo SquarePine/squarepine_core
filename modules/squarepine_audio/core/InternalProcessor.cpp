@@ -61,7 +61,6 @@ void InternalProcessor::prepareToPlay (const double sampleRate, const int estima
 
 //==============================================================================
 AudioProcessorParameter* InternalProcessor::getBypassParameter() const  { return bypassParameter; }
-const String InternalProcessor::getName() const                         { return getInternalProcessorTypeName(); }
 double InternalProcessor::getTailLengthSeconds() const                  { return 0.0; }
 bool InternalProcessor::hasEditor() const                               { return false; }
 AudioProcessorEditor* InternalProcessor::createEditor()                 { return nullptr; }

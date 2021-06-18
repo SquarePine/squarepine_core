@@ -7,13 +7,11 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return NEEDS_TRANS ("Basic Dither"); }
+    Identifier getIdentifier() const override { return NEEDS_TRANS ("Basic Dither"); }
     /** @internal */
-    Identifier getIdentifier() const override { return "BasicDither"; }
+    void prepareToPlay (double, int) override;
     /** @internal */
-    void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock) override;
-    /** @internal */
-    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
 
 private:
     //==============================================================================

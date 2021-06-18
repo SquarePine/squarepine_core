@@ -34,7 +34,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    void buttonClicked (Button* button) override;
+    void buttonClicked (Button*) override;
 
 protected:
     //==============================================================================

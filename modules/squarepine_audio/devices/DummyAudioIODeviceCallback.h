@@ -7,14 +7,13 @@ public:
 
     //==============================================================================
     /** @internal */
-    void audioDeviceIOCallback (const float** inputChannelData, int numInputChannels,
-                                float** outputChannelData, int numOutputChannels, int numSamples) override;
+    void audioDeviceIOCallback (const float**, int, float**, int, int) override;
     /** @internal */
-    void audioDeviceAboutToStart (AudioIODevice* device) override;
+    void audioDeviceAboutToStart (AudioIODevice*) override;
     /** @internal */
     void audioDeviceStopped() override;
     /** @internal */
-    void audioDeviceError (const String& errorMessage) override;
+    void audioDeviceError (const String&) override;
 
 private:
     //==============================================================================

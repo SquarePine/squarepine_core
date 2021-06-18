@@ -96,4 +96,3 @@ inline float excsc (float x) noexcept       { return csc (x) - 1.0f; }
 /** Excosecant function */
 template<typename Type>
 inline Type excsc (Type x) noexcept         { return (Type) excsc ((double) x); }
-

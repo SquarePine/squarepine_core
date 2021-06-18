@@ -27,7 +27,6 @@ PolarityInversionProcessor::PolarityInversionProcessor() :
 //==============================================================================
 void PolarityInversionProcessor::setActive (bool shouldBeActive)
 {
-    const ScopedLock sl (getCallbackLock());        
     invertParameter->juce::AudioParameterBool::operator= (shouldBeActive);
 }
 

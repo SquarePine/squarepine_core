@@ -100,10 +100,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    double getCurrentTime() const override
-    {
-        return Time::getMillisecondCounterHiRes();
-    }
+    double getCurrentTime() const override { return Time::getMillisecondCounterHiRes(); }
 
 private:
     //==============================================================================
@@ -123,10 +120,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    int64 getCurrentTime() const override
-    {
-        return Time::getHighResolutionTicks();
-    }
+    int64 getCurrentTime() const override { return Time::getHighResolutionTicks(); }
 
 private:
     //==============================================================================

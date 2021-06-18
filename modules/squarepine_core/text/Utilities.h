@@ -2,7 +2,7 @@
 */
 inline String createLocaleFormattedPrice (double value)
 {
-    value *= 100.0; //std::put_money operates on a cents basis. https://stackoverflow.com/a/50476453/1907103
+    value *= 100.0; // NB: std::put_money operates on a cents basis. https://stackoverflow.com/a/50476453/1907103
 
     const auto euroSymbol   = String::fromUTF8 ("\xe2\x82\xac");
     const auto yenSymbol    = String::fromUTF8 ("\xc2\xa5");

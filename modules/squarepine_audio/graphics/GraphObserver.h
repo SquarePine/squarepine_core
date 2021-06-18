@@ -10,11 +10,11 @@ public:
 
     //==============================================================================
     /** @internal */
-    void paint (Graphics& g) override;
+    void paint (Graphics&) override;
     /** @internal */
     void resized() override;
     /** @internal */
-    void changeListenerCallback (ChangeBroadcaster* source) override;
+    void changeListenerCallback (ChangeBroadcaster*) override;
 
 private:
     //==============================================================================

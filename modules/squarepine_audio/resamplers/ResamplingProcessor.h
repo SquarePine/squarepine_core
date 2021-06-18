@@ -30,17 +30,11 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return TRANS ("Resampler"); }
+    Identifier getIdentifier() const override { return NEEDS_TRANS ("Resampler"); }
     /** @internal */
-    Identifier getIdentifier() const override { return "Resampler"; }
+    void prepareToPlay (double, int) override;
     /** @internal */
-    void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock) override;
-    /** @internal */
-    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
-    /** @internal */
-    bool acceptsMidi() const override { return false; }
-    /** @internal */
-    bool producesMidi() const override { return false; }
+    void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
 
 private:
     //==============================================================================

@@ -29,7 +29,7 @@ public:
 
     //==============================================================================
     /** @returns */
-    Type length() const noexcept                                { return std::sqrt (lengthSquared()); }
+    Type length() const noexcept                                { return (Type) std::sqrt ((double) lengthSquared()); }
     /** @returns */
     Type lengthSquared() const noexcept                         { return square (x) + square (y) + square (z) + square (w); }
     /** @returns */

@@ -29,21 +29,16 @@ public:
     static constexpr auto maximumVolume = 5.0f;
 
     //==============================================================================
-    CREATE_INLINE_CLASS_IDENTIFIER (volume)
-
-    //==============================================================================
     /** @internal */
-    const String getName() const override { return TRANS ("Volume"); }
-    /** @internal */
-    Identifier getIdentifier() const override { return volumeId; }
+    Identifier getIdentifier() const override { return NEEDS_TRANS ("Volume"); }
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
+    void prepareToPlay (double, int) override;
     /** @internal */
-    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
     /** @internal */
-    void processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override;
+    void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
 
 private:
     //==============================================================================
