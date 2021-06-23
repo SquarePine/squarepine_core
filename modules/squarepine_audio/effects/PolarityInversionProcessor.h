@@ -11,18 +11,18 @@ inline void invertPolarity (juce::AudioBuffer<FloatType>& buffer)
 }
 
 //==============================================================================
-/** A simple processor that will flip the polarity to all incoming audio channels! */
+/** A simple processor that will flip the polarity of all incoming audio channels! */
 class PolarityInversionProcessor final : public InternalProcessor
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     PolarityInversionProcessor();
 
     //==============================================================================
-    /** Enables or disables the PolarityInversionProcessor */
+    /** Enables or disables the polarity inversion. */
     void setActive (bool shouldBeActive);
 
-    /** Find out of an instance of a PolarityInversionProcessor is active */
+    /** @returns true if polarity is reversed. */
     bool isActive() const;
 
     //==============================================================================
@@ -43,7 +43,7 @@ private:
     template<typename FloatType>
     void process (juce::AudioBuffer<FloatType>& buffer, MidiBuffer&)
     {
-        if (isActive())
+        if (! isBypassed() && isActive())
             invertPolarity (buffer);
     }
 
