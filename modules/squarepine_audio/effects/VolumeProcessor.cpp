@@ -1,15 +1,24 @@
 //==============================================================================
-VolumeProcessor::VolumeProcessor()
+VolumeProcessor::VolumeProcessor() :
+    InternalProcessor (false)
 {
-    volumeParameter = new AudioParameterFloat (getIdentifier().toString(), getName(),
-                                               NormalisableRange<float> (0.0f, maximumVolume, 0.0001f),
-                                               1.0f, getName(), AudioProcessorParameter::outputGain);
-    addParameter (volumeParameter);
+    auto layout = createDefaultParameterLayout();
+
+    auto vp = std::make_unique<AudioParameterFloat> (getIdentifier().toString(), getName(),
+                                                     NormalisableRange<float> (0.0f, maximumVolume),
+                                                     1.0f, getName(), AudioProcessorParameter::outputGain);
+    volumeParameter = vp.get();
+    volumeParameter->addListener (this);
+
+    layout.add (std::move (vp));
+
+    apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 }
 
 //==============================================================================
 void VolumeProcessor::setVolume (float newVolume)
 {
+    newVolume = std::clamp (newVolume, 0.0f, maximumVolume);
     volumeParameter->operator= (newVolume);
 }
 
@@ -18,21 +27,47 @@ float VolumeProcessor::getVolume() const
     return volumeParameter->get();
 }
 
+void VolumeProcessor::parameterValueChanged (int, float newValue)
+{
+    newValue = getVolume(); // Easier to do this than to use the normalised value...
+
+    const ScopedLock sl (getCallbackLock());
+    floatGain.setTargetValue (newValue);
+    doubleGain.setTargetValue ((double) newValue);
+}
+
+void VolumeProcessor::parameterGestureChanged (int, bool)
+{
+}
+
 //==============================================================================
 void VolumeProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     setRateAndBufferSizeDetails (sampleRate, samplesPerBlock);
 
-    currentGain = volumeParameter->get();
+    const ScopedLock sl (getCallbackLock());
+    floatGain.reset (sampleRate, 0.001);
+    doubleGain.reset (sampleRate, 0.001);
 }
 
 //==============================================================================
-void VolumeProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void VolumeProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
-    process (buffer, midiMessages);
+    process (buffer, floatGain);
 }
 
-void VolumeProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiMessages)
+void VolumeProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer&)
 {
-    process (buffer, midiMessages);
+    process (buffer, doubleGain);
+}
+
+template<typename FloatType>
+void VolumeProcessor::process (juce::AudioBuffer<FloatType>& buffer, 
+                               LinearSmoothedValue<FloatType>& gain)
+{
+    if (isBypassed())
+        return;
+
+    const ScopedLock sl (getCallbackLock());
+    gain.applyGain (buffer, buffer.getNumSamples());
 }

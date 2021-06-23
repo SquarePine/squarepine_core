@@ -1,36 +1,36 @@
-/** Use this processor to scale volumes of incoming audio samples! */
-class VolumeProcessor final : public InternalProcessor
+/** Use this processor to scale volumes of incoming audio samples. */
+class VolumeProcessor final : public InternalProcessor,
+                              public AudioProcessorParameter::Listener
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     VolumeProcessor();
 
     //==============================================================================
-    /** Change the volume
+    /** Changes the volume.
 
         A value of 1.0 means no volume change.
         To boost, pass in values beyond 1.0.
         To cut, pass in values under 1.0.
 
-        @warning The value will be clamped to 0.0 if below 0.0.
-        @warning Be careful when boosting - you may end-up with heavy distortion!
-
         @param newVolume New volume amount
+
+        @see maximumVolume
     */
     void setVolume (float newVolume);
 
-    /** Obtain the currently set volume
-
-        @return Volume
-    */
+    /** @returns the current volume. */
     float getVolume() const;
 
-    /** */
-    static constexpr auto maximumVolume = 5.0f;
+    /** This is the maximum volume that can be set to a VolumeProcessor.
+
+        And, though it should be obvious - the minimum is 0.0f.
+    */
+    static constexpr auto maximumVolume = MathConstants<float>::twoPi;
 
     //==============================================================================
     /** @internal */
-    Identifier getIdentifier() const override { return NEEDS_TRANS ("Volume"); }
+    Identifier getIdentifier() const override { return NEEDS_TRANS ("volume"); }
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
@@ -39,31 +39,21 @@ public:
     void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
     /** @internal */
     void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
+    /** @internal */
+    void parameterValueChanged (int, float) override;
+    /** @internal */
+    void parameterGestureChanged (int, bool) override;
 
 private:
     //==============================================================================
     AudioParameterFloat* volumeParameter = nullptr;
 
-    // We must track gain separately to the parameter so that we can ramp to the new parameter value
-    float currentGain = 1.0f;
+    LinearSmoothedValue<float> floatGain { 1.0f };
+    LinearSmoothedValue<double> doubleGain { 1.0 };
 
     template<typename FloatType>
-    void process (juce::AudioBuffer<FloatType>& buffer, MidiBuffer&)
-    {
-        const ScopedLock sl (getCallbackLock());
-
-        if (isBypassed())
-            return;
-
-        const auto localGain = volumeParameter->get();
-
-        if (! approximatelyEqual (currentGain, localGain))
-            buffer.applyGainRamp (0, buffer.getNumSamples(), (FloatType) currentGain, (FloatType) localGain);
-        else
-            buffer.applyGain ((FloatType) localGain);
-
-        currentGain = localGain;
-    }
+    void process (juce::AudioBuffer<FloatType>& buffer, 
+                  LinearSmoothedValue<FloatType>& gain);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VolumeProcessor)
