@@ -26,6 +26,7 @@ private:
     AudioParameterFloat* width = nullptr;
     AudioParameterBool* freezeMode = nullptr;
 
+    //==============================================================================
     void updateReverbParameters();
 
     //==============================================================================

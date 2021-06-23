@@ -102,7 +102,6 @@ namespace sp
     //==============================================================================
     #include "core/AudioBufferView.h"
     #include "core/AudioBufferFIFO.h"
-    #include "core/AudioParameterDouble.h"
     #include "core/AudioUtilities.h"
     #include "core/ChildProcessPluginScanner.h"
     #include "core/InternalAudioPluginFormat.h"
@@ -134,6 +133,7 @@ namespace sp
     #include "effects/PanProcessor.h"
     #include "effects/PolarityInversionProcessor.h"
     #include "effects/SimpleDistortionProcessor.h"
+    #include "effects/SimpleEQProcessor.h"
     #include "effects/StereoWidthProcessor.h"
     #include "effects/VolumeProcessor.h"
     #include "graphics/GraphObserver.h"

@@ -32,7 +32,6 @@ namespace sp
     }
     
     #include "codecs/REXAudioFormat.cpp"
-    #include "core/AudioParameterDouble.cpp"
     #include "core/ChildProcessPluginScanner.cpp"
     #include "core/EffectProcessor.cpp"
     #include "core/EffectProcessorChain.cpp"
@@ -56,6 +55,7 @@ namespace sp
     #include "effects/PanProcessor.cpp"
     #include "effects/PolarityInversionProcessor.cpp"
     #include "effects/SimpleDistortionProcessor.cpp"
+    #include "effects/SimpleEQProcessor.cpp"
     #include "effects/StereoWidthProcessor.cpp"
     #include "effects/VolumeProcessor.cpp"
     #include "graphics/GraphObserver.cpp"

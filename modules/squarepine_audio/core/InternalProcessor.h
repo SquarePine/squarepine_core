@@ -19,10 +19,10 @@ public:
     virtual Identifier getIdentifier() const = 0;
 
     //==============================================================================
-    /** Enable or disable this processor */
+    /** Effectively enables or disables this processor. */
     void setBypass (bool shouldBeBypassed);
 
-    /** Find out of this processor is bypassed.
+    /** @returns true if this processor is bypassed.
 
         @note This concept helps preserve connections in a graph,
               and simplify programmatically bypassing any processing.

@@ -33,7 +33,7 @@ private:
     std::unique_ptr<LFO> lfo;
     LFO::Configuration configuration;
 
-    AudioParameterDouble* frequency = nullptr;
+    AudioParameterFloat* frequency = nullptr;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFOProcessor)

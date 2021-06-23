@@ -1,7 +1,7 @@
 LFOProcessor::LFOProcessor() :
     lfo (new SineLFO())
 {
-    addParameter (frequency = new AudioParameterDouble ("frequency", "Frequency", 1.f, 20000.f, 440.f));
+    addParameter (frequency = new AudioParameterFloat ("frequency", "Frequency", 1.f, 20000.f, 440.f));
 }
 
 //==============================================================================
@@ -20,13 +20,14 @@ void LFOProcessor::setLFOType (LFO* const newLfo)
 
 void LFOProcessor::setFrequency (const double newFrequency)
 {
-    if (*frequency == newFrequency)
+    const auto newF = (float) newFrequency;
+    if (approximatelyEqual (frequency->get(), newF))
         return;
 
-    *frequency = newFrequency;
+    *frequency = newF;
 
     const ScopedLock sl (getCallbackLock());
-    configuration.frequency = frequency->get();
+    configuration.frequency = newF;
 
     //@todo if the frequency is set using getParameters(), the phase will not be reset.
     configuration.currentPhase = 0.0;
