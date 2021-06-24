@@ -1,3 +1,18 @@
+/** @returns an array of pointers to a processor's parameters,
+    excluding its bypass parameter if set.
+*/
+inline Array<AudioProcessorParameter*> getAllParametersExcludingBypass (AudioProcessor& processor)
+{
+    Array<AudioProcessorParameter*> params;
+
+    for (auto* param : processor.getParameters())
+        if (param != processor.getBypassParameter())
+            params.addIfNotAlreadyThere (param);
+
+    return params;
+}
+
+//==============================================================================
 /** A base class for basic internal processors; processors which you 
     don't typically expose to the user.
 

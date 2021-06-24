@@ -32,7 +32,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    Identifier getIdentifier() const override { return NEEDS_TRANS ("Stereo Width"); }
+    Identifier getIdentifier() const override { return NEEDS_TRANS ("StereoWidth"); }
     /** @internal */
     void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
 

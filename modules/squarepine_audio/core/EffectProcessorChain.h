@@ -289,9 +289,6 @@ private:
         }
 
         juce::AudioBuffer<FloatType> mixingBuffer, effectBuffer, lastBuffer;
-
-    private:
-        JUCE_DECLARE_NON_COPYABLE (BufferPackage)
     };
 
     //==============================================================================
