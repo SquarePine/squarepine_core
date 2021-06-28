@@ -10,13 +10,6 @@ EffectProcessorChain::EffectProcessorChain (std::shared_ptr<EffectProcessorFacto
 template<typename Type>
 EffectProcessor::Ptr EffectProcessorChain::insertInternal (const Type& valueOrRef, int destinationIndex, InsertionStyle insertionStyle)
 {
-    if (insertionStyle != InsertionStyle::append
-        && ! isPositiveAndBelow (destinationIndex, getNumEffects()))
-    {
-        jassertfalse;
-        return {};
-    }
-
     if (factory == nullptr)
     {
         jassertfalse;
@@ -33,12 +26,19 @@ EffectProcessor::Ptr EffectProcessorChain::insertInternal (const Type& valueOrRe
         {
             const ScopedLock sl (getCallbackLock());
 
-            if (insertionStyle == InsertionStyle::insert)
+            if (insertionStyle == InsertionStyle::append
+                || ! isPositiveAndBelow (destinationIndex, getNumEffects()))
+            {
                 plugins.emplace_back (effect);
-            else if (insertionStyle == InsertionStyle::append)
-                plugins.emplace_back (effect);
+            }
+            else if (insertionStyle == InsertionStyle::insert)
+            {
+                plugins.insert (plugins.begin() + (size_t) destinationIndex, effect);
+            }
             else
-                plugins.emplace_back (effect);
+            {
+                plugins[(size_t) destinationIndex] = effect;
+            }
 
             updateLatency();
         }
@@ -147,159 +147,60 @@ bool EffectProcessorChain::clear()
 }
 
 //==============================================================================
-bool EffectProcessorChain::setEffectName (int index, const String& name)
-{
-    {
-        const ScopedLock sl (getCallbackLock());
-
-        if (isPositiveAndBelow (index, getNumEffects()))
-        {
-            if (auto effect = plugins[(size_t) index])
-            {
-                effect->name = name;
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-bool EffectProcessorChain::setBypass (int index, bool bypass)
-{
-    {
-        const ScopedLock sl (getCallbackLock());
-
-        if (isPositiveAndBelow (index, getNumEffects()))
-        {
-            if (auto effect = plugins[(size_t) index])
-            {
-                effect->isBypassed = bypass;
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-bool EffectProcessorChain::setMixLevel (int index, float mixLevel)
-{
-    {
-        const ScopedLock sl (getCallbackLock());
-
-        if (isPositiveAndBelow (index, getNumEffects()))
-        {
-            if (auto effect = plugins[(size_t) index])
-            {
-                effect->mixLevel = mixLevel;
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-//==============================================================================
-SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (String) EffectProcessorChain::getEffectName (int index) const
+EffectProcessor::Ptr EffectProcessorChain::getEffectProcessor (int index) const
 {
     const ScopedLock sl (getCallbackLock());
 
     if (isPositiveAndBelow (index, getNumEffects()))
-        if (auto effect = plugins.at ((size_t) index))
-            return { effect->name };
+        return plugins[(size_t) index];
 
     return {};
 }
 
 SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (String) EffectProcessorChain::getPluginInstanceName (int index) const
 {
-    const ScopedLock sl (getCallbackLock());
+    return getEffectProperty<String> (index, [&] (EffectProcessor::Ptr e)
+    {
+        if (auto p = e->plugin)
+            return p->getName();
 
-    if (isPositiveAndBelow (index, getNumEffects()))
-        if (auto effect = plugins[(size_t) index])
-            if (auto p = effect->plugin)
-                return { p->getName() };
+        return String();
+    });
+}
 
-    return {};
+SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (String) EffectProcessorChain::getEffectName (int index) const
+{
+    return getEffectProperty<String> (index, [] (EffectProcessor::Ptr e) { return e->name; });
 }
 
 SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (std::shared_ptr<AudioPluginInstance>) EffectProcessorChain::getPluginInstance (int index) const
 {
-    const ScopedLock sl (getCallbackLock());
-
-    if (isPositiveAndBelow (index, getNumEffects()))
-        if (auto effect = plugins[(size_t) index])
-            return { effect->plugin };
-
-    return {};
-}
-
-EffectProcessor::Ptr EffectProcessorChain::getEffectProcessor (int index) const
-{
-    const ScopedLock sl (getCallbackLock());
-
-    if (isPositiveAndBelow (index, getNumEffects()))
-        if (auto effect = plugins[(size_t) index])
-            return effect;
-
-    return {};
+    return getEffectProperty<std::shared_ptr<AudioPluginInstance>> (index, [&] (EffectProcessor::Ptr e) { return e->plugin; });
 }
 
 SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (PluginDescription) EffectProcessorChain::getPluginDescription (int index) const
 {
-    const ScopedLock sl (getCallbackLock());
-
-    if (isPositiveAndBelow (index, getNumEffects()))
-        if (auto effect = plugins[(size_t) index])
-            return { effect->description };
-
-    return {};
+    return getEffectProperty<PluginDescription> (index, [&] (EffectProcessor::Ptr e) { return e->description; });
 }
 
 SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (bool) EffectProcessorChain::isBypassed (int index) const
 {
-    const ScopedLock sl (getCallbackLock());
-
-    if (isPositiveAndBelow (index, getNumEffects()))
-        if (auto effect = plugins[(size_t) index])
-            return { effect->isBypassed.load (std::memory_order_relaxed) };
-
-    return {};
+    return getEffectProperty<bool> (index, [&] (EffectProcessor::Ptr e) { return e->isBypassed.load (std::memory_order_relaxed); });
 }
 
 SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (float) EffectProcessorChain::getMixLevel (int index) const
 {
-    const ScopedLock sl (getCallbackLock());
-
-    if (isPositiveAndBelow (index, getNumEffects()))
-        if (auto effect = plugins[(size_t) index])
-            return { effect->mixLevel.getTargetValue() };
-
-    return {};
+    return getEffectProperty<float> (index, [&] (EffectProcessor::Ptr e) { return e->mixLevel.getTargetValue(); });
 }
 
 SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (juce::Point<int>) EffectProcessorChain::getLastUIPosition (int index) const
 {
-    const ScopedLock sl (getCallbackLock());
-
-    if (isPositiveAndBelow (index, getNumEffects()))
-        if (auto effect = plugins[(size_t) index])
-            return { effect->lastUIPosition };
-
-    return {};
+    return getEffectProperty<juce::Point<int>> (index, [&] (EffectProcessor::Ptr e) { return e->lastUIPosition; });
 }
 
 SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (bool) EffectProcessorChain::isPluginMissing (int index) const
 {
-    const ScopedLock sl (getCallbackLock());
-
-    if (isPositiveAndBelow (index, getNumEffects()))
-        if (auto effect = plugins[(size_t) index])
-            return { effect->isMissing() };
-
-    return {};
+    return getEffectProperty<bool> (index, [&] (EffectProcessor::Ptr e) { return e->isMissing(); });
 }
 
 bool EffectProcessorChain::loadIfMissing (int index)
@@ -323,6 +224,37 @@ bool EffectProcessorChain::loadIfMissing (int index)
 }
 
 //==============================================================================
+bool EffectProcessorChain::setEffectProperty (int index, std::function<void (EffectProcessor::Ptr)> func)
+{
+    jassert (func != nullptr);
+
+    const ScopedLock sl (getCallbackLock());
+
+    if (auto effect = getEffectProcessor (index))
+    {
+        func (effect);
+        return true;
+    }
+
+    return false;
+}
+
+bool EffectProcessorChain::setEffectName (int index, const String& name)
+{
+    return setEffectProperty (index, [&] (EffectProcessor::Ptr e) { e->name = name; });
+}
+
+bool EffectProcessorChain::setBypass (int index, bool bypass)
+{
+    return setEffectProperty (index, [&] (EffectProcessor::Ptr e) { e->isBypassed = bypass; });
+}
+
+bool EffectProcessorChain::setMixLevel (int index, float mixLevel)
+{
+    return setEffectProperty (index, [&] (EffectProcessor::Ptr e) { e->mixLevel = mixLevel; });
+}
+
+//==============================================================================
 void EffectProcessorChain::prepareToPlay (const double sampleRate, const int estimatedSamplesPerBlock)
 {
     setRateAndBufferSizeDetails (sampleRate, estimatedSamplesPerBlock);
@@ -331,8 +263,8 @@ void EffectProcessorChain::prepareToPlay (const double sampleRate, const int est
 
     const ScopedLock sl (getCallbackLock());
 
-    floatBuffers.update (numChans, estimatedSamplesPerBlock);
-    doubleBuffers.update (numChans, estimatedSamplesPerBlock);
+    floatBuffers.prepare (numChans, estimatedSamplesPerBlock);
+    doubleBuffers.prepare (numChans, estimatedSamplesPerBlock);
 
     for (auto effect : plugins)
     {
@@ -377,10 +309,10 @@ void EffectProcessorChain::processInternal (juce::AudioBuffer<FloatType>& source
                                             const int numChannels,
                                             const int numSamples)
 {
-    // Uses requiredChannels to ensure enough memory is allocated for the plugin to potentially read from/write to - avoids bad accesses
-    // Currently we only care about the main outputs, so still use the numChannels variable throughout
-    // @todo: Add support for aux/bus/side chain channels
-    bufferPackage.update (requiredChannels, numSamples);
+    // Uses requiredChannels to ensure enough memory is allocated for the plugin to
+    // potentially read from/write to - avoids bad accesses.
+    // We only care about the main outputs, so still use the numChannels variable throughout
+    bufferPackage.prepare (requiredChannels, numSamples);
     bufferPackage.clear();
 
     const auto channels = jmin (numChannels, requiredChannels.load());
@@ -392,24 +324,24 @@ void EffectProcessorChain::processInternal (juce::AudioBuffer<FloatType>& source
         if (effect == nullptr || ! effect->canBeProcessed())
             continue;
 
-        //Process the effect:
+        // Process the effect:
         bufferPackage.effectBuffer.clear();
         addFrom (bufferPackage.effectBuffer, bufferPackage.mixingBuffer, channels, numSamples);
 
         processSafely (*effect->plugin, bufferPackage.effectBuffer, midiMessages);
 
-        //Add the effect-saturated samples at the specified mix level:
+        // Add the effect-saturated samples at the specified mix level:
         const auto mixLevel = effect->mixLevel.getNextValue();
         jassert (isPositiveAndBelow (mixLevel, 1.00001f));
 
         bufferPackage.lastBuffer.clear();
         addFrom (bufferPackage.lastBuffer, bufferPackage.effectBuffer, channels, numSamples, mixLevel);
 
-        //Add the original samples, at a percentage of the original gain, if the effect level isn't 100%:
+        // Add the original samples, at a percentage of the original gain, if the effect level isn't 100%:
         if (mixLevel < 1.0f)
             addFrom (bufferPackage.lastBuffer, bufferPackage.mixingBuffer, channels, numSamples, mixLevel);
 
-        //Copy the result:
+        // Copy the result:
         bufferPackage.mixingBuffer.clear();
         addFrom (bufferPackage.mixingBuffer, bufferPackage.lastBuffer, channels, numSamples);
     }

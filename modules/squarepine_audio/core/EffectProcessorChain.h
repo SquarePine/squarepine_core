@@ -31,7 +31,7 @@ public:
 
         @param pluginIndex Plugin index within the KnownPluginList
 
-        @returns a new effect processor or nullptr if the identifier wasn't found.
+        @returns a new effect processor or nullptr if the index wasn't found.
     */
     EffectProcessor::Ptr appendNewEffect (int pluginIndex);
 
@@ -52,7 +52,7 @@ public:
         @warning Callers need to remove plugin editors associated with the current slot
                  or there will be dangling pointers to the removed plugin!
 
-        @returns a new effect processor or nullptr if the identifier wasn't found.
+        @returns a new effect processor or nullptr if the index wasn't found.
     */
     EffectProcessor::Ptr insertNewEffect (int pluginIndex, int destinationIndex);
 
@@ -77,7 +77,7 @@ public:
         @warning Callers need to remove plugin editors associated with the current slot
                  or there will be dangling pointers to the removed plugin!
 
-        @returns a new effect processor or nullptr if the identifier wasn't found.
+        @returns a new effect processor or nullptr if the index wasn't found.
     */
     EffectProcessor::Ptr replaceEffect (int pluginIndex, int destinationIndex);
 
@@ -272,23 +272,24 @@ private:
     template<typename FloatType>
     struct BufferPackage final
     {
-        BufferPackage() noexcept = default;
-
-        void update (int numChannels, int numSamples)
-        {
-            mixingBuffer.setSize (numChannels, numSamples, false, true, true);
-            effectBuffer.setSize (numChannels, numSamples, false, true, true);
-            lastBuffer.setSize (numChannels, numSamples, false, true, true);
-        }
+        using Buffer = juce::AudioBuffer<FloatType>;
 
         void clear() noexcept
         {
-            mixingBuffer.clear();
-            effectBuffer.clear();
-            lastBuffer.clear();
+            for (auto& buff : buffers)
+                buff->clear();
         }
 
-        juce::AudioBuffer<FloatType> mixingBuffer, effectBuffer, lastBuffer;
+        void prepare (int numChannels, int numSamples)
+        {
+            for (auto& buff : buffers)
+                buff->setSize (numChannels, numSamples, false, true, true);
+
+            clear();
+        }
+
+        Buffer mixingBuffer, effectBuffer, lastBuffer;
+        std::array<Buffer*, 3> buffers = { &mixingBuffer, &effectBuffer, &lastBuffer };
     };
 
     //==============================================================================
@@ -301,12 +302,19 @@ private:
     BufferPackage<double> doubleBuffers;
 
     //==============================================================================
+    enum class InsertionStyle
+    {
+        insert,
+        append,
+        replace
+    };
+
     bool isWholeChainBypassed() const;
     void updateLatency();
     void updateChannelCount();
-
     XmlElement* createElementForEffect (EffectProcessor::Ptr effect);
     EffectProcessor::Ptr createEffectProcessorFromXML (XmlElement* state);
+    bool setEffectProperty (int index, std::function<void (EffectProcessor::Ptr)> func);
 
     template<typename FloatType>
     void process (juce::AudioBuffer<FloatType>&, MidiBuffer&, BufferPackage<FloatType>&);
@@ -315,23 +323,27 @@ private:
     void processInternal (juce::AudioBuffer<FloatType>& source, MidiBuffer& midiMessages,
                           BufferPackage<FloatType>& bufferPackage, int numChannels, int numSamples);
 
-    enum class InsertionStyle
-    {
-        insert,
-        append,
-        replace
-    };
-
     template<typename Type>
     EffectProcessor::Ptr insertInternal (const Type& valueOrRef, int destinationIndex, InsertionStyle insertionStyle = InsertionStyle::insert);
+
+    template<typename Type>
+    SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (Type) getEffectProperty (int index, std::function<Type (EffectProcessor::Ptr)> func) const
+    {
+        const ScopedLock sl (getCallbackLock());
+
+        if (isPositiveAndBelow (index, getNumEffects()))
+            if (auto effect = plugins[(size_t) index])
+                return { func (effect) };
+
+        return {};
+    }
 
     template<void (AudioProcessor::*function)()>
     void loopThroughEffectsAndCall()
     {
-
-        for (auto EffectProcessor : plugins)
-            if (EffectProcessor != nullptr)
-                if (auto* plugin = EffectProcessor->plugin.get())
+        for (auto effect : plugins)
+            if (effect != nullptr)
+                if (auto* plugin = effect->plugin.get())
                     (plugin->*function)();
     }
 
