@@ -82,7 +82,7 @@ private:
         const auto r = (SampleType) resonance->get();
 
         using Coeffs = Coefficients<SampleType>;
-        Coeffs::Ptr coeffs;
+        typename Coeffs::Ptr coeffs;
 
         switch (type)
         {
