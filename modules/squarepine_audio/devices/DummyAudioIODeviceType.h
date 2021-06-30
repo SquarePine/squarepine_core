@@ -2,7 +2,7 @@
 class DummyAudioIODeviceType final : public AudioIODeviceType
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     DummyAudioIODeviceType();
 
     //==============================================================================

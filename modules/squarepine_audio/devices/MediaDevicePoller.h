@@ -12,7 +12,7 @@ public:
     */
     MediaDevicePoller (AudioDeviceManager& audioDeviceManager);
 
-    /** Destructor */
+    /** Destructor. */
     ~MediaDevicePoller() override;
 
     //==============================================================================

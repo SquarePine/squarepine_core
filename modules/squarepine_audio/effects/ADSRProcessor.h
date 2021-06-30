@@ -2,7 +2,7 @@
 class ADSRProcessor final : public InternalProcessor
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     ADSRProcessor();
 
     //==============================================================================

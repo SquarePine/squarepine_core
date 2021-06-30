@@ -5,7 +5,7 @@
 class AudioSourceProcessor final : public InternalProcessor
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     AudioSourceProcessor();
 
     //==============================================================================

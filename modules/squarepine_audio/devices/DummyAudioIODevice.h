@@ -5,10 +5,10 @@ class DummyAudioIODevice final : public AudioIODevice,
                                  public Thread
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     DummyAudioIODevice (bool isInput, int numChannels = 2, double sampleRate = 44100.0, int bufferSize = 1024);
 
-    /** Destructor */
+    /** Destructor. */
     ~DummyAudioIODevice() override;
 
     //==============================================================================

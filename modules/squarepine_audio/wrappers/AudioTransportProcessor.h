@@ -5,10 +5,10 @@
 class AudioTransportProcessor final : public InternalProcessor
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     AudioTransportProcessor();
 
-    /** Destructor */
+    /** Destructor. */
     ~AudioTransportProcessor() override;
 
     //==============================================================================

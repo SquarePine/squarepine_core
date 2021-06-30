@@ -22,13 +22,16 @@ public:
 
     void processAdditiveDither (float& inputSample) const noexcept
     {
+        dsp::util::snapToZero (inputSample);
         inputSample += 0.5f * (s1 + s1 - s2);
+        dsp::util::snapToZero (inputSample);
     }
 
     void process (float& inputSample, float& outSample) noexcept
     {
         processAdditiveDither (inputSample);
         outSample = generateNextSample (inputSample);
+        dsp::util::snapToZero (outSample);
     }
 
     void process (float* channel, int numSamples) noexcept
@@ -40,23 +43,13 @@ public:
         {
             random2 = random1;
 
-            //N.B.: This was using 'rand()', but that C function isn't multithreaded FFS!
+            // N.B.: This was using 'rand()', but that C function isn't multithreaded FFS!
             random1 = generator.nextInt (RAND_MAX);
 
             auto in = *channel;
             float out;
-
-            //Check for dodgy numbers coming in:
-            if (in < -0.000001f || in > 0.000001f)
-            {
-                process (in, out);
-                *channel++ = out;
-            }
-            else
-            {
-                *channel++ = in;
-                process (in, out);
-            }
+            process (in, out);
+            *channel++ = out;
 
             s2 = s1;
             s1 = in - out;

@@ -3,7 +3,7 @@
 class ResamplingProcessor : public InternalProcessor
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     template <typename ResamplerType>
     ResamplingProcessor();
 

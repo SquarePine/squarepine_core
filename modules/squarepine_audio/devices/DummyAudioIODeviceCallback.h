@@ -2,7 +2,7 @@
 class DummyAudioIODeviceCallback final : public AudioIODeviceCallback
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     DummyAudioIODeviceCallback();
 
     //==============================================================================

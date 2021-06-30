@@ -2,10 +2,10 @@
 class Resampler
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     Resampler() noexcept = default;
 
-    /** Destructor */
+    /** Destructor. */
     virtual ~Resampler() noexcept = default;
 
     /**  */
