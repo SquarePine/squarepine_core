@@ -1,6 +1,17 @@
+LevelsProcessor::LevelsProcessor() :
+    InternalProcessor (false)
+{
+}
+
+//==============================================================================
 void LevelsProcessor::setMode (Mode newMode)
 {
     mode.store (newMode, std::memory_order_relaxed);
+}
+
+LevelsProcessor::Mode LevelsProcessor::getMode() const noexcept
+{
+    return mode.load (std::memory_order_relaxed);
 }
 
 //==============================================================================

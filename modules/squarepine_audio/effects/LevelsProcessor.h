@@ -1,9 +1,12 @@
-/** */
+/** Use an instance of this within an audio callback of some kind,
+    and call getChannelLevels (on the main thread) to get the
+    last known audio levels.
+*/
 class LevelsProcessor final : public InternalProcessor
 {
 public:
-    /** */
-    LevelsProcessor() = default;
+    /** Constructor. */
+    LevelsProcessor();
 
     //==============================================================================
     /** */
@@ -12,7 +15,7 @@ public:
     void getChannelLevels (Array<double>& destData);
 
     //==============================================================================
-    /** */
+    /** The list of possible modes for audio level analysis. */
     enum class Mode
     {
         peak = 0,
@@ -20,15 +23,17 @@ public:
         midSide
     };
 
-    /** */
+    /** Changes the mode of analysis for the audio levels. */
     void setMode (Mode mode);
 
-    /** */
-    Mode getMode() const noexcept { return mode.load (std::memory_order_relaxed); }
+    /** @returns the current mode for audio levels analysis. */
+    Mode getMode() const noexcept;
 
     //==============================================================================
     /** @internal */
-    Identifier getIdentifier() const override { return NEEDS_TRANS ("Levels"); }
+    const String getName() const override { return TRANS ("Levels Meter"); }
+    /** @internal */
+    Identifier getIdentifier() const override { return "levelsMeter"; }
     /** @internal */
     bool acceptsMidi() const override { return true; }
     /** @internal */
@@ -60,10 +65,10 @@ private:
     };
 
     std::atomic<Mode> mode { Mode::peak };
-
     ChannelDetails<float> floatChannelDetails;
     ChannelDetails<double> doubleChannelDetails;
 
+    //==============================================================================
     template<typename FloatType>
     void getChannelLevels (Array<FloatType>& destData, ChannelDetails<FloatType>& details)
     {

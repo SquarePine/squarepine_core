@@ -16,18 +16,20 @@ class PolarityInversionProcessor final : public InternalProcessor
 {
 public:
     /** Constructor. */
-    PolarityInversionProcessor();
+    PolarityInversionProcessor (bool startActive = false);
 
     //==============================================================================
     /** Enables or disables the polarity inversion. */
     void setActive (bool shouldBeActive);
 
-    /** @returns true if polarity is reversed. */
-    bool isActive() const;
+    /** @returns true if the polarity is reversed. */
+    bool isActive() const noexcept;
 
     //==============================================================================
     /** @internal */
-    Identifier getIdentifier() const override { return NEEDS_TRANS ("Polarity Inverter"); }
+    const String getName() const override { return TRANS ("Polarity Inverter"); }
+    /** @internal */
+    Identifier getIdentifier() const override { return "polarityInverter"; }
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
@@ -37,15 +39,11 @@ public:
 
 private:
     //==============================================================================
-    class InvertParameter;
-    InvertParameter* invertParameter = nullptr;
+    AudioParameterBool* invertParameter = nullptr;
 
+    //==============================================================================
     template<typename FloatType>
-    void process (juce::AudioBuffer<FloatType>& buffer, MidiBuffer&)
-    {
-        if (! isBypassed() && isActive())
-            invertPolarity (buffer);
-    }
+    void process (juce::AudioBuffer<FloatType>&, MidiBuffer&);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PolarityInversionProcessor)

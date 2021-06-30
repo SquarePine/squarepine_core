@@ -2,8 +2,11 @@
 class PanProcessor final : public InternalProcessor
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     PanProcessor();
+
+    /** Destructor. */
+    ~PanProcessor() override;
 
     //==============================================================================
     /** Change the pan.
@@ -17,7 +20,7 @@ public:
 
     //==============================================================================
     /** Change the panning rule. */
-    void setPanLaw (dsp::PannerRule newRule);
+    void setPannerRule (dsp::PannerRule newRule);
 
     /** @returns the current panning rule. */
     dsp::PannerRule getPannerRule() const noexcept;
@@ -37,15 +40,21 @@ public:
 
     //==============================================================================
     /** @internal */
-    Identifier getIdentifier() const override { return NEEDS_TRANS ("Stereophonic Panner"); }
+    const String getName() const override { return TRANS ("Stereophonic Panner"); }
+    /** @internal */
+    Identifier getIdentifier() const override { return "stereoPanner"; }
+    /** @internal */
+    bool acceptsMidi() const override { return true; }
+    /** @internal */
+    bool producesMidi() const override { return true; }
+    /** @internal */
+    bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
     void prepareToPlay (double, int) override;
     /** @internal */
     void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
     /** @internal */
-    bool acceptsMidi() const override { return true; }
-    /** @internal */
-    bool producesMidi() const override { return true; }
+    void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
 
 private:
     //==============================================================================
@@ -54,9 +63,14 @@ private:
 
     PanParameter* panParam = nullptr;
     PanRuleParameter* panRuleParam = nullptr;
+    dsp::Panner<float> floatPanner;
+    dsp::Panner<double> doublePanner;
 
     //==============================================================================
-    dsp::Panner<float> panner;
+    template<typename FloatType>
+    void process (dsp::Panner<FloatType>& panner,
+                  juce::AudioBuffer<FloatType>& buffer,
+                  MidiBuffer& midiMessages);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PanProcessor)

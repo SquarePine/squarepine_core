@@ -2,12 +2,14 @@
 class SimpleDistortionProcessor final : public InternalProcessor
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     SimpleDistortionProcessor();
 
     //==============================================================================
     /** @internal */
-    Identifier getIdentifier() const override { return NEEDS_TRANS ("SimpleDistortion"); }
+    const String getName() const override { return TRANS ("Simple Distortion"); }
+    /** @internal */
+    Identifier getIdentifier() const override { return "simpleDistortion"; }
     /** @internal */
     void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 

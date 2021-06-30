@@ -3,7 +3,7 @@ class PanProcessor::PanParameter final : public AudioParameterFloat
 {
 public:
     PanParameter() :
-        AudioParameterFloat ("panId", TRANS ("Pan"), fullLeft, fullRight, centre)
+        AudioParameterFloat ("pan", TRANS ("Pan"), fullLeft, fullRight, centre)
     {
     }
 
@@ -44,9 +44,7 @@ class PanProcessor::PanRuleParameter final : public AudioParameterChoice
 {
 public:
     PanRuleParameter() :
-        AudioParameterChoice ("panRuleId",
-                              TRANS ("Pan Rule"),
-                              getChoices(),
+        AudioParameterChoice ("panRule", TRANS ("Pan Rule"), getChoices(),
                               static_cast<int> (PanProcessor::defaultPannerRule))
     {
     }
@@ -57,10 +55,9 @@ private:
         StringArray choices;
         choices.add (TRANS ("Linear"));
         choices.add (TRANS ("Balanced"));
-        choices.add (TRANS ("-2.5 dBFS Center"));
-        choices.add (TRANS ("-3.0 dBFS Center"));
-        choices.add (TRANS ("-4.5 dBFS Center"));
-        choices.add (TRANS ("-6.0 dBFS Center"));
+        choices.add (TRANS ("-3.0 dBFS"));
+        choices.add (TRANS ("-4.5 dBFS"));
+        choices.add (TRANS ("-6.0 dBFS"));
         choices.add (TRANS ("-3.0 dBFS Square"));
         choices.add (TRANS ("-4.5 dBFS Square"));
 
@@ -72,11 +69,23 @@ private:
 
 //==============================================================================
 PanProcessor::PanProcessor() :
-    panParam (new PanParameter()),
-    panRuleParam (new PanRuleParameter())
+    InternalProcessor (false)
 {
-    addParameter (panParam);
-    addParameter (panRuleParam);
+    auto layout = createDefaultParameterLayout();
+
+    auto pp = std::make_unique<PanParameter>();
+    panParam = pp.get();
+    layout.add (std::move (pp));
+
+    auto prp = std::make_unique<PanRuleParameter>();
+    panRuleParam = prp.get();
+    layout.add (std::move (prp));
+
+    apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
+}
+
+PanProcessor::~PanProcessor()
+{
 }
 
 //==============================================================================
@@ -85,7 +94,7 @@ void PanProcessor::setPan (float newPan)
     panParam->AudioParameterFloat::operator= (newPan);
 }
 
-void PanProcessor::setPanLaw (dsp::PannerRule newRule)
+void PanProcessor::setPannerRule (dsp::PannerRule newRule)
 {
     panRuleParam->AudioParameterChoice::operator= (static_cast<int> (newRule));
 }
@@ -107,15 +116,37 @@ void PanProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 
     const auto maxChans = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels());
 
-    panner.prepare ({ sampleRate, (uint32) samplesPerBlock, (uint32) maxChans });
+    const dsp::ProcessSpec spec =
+    {
+        sampleRate,
+        (uint32) samplesPerBlock,
+        (uint32) maxChans
+    };
+
+    floatPanner.prepare (spec);
+    doublePanner.prepare (spec);
 }
 
-void PanProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
+void PanProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiBuffer)
+{
+    process (floatPanner, buffer, midiBuffer);
+}
+
+void PanProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiBuffer)
+{
+    process (doublePanner, buffer, midiBuffer);
+}
+
+template<typename FloatType>
+void PanProcessor::process (dsp::Panner<FloatType>& panner,
+                            juce::AudioBuffer<FloatType>& buffer,
+                            MidiBuffer&)
 {
     panner.setPan (getPan());
     panner.setRule (getPannerRule());
 
-    dsp::AudioBlock<float> block (buffer);
-    dsp::ProcessContextReplacing<float> context (block);
+    dsp::AudioBlock<FloatType> block (buffer);
+    dsp::ProcessContextReplacing<FloatType> context (block);
+    context.isBypassed = isBypassed();
     panner.process (context);
 }

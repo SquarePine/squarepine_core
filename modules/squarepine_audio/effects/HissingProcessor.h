@@ -2,12 +2,14 @@
 class HissingProcessor final : public InternalProcessor
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     HissingProcessor() = default;
 
     //==============================================================================
     /** @internal */
-    Identifier getIdentifier() const override { return NEEDS_TRANS ("Periodic Hisser"); }
+    const String getName() const override { return TRANS ("Periodic Hisser"); }
+    /** @internal */
+    Identifier getIdentifier() const override { return "periodicHisser"; }
     /** @internal */
     void prepareToPlay (double, int) override;
     /** @internal */
@@ -15,8 +17,9 @@ public:
 
 private:
     //==============================================================================
-    int blockCounter = 0, blocksBetweenHisses = 0, maxBlocksBetweenHisses = 0, blocksPerHiss = 0;
-    double level = 0;
+    int blockCounter = 0, blocksBetweenHisses = 0,
+        maxBlocksBetweenHisses = 0, blocksPerHiss = 0;
+    double level = 0.0;
     juce::Random random;
 
     //==============================================================================

@@ -35,6 +35,7 @@ float ChorusProcessor::getRate() const noexcept
     return rate->get();
 }
 
+//==============================================================================
 void ChorusProcessor::setDepth (float newDepth)
 {
     if (depth->get() != newDepth)
@@ -50,6 +51,7 @@ float ChorusProcessor::getDepth() const noexcept
     return depth->get();
 }
 
+//==============================================================================
 void ChorusProcessor::setCentreDelay (float newDelayMs)
 {
     if (centreDelay->get() != newDelayMs)
@@ -65,6 +67,7 @@ float ChorusProcessor::getCentreDelay() const noexcept
     return centreDelay->get();
 }
 
+//==============================================================================
 void ChorusProcessor::setFeedback (float newFeedback)
 {
     if (feedback->get() != newFeedback)
@@ -80,6 +83,7 @@ float ChorusProcessor::getFeedback() const noexcept
     return feedback->get();
 }
 
+//==============================================================================
 void ChorusProcessor::setMix (float newMix)
 {
     if (mix->get() != newMix)
@@ -123,6 +127,7 @@ void ChorusProcessor::releaseResources()
     doubleChorus.reset();
 }
 
+//==============================================================================
 void ChorusProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
     process (buffer, floatChorus);
@@ -131,4 +136,15 @@ void ChorusProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer
 void ChorusProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer&)
 {
     process (buffer, doubleChorus);
+}
+
+template<typename FloatType>
+void ChorusProcessor::process (juce::AudioBuffer<FloatType>& buffer, dsp::Chorus<FloatType>& chorus)
+{
+    const ScopedLock sl (getCallbackLock());
+
+    dsp::AudioBlock<FloatType> block (buffer);
+    dsp::ProcessContextReplacing<FloatType> context (block);
+    context.isBypassed = isBypassed();
+    chorus.process (context);
 }

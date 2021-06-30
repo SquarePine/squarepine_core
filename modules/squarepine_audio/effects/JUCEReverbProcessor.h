@@ -2,12 +2,14 @@
 class JUCEReverbProcessor final : public InternalProcessor
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     JUCEReverbProcessor();
 
     //==============================================================================
     /** @internal */
-    Identifier getIdentifier() const override { return NEEDS_TRANS ("Simple Reverb"); }
+    const String getName() const override { return TRANS ("Simple Reverb"); }
+    /** @internal */
+    Identifier getIdentifier() const override { return "simpleReverb"; }
     /** @internal */
     void prepareToPlay (double sampleRate, int bufferSize) override;
     /** @internal */

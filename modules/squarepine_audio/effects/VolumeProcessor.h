@@ -20,17 +20,19 @@ public:
     void setVolume (float newVolume);
 
     /** @returns the current volume. */
-    float getVolume() const;
+    float getVolume() const noexcept;
 
     /** This is the maximum volume that can be set to a VolumeProcessor.
 
-        And, though it should be obvious - the minimum is 0.0f.
+        And, though it should be obvious, the minimum is 0.0f.
     */
     static constexpr auto maximumVolume = MathConstants<float>::twoPi;
 
     //==============================================================================
     /** @internal */
-    Identifier getIdentifier() const override { return NEEDS_TRANS ("volume"); }
+    const String getName() const override { return TRANS ("Volume"); }
+    /** @internal */
+    Identifier getIdentifier() const override { return "volume"; }
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
@@ -51,9 +53,10 @@ private:
     LinearSmoothedValue<float> floatGain { 1.0f };
     LinearSmoothedValue<double> doubleGain { 1.0 };
 
+    //==============================================================================
     template<typename FloatType>
     void process (juce::AudioBuffer<FloatType>& buffer, 
-                  LinearSmoothedValue<FloatType>& gain);
+                  LinearSmoothedValue<FloatType>& value);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VolumeProcessor)

@@ -2,7 +2,7 @@
 class BitCrusherProcessor final : public InternalProcessor
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     BitCrusherProcessor();
 
     //==============================================================================
@@ -14,7 +14,9 @@ public:
 
     //==============================================================================
     /** @internal */
-    Identifier getIdentifier() const override { return NEEDS_TRANS ("BitCrusher"); }
+    const String getName() const override { return TRANS ("BitCrusher"); }
+    /** @internal */
+    Identifier getIdentifier() const override { return "bitCrusher"; }
     /** @internal */
     void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
 

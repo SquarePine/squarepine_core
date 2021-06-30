@@ -1,33 +1,21 @@
-//==============================================================================
-class MuteProcessor::MuteParameter : public AudioParameterBool
+MuteProcessor::MuteProcessor (bool startMuted) :
+    InternalProcessor (false)
 {
-public:
-    MuteParameter() :
-        AudioParameterBool ("muteId", TRANS ("Mute"), false)
-    {
-    }
+    auto layout = createDefaultParameterLayout();
 
-    String getText (float v, int maximumStringLength) const override
-    {
-        return (v >= 0.5f ? TRANS ("Muted") : TRANS ("Normal"))
-               .substring (0, maximumStringLength);
-    }
+    auto vp = std::make_unique<AudioParameterBool> (getIdentifier().toString(), getName(), false);
+    muteParameter = vp.get();
+    setMuted (startMuted);
 
-private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MuteParameter)
-};
+    layout.add (std::move (vp));
 
-//==============================================================================
-MuteProcessor::MuteProcessor() :
-    muteParameter (new MuteParameter())
-{
-    addParameter (muteParameter);
+    apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 }
 
 //==============================================================================
-void MuteProcessor::setMuted (const bool shouldBeMuted)
+void MuteProcessor::setMuted (bool shouldBeMuted)
 {
-    if (isMuted() == shouldBeMuted || muteParameter == nullptr)
+    if (isMuted() == shouldBeMuted)
         return;
 
     if (shouldBeMuted)
@@ -35,19 +23,27 @@ void MuteProcessor::setMuted (const bool shouldBeMuted)
     else
         shouldFadeIn.store (true, std::memory_order_relaxed);
 
-    muteParameter->juce::AudioParameterBool::operator= (shouldBeMuted);
+    muteParameter->operator= (shouldBeMuted);
 }
 
-bool MuteProcessor::isMuted() const
+bool MuteProcessor::isMuted() const noexcept
 {
-    if (muteParameter != nullptr)
-        return muteParameter->get();
-
-    return false;
+    return muteParameter->get();
 }
 
 //==============================================================================
-void MuteProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void MuteProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiBuffer)
+{
+    process (buffer, midiBuffer);
+}
+
+void MuteProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiBuffer)
+{
+    process (buffer, midiBuffer);
+}
+
+template<typename FloatType>
+void MuteProcessor::process (juce::AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages)
 {
     auto appendAllNotesOff = [&]()
     {
@@ -60,13 +56,16 @@ void MuteProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& 
                 midiMessages.addEvent (MidiMessage::noteOff (i, f), 0);
     };
 
-    if (muteParameter->get())
+    constexpr auto zero = static_cast<FloatType> (0);
+    constexpr auto one = static_cast<FloatType> (1);
+
+    if (isMuted())
     {
         midiMessages.clear();
 
         if (shouldFadeOut.load (std::memory_order_relaxed))
         {
-            buffer.applyGainRamp (0, buffer.getNumSamples(), 1.0f, 0.0f);
+            buffer.applyGainRamp (0, buffer.getNumSamples(), one, zero);
             appendAllNotesOff();
         }
         else
@@ -77,7 +76,7 @@ void MuteProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& 
     else
     {
         if (shouldFadeIn.load (std::memory_order_relaxed))
-            buffer.applyGainRamp (0, buffer.getNumSamples(), 0.0f, 1.0f);
+            buffer.applyGainRamp (0, buffer.getNumSamples(), zero, one);
     }
 
     shouldFadeIn.store (false, std::memory_order_relaxed);

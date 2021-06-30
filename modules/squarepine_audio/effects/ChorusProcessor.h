@@ -2,7 +2,7 @@
 class ChorusProcessor final : public InternalProcessor
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     ChorusProcessor();
 
     //==============================================================================
@@ -46,11 +46,13 @@ public:
 
     //==============================================================================
     /** @internal */
+    const String getName() const override { return TRANS ("Chorus"); }
+    /** @internal */
+    Identifier getIdentifier() const override { return "chorus"; }
+    /** @internal */
     void prepareToPlay (double sampleRate, int bufferSize) override;
     /** @internal */
     void releaseResources() override;
-    /** @internal */
-    Identifier getIdentifier() const override { return NEEDS_TRANS ("Chorus"); }
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
@@ -69,14 +71,7 @@ private:
                mix = nullptr;
 
     template<typename FloatType>
-    void process (juce::AudioBuffer<FloatType>& buffer, dsp::Chorus<FloatType>& chorus)
-    {
-        const ScopedLock sl (getCallbackLock());
-
-        dsp::AudioBlock<FloatType> block (buffer);
-        dsp::ProcessContextReplacing<FloatType> context (block);
-        chorus.process (context);
-    }
+    void process (juce::AudioBuffer<FloatType>&, dsp::Chorus<FloatType>&);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChorusProcessor)

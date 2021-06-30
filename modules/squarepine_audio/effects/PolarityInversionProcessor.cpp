@@ -1,41 +1,26 @@
-//==============================================================================
-class PolarityInversionProcessor::InvertParameter final : public AudioParameterBool
+PolarityInversionProcessor::PolarityInversionProcessor (bool startActive) :
+    InternalProcessor (false)
 {
-public:
-    InvertParameter() :
-        AudioParameterBool ("polarityInversionId", TRANS ("Invert Polarity"), false)
-    {
-    }
+    auto layout = createDefaultParameterLayout();
 
-    String getText (float v, int maximumStringLength) const override
-    {
-        return (v >= 0.5f ? TRANS ("Active") : TRANS ("Normal"))
-               .substring (0, maximumStringLength);
-    }
+    auto vp = std::make_unique<AudioParameterBool> (getIdentifier().toString(), getName(), false);
+    invertParameter = vp.get();
+    setActive (startActive);
 
-private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (InvertParameter)
-};
+    layout.add (std::move (vp));
 
-//==============================================================================
-PolarityInversionProcessor::PolarityInversionProcessor() :
-    invertParameter (new InvertParameter())
-{
-    addParameter (invertParameter);
+    apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 }
 
 //==============================================================================
 void PolarityInversionProcessor::setActive (bool shouldBeActive)
 {
-    invertParameter->juce::AudioParameterBool::operator= (shouldBeActive);
+    invertParameter->operator= (shouldBeActive);
 }
 
-bool PolarityInversionProcessor::isActive() const
+bool PolarityInversionProcessor::isActive() const noexcept
 {
-    if (invertParameter != nullptr)
-        return invertParameter->get();
-
-    return false;
+    return invertParameter->get();
 }
 
 //==============================================================================
@@ -47,4 +32,11 @@ void PolarityInversionProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 void PolarityInversionProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiBuffer)
 {
     process (buffer, midiBuffer);
+}
+
+template<typename FloatType>
+void PolarityInversionProcessor::process (juce::AudioBuffer<FloatType>& buffer, MidiBuffer&)
+{
+    if (! isBypassed() && isActive())
+        invertPolarity (buffer);
 }

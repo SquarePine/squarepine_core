@@ -51,13 +51,16 @@ sp_nodiscard std::unique_ptr<AudioParameterBool> InternalProcessor::createBypass
     return std::make_unique<BypassParameter>();
 }
 
-sp_nodiscard AudioProcessorValueTreeState::ParameterLayout InternalProcessor::createDefaultParameterLayout()
+sp_nodiscard AudioProcessorValueTreeState::ParameterLayout InternalProcessor::createDefaultParameterLayout (bool addBypassParam)
 {
     AudioProcessorValueTreeState::ParameterLayout layout;
 
-    auto bp = createBypassParameter();
-    bypassParameter = bp.get();
-    layout.add (std::move (bp));
+    if (addBypassParam)
+    {
+        auto bp = createBypassParameter();
+        bypassParameter = bp.get();
+        layout.add (std::move (bp));
+    }
 
     return layout;
 }
@@ -112,12 +115,15 @@ void InternalProcessor::removeProperty (const Identifier& id, UndoManager* um)
 //==============================================================================
 void InternalProcessor::setBypass (const bool shouldBeBypassed)
 {
-    bypassParameter->operator= (shouldBeBypassed);
+    if (bypassParameter != nullptr)
+        bypassParameter->operator= (shouldBeBypassed);
 }
 
 sp_nodiscard bool InternalProcessor::isBypassed() const noexcept
 {
-    return bypassParameter->get();
+    return bypassParameter != nullptr
+            ? bypassParameter->get()
+            : false;
 }
 
 //==============================================================================

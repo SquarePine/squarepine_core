@@ -2,27 +2,37 @@
 class MuteProcessor final : public InternalProcessor
 {
 public:
-    /** Constructor */
-    MuteProcessor();
+    /** Constructor. */
+    MuteProcessor (bool startMuted = false);
 
     //==============================================================================
     /** Mute or unmute the incoming audio and MIDI */
     void setMuted (bool shouldBeMuted);
 
     /** @returns true if this mute processor is muted. */
-    bool isMuted() const;
+    bool isMuted() const noexcept;
 
     //==============================================================================
     /** @internal */
-    Identifier getIdentifier() const override { return NEEDS_TRANS ("Mute"); }
+    const String getName() const override { return TRANS ("Mute"); }
+    /** @internal */
+    Identifier getIdentifier() const override { return "mute"; }
+    /** @internal */
+    bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
     void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
+    /** @internal */
+    void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
 
 private:
     //==============================================================================
-    class MuteParameter;
-    MuteParameter* muteParameter = nullptr;
-    std::atomic<bool> shouldFadeIn { false }, shouldFadeOut { false };
+    AudioParameterBool* muteParameter = nullptr;
+    std::atomic<bool> shouldFadeIn { false },
+                      shouldFadeOut { false };
+
+    //==============================================================================
+    template<typename FloatType>
+    void process (juce::AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MuteProcessor)

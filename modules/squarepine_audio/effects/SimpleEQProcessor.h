@@ -10,7 +10,9 @@ public:
 
     //==============================================================================
     /** @internal */
-    Identifier getIdentifier() const override { return NEEDS_TRANS ("Equaliser"); }
+    const String getName() const override { return TRANS ("Equaliser"); }
+    /** @internal */
+    Identifier getIdentifier() const override { return "equaliser"; }
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */

@@ -1,4 +1,3 @@
-//==============================================================================
 VolumeProcessor::VolumeProcessor() :
     InternalProcessor (false)
 {
@@ -12,21 +11,24 @@ VolumeProcessor::VolumeProcessor() :
 
     layout.add (std::move (vp));
 
+    setVolume (getVolume());
+
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 }
 
 //==============================================================================
-void VolumeProcessor::setVolume (float newVolume)
+void VolumeProcessor::setVolume (float v)
 {
-    newVolume = std::clamp (newVolume, 0.0f, maximumVolume);
-    volumeParameter->operator= (newVolume);
+    v = std::clamp (v, 0.0f, maximumVolume);
+    volumeParameter->operator= (v);
 }
 
-float VolumeProcessor::getVolume() const
+float VolumeProcessor::getVolume() const noexcept
 {
     return volumeParameter->get();
 }
 
+//==============================================================================
 void VolumeProcessor::parameterValueChanged (int, float newValue)
 {
     newValue = getVolume(); // Easier to do this than to use the normalised value...
@@ -63,11 +65,11 @@ void VolumeProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffe
 
 template<typename FloatType>
 void VolumeProcessor::process (juce::AudioBuffer<FloatType>& buffer, 
-                               LinearSmoothedValue<FloatType>& gain)
+                               LinearSmoothedValue<FloatType>& value)
 {
     if (isBypassed())
         return;
 
     const ScopedLock sl (getCallbackLock());
-    gain.applyGain (buffer, buffer.getNumSamples());
+    value.applyGain (buffer, buffer.getNumSamples());
 }

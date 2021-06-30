@@ -2,7 +2,7 @@
 class LFOProcessor final : public InternalProcessor
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     LFOProcessor();
 
     //==============================================================================

@@ -195,7 +195,7 @@ protected:
     sp_nodiscard std::unique_ptr<AudioParameterBool> createBypassParameter() const;
 
     /** */
-    sp_nodiscard AudioProcessorValueTreeState::ParameterLayout createDefaultParameterLayout();
+    sp_nodiscard AudioProcessorValueTreeState::ParameterLayout createDefaultParameterLayout (bool addBypassParam = true);
 
 private:
     //==============================================================================
@@ -214,7 +214,7 @@ private:
 class DummyProcessor : public InternalProcessor
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     DummyProcessor() = default;
 
     //==============================================================================
