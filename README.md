@@ -6,9 +6,11 @@ An assortment of modules that make a great addition to your JUCE app and plugin 
 
 The current license is ISC.
 
+Mind you, I'd rather something that requires you to not hide away and privately modify the code. And I'd rather issues and concerns be brought directly here.
+
 # Library Goal
 
-The philosophy is to open up as much code as possible and hope for some contributions. There's no secret sauce here, and limited sorcery.
+The philosophy is to open up as much code as possible and create tiny community surrounding the features. There's no secret sauce here, and limited sorcery.
 
 I don't care to give myself or others more mental overhead - just drop this stuff in and be on your way. Dealing with vastly different coding styles, different architectures, different design patterns, and whatever else is **exhausting**. So, this repository attempts to make it all fairly consistent with the same integration strategy.
 
