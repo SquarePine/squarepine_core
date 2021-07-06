@@ -11,18 +11,23 @@ public:
 
     String getText (float v, int maximumStringLength) const override
     {
-        if (maximumStringLength <= 1)
+        // we will need at least 6 characters to show 3 digits + "% L" or "% R"
+        if (maximumStringLength <= 6)
             return getGeneralPanPosition();
-
-        const auto doubleValue = (double) v;
+        
+        const auto range = getNormalisableRange().getRange();
+        const auto value = jmap (v, 0.0f, 1.0f, range.getStart(), range.getEnd());
         String l = "Centre";
+        
+        if (approximatelyEqual (value, centre))
+            return l;
 
-        if (doubleValue < centre)
-            l = String (doubleValue * 100.0, 0) + "% L";
-        else if (doubleValue > centre)
-            l = String (doubleValue * 100.0, 0) + "% R";
+        if (value < centre)
+            l = String (abs(static_cast<int>(value * 100.0f))).substring (0, maximumStringLength - 3) + "% L";
+        else if (value > centre)
+            l = String (abs(static_cast<int>(value * 100.0f))).substring (0, maximumStringLength - 3) + "% R";
 
-        return l.substring (0, maximumStringLength);
+        return l;
     }
 
 private:
@@ -30,7 +35,7 @@ private:
     {
         const auto v = get();
 
-        if (v == centre)        return "C";
+        if (approximatelyEqual (v, centre))        return "C";
         else if (v > centre)    return "R";
 
         return "L";
