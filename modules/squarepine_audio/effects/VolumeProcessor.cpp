@@ -5,11 +5,21 @@ VolumeProcessor::VolumeProcessor() :
 
     auto vp = std::make_unique<AudioParameterFloat> (getIdentifier().toString(), getName(),
                                                      NormalisableRange<float> (0.0f, maximumVolume),
-                                                     1.0f, getName(), AudioProcessorParameter::outputGain);
+                                                     1.0f, getName(), AudioProcessorParameter::outputGain,
+                                                     [] (float value, int) -> String
+                                                     {
+                                                        if (approximatelyEqual (value, 1.0f))
+                                                            return "0 dB";
+
+                                                        return Decibels::toString (Decibels::gainToDecibels (value));
+                                                     });
+
     volumeParameter = vp.get();
     volumeParameter->addListener (this);
 
     layout.add (std::move (vp));
+
+    DBG (volumeParameter->getCurrentValueAsText());
 
     setVolume (getVolume());
 
