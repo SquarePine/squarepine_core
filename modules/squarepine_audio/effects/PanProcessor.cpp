@@ -3,7 +3,9 @@ class PanProcessor::PanParameter final : public AudioParameterFloat
 {
 public:
     PanParameter() :
-        AudioParameterFloat ("pan", TRANS ("Pan"), fullLeft, fullRight, centre)
+        AudioParameterFloat ("pan", TRANS ("Pan"),
+                             { fullLeft, fullRight, 0.01f },
+                             centre)
     {
     }
 
@@ -11,29 +13,36 @@ public:
 
     String getText (float v, int maximumStringLength) const override
     {
-        if (maximumStringLength <= 1)
-            return getGeneralPanPosition();
+        if (maximumStringLength <= 6)
+            return getGeneralPanPosition().substring (0, maximumStringLength);
 
-        const auto doubleValue = (double) v;
-        String l = "Centre";
+        v = convertFrom0to1 (v);
 
-        if (doubleValue < centre)
-            l = String (doubleValue * 100.0, 0) + "% L";
-        else if (doubleValue > centre)
-            l = String (doubleValue * 100.0, 0) + "% R";
+        auto createSnappedValueString = [] (float value, StringRef labelName)
+        {
+            const auto vr = roundToIntAccurate (std::abs (value) * 100.0f);
+            return String (vr) + "% " + labelName;
+        };
+
+        auto l = String ("Centre");
+
+        if (v < centre)         l = createSnappedValueString (v, "L");
+        else if (v > centre)    l = createSnappedValueString (v, "R");
 
         return l.substring (0, maximumStringLength);
     }
 
 private:
+    static String getGeneralPanPosition (float v)
+    {
+        if (v < centre)         return "L";
+        else if (v > centre)    return "R";
+        else                    return "C";
+    }
+
     String getGeneralPanPosition() const
     {
-        const auto v = get();
-
-        if (v == centre)        return "C";
-        else if (v > centre)    return "R";
-
-        return "L";
+        return getGeneralPanPosition (convertFrom0to1 (get()));
     }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PanParameter)

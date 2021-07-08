@@ -9,7 +9,9 @@ public:
     ~PanProcessor() override;
 
     //==============================================================================
-    /** Change the pan.
+    /** Changes the pan.
+
+        This will be clamped to fullLeft and fullRight.
 
         @param newPan New pan amount.
     */
@@ -18,14 +20,6 @@ public:
     /** @returns the current pan */
     float getPan() const noexcept;
 
-    //==============================================================================
-    /** Change the panning rule. */
-    void setPannerRule (dsp::PannerRule newRule);
-
-    /** @returns the current panning rule. */
-    dsp::PannerRule getPannerRule() const noexcept;
-
-    //==============================================================================
     /** Full left. */
     static constexpr auto fullLeft = -1.0f;
 
@@ -34,6 +28,13 @@ public:
 
     /** Full right. */
     static constexpr auto fullRight = 1.0f;
+
+    //==============================================================================
+    /** Change the panning rule. */
+    void setPannerRule (dsp::PannerRule newRule);
+
+    /** @returns the current panning rule. */
+    dsp::PannerRule getPannerRule() const noexcept;
 
     /** The default panning rule. */
     static constexpr auto defaultPannerRule = dsp::PannerRule::squareRoot3dB;
