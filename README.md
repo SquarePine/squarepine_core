@@ -28,6 +28,6 @@ There's no secret sauce here, and limited to no sorcery.
 
 We don't care to give ourselves or others more mental overhead - just drop this stuff in and be on your way.
 
-With that, we find that dealing with vastly different coding styles, different architectures, different design patterns, and whatever else, to be **exhausting**. So, this repository attempts to make it all fairly consistent with the same integration strategy (ie: following the JUCE module format).
+With that, we find that dealing with vastly different coding styles, different architectures, different design patterns, and whatever else, to be **exhausting**. So, this repository attempts to make it all fairly consistent, all the while using the same integration strategy (ie: following the JUCE module format).
 
 If you get snagged by anything then let's openly have a look. Got suggestions? Let's have a look. Just make a GitHub Issue, a Pull Request, whatever works. All that we ask is that you try to get on board with the coding standards as best as possible.
