@@ -57,7 +57,7 @@ namespace sp
     #include "effects/SimpleDistortionProcessor.cpp"
     #include "effects/SimpleEQProcessor.cpp"
     #include "effects/StereoWidthProcessor.cpp"
-    #include "effects/VolumeProcessor.cpp"
+    #include "effects/GainProcessor.cpp"
     #include "graphics/GraphObserver.cpp"
     #include "graphics/Meter.cpp"
     #include "graphics/ProgramAudioProcessorEditor.cpp"

@@ -136,7 +136,7 @@ void InternalAudioPluginFormat::addInternalPluginDescriptions()
     CreationHelpers::addPlugin<PolarityInversionProcessor> (pluginCreationMap, descriptions);
     CreationHelpers::addPlugin<SimpleDistortionProcessor> (pluginCreationMap, descriptions);
     CreationHelpers::addPlugin<StereoWidthProcessor> (pluginCreationMap, descriptions);
-    CreationHelpers::addPlugin<VolumeProcessor> (pluginCreationMap, descriptions);
+    CreationHelpers::addPlugin<GainProcessor> (pluginCreationMap, descriptions);
 
     //Wrappers:
     CreationHelpers::addPlugin<AudioSourceProcessor> (pluginCreationMap, descriptions);
