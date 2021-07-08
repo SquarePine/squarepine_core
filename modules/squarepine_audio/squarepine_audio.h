@@ -135,7 +135,7 @@ namespace sp
     #include "effects/SimpleDistortionProcessor.h"
     #include "effects/SimpleEQProcessor.h"
     #include "effects/StereoWidthProcessor.h"
-    #include "effects/VolumeProcessor.h"
+    #include "effects/GainProcessor.h"
     #include "graphics/GraphObserver.h"
     #include "graphics/Meter.h"
     #include "graphics/ProgramAudioProcessorEditor.h"

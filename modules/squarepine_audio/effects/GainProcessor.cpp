@@ -1,11 +1,11 @@
-VolumeProcessor::VolumeProcessor() :
+GainProcessor::GainProcessor (NormalisableRange<float> gainRange) :
     InternalProcessor (false)
 {
     auto layout = createDefaultParameterLayout();
 
     auto vp = std::make_unique<AudioParameterFloat> (getIdentifier().toString(), getName(),
-                                                     NormalisableRange<float> (0.0f, maximumVolume),
-                                                     1.0f, getName(), AudioProcessorParameter::outputGain,
+                                                     gainRange, 1.0f, getName(),
+                                                     AudioProcessorParameter::outputGain,
                                                      [] (float value, int) -> String
                                                      {
                                                         if (approximatelyEqual (value, 1.0f))
@@ -14,46 +14,57 @@ VolumeProcessor::VolumeProcessor() :
                                                         return Decibels::toString (Decibels::gainToDecibels (value));
                                                      });
 
-    volumeParameter = vp.get();
-    volumeParameter->addListener (this);
+    gainParameter = vp.get();
+    gainParameter->addListener (this);
 
     layout.add (std::move (vp));
 
-    DBG (volumeParameter->getCurrentValueAsText());
-
-    setVolume (getVolume());
+    setGain (getGain());
 
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 }
 
 //==============================================================================
-void VolumeProcessor::setVolume (float v)
+void GainProcessor::setGain (float v)
 {
-    v = std::clamp (v, 0.0f, maximumVolume);
-    volumeParameter->operator= (v);
+    v = std::clamp (v, getMinimumGain(), getMaximumGain());
+    gainParameter->operator= (v);
 }
 
-float VolumeProcessor::getVolume() const noexcept
+float GainProcessor::getGain() const noexcept
 {
-    return volumeParameter->get();
+    jassert (gainParameter != nullptr);
+    return gainParameter->get();
+}
+
+float GainProcessor::getMinimumGain() const noexcept
+{
+    jassert (gainParameter != nullptr);
+    return gainParameter->range.start;
+}
+
+float GainProcessor::getMaximumGain() const noexcept
+{
+    jassert (gainParameter != nullptr);
+    return gainParameter->range.end;
 }
 
 //==============================================================================
-void VolumeProcessor::parameterValueChanged (int, float newValue)
+void GainProcessor::parameterValueChanged (int, float newValue)
 {
-    newValue = getVolume(); // Easier to do this than to use the normalised value...
+    newValue = getGain();
 
     const ScopedLock sl (getCallbackLock());
     floatGain.setTargetValue (newValue);
     doubleGain.setTargetValue ((double) newValue);
 }
 
-void VolumeProcessor::parameterGestureChanged (int, bool)
+void GainProcessor::parameterGestureChanged (int, bool)
 {
 }
 
 //==============================================================================
-void VolumeProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void GainProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     setRateAndBufferSizeDetails (sampleRate, samplesPerBlock);
 
@@ -63,19 +74,19 @@ void VolumeProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 }
 
 //==============================================================================
-void VolumeProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
+void GainProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
     process (buffer, floatGain);
 }
 
-void VolumeProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer&)
+void GainProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer&)
 {
     process (buffer, doubleGain);
 }
 
 template<typename FloatType>
-void VolumeProcessor::process (juce::AudioBuffer<FloatType>& buffer, 
-                               LinearSmoothedValue<FloatType>& value)
+void GainProcessor::process (juce::AudioBuffer<FloatType>& buffer,
+                             LinearSmoothedValue<FloatType>& value)
 {
     if (isBypassed())
         return;
