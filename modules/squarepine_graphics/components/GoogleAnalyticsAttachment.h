@@ -1,3 +1,5 @@
+#if SQUAREPINE_USE_GOOGLE_ANALYTICS
+
 /** A simple Google Analytics attachment that fires off an event
     when a button is clicked.
 
@@ -54,3 +56,5 @@ private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GoogleAnalyticsAttachment)
 };
+
+#endif // SQUAREPINE_USE_GOOGLE_ANALYTICS

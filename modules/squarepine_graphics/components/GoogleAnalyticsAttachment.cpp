@@ -1,3 +1,5 @@
+#if SQUAREPINE_USE_GOOGLE_ANALYTICS
+
 GoogleAnalyticsAttachment::GoogleAnalyticsAttachment (const String& t, const String& c, const String& a, const String& l, int v) :
     id (t.trim()),
     category (c.trim()),
@@ -42,3 +44,5 @@ void GoogleAnalyticsAttachment::buttonClicked (Button* button)
     if (shouldAutomaticallyLabel)
         label = String();
 }
+
+#endif // SQUAREPINE_USE_GOOGLE_ANALYTICS
