@@ -1,11 +1,18 @@
 VolumeProcessor::VolumeProcessor() :
+    VolumeProcessor (NormalisableRange<float> (0.0f, maximumVolume))
+{}
+
+VolumeProcessor::VolumeProcessor (NormalisableRange<float> volumeRange) :
     InternalProcessor (false)
 {
     auto layout = createDefaultParameterLayout();
 
-    auto vp = std::make_unique<AudioParameterFloat> (getIdentifier().toString(), getName(),
-                                                     NormalisableRange<float> (0.0f, maximumVolume),
-                                                     1.0f, getName(), AudioProcessorParameter::outputGain,
+    auto vp = std::make_unique<AudioParameterFloat> (getIdentifier().toString(),
+                                                     getName(),
+                                                     volumeRange,
+                                                     1.0f,
+                                                     getName(),
+                                                     AudioProcessorParameter::outputGain,
                                                      [] (float value, int) -> String
                                                      {
                                                         if (approximatelyEqual (value, 1.0f))

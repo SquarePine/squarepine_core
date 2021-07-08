@@ -3,9 +3,10 @@ class VolumeProcessor final : public InternalProcessor,
                               public AudioProcessorParameter::Listener
 {
 public:
-    /** Constructor. */
+    /** Constructors. */
     VolumeProcessor();
-
+    VolumeProcessor (NormalisableRange<float> range);
+    
     //==============================================================================
     /** Changes the volume.
 
