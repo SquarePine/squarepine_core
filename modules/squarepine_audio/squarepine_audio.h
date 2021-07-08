@@ -39,7 +39,7 @@
 #endif
 
 /** Config: SQUAREPINE_USE_AUFTAKT
-    Enable this to use zplane's auftakt.
+    Enable this to help you use zplane's Auftakt.
 
     Only available with MSVC and macOS.
 */
@@ -54,7 +54,7 @@
     Only available with MSVC (not MinGW) and macOS (Intel desktop).
 */
 #ifndef SQUAREPINE_USE_REX_AUDIO_FORMAT
-    #define SQUAREPINE_USE_REX_AUDIO_FORMAT 1
+    #define SQUAREPINE_USE_REX_AUDIO_FORMAT 0
 #endif
 
 //==============================================================================
