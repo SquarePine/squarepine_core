@@ -18,9 +18,9 @@ public:
 
         v = convertFrom0to1 (v);
 
-        auto createSnappedValueString = [] (float value, StringRef labelName)
+        auto createSnappedValueString = [] (float valueToSnap, StringRef labelName)
         {
-            const auto vr = roundToIntAccurate (std::abs (value) * 100.0f);
+            const auto vr = roundToIntAccurate (std::abs (valueToSnap) * 100.0f);
             return String (vr) + "% " + labelName;
         };
 
