@@ -1,4 +1,10 @@
-/** Use this processor to apply a basic EQ to all incoming audio channels. */
+/** Use this processor to apply a basic EQ to all incoming audio channels.
+
+    By default this contains 5 bands, in this order:
+    - High-pass
+    - 3 centred band-passes
+    - Low-pass
+*/
 class SimpleEQProcessor final : public InternalProcessor
 {
 public:
