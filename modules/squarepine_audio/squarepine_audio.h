@@ -109,6 +109,7 @@ namespace sp
     #include "core/EffectProcessor.h"
     #include "core/EffectProcessorFactory.h"
     #include "core/EffectProcessorChain.h"
+    #include "core/LastKnownPluginDetails.h"
     #include "core/MetadataUtilities.h"
     #include "core/MIDIChannel.h"
     #include "codecs/REXAudioFormat.h"
