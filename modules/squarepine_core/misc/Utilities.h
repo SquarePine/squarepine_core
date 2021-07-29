@@ -26,7 +26,7 @@ private:
 };
 
 //==============================================================================
-/** This is basic Timer wrapper where the provided callback function will be called.
+/** This is a basic Timer wrapper where the provided callback function will be called.
 
     Simply put, this prevents having to constantly derive a Timer to use one!
 */
