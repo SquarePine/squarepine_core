@@ -37,7 +37,7 @@ protected:
         You should always attempt doing so in the quickest fashion
         possible for better performance!
     */
-    virtual void performAtIndex (int index) = 0;
+    virtual void performAtIndex (int index, bool& needsToBreak) = 0;
 
 private:
     //==============================================================================
@@ -51,8 +51,8 @@ private:
     friend class InternalPerform;
 
     //==============================================================================
-    void pairedPerform (int index);
-    void quadPerform (int index);
+    void pairedPerform (int index, bool& needsToBreak);
+    void quadPerform (int index, bool& needsToBreak);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArrayIterationUnroller)
