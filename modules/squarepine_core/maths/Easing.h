@@ -1,4 +1,3 @@
-
 #if JUCE_CXX14_IS_AVAILABLE
     #define inlineconstexpr14 constexpr
 #else
@@ -58,11 +57,11 @@ namespace ease
             /** @returns */
             constexpr double quad (double weight) noexcept  { return 1.0 - square (1.0 - weight); }
             /** @returns */
-            constexpr double cubic (double weight)          { return 1.0 - cube (1.0 - weight); }
+            constexpr double cubic (double weight) noexcept { return 1.0 - cube (1.0 - weight); }
             /** @returns */
-            constexpr double quart (double weight)          { return 1.0 - biquadrate (1.0 - weight); }
+            constexpr double quart (double weight) noexcept { return 1.0 - biquadrate (1.0 - weight); }
             /** @returns */
-            constexpr double quint (double weight)          { return 1.0 - sursolid (1.0 - weight); }
+            constexpr double quint (double weight) noexcept { return 1.0 - sursolid (1.0 - weight); }
             /** @returns */
             inline double expo (double weight)              { return approximatelyEqual (weight, 1.0) ? 1.0 : 1.0 - std::pow (2.0, -10.0 * weight); }
             /** @returns */
