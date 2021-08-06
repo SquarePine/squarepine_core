@@ -15,11 +15,6 @@ GainProcessor::GainProcessor (NormalisableRange<float> gainRange) :
 {
     auto layout = createDefaultParameterLayout();
 
-    auto vp = std::make_unique<AudioParameterFloat> (getIdentifier().toString(), getName(), gainRange, 1.0f,
-                                                     AudioParameterFloatAttributes ()
-                                                        .withCategory (AudioParameterFloatAttributes::Category::outputGain)
-                                                        .withLabel (getName())
-                                                        .withStringFromValueFunction (toStringFromGainValue));
 
     gainParameter = vp.get();
     gainParameter->addListener (this);
