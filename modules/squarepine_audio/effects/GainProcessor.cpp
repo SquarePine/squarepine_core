@@ -35,7 +35,8 @@ GainProcessor::GainProcessor (NormalisableRange<float> gainRange) :
 void GainProcessor::setGain (float v)
 {
     v = std::clamp (v, getMinimumGain(), getMaximumGain());
-    gainParameter->operator= (v);
+    
+    gainParameter->juce::AudioParameterFloat::operator= (v);
 }
 
 float GainProcessor::getGain() const noexcept
