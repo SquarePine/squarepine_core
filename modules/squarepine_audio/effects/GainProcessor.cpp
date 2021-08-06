@@ -3,16 +3,16 @@ GainProcessor::GainProcessor (NormalisableRange<float> gainRange) :
 {
     auto layout = createDefaultParameterLayout();
 
-    auto vp = std::make_unique<AudioParameterFloat> (getIdentifier().toString(), getName(),
-                                                     gainRange, 1.0f, getName(),
-                                                     AudioProcessorParameter::outputGain,
-                                                     [] (float value, int) -> String
-                                                     {
-                                                        if (approximatelyEqual (value, 1.0f))
-                                                            return "0 dB";
+    auto vp = std::make_unique<GainParameter> (getIdentifier().toString(), getName(),
+                                               gainRange, 1.0f, getName(),
+                                               AudioProcessorParameter::outputGain,
+                                               [] (float value, int) -> String
+                                               {
+                                                    if (approximatelyEqual (value, 1.0f))
+                                                        return "0 dB";
 
-                                                        return Decibels::toString (Decibels::gainToDecibels (value));
-                                                     });
+                                                    return Decibels::toString (Decibels::gainToDecibels (value));
+                                               });
 
     gainParameter = vp.get();
     gainParameter->addListener (this);
@@ -28,7 +28,8 @@ GainProcessor::GainProcessor (NormalisableRange<float> gainRange) :
 void GainProcessor::setGain (float v)
 {
     v = std::clamp (v, getMinimumGain(), getMaximumGain());
-    gainParameter->operator= (v);
+    
+    gainParameter->juce::AudioParameterFloat::operator= (v);
 }
 
 float GainProcessor::getGain() const noexcept

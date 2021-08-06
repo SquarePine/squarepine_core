@@ -68,8 +68,35 @@ public:
     void parameterGestureChanged (int, bool) override;
 
 private:
+    
+    class GainParameter : public AudioParameterFloat
+    {
+    public:
+        GainParameter (const String& parameterID,
+                       const String& parameterName,
+                       NormalisableRange<float> normalisableRange,
+                       float defaultValue,
+                       const String& parameterLabel = String(),
+                       Category parameterCategory = AudioProcessorParameter::genericParameter,
+                       std::function<String (float value, int maximumStringLength)> stringFromValue = nullptr,
+                       std::function<float (const String& text)> valueFromString = nullptr) :
+                       AudioParameterFloat (parameterID,
+                                            parameterName,
+                                            normalisableRange,
+                                            defaultValue,
+                                            parameterLabel,
+                                            parameterCategory,
+                                            stringFromValue,
+                                            valueFromString) {}
+    protected:
+        void valueChanged (float newValue) override
+        {
+            sendValueChangedMessageToListeners (newValue);
+        }
+    };
+    
     //==============================================================================
-    AudioParameterFloat* gainParameter = nullptr;
+    GainParameter* gainParameter = nullptr;
 
     LinearSmoothedValue<float> floatGain { 1.0f };
     LinearSmoothedValue<double> doubleGain { 1.0 };
