@@ -19,7 +19,8 @@ public:
 
         @see defaultMaximumGainLinear
     */
-    GainProcessor (NormalisableRange<float> gainRange = { 0.0f, defaultMaximumGainLinear });
+    GainProcessor (const String& parameterName = "Gain",
+                   NormalisableRange<float> gainRange = { 0.0f, defaultMaximumGainLinear });
 
     //==============================================================================
     /** Changes the gain.
@@ -51,7 +52,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return TRANS ("Gain"); }
+    const String getName() const override { return TRANS (name); }
     /** @internal */
     Identifier getIdentifier() const override { return "gain"; }
     /** @internal */
@@ -97,7 +98,7 @@ private:
     
     //==============================================================================
     GainParameter* gainParameter = nullptr;
-
+    String name;
     LinearSmoothedValue<float> floatGain { 1.0f };
     LinearSmoothedValue<double> doubleGain { 1.0 };
 

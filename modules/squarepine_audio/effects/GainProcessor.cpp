@@ -1,5 +1,7 @@
-GainProcessor::GainProcessor (NormalisableRange<float> gainRange) :
-    InternalProcessor (false)
+GainProcessor::GainProcessor (const String& parameterName,
+                              NormalisableRange<float> gainRange) :
+    InternalProcessor (false),
+    name (parameterName)
 {
     auto layout = createDefaultParameterLayout();
 
