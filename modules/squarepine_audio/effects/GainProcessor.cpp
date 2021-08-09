@@ -5,7 +5,7 @@ GainProcessor::GainProcessor (const String& parameterName,
 {
     auto layout = createDefaultParameterLayout();
 
-    auto vp = std::make_unique<GainParameter> (getIdentifier().toString(), getName(),
+    auto vp = std::make_unique<NotifiableAudioParameterFloat> (getIdentifier().toString(), getName(),
                                                gainRange, 1.0f, getName(),
                                                AudioProcessorParameter::outputGain,
                                                [] (float value, int) -> String

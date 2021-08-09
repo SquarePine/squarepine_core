@@ -122,6 +122,7 @@ namespace sp
     #include "dsp/EnvelopeFollower.h"
     #include "dsp/LFO.h"
     #include "dsp/PositionedImpulseResponse.h"
+    #include "effects/NotifiableAudioParameterFloat.h"
     #include "effects/ADSRProcessor.h"
     #include "effects/BitCrusherProcessor.h"
     #include "effects/ChorusProcessor.h"
