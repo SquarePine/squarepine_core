@@ -89,6 +89,13 @@ public:
     */
     Image loadFrom (const void* rawData, size_t numBytesOfData);
 
+    //==============================================================================
+    /** @returns an Image loaded from Base64 data, or an invalid Image on failure. */
+    Image fromBase64 (const String& base64Data);
+
+    /** @returns a base64 string representing the image's data, or an empty string on failure. */
+    String toBase64 (const Image&);
+
 private:
     //==============================================================================
     OwnedArray<ImageFileFormat> knownFormats;
