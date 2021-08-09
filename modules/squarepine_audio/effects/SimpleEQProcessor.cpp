@@ -3,9 +3,9 @@ class SimpleEQProcessor::InternalFilter final : public AudioProcessorParameter::
 {
 public:
     InternalFilter (FilterType filterType,
-                    AudioParameterFloat* g,
-                    AudioParameterFloat* c,
-                    AudioParameterFloat* r) :
+                    NotifiableAudioParameterFloat* g,
+                    NotifiableAudioParameterFloat* c,
+                    NotifiableAudioParameterFloat* r) :
         type (filterType),
         gain (g),
         cutoff (c),
@@ -68,9 +68,9 @@ public:
     ProcessorDuplicator<double> doubleProcessor;
 
     // NB: These are owned by the parent EQ processor.
-    AudioParameterFloat* gain = nullptr;
-    AudioParameterFloat* cutoff = nullptr;
-    AudioParameterFloat* resonance = nullptr;
+    NotifiableAudioParameterFloat* gain = nullptr;
+    NotifiableAudioParameterFloat* cutoff = nullptr;
+    NotifiableAudioParameterFloat* resonance = nullptr;
 
 private:
     //==============================================================================
@@ -183,17 +183,23 @@ AudioProcessorValueTreeState::ParameterLayout SimpleEQProcessor::createParameter
 
     for (const auto& c : configs)
     {
-        auto gain = std::make_unique<AudioParameterFloat> (String ("gainXYZ").replace ("XYZ", c.name),
-                                                           TRANS ("Gain (XYZ)").replace ("XYZ", TRANS (c.name)),
-                                                           0.0f, MathConstants<float>::pi, 1.0f);
+        auto gain = std::make_unique<NotifiableAudioParameterFloat> (String ("gainXYZ").replace ("XYZ", c.name),
+                                                                     TRANS ("Gain (XYZ)").replace ("XYZ", TRANS (c.name)),
+                                                                     0.0f,
+                                                                     MathConstants<float>::pi,
+                                                                     1.0f);
 
-        auto cutoff = std::make_unique<AudioParameterFloat> (String ("cutoffXYZ").replace ("XYZ", c.name),
-                                                             TRANS ("Cutoff (XYZ)").replace ("XYZ", TRANS (c.name)),
-                                                             20.0f, 20000.0f, (float) MidiMessage::getMidiNoteInHertz (c.note));
+        auto cutoff = std::make_unique<NotifiableAudioParameterFloat> (String ("cutoffXYZ").replace ("XYZ", c.name),
+                                                                       TRANS ("Cutoff (XYZ)").replace ("XYZ", TRANS (c.name)),
+                                                                       20.0f,
+                                                                       20000.0f,
+                                                                       (float) MidiMessage::getMidiNoteInHertz (c.note));
 
-        auto resonance = std::make_unique<AudioParameterFloat> (String ("qXYZ").replace ("XYZ", c.name),
-                                                                TRANS ("Q (XYZ)").replace ("XYZ", TRANS (c.name)),
-                                                                0.00001f, 10.0f, 1.0f / MathConstants<float>::sqrt2);
+        auto resonance = std::make_unique<NotifiableAudioParameterFloat> (String ("qXYZ").replace ("XYZ", c.name),
+                                                                          TRANS ("Q (XYZ)").replace ("XYZ", TRANS (c.name)),
+                                                                          0.00001f,
+                                                                          10.0f,
+                                                                          1.0f / MathConstants<float>::sqrt2);
 
         filters.add (new InternalFilter (c.type, gain.get(), cutoff.get(), resonance.get()));
 
