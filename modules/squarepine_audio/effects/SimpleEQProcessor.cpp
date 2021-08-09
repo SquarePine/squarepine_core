@@ -95,7 +95,7 @@ private:
             break;
         };
 
-        processor.state = *coeffs;
+        *processor.state = *coeffs;
     }
 
     template<typename SampleType>
