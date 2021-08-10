@@ -5,16 +5,20 @@ GainProcessor::GainProcessor (const String& parameterName,
 {
     auto layout = createDefaultParameterLayout();
 
-    auto vp = std::make_unique<NotifiableAudioParameterFloat> (getIdentifier().toString(), getName(),
-                                               gainRange, 1.0f, getName(),
-                                               AudioProcessorParameter::outputGain,
-                                               [] (float value, int) -> String
-                                               {
-                                                    if (approximatelyEqual (value, 1.0f))
-                                                        return "0 dB";
+    auto vp = std::make_unique<NotifiableAudioParameterFloat> (getIdentifier().toString(),
+                                                               getName(),
+                                                               gainRange,
+                                                               1.0f,
+                                                               true, // isAutomatable
+                                                               getName(),
+                                                               AudioProcessorParameter::outputGain,
+                                                               [] (float value, int) -> String
+                                                               {
+                                                                    if (approximatelyEqual (value, 1.0f))
+                                                                        return "0 dB";
 
-                                                    return Decibels::toString (Decibels::gainToDecibels (value));
-                                               });
+                                                                    return Decibels::toString (Decibels::gainToDecibels (value));
+                                                               });
 
     gainParameter = vp.get();
     gainParameter->addListener (this);
