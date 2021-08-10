@@ -5,6 +5,7 @@ public:
                                    const String& parameterName,
                                    NormalisableRange<float> normalisableRange,
                                    float defaultValue,
+                                   bool automate,
                                    const String& parameterLabel = String(),
                                    Category parameterCategory = AudioProcessorParameter::genericParameter,
                                    std::function<String (float value, int maximumStringLength)> stringFromValue = nullptr,
@@ -16,21 +17,30 @@ public:
                                                         parameterLabel,
                                                         parameterCategory,
                                                         stringFromValue,
-                                                        valueFromString) {}
+                                                        valueFromString),
+                                    automatable (automate) {}
     
-    NotifiableAudioParameterFloat   (String parameterID,
+    
+    NotifiableAudioParameterFloat  (String parameterID,
                                     String parameterName,
                                     float minValue,
                                     float maxValue,
-                                    float defaultValue) :
+                                    float defaultValue,
+                                    bool automate) :
                                     AudioParameterFloat (parameterID,
                                                          parameterName,
                                                          minValue,
                                                          maxValue,
-                                                         defaultValue) {}
+                                                         defaultValue),
+                                    automatable (automate) {}
+    
+    bool isAutomatable() const override { return automatable; }
+    
 protected:
     void valueChanged (float newValue) override
     {
         sendValueChangedMessageToListeners (newValue);
     }
+private:
+    const bool automatable;
 };

@@ -185,19 +185,22 @@ AudioProcessorValueTreeState::ParameterLayout SimpleEQProcessor::createParameter
                                                                      TRANS ("Gain (XYZ)").replace ("XYZ", TRANS (c.name)),
                                                                      0.0f,
                                                                      MathConstants<float>::pi,
-                                                                     1.0f);
+                                                                     1.0f,
+                                                                     true);
 
         auto cutoff = std::make_unique<NotifiableAudioParameterFloat> (String ("cutoffXYZ").replace ("XYZ", c.name),
                                                                        TRANS ("Cutoff (XYZ)").replace ("XYZ", TRANS (c.name)),
                                                                        20.0f,
                                                                        20000.0f,
-                                                                       (float) MidiMessage::getMidiNoteInHertz (c.note));
+                                                                       (float) MidiMessage::getMidiNoteInHertz (c.note),
+                                                                       false);
 
         auto resonance = std::make_unique<NotifiableAudioParameterFloat> (String ("qXYZ").replace ("XYZ", c.name),
                                                                           TRANS ("Q (XYZ)").replace ("XYZ", TRANS (c.name)),
                                                                           0.00001f,
                                                                           10.0f,
-                                                                          1.0f / MathConstants<float>::sqrt2);
+                                                                          1.0f / MathConstants<float>::sqrt2,
+                                                                          false);
 
         filters.add (new InternalFilter (c.type, gain.get(), cutoff.get(), resonance.get()));
 
