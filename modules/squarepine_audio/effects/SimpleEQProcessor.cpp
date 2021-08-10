@@ -181,12 +181,21 @@ AudioProcessorValueTreeState::ParameterLayout SimpleEQProcessor::createParameter
 
     for (const auto& c : configs)
     {
+        const NormalisableRange<float> gainRange = { 0.00001f, 2.0f };
         auto gain = std::make_unique<NotifiableAudioParameterFloat> (String ("gainXYZ").replace ("XYZ", c.name),
                                                                      TRANS ("Gain (XYZ)").replace ("XYZ", TRANS (c.name)),
-                                                                     0.0f,
-                                                                     MathConstants<float>::pi,
+                                                                     gainRange,
                                                                      1.0f,
-                                                                     true);
+                                                                     true,
+                                                                     getName(),
+                                                                     AudioProcessorParameter::genericParameter,
+                                                                     [] (float value, int) -> String
+                                                                     {
+                                                                          if (approximatelyEqual (value, 1.0f))
+                                                                              return "0 dB";
+
+                                                                          return Decibels::toString (Decibels::gainToDecibels (value));
+                                                                     });
 
         auto cutoff = std::make_unique<NotifiableAudioParameterFloat> (String ("cutoffXYZ").replace ("XYZ", c.name),
                                                                        TRANS ("Cutoff (XYZ)").replace ("XYZ", TRANS (c.name)),
