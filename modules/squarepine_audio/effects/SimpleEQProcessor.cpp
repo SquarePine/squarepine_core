@@ -170,9 +170,9 @@ AudioProcessorValueTreeState::ParameterLayout SimpleEQProcessor::createParameter
 
     const Config configs[] =
     {
-        { NEEDS_TRANS ("LowShelf"), FilterType::lowpass, 24 },
+        { NEEDS_TRANS ("HighShelf"), FilterType::highpass, 108 },
         { NEEDS_TRANS ("BandPass"), FilterType::bandpass, 60 },
-        { NEEDS_TRANS ("HighShelf"), FilterType::highpass, 108 }
+        { NEEDS_TRANS ("LowShelf"), FilterType::lowpass, 24 }
     };
 
     filters.ensureStorageAllocated (numElementsInArray (configs));
