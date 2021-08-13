@@ -4,12 +4,12 @@ LevelsProcessor::LevelsProcessor() :
 }
 
 //==============================================================================
-void LevelsProcessor::setMode (Mode newMode)
+void LevelsProcessor::setMode (MeteringMode newMode)
 {
     mode.store (newMode, std::memory_order_relaxed);
 }
 
-LevelsProcessor::Mode LevelsProcessor::getMode() const noexcept
+MeteringMode LevelsProcessor::getMode() const noexcept
 {
     return mode.load (std::memory_order_relaxed);
 }

@@ -168,15 +168,12 @@ namespace juce
     //==============================================================================
     /** */
     template<>
-    struct VariantConverter<LevelsProcessor::Mode>
+    struct VariantConverter<MeteringMode>
     {
         /** */
-        using Mode = LevelsProcessor::Mode;
-
+        static MeteringMode fromVar (const var& v)  { return (MeteringMode) static_cast<int> (v); }
         /** */
-        static Mode fromVar (const var& v) { return (Mode) static_cast<int> (v); }
-        /** */
-        static var toVar (Mode mode)       { return static_cast<int> (mode); }
+        static var toVar (MeteringMode mode)        { return static_cast<int> (mode); }
     };
 
     //==============================================================================

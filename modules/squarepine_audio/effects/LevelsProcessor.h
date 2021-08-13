@@ -1,3 +1,16 @@
+//==============================================================================
+/** The list of possible modes for audio level analysis.
+
+    @see LevelsProcessor, Meter
+*/
+enum class MeteringMode
+{
+    peak = 0,
+    rms,
+    midSide
+};
+
+//==============================================================================
 /** Use an instance of this within an audio callback of some kind,
     and call getChannelLevels (on the main thread) to get the
     last known audio levels.
@@ -15,19 +28,11 @@ public:
     void getChannelLevels (Array<double>& destData);
 
     //==============================================================================
-    /** The list of possible modes for audio level analysis. */
-    enum class Mode
-    {
-        peak = 0,
-        rms,
-        midSide
-    };
-
     /** Changes the mode of analysis for the audio levels. */
-    void setMode (Mode mode);
+    void setMode (MeteringMode mode);
 
     /** @returns the current mode for audio levels analysis. */
-    Mode getMode() const noexcept;
+    MeteringMode getMode() const noexcept;
 
     //==============================================================================
     /** @internal */
@@ -64,7 +69,7 @@ private:
         Array<FloatType> channels, tempBuffer;
     };
 
-    std::atomic<Mode> mode { Mode::peak };
+    std::atomic<MeteringMode> mode { MeteringMode::peak };
     ChannelDetails<float> floatChannelDetails;
     ChannelDetails<double> doubleChannelDetails;
 
@@ -87,17 +92,17 @@ private:
 
         switch (mode.load (std::memory_order_relaxed))
         {
-            case Mode::peak:
+            case MeteringMode::peak:
                 for (int i = 0; i < numChannels; ++i)
                     details.tempBuffer.add (buffer.getMagnitude (i, 0, buffer.getNumSamples()));
             break;
 
-            case Mode::rms:
+            case MeteringMode::rms:
                 for (int i = 0; i < numChannels; ++i)
                     details.tempBuffer.add (buffer.getRMSLevel (i, 0, buffer.getNumSamples()));
             break;
 
-            case Mode::midSide:
+            case MeteringMode::midSide:
                 for (int i = 0; i < numChannels; ++i)
                 {
                     const auto v = buffer.getMagnitude (i, 0, buffer.getNumSamples());
