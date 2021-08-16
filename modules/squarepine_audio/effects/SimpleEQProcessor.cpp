@@ -178,30 +178,52 @@ AudioProcessorValueTreeState::ParameterLayout SimpleEQProcessor::createParameter
     filters.ensureStorageAllocated (numElementsInArray (configs));
 
     auto layout = createDefaultParameterLayout();
-
+    const std::function<float(float, float, float)> from0To1 = [] (float start, float end, float value) -> float
+    {
+        if (value < 0.5f)
+            return (0.5f - value) / 0.5f * start;
+    
+        return (value - 0.5f) / 0.5f * end;
+    };
+    
+    const std::function<float(float, float, float)> to0To1 = [] (float start, float end, float db) -> float
+    {
+        if (db < 0.0f)
+            return (1.0f + db / start) * 0.5f;
+    
+        return (db / end) * 0.5f + 0.5f;
+    };
+    
     for (const auto& c : configs)
     {
-        const NormalisableRange<float> gainRange = { 0.00001f, 2.0f };
+        const auto minimum = c.type == FilterType::bandpass ? -25.0f : -100.0f;
+        const auto maximum = c.type == FilterType::bandpass ? 10.0f : 6.0f;
+        NormalisableRange<float> decibelRange =
+        {   minimum,
+            maximum,
+            from0To1,
+            to0To1
+        };
         auto gain = std::make_unique<NotifiableAudioParameterFloat> (String ("gainXYZ").replace ("XYZ", c.name),
                                                                      TRANS ("Gain (XYZ)").replace ("XYZ", TRANS (c.name)),
-                                                                     gainRange,
-                                                                     1.0f,
+                                                                     decibelRange,
+                                                                     0.0f, // default db
                                                                      true,
                                                                      getName(),
                                                                      AudioProcessorParameter::genericParameter,
                                                                      [] (float value, int) -> String
                                                                      {
-                                                                          if (approximatelyEqual (value, 1.0f))
+                                                                          if (approximatelyEqual (value, 0.0f))
                                                                               return "0 dB";
 
-                                                                          return Decibels::toString (Decibels::gainToDecibels (value));
+                                                                          return Decibels::toString (value);
                                                                      });
 
         auto cutoff = std::make_unique<NotifiableAudioParameterFloat> (String ("cutoffXYZ").replace ("XYZ", c.name),
                                                                        TRANS ("Cutoff (XYZ)").replace ("XYZ", TRANS (c.name)),
                                                                        20.0f,
                                                                        20000.0f,
-                                                                       (float) MidiMessage::getMidiNoteInHertz (c.note),
+                                                                       c.frequency,
                                                                        false);
 
         auto resonance = std::make_unique<NotifiableAudioParameterFloat> (String ("qXYZ").replace ("XYZ", c.name),
