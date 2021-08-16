@@ -165,14 +165,14 @@ AudioProcessorValueTreeState::ParameterLayout SimpleEQProcessor::createParameter
     {
         String name;
         FilterType type = FilterType::bandpass;
-        int note = 0;
+        float frequency = 0.0f;
     };
 
     const Config configs[] =
     {
-        { NEEDS_TRANS ("HighShelf"), FilterType::highpass, 108 },
-        { NEEDS_TRANS ("BandPass"), FilterType::bandpass, 60 },
-        { NEEDS_TRANS ("LowShelf"), FilterType::lowpass, 24 }
+        { NEEDS_TRANS ("HighShelf"), FilterType::highpass, 13000 },
+        { NEEDS_TRANS ("BandPass"), FilterType::bandpass, 1200 },
+        { NEEDS_TRANS ("LowShelf"), FilterType::lowpass, 70 }
     };
 
     filters.ensureStorageAllocated (numElementsInArray (configs));
