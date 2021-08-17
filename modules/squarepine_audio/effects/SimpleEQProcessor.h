@@ -5,7 +5,8 @@
     - 3 centred band-passes
     - Low-pass
 */
-class SimpleEQProcessor final : public InternalProcessor
+class SimpleEQProcessor final : public InternalProcessor,
+                                public AudioProcessorParameter::Listener
 {
 public:
     /** Constructor. */
@@ -28,6 +29,10 @@ public:
     /** @internal */
     void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
 
+    
+    
+    void parameterValueChanged (int, float) override;
+    void parameterGestureChanged (int, bool) override   { }
 private:
     //==============================================================================
     using FilterType = dsp::StateVariableTPTFilterType;
@@ -44,6 +49,9 @@ private:
     template<typename SampleType>
     using ProcessorDuplicator = dsp::ProcessorDuplicator<Filter<SampleType>, Coefficients<SampleType>>;
 
+    template<typename SampleType>
+    using ExponentialSmoothing = SmoothedValue<SampleType, ValueSmoothingTypes::Multiplicative>;
+    
     class InternalFilter;
     OwnedArray<InternalFilter> filters;
 

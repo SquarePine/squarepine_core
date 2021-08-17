@@ -1,5 +1,5 @@
 //==============================================================================
-class SimpleEQProcessor::InternalFilter final : public AudioProcessorParameter::Listener
+class SimpleEQProcessor::InternalFilter final
 {
 public:
     InternalFilter (FilterType filterType,
@@ -11,11 +11,11 @@ public:
         cutoff (c),
         resonance (r)
     {
-        updateParams();
+        updateCoefficients();
 
-        gain->addListener (this);
-        cutoff->addListener (this);
-        resonance->addListener (this);
+        parameters.push_back (gain);
+        parameters.push_back (cutoff);
+        parameters.push_back (resonance);
     }
 
     //==============================================================================
@@ -30,10 +30,13 @@ public:
             (uint32) jmax (0, numChannels)
         };
 
+        floatGain.reset (newSampleRate, 0.01);
+        doubleGain.reset (newSampleRate, 0.01);
+        
         floatProcessor.prepare (spec);
         doubleProcessor.prepare (spec);
 
-        updateParams();
+        updateCoefficients();
     }
 
     void reset()
@@ -44,26 +47,32 @@ public:
 
     void process (juce::AudioBuffer<float>& buffer, bool wholeProcIsBypassed)
     {
+        if (floatGain.isSmoothing())
+            updateParamsFor (floatProcessor, floatGain.skip (buffer.getNumSamples()));
+        
         process (floatProcessor, buffer, wholeProcIsBypassed);
     }
 
     void process (juce::AudioBuffer<double>& buffer, bool wholeProcIsBypassed)
     {
+        if (doubleGain.isSmoothing())
+            updateParamsFor (doubleProcessor, doubleGain.skip (buffer.getNumSamples()));
+        
         process (doubleProcessor, buffer, wholeProcIsBypassed);
     }
 
     void updateParams()
     {
-        updateParamsFor (floatProcessor);
-        updateParamsFor (doubleProcessor);
+        updateSmoothedValue (floatGain);
+        updateSmoothedValue (doubleGain);
     }
-
-    void parameterValueChanged (int, float) override    { updateParams(); }
-    void parameterGestureChanged (int, bool) override   { }
 
     //==============================================================================
     const FilterType type = FilterType::bandpass;
     double sampleRate = 44100.0;
+    ExponentialSmoothing<float> floatGain { 1.0f };
+    ExponentialSmoothing<double> doubleGain { 1.0 };
+    
     ProcessorDuplicator<float> floatProcessor;
     ProcessorDuplicator<double> doubleProcessor;
 
@@ -72,15 +81,30 @@ public:
     NotifiableAudioParameterFloat* cutoff = nullptr;
     NotifiableAudioParameterFloat* resonance = nullptr;
 
+    std::vector<NotifiableAudioParameterFloat*> parameters;
 private:
+    void updateCoefficients()
+    {
+        updateParamsFor (floatProcessor, floatGain.getCurrentValue());
+        updateParamsFor (doubleProcessor, doubleGain.getCurrentValue());
+    }
+    
     //==============================================================================
     template<typename SampleType>
-    void updateParamsFor (ProcessorDuplicator<SampleType>& processor)
+    void updateSmoothedValue (ExponentialSmoothing<SampleType>& smoothedValue)
     {
-        const auto g = (SampleType) gain->get();
+        const auto g = jmax ((SampleType)0.00001, Decibels::decibelsToGain ((SampleType) gain->get()));
+        
+        smoothedValue.setTargetValue (g);
+    }
+    
+    template<typename SampleType>
+    void updateParamsFor (ProcessorDuplicator<SampleType>& processor,
+                          SampleType currentGain)
+    {
+        const auto g = currentGain;
         const auto c = (SampleType) cutoff->get();
         const auto r = (SampleType) resonance->get();
-
         using Coeffs = Coefficients<SampleType>;
         typename Coeffs::Ptr coeffs;
 
@@ -123,6 +147,11 @@ SimpleEQProcessor::SimpleEQProcessor() :
 
 SimpleEQProcessor::~SimpleEQProcessor()
 {
+    for (auto* f : filters)
+    {
+        for (auto* p : f->parameters)
+            p->removeListener (this);
+    }
 }
 
 //==============================================================================
@@ -234,7 +263,11 @@ AudioProcessorValueTreeState::ParameterLayout SimpleEQProcessor::createParameter
                                                                           false);
 
         filters.add (new InternalFilter (c.type, gain.get(), cutoff.get(), resonance.get()));
-
+        for (auto* p : filters.getLast()->parameters)
+        {
+            p->addListener (this);
+        }
+        
         layout.add (std::move (gain));
         layout.add (std::move (cutoff));
         layout.add (std::move (resonance));
@@ -243,4 +276,9 @@ AudioProcessorValueTreeState::ParameterLayout SimpleEQProcessor::createParameter
     filters.minimiseStorageOverheads();
 
     return layout;
+}
+void SimpleEQProcessor::parameterValueChanged (int, float)
+{
+    const ScopedLock sl (getCallbackLock());
+    for (auto* f : filters) f->updateParams();
 }
