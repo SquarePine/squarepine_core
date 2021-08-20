@@ -44,6 +44,22 @@ inline AffineTransform createTranslationAndScale (float x, float y, float scale)
 }
 
 //==============================================================================
+/** @returns the magnitude of a set of coordinates. */
+template<typename ValueType>
+inline ValueType getMagnitude (ValueType x, ValueType y)
+{
+    return (ValueType) std::sqrt (square ((double) x) + square ((double) y));
+}
+
+
+/** @returns the magnitude of a point. */
+template<typename ValueType>
+inline ValueType getMagnitude (juce::Point<ValueType> p)
+{
+    return getMagnitude (p.x, p.y);
+}
+
+//==============================================================================
 /** @returns true if the given value number is odd. */
 template<typename Type>
 constexpr bool isOdd (Type value) noexcept      { return (value % 2) != 0; }
