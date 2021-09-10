@@ -588,65 +588,6 @@ void applyHueSaturationLightness (Image& img, float hueIn, float saturation, flo
 }
 
 //==============================================================================
-Image applyResize (const Image& src, int width, int height)
-{
-   #if SQUAREPINE_USE_AVIR_RESIZER
-    Image dst (src.getFormat(), width, height, true);
-
-    Image::BitmapData srcData (src, Image::BitmapData::readOnly);
-    Image::BitmapData dstData (dst, Image::BitmapData::readWrite);
-
-    auto channels = 0;
-
-    switch (src.getFormat())
-    {
-        case Image::ARGB:           channels = 4;
-        case Image::RGB:            channels = 3;
-        case Image::SingleChannel:  channels = 1;
-
-        default:
-            jassertfalse;
-            return {};
-        break;
-    };
-
-    // JUCE images may have padding at the end of each scan line.
-    // Avir expects the image data to be packed. So we need to
-    // pack and unpack the image data before and after resizing.
-    HeapBlock<uint8_t> srcPacked (src.getWidth() * src.getHeight() * channels);
-    HeapBlock<uint8_t> dstPacked (dst.getWidth() * dst.getHeight() * channels);
-
-    auto* rawSrc = srcPacked.getData();
-    auto* rawDst = dstPacked.getData();
-
-    for (int y = 0; y < src.getHeight(); y++)
-        std::memcpy (rawSrc + y * src.getWidth() * channels,
-                     srcData.getLinePointer (y),
-                     (size_t) (src.getWidth() * channels));
-
-   #if JUCE_INTEL
-    avir::CImageResizer<avir::fpclass_float4> imageResizer (8);
-    imageResizer.resizeImage (rawSrc, src.getWidth(), src.getHeight(), 0,
-                                rawDst, dst.getWidth(), dst.getHeight(), channels, 0);
-   #else
-    avir::CImageResizer<> imageResizer (8);
-    imageResizer.resizeImage (rawSrc, src.getWidth(), src.getHeight(), 0,
-                                    rawDst, dst.getWidth(), dst.getHeight(), channels, 0);
-   #endif
-
-    for (int y = 0; y < dst.getHeight(); y++)
-        std::memcpy (dstData.getLinePointer (y),
-                     rawDst + y * dst.getWidth() * channels,
-                     (size_t) (dst.getWidth() * channels));
-
-    return dst;
-   #else
-    ignoreUnused (width, height);
-
-    return src;
-   #endif //SQUAREPINE_USE_AVIR_RESIZER
-}
-//==============================================================================
 template<class T>
 void applyGradientMap (Image& img, const ColourGradient& gradient, ThreadPool* threadPool)
 {
@@ -834,13 +775,6 @@ void applyColour (Image& img, Colour c, ThreadPool* threadPool)
 }
 
 //==============================================================================
-Image applyResize (const Image& src, float factor)
-{
-    return applyResize (src,
-                        roundToInt (factor * src.getWidth()),
-                        roundToInt (factor * src.getHeight()));
-}
-
 void applyGradientMap (Image& img, const Colour c1, const Colour c2, ThreadPool* threadPool)
 {
     ColourGradient g;

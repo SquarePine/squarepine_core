@@ -21,9 +21,13 @@
 
 //==============================================================================
 /** Config: SQUAREPINE_USE_AVIR_RESIZER
+
+    A high-quality image resizer.
+
+    By default, this is enabled when building against Intel CPU systems.
 */
 #ifndef SQUAREPINE_USE_AVIR_RESIZER
-    #define SQUAREPINE_USE_AVIR_RESIZER 0
+    #define SQUAREPINE_USE_AVIR_RESIZER JUCE_INTEL
 #endif
 
 /** Config: SQUAREPINE_USE_CUESDK
@@ -36,8 +40,6 @@
 #ifndef SQUAREPINE_USE_CUESDK
     #define SQUAREPINE_USE_CUESDK 0
 #endif
-
-#undef SQUAREPINE_USE_AVIR_RESIZER // Not yet supported...
 
 //==============================================================================
 namespace sp
@@ -177,6 +179,7 @@ namespace sp
     #include "images/BMPImageFormat.h"
     #include "images/ImageEffects.h"
     #include "images/ImageFormatManager.h"
+    #include "images/Resizer.h"
     #include "images/SVGParser.h"
     #include "images/TGAImageFormat.h"
     //#include "images/WebPImageFormat.h"

@@ -64,16 +64,6 @@ void applyHueSaturationLightness (Image& img, float hue, float saturation, float
 void applyStackBlur (Image& img, int radius);
 
 //==============================================================================
-/** A very high quality image resize using a bank of sinc
-    function-based fractional delay filters.
-*/
-Image applyResize (const Image& img, int width, int height);
-
-/** A very high quality image resize using a bank of sinc
-    function-based fractional delay filters.
-*/
-Image applyResize (const Image& img, float factor);
-
 /** GradientMap a image.
     Brightness gets remapped to colour on a gradient.
 */
