@@ -1,6 +1,18 @@
 //==============================================================================
 namespace juce
 {
+    template<typename Type>
+    var fromEnum (Type value)
+    {
+        return static_cast<int> (static_cast<std::underlying_type_t<Type>> (value));
+    }
+
+    template<typename Type>
+    Type toEnum (const var& var)
+    {
+        return static_cast<Type> (static_cast<std::underlying_type_t<Type>> ((int) var));
+    }
+
     //==============================================================================
     /** */
     template<typename Type, int expectedNumElements>
