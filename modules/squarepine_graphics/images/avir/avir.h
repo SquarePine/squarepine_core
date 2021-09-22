@@ -1531,7 +1531,7 @@ public:
 template< class fptype >
 class CDSPFracFilterBankLin
 {
-	AVIR_NOCTOR( CDSPFracFilterBankLin );
+	AVIR_NOCTOR( CDSPFracFilterBankLin )
 
 public:
 	CDSPFracFilterBankLin()
@@ -2445,7 +2445,7 @@ public:
 template< class fptype, class fptypeatom >
 class CImageResizerFilterStep
 {
-	AVIR_NOCTOR( CImageResizerFilterStep );
+	AVIR_NOCTOR( CImageResizerFilterStep )
 
 public:
 	bool IsUpsample; ///< "True" if this step is an upsampling step, "false"
@@ -4378,7 +4378,7 @@ public:
 template< class fpclass = fpclass_def< float > >
 class CImageResizer
 {
-	AVIR_NOCTOR( CImageResizer );
+	AVIR_NOCTOR( CImageResizer )
 
 public:
 	/**
