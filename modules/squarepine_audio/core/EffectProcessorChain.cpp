@@ -33,7 +33,7 @@ EffectProcessor::Ptr EffectProcessorChain::insertInternal (const Type& valueOrRe
             }
             else if (insertionStyle == InsertionStyle::insert)
             {
-                plugins.insert (plugins.begin() + (size_t) destinationIndex, effect);
+                plugins.insert (plugins.begin() + (ContainerType::difference_type) destinationIndex, effect);
             }
             else
             {
