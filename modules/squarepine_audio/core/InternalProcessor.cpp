@@ -38,7 +38,7 @@ InternalProcessor::InternalProcessor (bool applyDefaultBypassParam)
     if (applyDefaultBypassParam)
     {
         bypassParameter = createBypassParameter().release();
-        addParameter (bypassParameter);
+        AudioProcessor::addParameter (bypassParameter);
     }
 
     resetBuses (*this, 2, 2);
@@ -182,7 +182,6 @@ void InternalProcessor::setStateInformation (const void* data, const int sizeInB
         }
         else
         {
-
             if (valueTree.getType() == getIdentifier())
             {
                 const ScopedLock sl (getCallbackLock());

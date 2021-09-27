@@ -23,7 +23,7 @@ private:
 SimpleDistortionProcessor::SimpleDistortionProcessor() :
     amountParam (new AmountParameter())
 {
-    addParameter (amountParam);
+    AudioProcessor::addParameter (amountParam);
 }
 
 //==============================================================================

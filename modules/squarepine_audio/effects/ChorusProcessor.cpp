@@ -6,11 +6,11 @@ ChorusProcessor::ChorusProcessor() :
     feedback (new AudioParameterFloat ("feedback", NEEDS_TRANS ("Feedback"), -1.0f, 1.0f, 0.25f)),
     mix (new AudioParameterFloat ("mix", NEEDS_TRANS ("Mix"), 0.0f, 1.0f, 1.0f))
 {
-    addParameter (rate);
-    addParameter (depth);
-    addParameter (centreDelay);
-    addParameter (feedback);
-    addParameter (mix);
+    AudioProcessor::addParameter (rate);
+    AudioProcessor::addParameter (depth);
+    AudioProcessor::addParameter (centreDelay);
+    AudioProcessor::addParameter (feedback);
+    AudioProcessor::addParameter (mix);
 
     setRate (2.5f);
     setDepth (0.5f);
