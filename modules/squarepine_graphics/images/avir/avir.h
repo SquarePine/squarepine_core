@@ -2051,7 +2051,7 @@ public:
 	 * from within the thread when the startAllWorkloads() function is called.
 	 */
 
-	virtual void addWorkload( CWorkload* const Workload )
+	virtual void addWorkload( CWorkload* const )
 	{
 	}
 

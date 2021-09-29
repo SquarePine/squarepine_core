@@ -29,10 +29,10 @@ public:
     StringArray getListOfOutputChannelNames();
 
     /** Obtain the most current list of MIDI input devices. */
-    StringArray getListOfMIDIInputDevices();
+    Array<MidiDeviceInfo> getListOfMIDIInputDevices();
 
     /** Obtain the most current list of MIDI output devices. */
-    StringArray getListOfMIDIOutputDevices();
+    Array<MidiDeviceInfo> getListOfMIDIOutputDevices();
 
     /** */
     struct DeviceInfo
@@ -83,7 +83,8 @@ private:
     ListenerList<Listener> listeners;
     String lastAPI, driverAPI;
     int numInputs = 0, lastNumInputs = 0, numOutputs = 0, lastNumOutputs = 0;
-    StringArray currentAudioInputDevices, currentAudioOutputDevices, currentMidiInputDevices, currentMidiOutputDevices;
+    StringArray currentAudioInputDevices, currentAudioOutputDevices;
+    Array<MidiDeviceInfo> currentMidiInputDevices, currentMidiOutputDevices;
     String lastDeviceChanged;
 
     enum class ChangeType
@@ -102,9 +103,15 @@ private:
     StringArray getListOfAudioDevices (bool giveMeInputDevices);
     StringArray getListOfChannelNames (bool giveMeInputDevices);
     DeviceInfo getCurrentDeviceInfo (bool giveMeInputDevices);
-    void checkForDeviceChange (const StringArray& arrayNew, StringArray& arrayOld);
-    static bool wasDeviceAdded (const StringArray& newList, const StringArray& oldList) noexcept;
+    
+    template<typename ArrayType>
+    void checkForDeviceChange (const ArrayType& arrayNew, ArrayType& arrayOld);
+    
+    template<typename ArrayType>
+    static bool wasDeviceAdded (const ArrayType& newList, const ArrayType& oldList);
+
     static String getChangedDeviceName (const StringArray& newList, const StringArray& oldList);
+    static String getChangedDeviceName (const Array<MidiDeviceInfo>& newList, const Array<MidiDeviceInfo>& oldList);
 
     //==============================================================================
     /** @internal */

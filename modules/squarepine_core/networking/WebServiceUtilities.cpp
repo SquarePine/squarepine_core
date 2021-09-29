@@ -38,7 +38,7 @@ void setContentTypeForFile (StringPairArray& h, const File& f)
     else if (f.hasFileExtension ("js"))         { setContentTypeJavascript (h); }
     else
     {
-        jassertfalse; //Unknown extension
+        jassertfalse; // Unknown extension
     }
 }
 
@@ -76,7 +76,7 @@ std::unique_ptr<WebInputStream> createEndpointStream (const URL& url,
 
     const auto formattedHeaders = networking::createUserAgentHeader() + toString (headers);
 
-    double timeSec = -1.0;
+    auto timeSec = -1.0;
 
    #if SQUAREPINE_LOG_NETWORK_CALLS
     Logger::writeToLog (String ("Performing network call with the following:") + newLine
@@ -88,10 +88,12 @@ std::unique_ptr<WebInputStream> createEndpointStream (const URL& url,
 
     {
         const ScopedTimeMeasurement stm (timeSec);
-        auto s = url.createInputStream (requestType != HTTPRequest::GET,
-                                        nullptr, nullptr, formattedHeaders,
-                                        timeoutMs, nullptr, nullptr,
-                                        10, toString (requestType));
+
+        auto s = url.createInputStream (URL::InputStreamOptions (URL::ParameterHandling::inAddress)
+                                        .withHttpRequestCmd (toString (requestType))
+                                        .withExtraHeaders (formattedHeaders)
+                                        .withNumRedirectsToFollow (10)
+                                        .withConnectionTimeoutMs (timeoutMs));
 
         if (auto stream = dynamicCastUniquePtr<WebInputStream> (std::move (s)))
         {
@@ -118,7 +120,7 @@ std::unique_ptr<WebInputStream> createEndpointStream (const URL& url,
 
     if (timeSec < 0.0 && NetworkConnectivityChecker().isConnectedToInternet())
     {
-        jassertfalse; //JUCE screwed something up here probably...
+        jassertfalse; // JUCE screwed something up here probably...
     }
     else if ((timeSec * 1000.0) >= (double) timeoutMs)
     {
@@ -138,8 +140,8 @@ std::unique_ptr<WebInputStream> createEndpointStream (const URL& url,
         }
         else
         {
-            jassertfalse; //Some kind of unexpected stream failure occurred.
-                          //If you're logging network calls, check the output window for more details.
+            jassertfalse; // Some kind of unexpected stream failure occurred.
+                          // If you're logging network calls, check the output window for more details.
         }
     }
 
