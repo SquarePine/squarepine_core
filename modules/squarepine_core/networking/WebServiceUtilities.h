@@ -8,7 +8,8 @@ enum class HTTPRequest
     DELETE,
     CONNECT,
     OPTIONS,
-    TRACE
+    TRACE,
+    PATCH
 };
 
 /** */
@@ -22,6 +23,7 @@ inline String toString (HTTPRequest type)
     else if (type == HTTPRequest::CONNECT)  return "CONNECT";
     else if (type == HTTPRequest::OPTIONS)  return "OPTIONS";
     else if (type == HTTPRequest::TRACE)    return "TRACE";
+    else if (type == HTTPRequest::PATCH)    return "PATCH";
 
     jassertfalse; //?
     return "GET";
@@ -38,6 +40,7 @@ inline HTTPRequest createHTTPRequestTypeFromString (const String& type)
     else if (type.compareIgnoreCase ("CONNECT") == 0)   return HTTPRequest::CONNECT;
     else if (type.compareIgnoreCase ("OPTIONS") == 0)   return HTTPRequest::OPTIONS;
     else if (type.compareIgnoreCase ("TRACE") == 0)     return HTTPRequest::TRACE;
+    else if (type.compareIgnoreCase ("PATCH") == 0)     return HTTPRequest::PATCH;
 
     jassertfalse; //?
     return HTTPRequest::GET;
