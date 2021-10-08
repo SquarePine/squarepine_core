@@ -1,4 +1,5 @@
 //==============================================================================
+/** */
 class PropertyComponentBase : public PropertyComponent,
                               private Value::Listener
 {
@@ -11,6 +12,7 @@ public:
 
 protected:
     //==============================================================================
+    /** @internal */
     void valueChanged (Value&) override { refresh(); }
 
     //==============================================================================
@@ -22,29 +24,32 @@ private:
 };
 
 //==============================================================================
+/** */
 class FilePropertyComponent final : public PropertyComponentBase
 {
 public:
+    /** */
     FilePropertyComponent (const Value& valueToControl, const String& propertyName,
-                           const String& title_ = "Open", const String pattern_ = "*.*") :
+                           const String& title = TRANS ("Open"), const String& pattern = "*.*") :
         PropertyComponentBase (valueToControl, propertyName),
-        title (title_),
-        pattern (pattern_)
+        chooser (title, File (valueToControl.toString()), pattern)
     {
-        addAndMakeVisible (container);
-
         container.browse.onClick = [this]
         {
-            FileChooser box (title, File (value.toString()), pattern);
+            constexpr int flags = FileBrowserComponent::openMode | FileBrowserComponent::canSelectDirectories;
 
-            if (box.browseForFileToOpen())
-                value.setValue (box.getResult().getFullPathName());
+            chooser.launchAsync (flags, [this] (const FileChooser&)
+            {
+                value.setValue (chooser.getResult().getFullPathName());
+            });
         };
 
         container.clear.onClick = [this] { value.setValue (String()); };
+        addAndMakeVisible (container);
     }
 
     //==============================================================================
+    /** @internal */
     void refresh() override { container.filename.setText (value.toString()); }
 
 private:
@@ -54,13 +59,14 @@ private:
     public:
         Container()
         {
+            filename.setReadOnly (true);
+
             addAndMakeVisible (filename);
             addAndMakeVisible (browse);
             addAndMakeVisible (clear);
-
-            filename.setReadOnly (true);
         }
 
+        //==============================================================================
         void resized() override
         {
             auto rc = getLocalBounds();
@@ -72,8 +78,7 @@ private:
 
         //==============================================================================
         TextEditor filename;
-        TextButton browse { "..." };
-        TextButton clear { "X" };
+        TextButton browse { "..." }, clear { "X" };
 
     private:
         //==============================================================================
@@ -81,17 +86,19 @@ private:
     };
 
     //==============================================================================
+    FileChooser chooser;
     Container container;
-    String title, pattern;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilePropertyComponent)
 };
 
 //==============================================================================
+/** */
 class ColourPropertyComponent final : public PropertyComponentBase
 {
 public:
+    /** */
     ColourPropertyComponent (const Value& valueToControl, const String& propertyName, bool showAlpha = false) :
         PropertyComponentBase (valueToControl, propertyName),
         container (value, showAlpha)
@@ -100,8 +107,10 @@ public:
     }
 
     //==============================================================================
+    /** @internal */
     void refresh() override { repaint(); }
 
+    /** @internal */
     void paint (Graphics& g) override
     {
         PropertyComponent::paint (g);
@@ -115,7 +124,8 @@ public:
 
 private:
     //==============================================================================
-    class Container final : public Component
+    class Container final : public Component,
+                            private ChangeListener
     {
     public:
         Container (Value& v, bool a) :
@@ -124,11 +134,12 @@ private:
         {
         }
 
-        Colour getCurrentColour() const
-        {
-            return VariantConverter<Colour>::fromVar (value.getValue());
-        }
+        //==============================================================================
+        /** @returns */
+        Colour getCurrentColour() const { return VariantConverter<Colour>::fromVar (value.getValue()); }
 
+        //==============================================================================
+        /** @internal */
         void paint (Graphics& g) override
         {
             const auto c = getCurrentColour();
@@ -140,13 +151,12 @@ private:
             g.drawText (c.toDisplayString (alpha), getLocalBounds(), Justification::centred);
         }
 
+        /** @internal */
         void mouseUp (const MouseEvent& e) override
         {
-            ignoreUnused (e);
-
-           #if JUCE_MODAL_LOOPS_PERMITTED
             if (e.mouseWasClicked())
             {
+               #if JUCE_MODAL_LOOPS_PERMITTED
                 ColourSelector colourSelector (ColourSelector::showColourAtTop | ColourSelector::showSliders | ColourSelector::showColourspace);
 
                 colourSelector.setSize (300, 280);
@@ -156,14 +166,41 @@ private:
                 callOut.runModalLoop();
 
                 value = colourSelector.getCurrentColour().toString();
+               #else
+                jassertfalse; // TODO
+               #endif
             }
-           #endif
+        }
+
+        void mouseDown (const MouseEvent&) override
+        {
+#if 0
+            auto colourSelector = std::make_unique<ColourSelector>();
+            colourSelector->setName ("Colour");
+            colourSelector->setCurrentColour (getColour());
+            colourSelector->addChangeListener (this);
+            colourSelector->setColour (ColourSelector::backgroundColourId, Colours::transparentBlack);
+            colourSelector->setSize (300, 400);
+
+            CallOutBox::launchAsynchronously (std::move (colourSelector), getScreenBounds(), nullptr);
+
+#endif
+        }
+
+        void changeListenerCallback (ChangeBroadcaster* source) override
+        {
+#if 0
+            if (auto* cs = dynamic_cast<ColourSelector*> (source))
+                editor.applyNewValue (getAsString (cs->getCurrentColour(), true));
+
+            repaint();
+#endif
         }
 
     private:
         //==============================================================================
         Value& value;
-        bool alpha;
+        const bool alpha;
 
         //==============================================================================
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Container)
@@ -175,4 +212,3 @@ private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ColourPropertyComponent)
 };
-
