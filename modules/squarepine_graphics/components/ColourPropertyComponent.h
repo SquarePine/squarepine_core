@@ -189,6 +189,8 @@ private:
 
         void changeListenerCallback (ChangeBroadcaster* source) override
         {
+            ignoreUnused (source);
+
 #if 0
             if (auto* cs = dynamic_cast<ColourSelector*> (source))
                 editor.applyNewValue (getAsString (cs->getCurrentColour(), true));
