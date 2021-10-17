@@ -29,7 +29,9 @@ public:
     /** @internal */
     void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
 
-    
+    constexpr static const float LOWFREQCUTOFF  = 70.f;
+    constexpr static const float MIDFREQPEAK    = 1200.f;
+    constexpr static const float HIGHFREQCUTOFF = 13000.f;
     
     void parameterValueChanged (int, float) override;
     void parameterGestureChanged (int, bool) override   { }
