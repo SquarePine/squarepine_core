@@ -606,7 +606,7 @@ inline double midiNoteToFrequency (int midiNoteNumber) noexcept
     @param source   The source file to hash.
     @param hash     The destination hash, which will be empty if anything failed.
 
-    @returns ok if the file could be hashed.
+    @returns a non-empty string if the file could be hashed.
 */
 template<typename HasherType = juce::SHA256>
 inline String createUniqueFileHash (const File& source)
