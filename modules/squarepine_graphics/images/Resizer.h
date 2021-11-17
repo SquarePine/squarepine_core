@@ -59,10 +59,8 @@ private:
     Image image;
     RectanglePlacement placement = RectanglePlacement::centred;
 
-   #if SQUAREPINE_USE_AVIR_RESIZER
     Image resizedImage;
     Rectangle<int> lastKnownBounds;
-   #endif
 
     //==============================================================================
     std::unique_ptr<AccessibilityHandler> createAccessibilityHandler() override;
