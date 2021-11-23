@@ -1,3 +1,4 @@
+//==============================================================================
 /** @returns a string representing a given price, formatted as per the user's locale.
 */
 inline String createLocaleFormattedPrice (double value)
@@ -18,6 +19,7 @@ inline String createLocaleFormattedPrice (double value)
         .replace (poundSymbol, euroSymbol, true);
 }
 
+//==============================================================================
 /** @returns a string representing the value, formatted as per the user's locale.
 
     For the value "One Million & Ten Thousand One Hundred & Three and Two Thirds":
@@ -49,6 +51,7 @@ inline String createLocaleFormattedValue (IntegralType value)
     return String (ss.str());
 }
 
+//==============================================================================
 /** @returns a reversed version of the source string. */
 inline String reverse (const String& source)
 {
