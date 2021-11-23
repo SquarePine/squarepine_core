@@ -6,14 +6,14 @@ public:
     TimeKeeper (double sampleRate = 44100.0);
 
     /** */
-    TimeKeeper (const AudioPlayHead::CurrentPositionInfo& positionInfo,
+    TimeKeeper (const AudioPlayHead::CurrentPositionInfo&,
                 double sampleRate = 44100.0);
 
     //==============================================================================
     /** */
     TimeKeeper& setSamplingRate (double sampleRate);
     /** */
-    TimeKeeper& setSamplingRate (AudioDeviceManager& device);
+    TimeKeeper& setSamplingRate (AudioDeviceManager&);
 
     //==============================================================================
     /** */
@@ -26,20 +26,20 @@ public:
     TimeKeeper& setTime (int hours, int minutes, int seconds, int milliseconds);
     /** */
     TimeKeeper& setTime (int hours, int minutes, int seconds, int frames,
-                         MidiMessage::SmpteTimecodeType rate);
+                         MidiMessage::SmpteTimecodeType);
     /** */
     TimeKeeper& setTime (int hours, int minutes, int seconds, int frames,
-                         AudioPlayHead::FrameRateType rate);
+                         AudioPlayHead::FrameRateType);
 
     /** */
-    TimeKeeper& setFrameRate (MidiMessage::SmpteTimecodeType rate);
+    TimeKeeper& setFrameRate (MidiMessage::SmpteTimecodeType);
     /** */
-    TimeKeeper& setFrameRate (AudioPlayHead::FrameRateType rate);
+    TimeKeeper& setFrameRate (AudioPlayHead::FrameRateType);
 
     /** */
-    TimeKeeper& setTempo (const Tempo& tempo);
+    TimeKeeper& setTempo (const Tempo&);
     /** */
-    TimeKeeper& setTimeSignature (const TimeSignature& timeSignature);
+    TimeKeeper& setTimeSignature (const TimeSignature&);
 
     //==============================================================================
     /** */
@@ -53,7 +53,7 @@ public:
     };
 
     /** */
-    TimeKeeper& setTimeFormat (TimeFormat format);
+    TimeKeeper& setTimeFormat (TimeFormat);
     /** */
     TimeFormat getCurrentTimeFormat() const noexcept { return timeFormat; }
 
