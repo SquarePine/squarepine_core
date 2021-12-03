@@ -698,24 +698,22 @@ void applyStackBlurARGB (Image& img, uint32 radius)
     mario@quasimondo.com and described here:
     http://incubator.quasimondo.com/processing/fast_blur_deluxe.php
 
-    Stackblur algorithm by Mario Klingemann
-
     Details here:
     http://www.quasimondo.com/StackBlurForCanvas/StackBlurDemo.html
 
-    C++ implemenation base from:
+    C++ implementation base from:
     https://gist.github.com/benjamin9999/3809142
     http://www.antigrain.com/__code/include/agg_blur.h.html
 */
-void applyStackBlur (Image& img, int radius)
+void applyStackBlur (Image& image, int radius)
 {
-    radius = jlimit (2, 254, radius);
+    radius = std::clamp (radius, 2, 254);
 
-    switch (img.getFormat())
+    switch (image.getFormat())
     {
-        case Image::ARGB:           applyStackBlurARGB (img, (uint32) radius);
-        case Image::RGB:            applyStackBlurRGB (img, (uint32) radius);
-        case Image::SingleChannel:  applyStackBlurBW (img, (uint32) radius);
+        case Image::ARGB:           applyStackBlurARGB (image, (uint32) radius); break;
+        case Image::RGB:            applyStackBlurRGB (image, (uint32) radius); break;
+        case Image::SingleChannel:  applyStackBlurBW (image, (uint32) radius); break;
 
         default:
             jassertfalse;

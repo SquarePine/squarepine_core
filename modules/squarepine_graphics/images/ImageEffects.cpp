@@ -42,7 +42,7 @@ inline ResultType convert (const ValueType& in)
 }
 
 //==============================================================================
-template<class T>
+template<class Type>
 void applyVignette (Image& img, float amountIn, float radiusIn, float fallOff, ThreadPool* threadPool)
 {
     const auto w = img.getWidth();
@@ -59,8 +59,7 @@ void applyVignette (Image& img, float amountIn, float radiusIn, float fallOff, T
 
     Image::BitmapData data (img, Image::BitmapData::readWrite);
 
-    Ellipse<double> outE { outA, outB };
-    Ellipse<double> inE  { inA,  inB  };
+    Ellipse<double> outE { outA, outB }, inE { inA, inB };
 
     multiThreadedFor<int> (0, h, 1, threadPool, [&] (int y)
     {
@@ -72,10 +71,10 @@ void applyVignette (Image& img, float amountIn, float radiusIn, float fallOff, T
         {
             const auto dx = x - cx;
 
-            const bool outside = outE.isPointOutside ({dx, dy});
-            const bool inside  = inE.isPointInside ({dx, dy});
+            const bool outside = outE.isPointOutside ({ dx, dy });
+            const bool inside  = inE.isPointInside ({ dx, dy });
 
-            auto* s = (T*)p;
+            auto* s = (Type*) p;
 
             if (outside)
             {
@@ -89,18 +88,15 @@ void applyVignette (Image& img, float amountIn, float radiusIn, float fallOff, T
             else if (! inside)
             {
                 const auto angle = std::atan2 (dy, dx);
-
                 const auto p1 = outE.getPointAtAngle (angle);
                 const auto p2 = inE.getPointAtAngle (angle);
-
                 const auto l1 = Line<double> ({ dx, dy }, p2);
                 const auto l2 = Line<double> (p1, p2);
-
                 const auto factor = 1.0 - (amountIn * jlimit (0.0, 1.0, l1.getLength() / l2.getLength()));
 
-                const auto r = toByte (0.5 + (s->getRed()   * factor));
+                const auto r = toByte (0.5 + (s->getRed() * factor));
                 const auto g = toByte (0.5 + (s->getGreen() * factor));
-                const auto b = toByte (0.5 + (s->getBlue()  * factor));
+                const auto b = toByte (0.5 + (s->getBlue() * factor));
                 const auto a = s->getAlpha();
 
                 s->setARGB (a, r, g, b);

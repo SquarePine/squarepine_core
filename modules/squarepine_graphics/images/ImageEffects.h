@@ -58,10 +58,10 @@ void applyHueSaturationLightness (Image& img, float hue, float saturation, float
     It creates much better looking blurs than Box Blur, but is 7x faster than some Gaussian Blur
     implementations.
 
-    @param img
+    @param image
     @param radius From 2 to 254.
 */
-void applyStackBlur (Image& img, int radius);
+void applyStackBlur (Image&, int radius);
 
 //==============================================================================
 /** GradientMap a image.
