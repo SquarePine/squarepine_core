@@ -24,8 +24,6 @@ void configureContextWithModernGL (OpenGLContext& context, bool shouldEnableMult
     context.setOpenGLVersionRequired (OpenGLContext::OpenGLVersion::openGL3_2);
     context.setTextureMagnificationFilter (OpenGLContext::linear);
 
-    // TODO: JUCE's multisampling support is broken in its entirety.
-   #if 0
     context.setMultisamplingEnabled (true);
     if (shouldEnableMultisampling)
     {
@@ -34,9 +32,6 @@ void configureContextWithModernGL (OpenGLContext& context, bool shouldEnableMult
         pf.multisamplingLevel = 1;
         context.setPixelFormat (pf);
     }
-   #else
-    ignoreUnused (shouldEnableMultisampling);
-   #endif
 }
 
 void logOpenGLInfoCallback (OpenGLContext&)
