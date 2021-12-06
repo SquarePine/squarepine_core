@@ -1,29 +1,5 @@
 //==============================================================================
 #if JUCE_MODULE_AVAILABLE_juce_opengl
-   #ifndef GL_VENDOR
-    #define GL_VENDOR 0x1F00
-   #endif
-
-   #ifndef GL_RENDERER
-    #define GL_RENDERER 0x1F01
-   #endif
-
-   #ifndef GL_VERSION
-    #define GL_VERSION 0x1F02
-   #endif
-
-   #ifndef GL_EXTENSIONS
-    #define GL_EXTENSIONS 0x1F03
-   #endif
-
-   #ifndef GL_MAJOR_VERSION
-    #define GL_MAJOR_VERSION 0x821b
-   #endif
-
-   #ifndef GL_MINOR_VERSION
-    #define GL_MINOR_VERSION 0x821c
-   #endif
-
     /** @returns a juce::String from an OpenGL style string. */
     String getGLString (GLenum value);
 
