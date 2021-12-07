@@ -6,7 +6,7 @@ An assortment of modules that make a great addition to your JUCE app and plugin 
 
 The current license is ISC.
 
-Mind you, we'd rather something that requires you to not hide away and privately modify the code. And I'd rather issues and concerns be brought directly here. Till then, I'd appreciate any contributions flowing back this way!
+Mind you, we'd rather something that requires you to not hide away and privately modify the code. And we'd rather issues and concerns be brought directly here. Till then,   any contributions flowing back this way are much appreciated!
 
 # Library Goal
 
