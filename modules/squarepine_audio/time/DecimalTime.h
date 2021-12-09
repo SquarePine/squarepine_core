@@ -3,6 +3,8 @@ class DecimalTime final : public TimeFormat
 {
 public:
     /** */
+    DecimalTime() noexcept = default;
+    /** */
     DecimalTime (double timeInSeconds) noexcept;
     /** */
     DecimalTime (int64 timeInSamples, double sampleRate) noexcept;
@@ -10,30 +12,34 @@ public:
     DecimalTime (int minutes, int seconds, int milliseconds) noexcept;
     /** */
     DecimalTime (int hours, int minutes, int seconds, int milliseconds) noexcept;
+    /** */
+    DecimalTime (const DecimalTime&) noexcept = default;
+    /** */
+    ~DecimalTime() noexcept = default;
 
     //==============================================================================
     /** */
-    static int hoursToSeconds (int hours) noexcept;
+    static constexpr int hoursToSeconds (int hours) noexcept;
     /** */
-    static int minutesToSeconds (int minutes) noexcept;
+    static constexpr int minutesToSeconds (int minutes) noexcept;
 
     //==============================================================================
     /** */
-    DecimalTime& operator= (const DecimalTime& other) noexcept;
+    DecimalTime& operator= (const DecimalTime&) noexcept;
     /** */
-    bool operator== (const DecimalTime& other) const noexcept;
+    bool operator== (const DecimalTime&) const noexcept;
     /** */
-    bool operator!= (const DecimalTime& other) const noexcept;
+    bool operator!= (const DecimalTime&) const noexcept;
 
     //==============================================================================
     /** @internal */
-    double toSeconds() const override;
+    double toSeconds() const override { return timeSeconds; }
     /** @internal */
     String toString() const override;
 
 private:
     //==============================================================================
-    double timeInSeconds;
+    double timeSeconds = 0.0;
 
     //==============================================================================
     JUCE_LEAK_DETECTOR (DecimalTime)
