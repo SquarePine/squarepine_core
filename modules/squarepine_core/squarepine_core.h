@@ -10,7 +10,7 @@
     description:        A decent backbone for any project.
     website:            https://www.squarepine.io
     license:            Proprietary
-    minimumCppStandard: 14
+    minimumCppStandard: 17
     OSXFrameworks:      SystemConfiguration
     iOSFrameworks:      SystemConfiguration
     dependencies:       juce_audio_utils juce_cryptography juce_opengl
