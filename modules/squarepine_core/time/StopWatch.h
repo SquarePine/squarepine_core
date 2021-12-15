@@ -90,7 +90,7 @@ private:
 //==============================================================================
 /** A simple class that can be used for precise timing, in milliseconds.
 
-    @see StopWatch, TickStopWatch
+    @see StopWatch, SecondsStopWatch, TickStopWatch
 */
 class MillisecondStopWatch final : public StopWatch<double>
 {
@@ -108,9 +108,29 @@ private:
 };
 
 //==============================================================================
+/** A simple class that can be used for precise timing, in seconds.
+
+    @see StopWatch, MillisecondStopWatch, TickStopWatch
+*/
+class SecondsStopWatch final : public StopWatch<double>
+{
+public:
+    /** Constructor. */
+    SecondsStopWatch() noexcept = default;
+
+    //==============================================================================
+    /** @internal */
+    double getCurrentTime() const override { return Time::getMillisecondCounterHiRes() / 1000.0; }
+
+private:
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SecondsStopWatch)
+};
+
+//==============================================================================
 /** A simple class that can be used for precise timing, in CPU ticks.
 
-    @see StopWatch, TickStopWatch
+    @see StopWatch, SecondsStopWatch, MillisecondStopWatch
 */
 class TickStopWatch final : public StopWatch<int64>
 {
