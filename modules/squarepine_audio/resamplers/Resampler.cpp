@@ -9,7 +9,7 @@ void R8brainResampler::prepare (int channels, int numSamples, double)
     updateRatio();
 }
 
-void R8brainResampler::process (juce::AudioBuffer<float>& source, juce::AudioBuffer<float>& dest)
+int R8brainResampler::process (juce::AudioBuffer<float>& source, juce::AudioBuffer<float>& dest)
 {
     const auto r = getRatio();
     const auto numInSamples = source.getNumSamples();
@@ -18,6 +18,8 @@ void R8brainResampler::process (juce::AudioBuffer<float>& source, juce::AudioBuf
     for (int channel = 0; channel < source.getNumChannels(); channel++)
         resamplers[channel]->oneshot (numInSamples, source.getReadPointer (channel), numInSamples,
                                       dest.getWritePointer (channel), numOutSamples);
+
+    return source.getNumSamples();
 }
 
 void R8brainResampler::updateRatio()

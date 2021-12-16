@@ -8,12 +8,22 @@ public:
     /** Destructor. */
     virtual ~Resampler() noexcept = default;
 
+    //==============================================================================
     /**  */
     virtual void prepare (int numChannels, double sampleRate, int numSamples) = 0;
 
-    /**  */
-    virtual void process (juce::AudioBuffer<float>& source, juce::AudioBuffer<float>& dest) = 0;
+    /** Resamples a stream of samples.
 
+        @param source       The source data to read from. This must contain at
+                            least (speedRatio * numOutputSamplesToProduce) samples.
+        @param destination  The buffer to write the results into.
+
+        @returns the actual number of input samples that were used
+    */
+    virtual int process (juce::AudioBuffer<float>& source,
+                         juce::AudioBuffer<float>& destination) = 0;
+
+    //==============================================================================
     /** Sets the ratio directly. */
     void setRatio (double newRatio)
     {
@@ -34,15 +44,17 @@ public:
     /** If the ratio has changed, you might need to override this to update your subclass. */
     virtual void updateRatio() {}
 
-    /** @returns the current resampling ratio */
-    sp_nodiscard double getRatio() const noexcept { return ratio.load (std::memory_order_relaxed); }
+    /** @returns the current resampling ratio. */
+    sp_nodiscard double getRatio() const noexcept { return ratio.load(); }
 
-    /** @returns the inverse resampling ratio */
+    /** @returns the inverse resampling ratio. */
     sp_nodiscard double getInverseRatio() const noexcept { return 1.0 / getRatio(); }
 
 private:
+    //==============================================================================
     std::atomic<double> ratio { 1.0 };
 
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Resampler)
 };
 
@@ -77,24 +89,30 @@ public:
     }
 
     /** @internal */
-    void process (juce::AudioBuffer<float>& source, juce::AudioBuffer<float>& dest) override
+    int process (juce::AudioBuffer<float>& source, juce::AudioBuffer<float>& dest) override
     {
-        const auto r = getRatio();
+        const auto localRatio = getRatio();
 
-        if (approximatelyEqual (r, 1.0) || source.hasBeenCleared())
+        if (approximatelyEqual (localRatio, 1.0) || source.hasBeenCleared())
         {
             dest = source;
+            return source.getNumSamples();
         }
-        else
-        {
-            const auto numOutSamples = dest.getNumSamples();
-            const auto numChans = jmin (source.getNumChannels(), dest.getNumChannels(), resamplers.size());
-            if (numChans <= 0)
-                dest.clear();
 
-            for (int i = numChans; --i >= 0;)
-                resamplers.getUnchecked (i)->process (r, source.getReadPointer (i), dest.getWritePointer (i), numOutSamples);
-        }
+        int numSamplesUsed = 0;
+        const auto numOutSamples = dest.getNumSamples();
+        const auto numChans = jmin (source.getNumChannels(), dest.getNumChannels(), resamplers.size());
+        if (numChans <= 0)
+            dest.clear();
+
+        for (int i = numChans; --i >= 0;)
+            numSamplesUsed = jmax (numSamplesUsed,
+                                   resamplers.getUnchecked (i)->process (localRatio,
+                                                                         source.getReadPointer (i),
+                                                                         dest.getWritePointer (i),
+                                                                         numOutSamples));
+
+        return numSamplesUsed;
     }
 
 private:
@@ -130,7 +148,7 @@ public:
     /** @internal */
     void prepare (int numChannels, int numSamples, double sampleRate) override;
     /** @internal */
-    void process (juce::AudioBuffer<float>& source, juce::AudioBuffer<float>& dest) override;
+    int process (juce::AudioBuffer<float>& source, juce::AudioBuffer<float>& dest) override;
     /** @internal */
     void updateRatio() override;
 
