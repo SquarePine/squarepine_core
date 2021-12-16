@@ -12,6 +12,20 @@ public:
     /**  */
     virtual void prepare (int numChannels, double sampleRate, int numSamples) = 0;
 
+    /**  */
+    virtual void configure (int numResultingSamples, int numChannels,
+                            juce::AudioBuffer<float>& source,
+                            juce::AudioBuffer<float>& destination)
+    {
+        const auto numSamples = roundToIntAccurate (getRatio() * numResultingSamples);
+
+        source.setSize (numChannels, numSamples, false, false, true);
+        source.clear();
+
+        destination.setSize (numChannels, numResultingSamples, false, false, true);
+        destination.clear();
+    }
+
     /** Resamples a stream of samples.
 
         @param source       The source data to read from. This must contain at
