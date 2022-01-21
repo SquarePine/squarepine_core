@@ -15,7 +15,7 @@ public:
     /** */
     DecimalTime (const DecimalTime&) noexcept = default;
     /** */
-    ~DecimalTime() noexcept = default;
+    ~DecimalTime() noexcept override = default;
 
     //==============================================================================
     /** */
