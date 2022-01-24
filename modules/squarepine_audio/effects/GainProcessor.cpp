@@ -8,16 +8,19 @@ GainProcessor::GainProcessor (const String& parameterName,
     auto vp = std::make_unique<NotifiableAudioParameterFloat> (getIdentifier().toString(),
                                                                getName(),
                                                                gainRange,
-                                                               1.0f,
+                                                               0.0f,
                                                                true, // isAutomatable
                                                                getName(),
                                                                AudioProcessorParameter::outputGain,
                                                                [] (float value, int) -> String
                                                                {
-                                                                    if (approximatelyEqual (value, 1.0f))
+                                                                    if (approximatelyEqual (value, 0.0f))
                                                                         return "0 dB";
+        
+                                                                    if (approximatelyEqual (value, -96.0f))
+                                                                        return "-Inf dB";
 
-                                                                    return Decibels::toString (Decibels::gainToDecibels (value));
+                                                                    return Decibels::toString (value);
                                                                });
 
     gainParameter = vp.get();
@@ -61,9 +64,10 @@ void GainProcessor::parameterValueChanged (int, float newValue)
 {
     newValue = getGain();
 
+    auto linearGain = std::pow(10.f,newValue/20.f); // convert to linear
     const ScopedLock sl (getCallbackLock());
-    floatGain.setTargetValue (newValue);
-    doubleGain.setTargetValue ((double) newValue);
+    floatGain.setTargetValue (linearGain);
+    doubleGain.setTargetValue ((double) linearGain);
 }
 
 void GainProcessor::parameterGestureChanged (int, bool)

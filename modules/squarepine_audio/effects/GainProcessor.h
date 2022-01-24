@@ -10,6 +10,8 @@ public:
         And, though it should be obvious, the default minimum is 0.0f.
     */
     static constexpr auto defaultMaximumGainLinear = 2.0f;
+    static constexpr auto defaultMaximumGaindB = 6.0f;
+    static constexpr auto defaultMinimumGaindB = -96.f;
 
     //==============================================================================
     /** Constructor.
@@ -20,7 +22,7 @@ public:
         @see defaultMaximumGainLinear
     */
     GainProcessor (const String& parameterName = "Gain",
-                   NormalisableRange<float> gainRange = { 0.0f, defaultMaximumGainLinear });
+                   NormalisableRange<float> gainRange = { defaultMinimumGaindB, defaultMaximumGaindB , 0.01f, 6.f});
 
     //==============================================================================
     /** Changes the gain.
