@@ -209,18 +209,20 @@ AudioProcessorValueTreeState::ParameterLayout SimpleEQProcessor::createParameter
     auto layout = createDefaultParameterLayout();
     const std::function<float(float, float, float)> from0To1 = [] (float start, float end, float value) -> float
     {
-        if (value < 0.5f)
-            return (0.5f - value) / 0.5f * start;
+        float skew = 0.65f;
+        if (value < skew)
+            return (skew - value) / skew * start;
     
-        return (value - 0.5f) / 0.5f * end;
+        return (value - skew) / (1.f-skew) * end;
     };
     
     const std::function<float(float, float, float)> to0To1 = [] (float start, float end, float db) -> float
     {
+        float skew = 0.65f;
         if (db < 0.0f)
-            return (1.0f + db / start) * 0.5f;
+            return (( -db / start) + 1.f) * skew;
     
-        return (db / end) * 0.5f + 0.5f;
+        return (db / end) * (1.f-skew) + skew;
     };
     
     for (const auto& c : configs)
