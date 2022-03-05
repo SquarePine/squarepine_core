@@ -227,7 +227,7 @@ AudioProcessorValueTreeState::ParameterLayout SimpleEQProcessor::createParameter
     
     for (const auto& c : configs)
     {
-        const auto minimum = c.type == FilterType::bandpass ? -25.0f : -100.0f;
+        const auto minimum = c.type == FilterType::bandpass ? -25.0f : -48.0f;
         const auto maximum = c.type == FilterType::bandpass ? 10.0f : 6.0f;
         NormalisableRange<float> decibelRange =
         {   minimum,
