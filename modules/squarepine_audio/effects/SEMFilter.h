@@ -3,17 +3,17 @@
 // by Will Pirkle: https://github.com/ddiakopoulos/MoogLadders/blob/master/src/OberheimVariationModel.h
 
 
-class OberheimSEM final : public InternalProcessor,
+class SEMFilter final : public InternalProcessor,
                            public AudioProcessorParameter::Listener
 {
 public:
 	
-	OberheimSEM()
+	SEMFilter()
     {
         reset();
         
         NormalisableRange<float> freqRange = { -1.f, 1.f};
-        auto normFreq = std::make_unique<NotifiableAudioParameterFloat> ("freq","Frequency",
+        auto normFreq = std::make_unique<NotifiableAudioParameterFloat> ("freqSEM","Frequency",
                                                                    freqRange,
                                                                    0.0f,
                                                                    true, // isAutomatable
@@ -22,7 +22,7 @@ public:
                                                                    [] (float value, int) -> String
                                                                    {
                                                                         if (approximatelyEqual (value,0.0f))
-                                                                            return "BYPASS";
+                                                                            return "BYP";
                                                                             
                                                                         if (value < 0.0f)
                                                                         {
@@ -38,7 +38,7 @@ public:
                                                                    });
         
         NormalisableRange<float> qRange = { 0.1f, 20.f};
-        auto res = std::make_unique<NotifiableAudioParameterFloat> ("res","resonance",
+        auto res = std::make_unique<NotifiableAudioParameterFloat> ("resSEM","resonance",
                                                                    qRange,
                                                                    0.7071f,
                                                                    true, // isAutomatable
@@ -61,13 +61,13 @@ public:
         resParam = res.get();
         resParam->addListener (this);
         
-        auto layout = createDefaultParameterLayout();
+        auto layout = createDefaultParameterLayout(false);
         layout.add (std::move (normFreq));
         layout.add (std::move (res));
         apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
     }
 	
-	~OberheimSEM() override
+	~SEMFilter() override
     {
         normFreqParam->removeListener (this);
         resParam->removeListener (this);
@@ -82,9 +82,9 @@ public:
     
     //==============================================================================
     /** @internal */
-    const String getName() const override { return TRANS ("Oberheim Filter"); }
+    const String getName() const override { return TRANS ("SEM Filter"); }
     /** @internal */
-    Identifier getIdentifier() const override { return "oberheim"; }
+    Identifier getIdentifier() const override { return "semFilter"; }
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     
