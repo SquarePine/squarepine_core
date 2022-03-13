@@ -26,18 +26,18 @@ public:
                                                                             
                                                                         if (value < 0.0f)
                                                                         {
-                                                                            float posValue = value + 1.0f;
-                                                                            float freqHz = 2.f * std::powf(10.f,3.f*posValue + 1.f);
+                                                                            float posFreq = value + 1.f;
+                                                                            float freqHz = 2.f * std::powf(10.f,3.f*posFreq + 1.f);
                                                                             return String(freqHz,0);
                                                                         }
-                                                                        if (value > 0.0f)
+                                                                        else
                                                                         {
                                                                             float freqHz = 2.f * std::powf(10.f,3.f*value + 1.f);
                                                                             return String(freqHz,0);
                                                                         }
                                                                    });
         
-        NormalisableRange<float> qRange = { 0.1f, 20.f};
+        NormalisableRange<float> qRange = { 0.1f, 10.f};
         auto res = std::make_unique<NotifiableAudioParameterFloat> ("resSEM","resonance",
                                                                    qRange,
                                                                    0.7071f,
@@ -49,8 +49,8 @@ public:
                                                                         if (approximatelyEqual (value, 0.1f))
                                                                             return "0.1";
             
-                                                                        if (approximatelyEqual (value, 20.f))
-                                                                            return "20";
+                                                                        if (approximatelyEqual (value, 10.f))
+                                                                            return "10";
 
                                                                         return String(value,1);
                                                                    });
@@ -75,8 +75,11 @@ public:
 	
     void prepareToPlay (double Fs, int bufferSize) override
     {
-        setRateAndBufferSizeDetails (Fs, bufferSize);
+        const ScopedLock sl (getCallbackLock());
         sampleRate = (float) Fs;
+        normFreqSmooth.reset (sampleRate, 0.001);
+        resSmooth.reset (sampleRate, 0.001);
+        setRateAndBufferSizeDetails (Fs, bufferSize);
         updateCoefficients();
     }
     
@@ -88,10 +91,10 @@ public:
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     
-    void parameterValueChanged (int, float) override
+    void parameterValueChanged (int , float ) override
     {
-        // smoothing?
-        
+        const ScopedLock sl (getCallbackLock());
+        updateCoefficients();
     }
     
     void parameterGestureChanged (int, bool) override {}
@@ -106,8 +109,10 @@ public:
         const auto numChannels = buffer.getNumChannels();
         const auto numSamples = buffer.getNumSamples();
 
-        if (approximatelyEqual (normFreqParam->get(),0.f))
-            setBypass(true);
+        if (approximatelyEqual (normFreqSmooth.getNextValue(),0.0f))
+            setBypass (true);
+        else
+            setBypass (false);
             
         const bool isWholeProcBypassed = isBypassed()
                                       || buffer.hasBeenCleared()
@@ -118,7 +123,7 @@ public:
 
         if (!isWholeProcBypassed)
         {
-            if (normFreqParam->get() < 0.0)
+            if (normFreqSmooth.getNextValue() < 0.f)
             {
                 if (!prevBufferWasLPF)
                 {
@@ -131,8 +136,8 @@ public:
                 {
                     for (int s = 0; s < numSamples; ++s)
                     {
-                        out = processSampleLPF(buffer.getWritePointer(c)[s],c);
-                        buffer.getWritePointer(c)[s] = out;
+                        out = processSampleLPF (buffer.getWritePointer (c)[s],c);
+                        buffer.getWritePointer (c)[s] = out;
                     }
                 }
             }
@@ -143,63 +148,65 @@ public:
                 {
                     for (int s = 0; s < numSamples; ++s)
                     {
-                        out = processSampleHPF(buffer.getWritePointer(c)[s],c);
-                        buffer.getWritePointer(c)[s] = out;
+                        out = processSampleHPF (buffer.getWritePointer (c)[s],c);
+                        buffer.getWritePointer (c)[s] = out;
                     }
                 }
             }
         }
     }
     
-	float processSampleLPF(float in, int channel)
+    template<typename SampleType>
+    SampleType processSampleLPF(SampleType in, int channel)
 	{
         
         // Filter Prep
-        float sigma = s1[channel]*beta1 + s2[channel]*beta2 + s3[channel]*beta3 + s4[channel]*beta4;
+        SampleType sigma = s1[channel]*beta1 + s2[channel]*beta2 + s3[channel]*beta3 + s4[channel]*beta4;
         
-        float u = in * (1.f+K);
+        SampleType u = in * (1.f+K);
         u = (u - sigma*(K)) * alpha0;
         u = std::tanh (1.2f*u);
         
         // LPF1
-        float x1 = alpha * (u - s1[channel]);
-        float y1 = s1[channel] + x1;
+        SampleType x1 = alpha * (u - s1[channel]);
+        SampleType y1 = s1[channel] + x1;
         s1[channel] = x1 + y1;
         
-        float x2 = alpha * (y1 - s2[channel]);
-        float y2 = s2[channel] + x2;
+        SampleType x2 = alpha * (y1 - s2[channel]);
+        SampleType y2 = s2[channel] + x2;
         s2[channel] = x2 + y2;
         
-        float x3 = alpha * (y2 - s3[channel]);
-        float y3 = s3[channel] + x3;
+        SampleType x3 = alpha * (y2 - s3[channel]);
+        SampleType y3 = s3[channel] + x3;
         s3[channel] = x3 + y3;
         
-        float x4 = alpha * (y3 - s4[channel]);
-        float y4 = s4[channel] + x4;
+        SampleType x4 = alpha * (y3 - s4[channel]);
+        SampleType y4 = s4[channel] + x4;
         s4[channel] = x4 + y4;
         
         return y4;
 	}
     
-    float processSampleHPF(float x, int channel)
+    template<typename SampleType>
+    SampleType processSampleHPF(SampleType x, int channel)
     {
         
-        float x1 = alpha * (x - s1[channel]);
-        float x2 = x1 + s1[channel];
+        SampleType x1 = alpha * (x - s1[channel]);
+        SampleType x2 = x1 + s1[channel];
         s1[channel] = x1 + x2;
-        float y1 = x - x2;
+        SampleType y1 = x - x2;
         
-        float u = alpha0 * (y1 + s3[channel]*beta3 + s2[channel]*beta2);
-        float output = u;
-        float y = K * u;
+        SampleType u = alpha0 * (y1 + s3[channel]*beta3 + s2[channel]*beta2);
+        SampleType output = u;
+        SampleType y = K * u;
         u = std::tanh(1.5f*u);
         
-        float x3 = alpha * (y - s2[channel]);
-        float x4 = x3 + s2[channel];
+        SampleType x3 = alpha * (y - s2[channel]);
+        SampleType x4 = x3 + s2[channel];
         s2[channel] = x3 + x4;
         
-        float x5 = alpha * (y - x4 - s3[channel]);
-        float y3 = s3[channel] + x5;
+        SampleType x5 = alpha * (y - x4 - s3[channel]);
+        SampleType y3 = s3[channel] + x5;
         s3[channel] = y3 + x5;
 
         return output;
@@ -207,34 +214,15 @@ public:
 
     void setNormFreq(float newNormFreq){
         
-        if (normFreqParam->get() != newNormFreq)
-        {
-            normFreqParam->setValueNotifyingHost (newNormFreq);
-            updateCoefficients();
-        }
+        normFreqParam->setValueNotifyingHost (newNormFreq);
+        updateCoefficients();
         
     }
     
-    // Allowable range from 0.01f to ~20
+    // Allowable range from 0.01f to ~10
     void setQValue(float q){
-        if (resParam->get() != q)
-        {
-            resParam->setValueNotifyingHost (q);
-            if (normFreqParam->get() < 0.0)
-            {
-                K = q/3.9f;
-                float posFreq = normFreqParam->get() + 1.f;
-                //float freqHz = normFreq->get()
-                //float freq0to1 = log10(freqHz/8.0f)/3.439332693830263f;
-                K = K + 0.3f*posFreq;  //scaling of K to keep resonance similar across spectrum
-            }
-            else
-            {
-                // For HPF, K should have a range of 0.1 to 1.9 (max resonance)
-                K = (((resParam->get()-0.1f) / 19.9f) * 1.8f) + 0.1f;
-            }
-            updateCoefficients();
-        }
+        resParam->setValueNotifyingHost (q);
+        updateCoefficients();
     }
     
     
@@ -254,7 +242,10 @@ private:
     
     NotifiableAudioParameterFloat* normFreqParam = nullptr;
     NotifiableAudioParameterFloat* resParam = nullptr;
-
+    
+    SmoothedValue <float, ValueSmoothingTypes::Linear> normFreqSmooth { 0.0f };
+    SmoothedValue <float, ValueSmoothingTypes::Linear> resSmooth { 0.7071f };
+    
     float sampleRate;
     float K; // transformed bandwidth "Q"
     float g;
@@ -275,7 +266,11 @@ private:
     
     void updateCoefficients()
     {
-        if (normFreqParam->get() >= 0.0) // LPF
+        
+        normFreqSmooth.setTargetValue (normFreqParam->get());
+        resSmooth.setTargetValue (resParam->get());
+        
+        if (normFreqSmooth.getNextValue() <= 0.f) // LPF
         {
             if (!prevBufferWasLPF)
             {
@@ -283,7 +278,10 @@ private:
                 prevBufferWasLPF = false;
             }
             
-            float posFreq = normFreqParam->get() + 1.f;
+            K = resSmooth.getNextValue() /3.9f;
+            float posFreq = normFreqSmooth.getNextValue() + 1.f;
+            K = K + 0.3f*posFreq;  //scaling of K to keep resonance similar across spectrum
+            
             float freqHz = 2.f * std::powf (10.f,3.f * posFreq + 1.f);
             float wd = 2.f * (float) M_PI * freqHz;
             float T = 1.f/sampleRate;
@@ -306,7 +304,10 @@ private:
                 prevBufferWasLPF = false;
             }
             
-            float freqHz = 2.0 * std::powf(10.f,3.f * normFreqParam->get() + 1.f);
+            // For HPF, K should have a range of 0.1 to 1 (max resonance)
+            K = (((resSmooth.getNextValue()-0.1f) / 9.9f) * 0.9f) + 0.1f;
+            
+            float freqHz = 2.f * std::powf(10.f,3.f * normFreqSmooth.getNextValue() + 1.f);
             float wd = 2.f * (float) M_PI * freqHz;
             float T = 1.f/sampleRate;
             float wa = (2.f/T) * std::tan(wd*T/2.f); // Warping for BLT
