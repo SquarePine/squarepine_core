@@ -1,11 +1,11 @@
 JUCEReverbProcessor::JUCEReverbProcessor()
 {
-    addParameter (roomSize = new AudioParameterFloat ("roomSize", "Room Size", 0.0f, 1.0f, 0.5f));
-    addParameter (damping = new AudioParameterFloat ("damping", "Damping", 0.0f, 1.0f, 0.5f));
-    addParameter (wetLevel = new AudioParameterFloat ("wetLevel", "Wet Level", 0.0f, 1.0f, 0.33f));
-    addParameter (dryLevel = new AudioParameterFloat ("dryLevel", "Dry Level", 0.0f, 1.0f, 0.4f));
-    addParameter (width = new AudioParameterFloat ("width", "Width", 0.0f, 1.0f, 1.0f));
-    addParameter (freezeMode = new AudioParameterBool ("freezeMode", "Freeze Mode", false));
+    AudioProcessor::addParameter (roomSize = new AudioParameterFloat ("roomSize", "Room Size", 0.0f, 1.0f, 0.5f));
+    AudioProcessor::addParameter (damping = new AudioParameterFloat ("damping", "Damping", 0.0f, 1.0f, 0.5f));
+    AudioProcessor::addParameter (wetLevel = new AudioParameterFloat ("wetLevel", "Wet Level", 0.0f, 1.0f, 0.33f));
+    AudioProcessor::addParameter (dryLevel = new AudioParameterFloat ("dryLevel", "Dry Level", 0.0f, 1.0f, 0.4f));
+    AudioProcessor::addParameter (width = new AudioParameterFloat ("width", "Width", 0.0f, 1.0f, 1.0f));
+    AudioProcessor::addParameter (freezeMode = new AudioParameterBool ("freezeMode", "Freeze Mode", false));
 }
 
 //==============================================================================

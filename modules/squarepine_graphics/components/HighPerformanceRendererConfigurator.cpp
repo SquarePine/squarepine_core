@@ -3,27 +3,30 @@
 
 String getGLString (GLenum value)
 {
-    return reinterpret_cast<const char*> (juce::gl::glGetString (value));
+    return reinterpret_cast<const char*> (gl::glGetString (value)); // NB: glGetString is from v2.0+.
 }
 
 String getGLString (GLenum value, GLuint index)
 {
-    if (juce::gl::glGetStringi != nullptr)
-        return reinterpret_cast<const char*> (juce::gl::glGetStringi (value, index));
+    // NB: glGetStringi is from v3.0+.
+    if (gl::glGetStringi != nullptr)
+        return reinterpret_cast<const char*> (gl::glGetStringi (value, index));
 
     return {};
 }
 
 void configureContextWithModernGL (OpenGLContext& context, bool shouldEnableMultisampling)
 {
-    // NB: On failure, JUCE will backtrack to an earlier version of OpenGL.
-    context.setOpenGLVersionRequired (OpenGLContext::openGL3_2);
-    context.setContinuousRepainting (false);
+    gl::loadFunctions();
+    gl::loadExtensions();
 
+    // NB: On failure, JUCE will backtrack to an earlier version of OpenGL.
+    context.setOpenGLVersionRequired (OpenGLContext::OpenGLVersion::openGL3_2);
+    context.setTextureMagnificationFilter (OpenGLContext::linear);
+
+    context.setMultisamplingEnabled (true);
     if (shouldEnableMultisampling)
     {
-        context.setMultisamplingEnabled (true);
-        context.setTextureMagnificationFilter (OpenGLContext::linear);
         OpenGLPixelFormat pf;
         pf.stencilBufferBits = 8;
         pf.multisamplingLevel = 1;
@@ -117,6 +120,9 @@ void HighPerformanceRendererConfigurator::configureWithOpenGLIfAvailable (Compon
    #if JUCE_MODULE_AVAILABLE_juce_opengl
     context.reset (new OpenGLContext());
     configureContextWithModernGL (*context.get());
+
+    context->setContinuousRepainting (false);
+
     context->attachTo (component);
    #else
     ignoreUnused (component);
@@ -132,9 +138,9 @@ void HighPerformanceRendererConfigurator::paintCallback()
         && context->isAttached())
     {
         GLint major = 0;
-        juce::gl::glGetIntegerv (GL_MAJOR_VERSION, &major);
+        gl::glGetIntegerv (gl::GL_MAJOR_VERSION, &major);
 
-        if (major < 3 || juce::gl::glBindVertexArray == nullptr)
+        if (major < 3 || gl::glBindVertexArray == nullptr)
         {
             (new DetachContextMessage (*this))->post();
             hasContextBeenForciblyDetached = true;

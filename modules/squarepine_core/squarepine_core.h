@@ -10,7 +10,7 @@
     description:        A decent backbone for any project.
     website:            https://www.squarepine.io
     license:            Proprietary
-    minimumCppStandard: 14
+    minimumCppStandard: 17
     OSXFrameworks:      SystemConfiguration
     iOSFrameworks:      SystemConfiguration
     dependencies:       juce_audio_utils juce_cryptography juce_opengl
@@ -72,7 +72,7 @@
 /** Config: SQUAREPINE_ARRAY_ITERATION_UNROLLER_CHECK_BIG_NUMS
 */
 #ifndef SQUAREPINE_ARRAY_ITERATION_UNROLLER_CHECK_BIG_NUMS
-    #define SQUAREPINE_ARRAY_ITERATION_UNROLLER_MAKE_LINEAR 0
+    #define SQUAREPINE_ARRAY_ITERATION_UNROLLER_CHECK_BIG_NUMS 0
 #endif
 
 /** Config: SQUAREPINE_LOG_NETWORK_CALLS
@@ -194,6 +194,21 @@
 
 //==============================================================================
 #include "valuetree/VariantConverters.h"
+
+//==============================================================================
+namespace std
+{
+    /** JUCE doesn't yet provide all possible std::hash overloads, so here's one for Identifier. */
+    template<>
+    struct hash<juce::Identifier>
+    {
+        /** */
+        size_t operator() (const juce::Identifier& key) const noexcept
+        {
+            return std::hash<juce::String>() (key.toString());
+        }
+    };
+}
 
 //==============================================================================
 namespace sp

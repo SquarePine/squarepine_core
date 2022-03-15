@@ -335,12 +335,12 @@ void Windows10LookAndFeel::drawComboBox (Graphics& g, int width, int height, boo
     g.drawRect (boxBounds.reduced (0.5f, 0.5f));
 
     const auto arrowZone = Rectangle<int> (width - 30, 0, 20, height).toFloat();
-    constexpr auto arrowSize = float_Pi;
+    constexpr auto arrowSize = MathConstants<float>::pi;
 
     Path path;
     path.addTriangle ({ arrowZone.getX() + arrowSize, arrowZone.getCentreY() - arrowSize },
                       { arrowZone.getCentreX(), arrowZone.getCentreY() + arrowSize},
-                      { arrowZone.getRight() - arrowSize, arrowZone.getCentreY() - float_Pi });
+                      { arrowZone.getRight() - arrowSize, arrowZone.getCentreY() - MathConstants<float>::pi });
 
     auto pathColour = box.findColour (ComboBox::arrowColourId);
     if (! box.isEnabled())

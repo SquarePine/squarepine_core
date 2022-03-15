@@ -39,6 +39,7 @@ namespace sp
     #include "images/BMPImageFormat.cpp"
     #include "images/ImageEffects.cpp"
     #include "images/ImageFormatManager.cpp"
+    #include "images/Resizer.cpp"
     #include "images/StackBlurEffects.cpp"
     #include "images/SVGParser.cpp"
     #include "images/TGAImageFormat.cpp"

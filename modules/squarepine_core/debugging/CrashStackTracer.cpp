@@ -10,7 +10,7 @@ public:
 
     ~GlobalCrashTracer()
     {
-        entries.clear(); //Explicitly calling this to avoid a possible deadlock.
+        entries.clear(); // Explicitly calling this to avoid a possible deadlock.
     }
 
     void push (CrashStackTracer* c)  { const EntryList::ScopedLockType sl (entries.getLock()); entries.add (c); }
@@ -18,22 +18,26 @@ public:
 
     void dump() const
     {
-        Logger::writeToLog ("Stack Backtrace");
-        Logger::writeToLog ("---------------");
-        Logger::writeToLog (SystemStats::getStackBacktrace());
-        Logger::writeToLog (newLine);
+        String message;
+        message
+            << "Stack Backtrace"
+            << "--------------------------------"
+            << SystemStats::getStackBacktrace()
+            << newLine
+            << "CrashStackTracer List"
+            << "--------------------------------";
 
-        Logger::writeToLog ("CrashStackTracer List");
-        Logger::writeToLog ("--------------------------------");
         Array<Thread::ThreadID> threads;
 
         {
-            //NB: This is here to simply make the lock lock once, and recursively...
+            // NB: This is here to simply make the lock lock once, and recursively...
             const EntryList::ScopedLockType sl (entries.getLock());
 
             for (auto* entry : entries)
                 threads.addIfNotAlreadyThere (entry->threadID);
         }
+
+        Logger::writeToLog (message);
 
         if (threads.isEmpty())
         {
@@ -43,11 +47,15 @@ public:
 
         threads.sort();
 
+        message.clear();
+        message.preallocateBytes (64);
+
         for (auto id : threads)
         {
-            Logger::writeToLog (newLine);
-            Logger::writeToLog (String ("Thread [xyz]")
-                                .replace ("xyz", String::toHexString ((pointer_sized_int) id)));
+            message
+                << newLine
+                << String ("Thread [xyz]")
+                    .replace ("xyz", String::toHexString ((pointer_sized_int) id));
 
             int n = 0;
 
@@ -57,21 +65,20 @@ public:
 
                 if (s.threadID == id)
                 {
-                    String traceNum;
                     if (n < 10)
-                        traceNum << "0";
+                        message << "0";
 
-                    traceNum << n++;
-
-                    Logger::writeToLog (traceNum
-                                        + "[" + s.threadName + "]: "
-                                        + File::createFileWithoutCheckingPath (s.file).getFileName()
-                                        + ":" + String (s.function)
-                                        + ":" + String (s.line));
-
+                    message
+                        << n++
+                        << "[" + s.threadName + "]: "
+                        << File::createFileWithoutCheckingPath (s.file).getFileName()
+                        << ":" + String (s.function)
+                        << ":" + String (s.line);
                 }
             }
         }
+
+        Logger::writeToLog (message);
     }
 
 private:

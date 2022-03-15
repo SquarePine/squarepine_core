@@ -9,7 +9,7 @@ TimeKeeper::TimeKeeper (const AudioPlayHead::CurrentPositionInfo& info, double s
     timeSeconds = info.timeInSeconds;
     tempo = Tempo (info.bpm);
     timeSignature = TimeSignature (info.timeSigNumerator, info.timeSigDenominator);
-    setFrameRate (info.frameRate);
+    setFrameRate (info.frameRate.getType());
 }
 
 //==============================================================================

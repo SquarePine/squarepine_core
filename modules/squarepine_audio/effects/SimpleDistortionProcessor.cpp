@@ -3,7 +3,7 @@ class SimpleDistortionProcessor::AmountParameter final : public AudioParameterFl
 {
 public:
     AmountParameter() noexcept :
-        AudioParameterFloat ("AmountId", TRANS ("Amout"), 0.0f, 1.0f, 1.0f)
+        AudioParameterFloat ("AmountId", TRANS ("Amount"), 0.0f, 1.0f, 1.0f)
     {
     }
 
@@ -23,7 +23,7 @@ private:
 SimpleDistortionProcessor::SimpleDistortionProcessor() :
     amountParam (new AmountParameter())
 {
-    addParameter (amountParam);
+    AudioProcessor::addParameter (amountParam);
 }
 
 //==============================================================================

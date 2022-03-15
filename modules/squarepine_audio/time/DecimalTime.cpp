@@ -1,33 +1,37 @@
 DecimalTime::DecimalTime (double time) noexcept :
-    timeInSeconds (time)
+    timeSeconds (time)
+{
+    jassert (approximatelyEqual (timeSeconds, 0.0)
+             || std::isnormal (timeSeconds));
+}
+
+DecimalTime::DecimalTime (int64 timeInSamples, double sampleRate) noexcept :
+    DecimalTime (timeSamplesToSeconds (timeInSamples, sampleRate))
 {
 }
 
-DecimalTime::DecimalTime (const int64 timeInSamples, const double sampleRate) noexcept :
-    timeInSeconds (timeSamplesToSeconds (timeInSamples, sampleRate))
+DecimalTime::DecimalTime (int minutes, int seconds, int milliseconds) noexcept :
+    DecimalTime (minutesToSeconds (minutes)
+                 + seconds
+                 + (double) (milliseconds / 1000))
 {
 }
 
-DecimalTime::DecimalTime (const int minutes, const int seconds, const int milliseconds) noexcept :
-    timeInSeconds ((double) ((milliseconds / 1000) + seconds + (minutes * 60)))
-{
-}
-
-DecimalTime::DecimalTime (const int hours, const int minutes, const int seconds, const int milliseconds) noexcept :
-    timeInSeconds (DecimalTime (minutes + (hours * 60), seconds, milliseconds).toSeconds())
+DecimalTime::DecimalTime (int hours, int minutes, int seconds, int milliseconds) noexcept :
+    DecimalTime (minutes, hoursToSeconds (hours) + seconds, milliseconds)
 {
 }
 
 //==============================================================================
 DecimalTime& DecimalTime::operator= (const DecimalTime& other) noexcept
 {
-    timeInSeconds = other.timeInSeconds;
+    timeSeconds = other.timeSeconds;
     return *this;
 }
 
 bool DecimalTime::operator== (const DecimalTime& other) const noexcept
 {
-    return timeInSeconds == other.timeInSeconds;
+    return approximatelyEqual (timeSeconds, other.timeSeconds);
 }
 
 bool DecimalTime::operator!= (const DecimalTime& other) const noexcept
@@ -36,37 +40,33 @@ bool DecimalTime::operator!= (const DecimalTime& other) const noexcept
 }
 
 //==============================================================================
-int DecimalTime::hoursToSeconds (const int hours) noexcept
+constexpr int DecimalTime::minutesToSeconds (int minutes) noexcept
 {
-    return DecimalTime::minutesToSeconds (hours * 24);
+    return minutes > 0
+            ? minutes * 60
+            : -minutes * 60;
 }
 
-int DecimalTime::minutesToSeconds (const int minutes) noexcept
+constexpr int DecimalTime::hoursToSeconds (int hours) noexcept
 {
-    return std::abs (minutes) * 60;
+    return minutesToSeconds (hours * 60);
 }
 
 //==============================================================================
-double DecimalTime::toSeconds() const
-{
-    return timeInSeconds;
-}
-
 String DecimalTime::toString() const
 {
-    auto integral = 0.0;
-    auto fractional = std::modf (timeInSeconds, &integral);
-    const int t = (int) integral;
+    auto integral           = 0.0;
+    auto fractional         = std::modf (timeSeconds, &integral);
+    const auto t            = (int) integral;
+    const auto numDays      = roundToInt ((double) timeSeconds / (double) (secondsPerHour * 24.0));
+    const auto numHours     = (t % secondsPerHour) / secondsPerMinute / 24;
+    const auto numMinutes   = (t % secondsPerHour) / secondsPerMinute;
+    auto numSeconds         = (t % secondsPerHour) % (secondsPerMinute);
+    const auto numMillis    = roundToInt (fractional * 1000.0);
 
-    const int numDays       = roundToInt ((double) timeInSeconds / (double) (secondsPerHour * 24.0));
-    const int numHours      = (t % secondsPerHour) / secondsPerMinute / 24;
-    const int numMinutes    = (t % secondsPerHour) / secondsPerMinute;
-    int numSeconds          = (t % secondsPerHour) % (secondsPerMinute);
-    const int numMillis     = roundToInt (fractional * 1000.0);
-
-    String min (numMinutes);
-    String sec (numSeconds);
-    String millis (numMillis);
+    String min (numMinutes),
+           sec (numSeconds),
+           millis (numMillis);
 
     if (numMinutes < 10)
         min = "0" + String (numMinutes);
@@ -90,8 +90,7 @@ String DecimalTime::toString() const
 
     if (numDays != 0)
     { //Include days and hours:
-        String days (numDays);
-        String hrs (numHours);
+        String days (numDays), hrs (numHours);
 
         if (numDays < 10)
             days = "0" + String (numDays);

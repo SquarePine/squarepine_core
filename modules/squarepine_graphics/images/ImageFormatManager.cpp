@@ -94,3 +94,32 @@ Image ImageFormatManager::loadFrom (const void* rawData, const size_t numBytes)
 
     return {};
 }
+
+//==============================================================================
+Image ImageFormatManager::fromBase64 (const String& data)
+{
+    if (data.isNotEmpty())
+    {
+        MemoryOutputStream mos;
+        if (Base64::convertFromBase64 (mos, data))
+            return loadFrom (mos.getData(), mos.getDataSize());
+    }
+
+    return {};
+}
+
+String ImageFormatManager::toBase64 (const Image& image)
+{
+    if (image.isValid())
+    {
+        for (auto* format : knownFormats)
+        {
+            MemoryOutputStream mos;
+            if (format != nullptr && format->writeImageToStream (image, mos))
+                return Base64::toBase64 (mos.getData(), mos.getDataSize());
+        }
+    }
+
+    return {};
+}
+

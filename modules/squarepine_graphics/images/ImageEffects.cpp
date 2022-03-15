@@ -42,7 +42,7 @@ inline ResultType convert (const ValueType& in)
 }
 
 //==============================================================================
-template<class T>
+template<class Type>
 void applyVignette (Image& img, float amountIn, float radiusIn, float fallOff, ThreadPool* threadPool)
 {
     const auto w = img.getWidth();
@@ -59,8 +59,7 @@ void applyVignette (Image& img, float amountIn, float radiusIn, float fallOff, T
 
     Image::BitmapData data (img, Image::BitmapData::readWrite);
 
-    Ellipse<double> outE { outA, outB };
-    Ellipse<double> inE  { inA,  inB  };
+    Ellipse<double> outE { outA, outB }, inE { inA, inB };
 
     multiThreadedFor<int> (0, h, 1, threadPool, [&] (int y)
     {
@@ -72,10 +71,10 @@ void applyVignette (Image& img, float amountIn, float radiusIn, float fallOff, T
         {
             const auto dx = x - cx;
 
-            const bool outside = outE.isPointOutside ({dx, dy});
-            const bool inside  = inE.isPointInside ({dx, dy});
+            const bool outside = outE.isPointOutside ({ dx, dy });
+            const bool inside  = inE.isPointInside ({ dx, dy });
 
-            auto* s = (T*)p;
+            auto* s = (Type*) p;
 
             if (outside)
             {
@@ -89,18 +88,15 @@ void applyVignette (Image& img, float amountIn, float radiusIn, float fallOff, T
             else if (! inside)
             {
                 const auto angle = std::atan2 (dy, dx);
-
                 const auto p1 = outE.getPointAtAngle (angle);
                 const auto p2 = inE.getPointAtAngle (angle);
-
                 const auto l1 = Line<double> ({ dx, dy }, p2);
                 const auto l2 = Line<double> (p1, p2);
-
                 const auto factor = 1.0 - (amountIn * jlimit (0.0, 1.0, l1.getLength() / l2.getLength()));
 
-                const auto r = toByte (0.5 + (s->getRed()   * factor));
+                const auto r = toByte (0.5 + (s->getRed() * factor));
                 const auto g = toByte (0.5 + (s->getGreen() * factor));
-                const auto b = toByte (0.5 + (s->getBlue()  * factor));
+                const auto b = toByte (0.5 + (s->getBlue() * factor));
                 const auto a = s->getAlpha();
 
                 s->setARGB (a, r, g, b);
@@ -588,65 +584,6 @@ void applyHueSaturationLightness (Image& img, float hueIn, float saturation, flo
 }
 
 //==============================================================================
-Image applyResize (const Image& src, int width, int height)
-{
-   #if SQUAREPINE_USE_AVIR_RESIZER
-    Image dst (src.getFormat(), width, height, true);
-
-    Image::BitmapData srcData (src, Image::BitmapData::readOnly);
-    Image::BitmapData dstData (dst, Image::BitmapData::readWrite);
-
-    auto channels = 0;
-
-    switch (src.getFormat())
-    {
-        case Image::ARGB:           channels = 4;
-        case Image::RGB:            channels = 3;
-        case Image::SingleChannel:  channels = 1;
-
-        default:
-            jassertfalse;
-            return {};
-        break;
-    };
-
-    // JUCE images may have padding at the end of each scan line.
-    // Avir expects the image data to be packed. So we need to
-    // pack and unpack the image data before and after resizing.
-    HeapBlock<uint8_t> srcPacked (src.getWidth() * src.getHeight() * channels);
-    HeapBlock<uint8_t> dstPacked (dst.getWidth() * dst.getHeight() * channels);
-
-    auto* rawSrc = srcPacked.getData();
-    auto* rawDst = dstPacked.getData();
-
-    for (int y = 0; y < src.getHeight(); y++)
-        std::memcpy (rawSrc + y * src.getWidth() * channels,
-                     srcData.getLinePointer (y),
-                     (size_t) (src.getWidth() * channels));
-
-   #if JUCE_INTEL
-    avir::CImageResizer<avir::fpclass_float4> imageResizer (8);
-    imageResizer.resizeImage (rawSrc, src.getWidth(), src.getHeight(), 0,
-                                rawDst, dst.getWidth(), dst.getHeight(), channels, 0);
-   #else
-    avir::CImageResizer<> imageResizer (8);
-    imageResizer.resizeImage (rawSrc, src.getWidth(), src.getHeight(), 0,
-                                    rawDst, dst.getWidth(), dst.getHeight(), channels, 0);
-   #endif
-
-    for (int y = 0; y < dst.getHeight(); y++)
-        std::memcpy (dstData.getLinePointer (y),
-                     rawDst + y * dst.getWidth() * channels,
-                     (size_t) (dst.getWidth() * channels));
-
-    return dst;
-   #else
-    ignoreUnused (width, height);
-
-    return src;
-   #endif //SQUAREPINE_USE_AVIR_RESIZER
-}
-//==============================================================================
 template<class T>
 void applyGradientMap (Image& img, const ColourGradient& gradient, ThreadPool* threadPool)
 {
@@ -834,13 +771,6 @@ void applyColour (Image& img, Colour c, ThreadPool* threadPool)
 }
 
 //==============================================================================
-Image applyResize (const Image& src, float factor)
-{
-    return applyResize (src,
-                        roundToInt (factor * src.getWidth()),
-                        roundToInt (factor * src.getHeight()));
-}
-
 void applyGradientMap (Image& img, const Colour c1, const Colour c2, ThreadPool* threadPool)
 {
     ColourGradient g;

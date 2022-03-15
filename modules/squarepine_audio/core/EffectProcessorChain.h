@@ -294,7 +294,9 @@ private:
 
     //==============================================================================
     std::shared_ptr<EffectProcessorFactory> factory;
-    std::vector<EffectProcessor::Ptr> plugins;
+    
+    using ContainerType = std::vector<EffectProcessor::Ptr>;
+    ContainerType plugins;
 
     std::atomic<int> requiredChannels { 0 };
 

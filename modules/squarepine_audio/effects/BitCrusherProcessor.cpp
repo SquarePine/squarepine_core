@@ -73,7 +73,7 @@ inline double crushBit (double sample, int bitDepth)
 //==============================================================================
 BitCrusherProcessor::BitCrusherProcessor()
 {
-    addParameter (bitDepth);
+    AudioProcessor::addParameter (bitDepth);
 }
 
 //==============================================================================

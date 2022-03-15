@@ -6,11 +6,11 @@ An assortment of modules that make a great addition to your JUCE app and plugin 
 
 The current license is ISC.
 
-Mind you, we'd rather something that requires you to not hide away and privately modify the code. And I'd rather issues and concerns be brought directly here. Till then, I'd appreciate any contributions flowing back this way!
+Mind you, we'd rather something that requires you to not hide away and privately modify the code. And we'd rather issues and concerns be brought directly here. Till then,   any contributions flowing back this way are much appreciated!
 
 # Library Goal
 
-Generally speaking, the point of this library is to provide an assortment of loosely related or unrelated JUCE-based tools, audio or GUI or otherwise, that you can pull up at any given time - and preferably with limited hassle. It should "Just Work TM" with your JUCE project (assuming you're using the latest `develop` branch of JUCE).
+Generally speaking, the point of this library is to provide an assortment of loosely related or unrelated JUCE-based tools, audio or GUI or otherwise, that you can pull up at any given time - and preferably with limited hassle. It should _"Just Work™"_ with your JUCE project (assuming you're using the latest `develop` branch of JUCE).
 
 The philosophy of this code is multi-part:
 

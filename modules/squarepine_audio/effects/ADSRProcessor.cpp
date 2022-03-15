@@ -1,9 +1,9 @@
 ADSRProcessor::ADSRProcessor()
 {
-    addParameter (new AudioParameterFloat ("attack", "Attack", 0.0f, 1.0f, 0.1f));
-    addParameter (new AudioParameterFloat ("decay", "Decay", 0.0f, 1.0f, 0.1f));
-    addParameter (new AudioParameterFloat ("sustain", "Sustain", 0.0f, 1.0f, 1.0f));
-    addParameter (new AudioParameterFloat ("release", "Release", 0.0f, 1.0f, 0.1f));
+    AudioProcessor::addParameter (new AudioParameterFloat ("attack", "Attack", 0.0f, 1.0f, 0.1f));
+    AudioProcessor::addParameter (new AudioParameterFloat ("decay", "Decay", 0.0f, 1.0f, 0.1f));
+    AudioProcessor::addParameter (new AudioParameterFloat ("sustain", "Sustain", 0.0f, 1.0f, 1.0f));
+    AudioProcessor::addParameter (new AudioParameterFloat ("release", "Release", 0.0f, 1.0f, 0.1f));
 }
 
 //==============================================================================

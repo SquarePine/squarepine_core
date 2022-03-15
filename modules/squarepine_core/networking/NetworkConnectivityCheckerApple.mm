@@ -16,8 +16,9 @@ namespace sp
 
     double getCurrentSystemRSSI()
     {
-        // According to [https://forums.developer.apple.com/thread/67932]
-        // Apple has has no interest on making RSSI available thru API
+        /** According to [https://forums.developer.apple.com/thread/67932],
+            Apple has has no interest in making RSSI available through its APIs.
+        */
         return 1.0;
     }
 }

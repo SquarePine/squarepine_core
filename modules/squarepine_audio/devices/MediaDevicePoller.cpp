@@ -71,8 +71,8 @@ StringArray MediaDevicePoller::getListOfChannelNames (bool giveMeInputDevices)
 //==============================================================================
 StringArray MediaDevicePoller::getListOfAudioInputDevices()                     { return getListOfAudioDevices (true); }
 StringArray MediaDevicePoller::getListOfAudioOutputDevices()                    { return getListOfAudioDevices (false); }
-StringArray MediaDevicePoller::getListOfMIDIInputDevices()                      { return MidiInput::getDevices(); }
-StringArray MediaDevicePoller::getListOfMIDIOutputDevices()                     { return MidiOutput::getDevices(); }
+Array<MidiDeviceInfo> MediaDevicePoller::getListOfMIDIInputDevices()            { return MidiInput::getAvailableDevices(); }
+Array<MidiDeviceInfo> MediaDevicePoller::getListOfMIDIOutputDevices()           { return MidiOutput::getAvailableDevices(); }
 StringArray MediaDevicePoller::getListOfInputChannelNames()                     { return getListOfChannelNames (true); }
 StringArray MediaDevicePoller::getListOfOutputChannelNames()                    { return getListOfChannelNames (false); }
 MediaDevicePoller::DeviceInfo MediaDevicePoller::getCurrentInputDeviceInfo()    { return getCurrentDeviceInfo (true); }
@@ -133,7 +133,8 @@ void MediaDevicePoller::handleAsyncUpdate()
 }
 
 //==============================================================================
-bool MediaDevicePoller::wasDeviceAdded (const StringArray& newList, const StringArray& oldList) noexcept
+template<typename ArrayType>
+bool MediaDevicePoller::wasDeviceAdded (const ArrayType& newList, const ArrayType& oldList)
 {
     return newList.size() > oldList.size();
 }
@@ -149,7 +150,19 @@ String MediaDevicePoller::getChangedDeviceName (const StringArray& newList, cons
             : newList.strings.getFirst();
 }
 
-void MediaDevicePoller::checkForDeviceChange (const StringArray& arrayNew, StringArray& arrayOld)
+String MediaDevicePoller::getChangedDeviceName (const Array<MidiDeviceInfo>& newList, const Array<MidiDeviceInfo>& oldList)
+{
+    for (const auto& s : newList)
+        if (! oldList.contains (s))
+            return s.name;
+
+    return newList.isEmpty()
+            ? oldList.getFirst().name
+            : newList.getFirst().name;
+}
+
+template<typename ArrayType>
+void MediaDevicePoller::checkForDeviceChange (const ArrayType& arrayNew, ArrayType& arrayOld)
 {
     jassert (&arrayNew != &arrayOld);
 

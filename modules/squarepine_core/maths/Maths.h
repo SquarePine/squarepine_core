@@ -44,6 +44,22 @@ inline AffineTransform createTranslationAndScale (float x, float y, float scale)
 }
 
 //==============================================================================
+/** @returns the magnitude of a set of coordinates. */
+template<typename ValueType>
+inline ValueType getMagnitude (ValueType x, ValueType y)
+{
+    return (ValueType) std::sqrt (square ((double) x) + square ((double) y));
+}
+
+
+/** @returns the magnitude of a point. */
+template<typename ValueType>
+inline ValueType getMagnitude (juce::Point<ValueType> p)
+{
+    return getMagnitude (p.x, p.y);
+}
+
+//==============================================================================
 /** @returns true if the given value number is odd. */
 template<typename Type>
 constexpr bool isOdd (Type value) noexcept      { return (value % 2) != 0; }
@@ -101,31 +117,45 @@ constexpr IntegralType ipow (IntegralType base, IntegralType exponent) noexcept
         : base * ipow (base, exponent - 1);
 }
 
-/** @returns the smallest power-of-two which is equal to or greater than the given integer. */
-inline int64 nextPowerOfTwo (int64 n) noexcept
+/** @returns the smallest power-of-two which is equal to or greater than the given value. */
+template<typename Type>
+inline Type nextPowerOfTwo (Type x) noexcept
 {
-    int64 power = 1;
-    while (power < n)
-        power *= 2;
+    jassert (x >= 0);
+
+    auto power = static_cast<Type> (1);
+    while (power < x)
+        power *= static_cast<Type> (2);
 
     return power;
 }
 
-/** @returns the largest power-of-two which is equal to or less than the given IntegralType.
+/** @returns the largest power-of-two which is equal to or less than the given value.
 
     e.g. the previous power of two for 566 is 512.
-
-    @param x
 */
 template<typename IntegralType>
 inline IntegralType previousPowerOfTwo (IntegralType x) noexcept
 {
+    jassert (x >= 0);
+
     constexpr auto m = (IntegralType) sizeof (IntegralType) * (IntegralType) CHAR_BIT;
 
     for (IntegralType i = 0; ipow ((IntegralType) 2, i) < m; ++i)
         x |= x >> ipow ((IntegralType) 2, i);
 
     return x - (x >> 1);
+}
+
+/** @returns the largest power-of-two which is equal to or less than the given value.
+
+    e.g. the previous power of two for 566.24 is 512.
+*/
+template<typename FloatType, typename std::enable_if<std::is_floating_point<FloatType>::value>::type* = nullptr>
+inline FloatType previousPowerOfTwo (FloatType x) noexcept
+{
+    const auto integralValue = (int64) roundToIntAccurate (x);
+    return (FloatType) previousPowerOfTwo (integralValue);
 }
 
 //==============================================================================
@@ -576,7 +606,7 @@ inline double midiNoteToFrequency (int midiNoteNumber) noexcept
     @param source   The source file to hash.
     @param hash     The destination hash, which will be empty if anything failed.
 
-    @returns ok if the file could be hashed.
+    @returns a non-empty string if the file could be hashed.
 */
 template<typename HasherType = juce::SHA256>
 inline String createUniqueFileHash (const File& source)

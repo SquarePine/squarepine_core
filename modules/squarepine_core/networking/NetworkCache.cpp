@@ -125,16 +125,19 @@ bool NetworkResponse::fetch()
 
         if (f.exists())
         {
-            jassertfalse; //This is probably wrong and needs to be dynamically assessed somehow...
+            jassertfalse; // This is probably wrong and needs to be dynamically assessed somehow...
         }
 
         if (storedLocation.existsAsFile())
             storedLocation.deleteRecursively (true);
     }
 
-    reset(); //This is also probably wrong...
+    reset(); // This is also probably wrong...
 
-    stream.reset (dynamicCastUniquePtr<WebInputStream> (url.createInputStream (false)).release());
+    if (auto s = url.createInputStream (URL::InputStreamOptions (URL::ParameterHandling::inAddress)))
+        stream.reset (dynamicCastUniquePtr<WebInputStream> (std::unique_ptr<InputStream> (s.release())).release());
+    else
+        stream.reset();
 
     cache.responseDate = getNow();
     if (stream == nullptr)
@@ -169,19 +172,19 @@ bool NetworkResponse::fetch()
 
 const StringPairArray& NetworkResponse::getResponseHeaders() const
 {
-    jassert (stream != nullptr); //You didn't fetch the stream data yet...
+    jassert (stream != nullptr); // You didn't fetch the stream data yet...
     return responseHeaders;
 }
 
 const MemoryBlock& NetworkResponse::getBody() const
 {
-    jassert (stream != nullptr); //You didn't fetch the stream data yet...
+    jassert (stream != nullptr); // You didn't fetch the stream data yet...
     return body;
 }
 
 bool NetworkResponse::supportsCaching() const
 {
-    jassert (stream != nullptr); //You didn't fetch the stream data yet...
+    jassert (stream != nullptr); // You didn't fetch the stream data yet...
     return stream != nullptr
         && cache.type.canBeCachedAndStored();
 }

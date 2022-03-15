@@ -6,25 +6,25 @@
     @param falloff      Relative size of inner boundry of vignette 0,1
     @param threadPool
 */
-void applyVignette (Image& img, float amount, float radius, float falloff, ThreadPool* threadPool = nullptr);
+void applyVignette (Image&, float amount, float radius, float falloff, ThreadPool* threadPool = nullptr);
 
 /** Make it look old */
-void applySepia (Image& img, ThreadPool* threadPool = nullptr);
+void applySepia (Image&, ThreadPool* threadPool = nullptr);
 
 /** Converts image to B/W, heavier weighting towards greens */
-void applyGreyScale (Image& img, ThreadPool* threadPool = nullptr);
+void applyGreyScale (Image&, ThreadPool* threadPool = nullptr);
 
 /** Softens an image */
-void applySoften (Image& img, ThreadPool* threadPool = nullptr);
+void applySoften (Image&, ThreadPool* threadPool = nullptr);
 
 /** Sharpens an image */
-void applySharpen (Image& img, ThreadPool* threadPool = nullptr);
+void applySharpen (Image&, ThreadPool* threadPool = nullptr);
 
 /** */
-void applyGamma (Image& img, float gamma, ThreadPool* threadPool = nullptr);
+void applyGamma (Image&, float gamma, ThreadPool* threadPool = nullptr);
 
 /** Inverts colours of an image */
-void applyInvert (Image& img, ThreadPool* threadPool = nullptr);
+void applyInvert (Image&, ThreadPool* threadPool = nullptr);
 
 /** Adjust contrast of an image
 
@@ -33,7 +33,7 @@ void applyInvert (Image& img, ThreadPool* threadPool = nullptr);
                     Negative values increase, positive values increase
     @param threadPool
 */
-void applyContrast (Image& img, float contrast, ThreadPool* threadPool = nullptr);
+void applyContrast (Image&, float contrast, ThreadPool* threadPool = nullptr);
 
 /** Adjust brightness and contrast of an image
 
@@ -42,7 +42,7 @@ void applyContrast (Image& img, float contrast, ThreadPool* threadPool = nullptr
     @param contrast     Amount to adjust contrast -100,100
     @param threadPool
 */
-void applyBrightnessContrast (Image& img, float brightness, float contrast, ThreadPool* threadPool = nullptr);
+void applyBrightnessContrast (Image&, float brightness, float contrast, ThreadPool* threadPool = nullptr);
 
 /** Adjust hue, saturation and lightness of an image
 
@@ -52,40 +52,30 @@ void applyBrightnessContrast (Image& img, float brightness, float contrast, Thre
     @param lightness    Amount to adjust lightness -100,100
     @param threadPool
 */
-void applyHueSaturationLightness (Image& img, float hue, float saturation, float lightness, ThreadPool* threadPool = nullptr);
+void applyHueSaturationLightness (Image&, float hue, float saturation, float lightness, ThreadPool* threadPool = nullptr);
 
 /** A very fast blur. This is a compromise between Gaussian Blur and Box blur.
     It creates much better looking blurs than Box Blur, but is 7x faster than some Gaussian Blur
     implementations.
 
-    @param img
+    @param image
     @param radius From 2 to 254.
 */
-void applyStackBlur (Image& img, int radius);
+void applyStackBlur (Image&, int radius);
 
 //==============================================================================
-/** A very high quality image resize using a bank of sinc
-    function-based fractional delay filters.
+/** GradientMap a image.
+    Brightness gets remapped to colour on a gradient.
 */
-Image applyResize (const Image& img, int width, int height);
-
-/** A very high quality image resize using a bank of sinc
-    function-based fractional delay filters.
-*/
-Image applyResize (const Image& img, float factor);
+void applyGradientMap (Image&, const ColourGradient&, ThreadPool* threadPool = nullptr);
 
 /** GradientMap a image.
     Brightness gets remapped to colour on a gradient.
 */
-void applyGradientMap (Image& img, const ColourGradient& gradient, ThreadPool* threadPool = nullptr);
-
-/** GradientMap a image.
-    Brightness gets remapped to colour on a gradient.
-*/
-void applyGradientMap (Image& img, Colour c1, Colour c2, ThreadPool* threadPool = nullptr);
+void applyGradientMap (Image&, Colour c1, Colour c2, ThreadPool* threadPool = nullptr);
 
 /** Set an image to a solid colour. */
-void applyColour (Image& img, Colour c, ThreadPool* threadPool = nullptr);
+void applyColour (Image&, Colour, ThreadPool* threadPool = nullptr);
 
 //==============================================================================
 /** Blending modes for applyBlend */
@@ -119,10 +109,10 @@ enum class BlendMode
 };
 
 /** Blend two images */
-void applyBlend (Image& dst, const Image& src, BlendMode mode,
+void applyBlend (Image& dest, const Image& source, BlendMode mode,
                  float alpha = 1.0f, Point<int> position = {},
                  ThreadPool* threadPool = nullptr);
 
 /** Blend two images */
-void applyBlend (Image& dst, BlendMode mode, Colour c,
+void applyBlend (Image& dest, BlendMode mode, Colour c,
                  ThreadPool* threadPool = nullptr);

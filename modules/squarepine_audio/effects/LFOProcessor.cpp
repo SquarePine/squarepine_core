@@ -1,7 +1,7 @@
 LFOProcessor::LFOProcessor() :
     lfo (new SineLFO())
 {
-    addParameter (frequency = new AudioParameterFloat ("frequency", "Frequency", 1.f, 20000.f, 440.f));
+    AudioProcessor::addParameter (frequency = new AudioParameterFloat ("frequency", "Frequency", 1.0f, 20000.f, 440.f));
 }
 
 //==============================================================================
