@@ -210,6 +210,259 @@ private:
     }
 };
 
+// Added this class temporarily for the HPF. Eventually we will want to use a better model of the SEM HPF
+class DigitalFilter
+{
+public:
+    
+    enum FilterType {LPF, HPF, BPF1, BPF2, NOTCH, LSHELF, HSHELF, PEAK, APF};
+    
+    void setFilterType (FilterType filterTypeParam)
+    {
+        this->filterType = filterTypeParam;
+    }
+    
+    double processSample(double x, int channel)
+    {
+        performSmoothing();
+        
+        // Output, processed sample (Direct Form 1)
+        double y = b0 * x + b1 * x1[channel] + b2 * x2[channel]
+                + (-a1) * y1[channel] + (-a2) * y2[channel];
+
+        x2[channel] = x1[channel]; // store delay samples for next process step
+        x1[channel] = x;
+        y2[channel] = y1[channel];
+        y1[channel] = y;
+
+        return y;
+    }
+
+    void setFs(double newFs)
+    {
+        Fs = newFs;
+        updateCoefficients(); // Need to update if Fs changes
+    }
+
+    void setFreq(double newFreq)
+    {
+        freqTarget = jlimit(20.0, 20000.0, newFreq);
+        updateCoefficients();
+    }
+
+    void setQ(double newQ)
+    {
+        qTarget = jlimit(0.1, 10.0, newQ);
+        updateCoefficients();
+    }
+
+    void setAmpdB(double newAmpdB)
+    {
+        ampdB = newAmpdB;
+
+        updateCoefficients();
+    }
+
+private:
+    FilterType filterType = LPF;
+
+    double Fs = 48000.0; // Sampling Rate
+
+    // Variables for User to Modify Filter
+    double freqTarget = 20.0; // frequency in Hz
+    double freqSmooth = 20.0;
+    double qTarget = 0.707; // Q => [0.1 - 10]
+    double qSmooth = 0.707;
+    double ampdB = 0.0; // Amplitude on dB scale
+
+    // Variables for Biquad Implementation
+    // 2 channels - L,R : Up to 2nd Order
+    double x1[2] = { 0.0 }; // 1 sample of delay feedforward
+    double x2[2] = { 0.0 }; // 2 samples of delay feedforward
+    double y1[2] = { 0.0 }; // 1 sample of delay feedback
+    double y2[2] = { 0.0 }; // 2 samples of delay feedback
+
+    // Filter coefficients
+    double b0 = 1.0; // initialized to pass signal
+    double b1 = 0.0; // without filtering
+    double b2 = 0.0;
+    double a0 = 1.0;
+    double a1 = 0.0;
+    double a2 = 0.0;
+    
+    void performSmoothing()
+    {
+        float alpha = 0.9999f;
+        freqSmooth = alpha * freqSmooth + (1.f - alpha) * freqTarget;
+        qSmooth    = alpha * qSmooth    + (1.f - alpha) * qTarget;
+        
+    }
+    void updateCoefficients()
+    {
+        double A = std::pow(10.0, ampdB / 40.0); // Linear amplitude
+        
+        // Normalize frequency
+        double w0 = (2.0 * M_PI) * freqSmooth / Fs;
+        
+        // Bandwidth/slope/resonance parameter
+        double alpha = std::sin(w0) / (2.0 * qSmooth);
+        
+        double cw0 = std::cos(w0);
+        switch (filterType)
+        {
+            case LPF:
+            {
+                a0 = 1.0 + alpha;
+                double B0 = (1.0 - cw0) / 2.0;
+                b0 = B0/a0;
+                double B1 = 1.0 - cw0;
+                b1 = B1/a0;
+                double B2 = (1.0 - cw0) / 2.0;
+                b2 = B2/a0;
+                double A1 = -2.0 * cw0;
+                a1 = A1/a0;
+                double A2 = 1.0 - alpha;
+                a2 = A2/a0;
+                break;
+            }
+            case HPF:
+            {
+                a0 = 1.0 + alpha;
+                double B0 = (1.0 + cw0) / 2.0;
+                b0 = B0/a0;
+                double B1 = -(1.0 + cw0);
+                b1 = B1/a0;
+                double B2 = (1.0 + cw0) / 2.0;
+                b2 = B2/a0;
+                double A1 = -2.0 * cw0;
+                a1 = A1/a0;
+                double A2 = 1.0 - alpha;
+                a2 = A2/a0;
+                break;
+            }
+            case BPF1:
+            {
+                double sw0 = std::sin(w0);
+                a0 = 1.0 + alpha;
+                double B0 = sw0 / 2.0;
+                b0 = B0/a0;
+                double B1 = 0.0;
+                b1 = B1/a0;
+                double B2 = -sw0 / 2.0;
+                b2 = B2/a0;
+                double A1 = -2.0 * cw0;
+                a1 = A1/a0;
+                double A2 = 1.0 - alpha;
+                a2 = A2/a0;
+                break;
+            }
+            case BPF2:
+            {
+                a0 = 1.0 + alpha;
+                double B0 = alpha;
+                b0 = B0/a0;
+                double B1 = 0.0;
+                b1 = B1/a0;
+                double B2 = -alpha;
+                b2 = B2/a0;
+                double A1 = -2.0 * cw0;
+                a1 = A1/a0;
+                double A2 = 1.0 - alpha;
+                a2 = A2/a0;
+
+                break;
+            }
+            case NOTCH:
+            {
+                a0 = 1.0 + alpha;
+                double B0 = 1.0;
+                b0 = B0/a0;
+                double B1 = -2.0 * cw0;
+                b1 = B1/a0;
+                double B2 = 1.0;
+                b2 = B2/a0;
+                double A1 = -2.0 * cw0;
+                a1 = A1/a0;
+                double A2 = 1.0 - alpha;
+                a2 = A2/a0;
+                break;
+            }
+            case LSHELF:
+            {
+                double sqA = std::sqrt(A);
+                a0 = (A + 1.0) + (A - 1.0) * cw0 + 2.0 * sqA * alpha;
+                double B0 = A * ((A + 1.0) - (A - 1.0) * cw0 + 2.0 * sqA * alpha);
+                b0 = B0/a0;
+                double B1 = 2.0 * A * ((A - 1.0) - (A + 1.0) * cw0);
+                b1 = B1/a0;
+                double B2 = A * ((A + 1.0) - (A - 1.0) * cw0 - 2.0 * sqA * alpha);
+                b2 = B2/a0;
+                double A1 = -2.0 * ((A - 1.0) + (A + 1.0) * cw0);
+                a1 = A1/a0;
+                double A2 = (A + 1.0) + (A - 1.0) * cw0 - 2.0 * sqA * alpha;
+                a2 = A2/a0;
+
+                break;
+            }
+
+            case HSHELF:
+            {
+                double sqA = std::sqrt(A);
+                a0 = (A + 1.0) - (A - 1.0) * cw0 + 2.0 * sqA * alpha;
+                double B0 = A * ((A + 1.0) + (A - 1.0) * cw0 + 2.0 * sqA * alpha);
+                b0 = B0/a0;
+                double B1 = -2.0 * A * ((A - 1.0) + (A + 1.0) * cw0);
+                b1 = B1/a0;
+                double B2 = A * ((A + 1.0) + (A - 1.0) * cw0 - 2.0 * sqA * alpha);
+                b2 = B2/a0;
+                double A1 = 2.0 * ((A - 1.0) - (A + 1.0) * cw0);
+                a1 = A1/a0;
+                double A2 = (A + 1.0) - (A - 1.0) * cw0 - 2.0 * sqA * alpha;
+                a2 = A2/a0;
+
+                break;
+            }
+
+            case PEAK:
+
+            {
+                a0 = 1.0 + alpha / A;
+                double B0 = 1.0 + alpha * A;
+                b0 = B0/a0;
+                double B1 = -2.0 * cw0;
+                b1 = B1/a0;
+                double B2 = 1.0 - alpha * A;
+                b2 = B2/a0;
+                double A1 = -2.0 * cw0;
+                a1 = A1/a0;
+                double A2 = 1.0 - alpha / A;
+                a2 = A2/a0;
+                
+                break;
+            }
+
+            case APF:
+            {
+                a0 = 1.0 + alpha;
+                double B0 = 1.0 - alpha;
+                b0 = B0/a0;
+                double B1 = -2.0 * cw0;
+                b1 = B1/a0;
+                double B2 = 1.0 + alpha;
+                b2 = B2/a0;
+                double A1 = -2.0 * cw0;
+                a1 = A1/a0;
+                double A2 = 1.0 - alpha;
+                a2 = A2/a0;
+
+                break;
+            }
+        }
+    }
+};
+
+
+
 // The SEMFilter in the DJDAW is a combination of both a LPF and HPF
 // By changing the value of the cut-off parameter to be above 0 (halfway),
 // the filter becomes a HPF. If the value is below 0, it is a LPF
@@ -288,9 +541,14 @@ public:
         const ScopedLock sl (getCallbackLock());
         lpf.prepareToPlay (Fs, bufferSize);
         hpf.prepareToPlay (Fs, bufferSize);
-        mixLPF.reset (Fs, 0.0001f);
-        mixHPF.reset (Fs, 0.0001f);
+        mixLPF.reset (Fs, 0.001f);
+        mixHPF.reset (Fs, 0.001f);
         setRateAndBufferSizeDetails (Fs, bufferSize);
+        
+        hpf2.setFs (Fs);
+        hpf2.setFreq (20.f);
+        hpf2.setQ (std::sqrt(2.f));
+        hpf2.setFilterType (DigitalFilter::FilterType::HPF);
     }
     
     //==============================================================================
@@ -308,6 +566,9 @@ public:
         { // Frequency change
             lpf.setNormFreq (jmin(1.f,value+1.f));
             hpf.setNormFreq (jmax(0.0001f,value));
+            
+            float freqHz = 2.f * std::powf(10.f,3.f * jmax(0.0001f,value) + 1.f);
+            hpf2.setFreq (freqHz);
             
             if (value < 0.f)
             {
@@ -329,6 +590,8 @@ public:
         { // Resonance change
             lpf.setQValue (value);
             hpf.setQValue (value);
+            
+            hpf2.setQ (value);
         }
     }
     
@@ -356,7 +619,7 @@ public:
                 y = (1.f - mix) * x + mix * lpf.processSample (x,c);
                 
                 mix = mixHPF.getNextValue();
-                y = (1.f - mix) * y + mix * hpf.processSample (y,c);
+                y = (1.f - mix) * y + mix * (float) hpf2.processSample (y,c);
                 buffer.getWritePointer (c)[s] = y;
             }
         }
@@ -405,4 +668,5 @@ private:
     
     SEMLowPassFilter lpf;
     SEMHighPassFilter hpf;
+    DigitalFilter hpf2; // Use for now. Swap out later for a better model of  the SEMHighPassFilter
 };
