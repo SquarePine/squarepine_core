@@ -2,17 +2,20 @@
 class FileSorter final
 {
 public:
+    /** */
     FileSorter (bool ascending = true, bool shouldBeCaseSensitive = false) noexcept :
         mult (ascending ? 1 : -1),
         caseSensitive (shouldBeCaseSensitive)
     {
     }
 
+    /** */
     int compareElements (const String& firstPath, const String& secondPath) const noexcept
     {
         return firstPath.compareNatural (secondPath, caseSensitive) * mult;
     }
 
+    /** */
     int compareElements (const File& first, const File& second) const noexcept
     {
         return compareElements (first.getFullPathName(), second.getFullPathName());
@@ -33,8 +36,10 @@ private:
 class OffloadedTimer final : public Timer
 {
 public:
+    /** */
     OffloadedTimer() = default;
 
+    /** */
     void timerCallback() override
     {
         if (callback != nullptr)
@@ -54,8 +59,10 @@ private:
 class OffloadedTimerHighRes final : public HighResolutionTimer
 {
 public:
+    /** */
     OffloadedTimerHighRes() = default;
 
+    /** */
     void hiResTimerCallback() override
     {
         if (callback != nullptr)
@@ -69,21 +76,25 @@ private:
 };
 
 //==============================================================================
+/** */
 class AccurateTimer final : public Thread,
                             public Lockable
 {
 public:
+    /** */
     AccurateTimer() :
         Thread ("AccurateTimerTM")
     {
     }
 
+    /** */
     ~AccurateTimer() override
     {
         shutdownThreadSafely (*this);
     }
 
     //==============================================================================
+    /** */
     void startTimer (double newIntervalSeconds) 
     {
         intervalSeconds.store (jmax (newIntervalSeconds, 0.0));
@@ -92,21 +103,25 @@ public:
             startThread();
     }
 
+    /** */
     void startTimer (int intervalInMilliseconds) 
     {
         startTimer (RelativeTime::milliseconds (intervalInMilliseconds).inSeconds());
     }
 
+    /** */
     void startTimerHz (int timerFrequencyHz) 
     {
         startTimer (1000.0 / static_cast<double> (timerFrequencyHz) / 1000.0);
     }
 
+    /** */
     void stopTimer()
     {
         shutdownThreadSafely (*this);
     }
 
+    /** */
     double getIntervalSeconds() const noexcept { return intervalSeconds.load(); }
 
     //==============================================================================
@@ -331,7 +346,7 @@ inline String getDemangledName (ObjectType* c)
 }
 
 //==============================================================================
-/** */
+/** @returns the operating system's maximum length of a path. */
 inline int getMaxPathLength()
 {
     int maxLength = 128;
@@ -348,4 +363,28 @@ inline int getMaxPathLength()
    #endif
 
     return jmax (128, maxLength);
+}
+
+//==============================================================================
+/** @returns a unique hash representing the user's system. */
+inline String createSystemHash()
+{
+    MemoryBlock data;
+
+    {
+        Array<File> roots;
+        File::findFileSystemRoots (roots);
+
+        MemoryOutputStream mos (data, false);
+        for (const auto& r : roots)
+            if (! (r.isOnRemovableDrive() || r.isOnCDRomDrive() || r.isSymbolicLink()))
+                mos << r.hashCode64();
+
+        mos
+            << SystemStats::getLogonName()
+            << SystemStats::getFullUserName()
+            << SystemStats::getComputerName();
+    }
+
+    return SHA256 (data).toHexString();
 }
