@@ -41,6 +41,8 @@ public:
 
         @param trackingId This is NOT an optional parameter, so be sure this is not empty.
                           It should look something like this: UA-00000000-0.
+
+        @see getDefaultClientId()
     */
     GoogleAnalyticsMetadata (const String& trackingId,
                              const String& clientId = getDefaultClientId(),
@@ -64,10 +66,10 @@ public:
     static String getDefaultClientId();
 
     //==============================================================================
-    /** */
+    /** @returns the raw string pair array that the metadata wraps. */
     const StringPairArray& getData() const noexcept { return data; }
 
-    /** */
+    /** @returns the raw string pair array that the metadata wraps. */
     operator const StringPairArray&() const noexcept { return data; }
 
     //==============================================================================
