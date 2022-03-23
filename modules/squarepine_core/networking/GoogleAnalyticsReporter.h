@@ -39,18 +39,24 @@ public:
         - Client Id: 'cid'
         - Hit Type: 't'
 
-        @param trackingId This is NOT an optional parameter, so be sure this is not empty
-                              and looks something like: UA-00000000-0.
+        @param trackingId This is NOT an optional parameter, so be sure this is not empty.
+                          It should look something like this: UA-00000000-0.
     */
     GoogleAnalyticsMetadata (const String& trackingId,
                              const String& clientId = getDefaultClientId(),
                              HitType hitType = HitType::event);
 
+    /** */
     GoogleAnalyticsMetadata (const GoogleAnalyticsMetadata&);
+    /** */
     GoogleAnalyticsMetadata (GoogleAnalyticsMetadata&&);
+    /** */
     ~GoogleAnalyticsMetadata();
 
+    //==============================================================================
+    /** */
     GoogleAnalyticsMetadata& operator= (const GoogleAnalyticsMetadata&);
+    /** */
     GoogleAnalyticsMetadata& operator= (GoogleAnalyticsMetadata&&);
 
     //==============================================================================
@@ -65,94 +71,179 @@ public:
     operator const StringPairArray&() const noexcept { return data; }
 
     //==============================================================================
+    /** */
     GoogleAnalyticsMetadata& withProtocolVersion (const String& v);
+    /** */
     GoogleAnalyticsMetadata& withTrackingId (const String& tid);
+    /** */
     GoogleAnalyticsMetadata& withAnonymisedIp (bool aip);
+    /** */
     GoogleAnalyticsMetadata& withDataSource (const String& ds);
+    /** */
     GoogleAnalyticsMetadata& withQueueTimeMs (int qt);
+    /** */
     GoogleAnalyticsMetadata& withCacheBuster (const String& z);
+    /** */
     GoogleAnalyticsMetadata& withClientId (const String& cid);
+    /** */
     GoogleAnalyticsMetadata& withUserId (const String& uid);
+    /** */
     GoogleAnalyticsMetadata& withSessionControl (const String& sc);
+    /** */
     GoogleAnalyticsMetadata& withIpOverride (const String& uip);
+    /** */
     GoogleAnalyticsMetadata& withUserAgentOverride (const String& ua);
+    /** */
     GoogleAnalyticsMetadata& withGeographicalOverride (const String& geoid);
+    /** */
     GoogleAnalyticsMetadata& withDocumentReferrer (const String& dr);
+    /** */
     GoogleAnalyticsMetadata& withCampaignName (const String& cn);
+    /** */
     GoogleAnalyticsMetadata& withCampaignSource (const String& cs);
+    /** */
     GoogleAnalyticsMetadata& withCampaignMedium (const String& cm);
+    /** */
     GoogleAnalyticsMetadata& withCampaignKeyword (const String& ck);
+    /** */
     GoogleAnalyticsMetadata& withCampaignContent (const String& cc);
+    /** */
     GoogleAnalyticsMetadata& withCampaignId (const String& ci);
+    /** */
     GoogleAnalyticsMetadata& withGoogleAdWordsId (const String& gclid);
+    /** */
     GoogleAnalyticsMetadata& withGoogleDisplayAdsId (const String& dclid);
 
+    /** */
     GoogleAnalyticsMetadata& withScreenResolution (const String& sr);
+    /** */
     GoogleAnalyticsMetadata& withScreenResolution (int w, int h);
     /** Takes the entire multi-monitor screen resolution area as information. */
     GoogleAnalyticsMetadata& withScreenResolution();
 
+    /** */
     GoogleAnalyticsMetadata& withViewportSize (const String& vp);
+    /** */
     GoogleAnalyticsMetadata& withViewportSize (int w, int h);
+    /** */
     GoogleAnalyticsMetadata& withViewportSize();
+    /** */
     GoogleAnalyticsMetadata& withDocumentEncoding (const String& de);
+    /** */
     GoogleAnalyticsMetadata& withScreenColours (const String& sd);
+    /** */
     GoogleAnalyticsMetadata& withUserLanguage (const String& ul);
+    /** */
     GoogleAnalyticsMetadata& withHitType (HitType hitType);
+    /** */
     GoogleAnalyticsMetadata& withNonInteractionHit (bool ni = true);
+    /** */
     GoogleAnalyticsMetadata& withDocumentLocationUrl (const String& dl);
+    /** */
     GoogleAnalyticsMetadata& withDocumentHostName (const String& dh);
+    /** */
     GoogleAnalyticsMetadata& withDocumentPath (const String& dp);
+    /** */
     GoogleAnalyticsMetadata& withDocumentTitle (const String& dt);
+    /** */
     GoogleAnalyticsMetadata& withScreenName (const String& cd);
+    /** */
     GoogleAnalyticsMetadata& withLinkId (const String& linkid);
+    /** */
     GoogleAnalyticsMetadata& withApplicationName (const String& an);
+    /** */
     GoogleAnalyticsMetadata& withApplicationId (const String& aid);
+    /** */
     GoogleAnalyticsMetadata& withApplicationVersion (const String& av);
+    /** */
     GoogleAnalyticsMetadata& withApplicationInstallerId (const String& aiid);
+    /** */
     GoogleAnalyticsMetadata& withEventCategory (const String& ec);
+    /** */
     GoogleAnalyticsMetadata& withEventAction (const String& ea);
+    /** */
     GoogleAnalyticsMetadata& withEventLabel (const String& el);
+    /** */
     GoogleAnalyticsMetadata& withEventValue (int ev);
+    /** */
     GoogleAnalyticsMetadata& withTransactionId (const String& ti);
+    /** */
     GoogleAnalyticsMetadata& withTransactionAffiliation (const String& ta);
+    /** */
     GoogleAnalyticsMetadata& withTransactionRevenue (const String& tr);
+    /** */
     GoogleAnalyticsMetadata& withTransactionShipping (const String& ts);
+    /** */
     GoogleAnalyticsMetadata& withTransactionTax (const String& tt);
+    /** */
     GoogleAnalyticsMetadata& withItemName (const String& in);
+    /** */
     GoogleAnalyticsMetadata& withItemPrice (const String& ip);
+    /** */
     GoogleAnalyticsMetadata& withItemQuantity (int iq);
+    /** */
     GoogleAnalyticsMetadata& withItemCode (const String& ic );
+    /** */
     GoogleAnalyticsMetadata& withItemCategory (const String& iv);
+    /** */
     GoogleAnalyticsMetadata& withProductAction (const String& pa);
+    /** */
     GoogleAnalyticsMetadata& withAffiliation (const String& ta);
+    /** */
     GoogleAnalyticsMetadata& withRevenue (const String& tr);
+    /** */
     GoogleAnalyticsMetadata& withTax (const String& tt);
+    /** */
     GoogleAnalyticsMetadata& withShipping (const String& ts);
+    /** */
     GoogleAnalyticsMetadata& withCouponCode (const String& tcc);
+    /** */
     GoogleAnalyticsMetadata& withProductActionList (const String& pal);
+    /** */
     GoogleAnalyticsMetadata& withCheckoutStep (int cos);
+    /** */
     GoogleAnalyticsMetadata& withCheckoutStepOption (const String& col);
+    /** */
     GoogleAnalyticsMetadata& withPromotionAction (const String& promoa);
+    /** */
     GoogleAnalyticsMetadata& withCurrencyCode (const String& cu);
+    /** */
     GoogleAnalyticsMetadata& withSocialNetwork (const String& sn);
+    /** */
     GoogleAnalyticsMetadata& withSocialAction (const String& sa);
+    /** */
     GoogleAnalyticsMetadata& withSocialActionTarget (const String& st);
+    /** */
     GoogleAnalyticsMetadata& withUserTimingCategory (const String& utc);
+    /** */
     GoogleAnalyticsMetadata& withUserTimingVariableName (const String& utv);
+    /** */
     GoogleAnalyticsMetadata& withUserTimingTimeMs (int utt);
+    /** */
     GoogleAnalyticsMetadata& withUserTimingLabel (const String& utl);
+    /** */
     GoogleAnalyticsMetadata& withPageLoadTime (const String& plt);
+    /** */
     GoogleAnalyticsMetadata& withDNSTimeMs (int dns);
+    /** */
     GoogleAnalyticsMetadata& withPageDownloadTimeMs (int pdt);
+    /** */
     GoogleAnalyticsMetadata& withRedirectResponseTimeMs (int rrt);
+    /** */
     GoogleAnalyticsMetadata& withTCPConnectTimeMs (int tcp);
+    /** */
     GoogleAnalyticsMetadata& withServerResponseTimeMs (int srt);
+    /** */
     GoogleAnalyticsMetadata& withDOMInteractiveTimeMs (int dit);
+    /** */
     GoogleAnalyticsMetadata& withContentLoadTimeMs (int clt);
+    /** */
     GoogleAnalyticsMetadata& withExceptionDescription (const String& exd);
+    /** */
     GoogleAnalyticsMetadata& withIsExceptionFatal (bool exf = true);
+    /** */
     GoogleAnalyticsMetadata& withCustomDimension (int index, const String& value);
+    /** */
     GoogleAnalyticsMetadata& withCustomDimensions (int startIndex, const StringArray& values);
 
     /** @see https://developers.google.com/analytics/devguides/collection/analyticsjs/custom-dims-mets */
@@ -170,13 +261,16 @@ public:
     /** @todo */
     GoogleAnalyticsMetadata& withExperimentVariant (const String& value);
 
+    /** */
     GoogleAnalyticsMetadata& with (const String& key, const String& value, int maxSizeBytes = -1);
+    /** */
     GoogleAnalyticsMetadata& with (const String& key, int index, const String& value, int maxSizeBytes = -1);
 
 private:
     //==============================================================================
     StringPairArray data;
 
+    //==============================================================================
     JUCE_LEAK_DETECTOR (GoogleAnalyticsMetadata)
 };
 
@@ -193,7 +287,7 @@ public:
     /** Constructor.
 
         @param address Typically this is the default Google Analytics end-point to POST to,
-                           but Google doesn't change this so a default parameter has been set.
+                       but Google doesn't change this so a default parameter has been set.
     */
     GoogleAnalyticsReporter (const URL& endPointAddress = URL ("https://www.google-analytics.com/collect"));
 
@@ -226,16 +320,16 @@ public:
     /** Sends a customised report.
 
         @param parameters The group of parameters Google Analytics can understand.
-                              For an easier means of filling these out, use GoogleAnalyticsMetadata.
+                          For an easier means of filling these out, use GoogleAnalyticsMetadata.
     */
     bool sendReport (const StringPairArray& parameters, ReportType type = ReportType::threadedReport);
 
     /** Sends a customised report.
 
         @param userAgent    The user agent to use. If you don't know what this should be,
-                                use the other version of this method.
+                            use the other version of this method.
         @param parameters   The group of parameters Google Analytics can understand.
-                                For an easier means of filling these out, use GoogleAnalyticsMetadata.
+                            For an easier means of filling these out, use GoogleAnalyticsMetadata.
     */
     bool sendReport (const String& userAgent, const StringPairArray& parameters, ReportType type = ReportType::threadedReport);
 
@@ -259,14 +353,14 @@ public:
         will definitely mess with your reports and previously logged custom dimensions!
 
         @param trackingId   This is the 'tid' that will be set in the parameters.
-                                This is NOT an optional parameter, so be sure this is not empty
-                                and looks something like: UA-00000000-0.
+                            This is NOT an optional parameter, so be sure this is not empty
+                            and looks something like: UA-00000000-0.
         @param clientId     This is the 'ea' that will be set in the parameters.
-                                @see getDefaultClientId()
+                            @see getDefaultClientId()
         @param eventAction  This is the 'ea' that will be set in the parameters.
-                                @see GoogleAnalyticsMetadata::withEventAction.
+                            @see GoogleAnalyticsMetadata::withEventAction.
         @param screenName   This is the 'cd' that will be set in the parameters.
-                                @see GoogleAnalyticsMetadata::withScreenName.
+                            @see GoogleAnalyticsMetadata::withScreenName.
     */
     static bool sendSystemReport (const String& trackingId,
                                   const String& clientId = GoogleAnalyticsMetadata::getDefaultClientId(),
@@ -283,6 +377,7 @@ private:
     const URL address;
     int timeoutMs = 3000;
 
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GoogleAnalyticsReporter)
 };
 
