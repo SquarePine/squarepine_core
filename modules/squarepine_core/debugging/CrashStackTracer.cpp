@@ -20,12 +20,11 @@ public:
     {
         String message;
         message
-            << "Stack Backtrace"
-            << "--------------------------------"
-            << SystemStats::getStackBacktrace()
-            << newLine
-            << "CrashStackTracer List"
-            << "--------------------------------";
+            << "Stack Backtrace" << newLine
+            << "--------------------------------" << newLine
+            << SystemStats::getStackBacktrace() << newLine
+            << "CrashStackTracer List" << newLine
+            << "--------------------------------" << newLine;
 
         Array<Thread::ThreadID> threads;
 
