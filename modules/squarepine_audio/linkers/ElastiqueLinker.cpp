@@ -31,8 +31,8 @@
     #define SQUAREPINE_ELASTIQUE_FULL_PATH \
         SQUAREPINE_ELASTIQUE_ROOT_PATH SQUAREPINE_ELASTIQUE_VC_PATH "MD/" SQUAREPINE_ELASTIQUE_DR_PATH
 
-    #pragma comment (lib, SQUAREPINE_ELASTIQUE_FULL_PATH "libelastiqueEfficientV3.lib")
-    #pragma comment (lib, SQUAREPINE_ELASTIQUE_FULL_PATH "libelastiqueProV3.lib")
+    #pragma comment (lib, SQUAREPINE_ELASTIQUE_FULL_PATH "libelastiqueEfficient.lib")
+    #pragma comment (lib, SQUAREPINE_ELASTIQUE_FULL_PATH "libelastiquePro.lib")
     #pragma comment (lib, SQUAREPINE_ELASTIQUE_FULL_PATH "libelastiqueSOLOIST.lib")
     #pragma comment (lib, SQUAREPINE_ELASTIQUE_FULL_PATH "libResample.lib")
     #pragma comment (lib, SQUAREPINE_ELASTIQUE_FULL_PATH "libzplAudioFile.lib")
