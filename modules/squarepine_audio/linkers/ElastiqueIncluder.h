@@ -128,10 +128,7 @@
             << "--------------------------------------------------" << newLine << newLine
             << "=== Elastique Information ===" << newLine << newLine
             << "Build Date: " << CElastiqueProV3If::GetBuildDate() << newLine
-            << "Version - Major: " << CElastiqueProV3If::GetVersion (CElastiqueProV3If::kMajor) << newLine
-            << "Version - Minor: " << CElastiqueProV3If::GetVersion (CElastiqueProV3If::kMinor) << newLine
-            << "Version - Patch: " << CElastiqueProV3If::GetVersion (CElastiqueProV3If::kPatch) << newLine
-            << "Version - Revision: " << CElastiqueProV3If::GetVersion (CElastiqueProV3If::kRevision) << newLine
+            << "Version: " << CElastiqueProV3If::GetVersion () << newLine
             << newLine
             << "--------------------------------------------------" << newLine;
 
