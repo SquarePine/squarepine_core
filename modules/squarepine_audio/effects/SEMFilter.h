@@ -471,7 +471,7 @@ class SEMFilter final : public InternalProcessor,
 {
 public:
 	
-	SEMFilter()
+	SEMFilter(int idNum) : idNumber(idNum)
     {
         reset();
         
@@ -555,7 +555,7 @@ public:
     /** @internal */
     const String getName() const override { return TRANS ("SEM Filter"); }
     /** @internal */
-    Identifier getIdentifier() const override { return "semFilter"; }
+    Identifier getIdentifier() const override { return "semFilter" + String (idNumber); }
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return false; }
     
@@ -665,6 +665,8 @@ private:
     
     SmoothedValue <float, ValueSmoothingTypes::Linear> mixLPF { 0.0f };
     SmoothedValue <float, ValueSmoothingTypes::Linear> mixHPF { 0.0f };
+    
+    int idNumber = 1;
     
     SEMLowPassFilter lpf;
     SEMHighPassFilter hpf;
