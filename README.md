@@ -2,11 +2,15 @@
 
 An assortment of modules that make a great addition to your JUCE app and plugin development tool belt.
 
-# License
+# Select Functionality Showcase
 
-The current license is ISC.
-
-Mind you, we'd rather something that requires you to not hide away and privately modify the code. And we'd rather issues and concerns be brought directly here. Till then,   any contributions flowing back this way are much appreciated!
+* CueSDK support.
+* Highly flexible Google Analyitcs integrations.
+* A wide array of [easing functions](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/maths/Easing.h) for animation purposes.
+* Simplifying font support for look and feels using [`sp::FontFamily`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_graphics/utilities/Fonts.h#L34).
+* Translation file notification using [`sp::LanguageHandler`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/text/LanguageHandler.h#L164).
+* A highly flexible memory pool allocation system called [`sp::Allocator`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/memory/Allocator.h).
+* An easy to use metering system with [`sp::LevelProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/LevelsProcessor.h) and [`sp::Meter`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/graphics/Meter.h).
 
 # Library Goal
 
@@ -26,12 +30,8 @@ The philosophy here is multi-part:
 * Make the code as consistent in design, architecture, and style, as much as possible.
   * Have a look at our coding standards!
 
-# Select Functionality Showcase
+# License
 
-* CueSDK support.
-* Highly flexible Google Analyitcs integrations.
-* A wide array of [easing functions](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/maths/Easing.h) for animation purposes.
-* Simplifying font support for look and feels using [`sp::FontFamily`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_graphics/utilities/Fonts.h#L34).
-* Translation file notification using [`sp::LanguageHandler`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/text/LanguageHandler.h#L164).
-* A highly flexible memory pool allocation system called [`sp::Allocator`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/memory/Allocator.h).
-* An easy to use metering system with [`sp::LevelProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/LevelsProcessor.h) and [`sp::Meter`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/graphics/Meter.h).
+The current license is ISC.
+
+Mind you, we'd rather something that requires you to not hide away and privately modify the code. And we'd rather issues and concerns be brought directly here. Till then, any contributions flowing back this way are much appreciated!
