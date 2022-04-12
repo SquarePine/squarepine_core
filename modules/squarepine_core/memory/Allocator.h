@@ -83,10 +83,10 @@ public:
                  or nullptr if there wasn't enough space to put it.
     */
     template<typename ObjectType, typename... Args, typename Type = typename std::remove_cv<ObjectType>::type>
-    Type* allocateObject (Args... args) const
+    Type* allocateObject (Args... constructorArgs) const
     {
         if (auto* address = allocate (sizeof (Type)))
-            return new (address) Type (args...);
+            return new (address) Type (constructorArgs...);
 
         return nullptr;
     }
