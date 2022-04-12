@@ -34,3 +34,4 @@ The philosophy here is multi-part:
 * Simplifying font support for look and feels using [`sp::FontFamily`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_graphics/utilities/Fonts.h#L34).
 * Translation file notification using [`sp::LanguageHandler`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/text/LanguageHandler.h#L164).
 * A highly flexible memory pool allocation system called [`sp::Allocator`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/memory/Allocator.h).
+* An easy to use metering system with [`sp::LevelProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/LevelsProcessor.h) and [`sp::Meter`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/graphics/Meter.h).
