@@ -4,7 +4,7 @@ An assortment of modules that make a great addition to your JUCE app and plugin 
 
 # Select Functionality Showcase
 
-* CueSDK support.
+* [CueSDK](https://github.com/CorsairOfficial/cue-sdk) support for controlling your Corsair devices' RGB lights.
 * Highly flexible Google Analyitcs integrations.
 * A wide array of [easing functions](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/maths/Easing.h) for animation purposes.
 * Simplifying font support for look and feels using [`sp::FontFamily`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_graphics/utilities/Fonts.h#L34).
