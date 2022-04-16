@@ -26,6 +26,7 @@
 //==============================================================================
 namespace sp
 {
+    #include "cryptography/CRC.cpp"
     //#include "cryptography/SHA1.cpp"
     #include "debugging/CrashStackTracer.cpp"
     #include "misc/ArrayIterationUnroller.cpp"

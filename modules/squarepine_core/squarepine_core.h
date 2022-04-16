@@ -218,6 +218,7 @@ namespace sp
     #include "behaviours/DeletionNotifier.h"
     #include "behaviours/Identifiable.h"
     #include "behaviours/Lockable.h"
+    #include "cryptography/CRC.h"
     //#include "cryptography/SHA1.h"
     //#include "cryptography/SHA2.h"
     #include "debugging/CrashStackTracer.h"
