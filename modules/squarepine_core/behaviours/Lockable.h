@@ -24,7 +24,7 @@ public:
         To lock, you can call getLock().enter() and getLock().exit(),
         or preferably use an RAII alternative to manage lock and unlocking.
     */
-    sp_nodiscard Lock& getLock() noexcept { return lock; }
+    JUCE_NODISCARD Lock& getLock() noexcept { return lock; }
 
 protected:
     //==============================================================================
@@ -64,7 +64,7 @@ public:
         To lock, you can call getLock().enter() and getLock().exit(),
         or preferably use an RAII alternative to manage lock and unlocking.
     */
-    sp_nodiscard Lock& getLock() noexcept { return lock; }
+    JUCE_NODISCARD Lock& getLock() noexcept { return lock; }
 
 protected:
     //==============================================================================

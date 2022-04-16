@@ -59,10 +59,10 @@ public:
     virtual void updateRatio() {}
 
     /** @returns the current resampling ratio. */
-    sp_nodiscard double getRatio() const noexcept { return ratio.load(); }
+    JUCE_NODISCARD double getRatio() const noexcept { return ratio.load(); }
 
     /** @returns the inverse resampling ratio. */
-    sp_nodiscard double getInverseRatio() const noexcept { return 1.0 / getRatio(); }
+    JUCE_NODISCARD double getInverseRatio() const noexcept { return 1.0 / getRatio(); }
 
 private:
     //==============================================================================

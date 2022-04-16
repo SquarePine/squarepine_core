@@ -54,23 +54,23 @@ public:
         The InternalProcessor owns this pointer, meaning that
         storing the pointer is done at your own risk!
     */
-    sp_nodiscard AudioProcessorValueTreeState* getAPVTS() const { return apvts.get(); }
+    JUCE_NODISCARD AudioProcessorValueTreeState* getAPVTS() const { return apvts.get(); }
 
     /** @returns true if the APVTS instance is non-null. */
-    sp_nodiscard bool hasAPVTS() const noexcept { return apvts != nullptr; }
+    JUCE_NODISCARD bool hasAPVTS() const noexcept { return apvts != nullptr; }
 
     /** @returns the underlying ValueTree state for the APVTS, assuming one is present.
 
         Use this and add listeners to it to get any kind of child or property change.
     */
-    sp_nodiscard ValueTree getState() const;
+    JUCE_NODISCARD ValueTree getState() const;
 
     /** @returns a direct Value to a property inside the APVTS.
 
         If no APVTS is present, or if the Value wasn't found,
         this will return a null/blank Value.
     */
-    sp_nodiscard Value getPropertyAsValue (const Identifier&,
+    JUCE_NODISCARD Value getPropertyAsValue (const Identifier&,
                                            UndoManager* undoManager = nullptr,
                                            bool shouldUpdateSynchronously = false);
 
@@ -80,19 +80,19 @@ public:
 
         @see var, setProperty, getPropertyPointer, hasProperty
     */
-    sp_nodiscard const var& getProperty (const Identifier&) const;
+    JUCE_NODISCARD const var& getProperty (const Identifier&) const;
 
     /** @returns the value of a named property, or the value of defaultReturnValue if the property doesn't exist.
 
         @see var, getProperty, getPropertyPointer, setProperty, hasProperty
     */
-    sp_nodiscard var getProperty (const Identifier&, const var& defaultReturnValue) const;
+    JUCE_NODISCARD var getProperty (const Identifier&, const var& defaultReturnValue) const;
 
     /** @returns a pointer to the value of a named property, or nullptr if the property doesn't exist.
 
         @see var, getProperty, setProperty, hasProperty
     */
-    sp_nodiscard const var* getPropertyPointer (const Identifier&) const;
+    JUCE_NODISCARD const var* getPropertyPointer (const Identifier&) const;
 
     /** Changes a named property of the project item.
 
@@ -107,7 +107,7 @@ public:
     InternalProcessor& setProperty (const Identifier&, const var&, UndoManager* undoManager = nullptr);
 
     /** @returns true if the project item contains a named property. */
-    sp_nodiscard bool hasProperty (const Identifier&) const;
+    JUCE_NODISCARD bool hasProperty (const Identifier&) const;
 
     /** Removes a property from the project item.
 
@@ -125,7 +125,7 @@ public:
         @note This concept helps preserve connections in a graph,
               and simplify programmatically bypassing any processing.
     */
-    sp_nodiscard bool isBypassed() const noexcept;
+    JUCE_NODISCARD bool isBypassed() const noexcept;
 
     /** The ID for the Bypass parameter. */
     CREATE_INLINE_CLASS_IDENTIFIER (bypass)
@@ -192,10 +192,10 @@ protected:
     AudioParameterBool* bypassParameter = nullptr;
 
     /** */
-    sp_nodiscard std::unique_ptr<AudioParameterBool> createBypassParameter() const;
+    JUCE_NODISCARD std::unique_ptr<AudioParameterBool> createBypassParameter() const;
 
     /** */
-    sp_nodiscard AudioProcessorValueTreeState::ParameterLayout createDefaultParameterLayout (bool addBypassParam = true);
+    JUCE_NODISCARD AudioProcessorValueTreeState::ParameterLayout createDefaultParameterLayout (bool addBypassParam = true);
 
 private:
     //==============================================================================

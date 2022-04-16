@@ -123,7 +123,6 @@
 #endif
 
 //==============================================================================
-#undef sp_nodiscard
 #undef SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE
 
 #if JUCE_CXX17_IS_AVAILABLE
@@ -131,29 +130,24 @@
 
     #define SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE(Type) \
         std::optional<Type>
-
-    #define sp_nodiscard [[nodiscard]]
 #else
     #define SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE(Type) \
         Type
 
-    #define sp_nodiscard
-
     namespace std
     {
         template<class T>
-        sp_nodiscard constexpr const T& clamp (const T& v, const T& lo, const T& hi) noexcept
+        JUCE_NODISCARD constexpr const T& clamp (const T& v, const T& lo, const T& hi) noexcept
         {
             return (v < lo) ? lo : (hi < v) ? hi : v;
         }
 
         template<class T, class Predicate>
-        sp_nodiscard constexpr const T& clamp (const T& v, const T& lo, const T& hi, Predicate predicate) noexcept
+        JUCE_NODISCARD constexpr const T& clamp (const T& v, const T& lo, const T& hi, Predicate predicate) noexcept
         {
             return predicate (v, lo) ? lo : predicate (hi, v) ? hi : v;
         }
     }
-
 #endif
 
 //==============================================================================

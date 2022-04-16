@@ -15,10 +15,10 @@ public:
 
     //==============================================================================
     /** */
-    sp_nodiscard const Identifier& getIdentifier() const noexcept { return identifier; }
+    JUCE_NODISCARD const Identifier& getIdentifier() const noexcept { return identifier; }
 
     /** */
-    sp_nodiscard const Uuid& getUuid() const noexcept { return uuid; }
+    JUCE_NODISCARD const Uuid& getUuid() const noexcept { return uuid; }
 
     //==============================================================================
     /** */
