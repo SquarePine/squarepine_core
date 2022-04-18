@@ -369,7 +369,7 @@ void Windows10LookAndFeel::drawButtonBackground (Graphics& g, Button& button, co
         baseColour = baseColour.contrasting (shouldDrawButtonAsDown ? 0.2f : 0.05f);
 
     if (shouldDrawButtonAsHighlighted)
-        baseColour.brighter (1.0f).brighter();
+        baseColour = baseColour.brighter (1.0f).brighter();
 
     g.setColour (baseColour);
 
