@@ -4,46 +4,47 @@
     @note There is no functionality for clearing single objects from the chunk,
           only clearing the entire chunk is implemented.
 */
-template<typename TypeOfCriticalSectionToUse = DummyCriticalSection>
-class Allocator final : public LockableBase<TypeOfCriticalSectionToUse>
-{
+template<size_t sizeBytes = 1024 * 1024 * 1 /* 1 MB */, size_t alignmentBytes = 4>
+class Allocator final{
 public:
-    //==============================================================================
-    /** 1 megabyte */
-    static constexpr auto defaultAllocationSizeBytes = static_cast<size_t> (1024 * 1024 * 1);
-
-    /** 4 bytes */
-    static constexpr auto defaultAlignmentBytes = static_cast<size_t> (4);
-
     //==============================================================================
     /** Constructor, which allocates an internal heap to use as a memory pool.
 
         If for any reason this fails to allocate, it will just leave the internal heap with a null pointer;
         of course this is assuming that the system's malloc() function doesn't throw.
-
-        @param sizeInBytes      The amount of bytes to allocate for use.
-        @param alignmentInBytes The alignment to use when an object is allocated.
     */
-    Allocator (size_t sizeInBytes = defaultAllocationSizeBytes,
-               size_t alignmentInBytes = defaultAlignmentBytes) :
-        base (sizeInBytes, true),
-        marker (base),
-        sizeBytes (sizeInBytes),
-        alignmentBytes (alignmentInBytes)
+    Allocator() :
+        base (sizeBytes, true),
+        marker (base)
     {
     }
 
+    /** Destructor. */
+    ~Allocator()
+    {
+        masterReference.clear();
+    }
+
     //==============================================================================
-    /** @returns the total size of the allocator's heap. */
-    size_t getSize() const noexcept                 { return sizeBytes; }
-    /** @returns the byte of alignment of the allocations.
-        By default, this is 4 bytes which you can configure on construction of an Allocator.
+    /** @returns the total size of the allocator's heap.
+        By default, this is 1 megabyte, which you can configure on template construction.
     */
-    size_t getAlignment() const noexcept            { return alignmentBytes; }
+    constexpr size_t getSizeBtes() const noexcept       { return sizeBytes; }
+
+    /** @returns the byte of alignment of the allocations.
+        By default, this is 4 bytes, which you can configure on template construction.
+    */
+    constexpr size_t getAlignmentBytes() const noexcept { return alignmentBytes; }
+
+    //==============================================================================
+    /** @returns the start pointer position within the allocator's heap. */
+    size_t getStartPosition() const noexcept            { return (size_t) base.getData(); }
+
     /** @returns the current pointer position within the allocator's heap. */
-    intptr_t getCurrentPosition() const noexcept    { return (intptr_t) marker; }
+    size_t getCurrentPosition() const noexcept          { return (size_t) marker; }
+
     /** @returns the remaining space available for allocations. */
-    size_t getRemainingSpace() const noexcept       { return getSize() - getCurrentPosition(); }
+    size_t getRemainingSpace() const noexcept           { return getSize() - getCurrentPosition(); }
 
     //==============================================================================
     /** Manually allocate some number of bytes.
@@ -55,8 +56,6 @@ public:
     */
     void* allocate (size_t numBytesToAllocate) const
     {
-        const typename LockableBase<TypeOfCriticalSectionToUse>::ScopedLock sl (this->lock);
-
         // Determine an allocation size that will align to our requested byte alignment:
         const auto remainder = static_cast<size_t> (numBytesToAllocate % alignmentBytes);
         auto allocationSize = numBytesToAllocate;
@@ -72,17 +71,132 @@ public:
             return newAddress;
         }
 
-        Logger::writeToLog ("Error: not enough memory!");
+        Logger::writeToLog ("Allocator: ran out of memory!");
         jassertfalse;
         return nullptr;
     }
 
-    /** Manually allocate space and create an object at that address.
+private:
+    //==============================================================================
+    /** */
+    class ObjectBase
+    {
+    public:
+        /** */
+        ObjectBase() noexcept = default;
+
+        /** */
+        virtual ~ObjectBase() noexcept = default;
+
+        //==============================================================================
+        /** */
+        virtual void reset() = 0;
+
+    private:
+        //==============================================================================
+        JUCE_DECLARE_NON_COPYABLE (ObjectBase)
+    };
+
+public:
+    //==============================================================================
+    /** */
+    template<typename SourceType>
+    class Object final : public ObjectBase
+    {
+    public:
+        //==============================================================================
+        /** */
+        using Type = SourceType;
+
+        //==============================================================================
+        /** */
+        Object() noexcept = default;
+
+        /** */
+        Object (Object&& other) noexcept :
+            value (std::move (other.value)),
+            parent (std::move (other.parent))
+        {
+        }
+
+        /** */
+        ~Object() override                      { reset(); }
+
+        //==============================================================================
+        /** @returns */
+        constexpr bool isNull() const noexcept  { return value == nullptr; }
+        /** @returns */
+        constexpr bool isValid() const noexcept { return ! isNull(); }
+
+        /** @returns */
+        Type& operator&()                       { jassert (isValid()); return *value; }
+        /** @returns */
+        Type& operator*()                       { jassert (isValid()); return *value; }
+
+        //==============================================================================
+        /** */
+        void reset() override
+        {
+            if (value != nullptr)
+                value->~Type();
+
+            // if (parent != nullptr)
+                // parent->clear (value);
+
+            value = nullptr;
+            parent = {};
+        }
+
+    private:
+        //==============================================================================
+        friend class Allocator;
+
+        Type* value = nullptr;
+        WeakReference<Allocator> parent;
+
+        //==============================================================================
+        constexpr size_t getStart() const noexcept  { return value; }
+        constexpr size_t getEnd() const noexcept    { return getStart() + sizeof (Type); }
+
+        //==============================================================================
+        JUCE_DECLARE_NON_COPYABLE (Object)
+    };
+
+    //==============================================================================
+    /** Allocates an object.
 
         @returns A new object placed within the allocator,
                  or nullptr if there wasn't enough space to put it.
     */
-    template<typename ObjectType, typename... Args, typename Type = typename std::remove_cv<ObjectType>::type>
+    template<typename ObjectType,
+             typename... Args,
+             typename Type = typename std::remove_cv_t<ObjectType>>
+    Object<Type> allocateObject (Args... constructorArgs)
+    {
+        Type* v = nullptr;
+
+        if (auto* address = allocate (sizeof (Type)))
+            v = new (address) Type (constructorArgs...);
+
+        if (v == nullptr)
+            return {};
+
+        Object<Type> o;
+        o.value = v;
+        o.parent = this;
+        return o;
+    }
+
+    //==============================================================================
+#if 0
+    /** Allocates an object.
+
+        @returns A new object placed within the allocator,
+                 or nullptr if there wasn't enough space to put it.
+    */
+    template<typename ObjectType,
+             typename... Args,
+             typename Type = typename std::remove_cv<ObjectType>::type>
     Type* allocateObject (Args... constructorArgs) const
     {
         if (auto* address = allocate (sizeof (Type)))
@@ -91,7 +205,6 @@ public:
         return nullptr;
     }
 
-    //==============================================================================
     /** @returns a newly allocated int8_t. */
     int8_t* allocateObject (int8_t value) const             { return allocateObject<int8_t> (value); }
     /** @returns a newly allocated int16_t. */
@@ -167,29 +280,26 @@ public:
         return nullptr;
     }
 
+#endif
+
     //==============================================================================
     /** Resets the marker to the base memory location of the allocated memory. */
     void reset (bool clearMemory = false)
     {
-        const typename LockableBase<TypeOfCriticalSectionToUse>::ScopedLock sl (this->lock);
-
         if (clearMemory)
             base.clear (sizeBytes);
 
+        occupiedSpaces.clear();
         marker = base.getData(); // Reset the marker position to the beginning of the data set.
     }
 
 private:
     //==============================================================================
     HeapBlock<uint8, false> base;
+    Array<Range<int64>> occupiedSpaces;
     mutable uint8* marker = nullptr;
 
-    const size_t sizeBytes;
-    const size_t alignmentBytes;
-
     //==============================================================================
-    size_t getStartPosition() const noexcept { return (size_t) base.getData(); }
-
-    //==============================================================================
+    JUCE_DECLARE_WEAK_REFERENCEABLE (Allocator)
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Allocator)
 };
