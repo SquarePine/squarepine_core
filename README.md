@@ -15,7 +15,7 @@ This library is an assortment of loosely related or unrelated JUCE-based tools, 
 # Functionality Highlights
 
 * [CueSDK](https://github.com/CorsairOfficial/cue-sdk) support for controlling your Corsair devices' RGB lights.
-* Highly flexible Google Analyitcs integrations.
+* Highly flexible Google Analyitcs integrations by pairing the [`sp::GoogleAnalyticsReporter`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/networking/GoogleAnalyticsReporter.h#L280-L384) with an easy to use and feature extensive [`sp::GoogleAnalyticsMetadata`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/networking/GoogleAnalyticsReporter.h#L3-L277).
 * A wide array of [easing functions](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/maths/Easing.h) for animation purposes.
 * Simplifying font support for look and feels using [`sp::FontWeight`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_graphics/utilities/Fonts.h#L5) and [`sp::FontFamily`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_graphics/utilities/Fonts.h#L34).
 * Translation file notification using [`sp::LanguageHandler`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/text/LanguageHandler.h#L164).
