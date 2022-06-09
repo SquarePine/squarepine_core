@@ -26,7 +26,7 @@ This library is an assortment of loosely related or unrelated JUCE-based tools, 
 
 # License
 
-The current license is ISC.
+[The current license is ISC](https://github.com/SquarePine/squarepine_core/blob/main/LICENSE.md).
 
 # Contributing
 
