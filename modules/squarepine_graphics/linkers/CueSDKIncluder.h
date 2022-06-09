@@ -78,10 +78,10 @@
 	        ids.reserve (numDevices);
 
 	        for (int deviceIndex = 0; deviceIndex < numDevices; ++deviceIndex)
-		        if (const auto* ledPositions = CorsairGetLedPositionsByDeviceIndex (deviceIndex))
+                if (const auto* ledPositions = CorsairGetLedPositionsByDeviceIndex (deviceIndex))
                     if (auto* ledPos = ledPositions->pLedPosition)
-			            for (int i = 0; i < ledPositions->numberOfLed; ++i)
-				            ids.push_back ({ ledPos[i].ledId, 0, 0, 0 });
+                        for (int i = 0; i < ledPositions->numberOfLed; ++i)
+                            ids.push_back ({ ledPos[i].ledId, 0, 0, 0 });
 
 	        return ids;
         }
