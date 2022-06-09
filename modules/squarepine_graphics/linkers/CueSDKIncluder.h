@@ -73,17 +73,16 @@
         inline std::vector<CorsairLedColor> getAllAvailableLEDIDs() 
         {
             const auto numDevices = CorsairGetDeviceCount();
+            std::vector<CorsairLedColor> ids;
+            ids.reserve (numDevices);
 
-	        std::vector<CorsairLedColor> ids;
-	        ids.reserve (numDevices);
-
-	        for (int deviceIndex = 0; deviceIndex < numDevices; ++deviceIndex)
+            for (int deviceIndex = 0; deviceIndex < numDevices; ++deviceIndex)
                 if (const auto* ledPositions = CorsairGetLedPositionsByDeviceIndex (deviceIndex))
                     if (auto* ledPos = ledPositions->pLedPosition)
                         for (int i = 0; i < ledPositions->numberOfLed; ++i)
                             ids.push_back ({ ledPos[i].ledId, 0, 0, 0 });
 
-	        return ids;
+            return ids;
         }
 
         inline void fillLED (CorsairLedColor& cLED, juce::Colour colour)
@@ -95,14 +94,14 @@
 
         inline void updateLED (CorsairLedColor cLED)
         {
-		    CorsairSetLedsColorsAsync (1, &cLED, nullptr, nullptr);
+            CorsairSetLedsColorsAsync (1, &cLED, nullptr, nullptr);
             CorsairSetLedsColorsFlushBuffer();
         }
 
         inline void updateLED (CorsairLedColor cLED, juce::Colour colour)
         {
             fillLED (cLED, colour);
-		    updateLED (cLED);
+            updateLED (cLED);
         }
 
         inline void updateLED (int id, juce::Colour colour)
