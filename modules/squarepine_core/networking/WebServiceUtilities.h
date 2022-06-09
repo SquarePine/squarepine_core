@@ -1,4 +1,4 @@
-/** */
+/** A list of many/most of the HTTP request methods. */
 enum class HTTPRequest
 {
     GET,
@@ -12,7 +12,9 @@ enum class HTTPRequest
     PATCH
 };
 
-/** */
+/** @returns a valid HTTP request string that the OS can use to make connections.
+    You can pair this up with calls to juce::URL::InputStreamOptions::withHttpRequestCmd.
+*/
 inline String toString (HTTPRequest type)
 {
     if (type == HTTPRequest::GET)           return "GET";
@@ -29,7 +31,7 @@ inline String toString (HTTPRequest type)
     return "GET";
 }
 
-/** */
+/** @returns a converted String to an HTTPRequest. On failure, this will simply return GET. */
 inline HTTPRequest createHTTPRequestTypeFromString (const String& type)
 {
     if (type.compareIgnoreCase ("GET") == 0)            return HTTPRequest::GET;
@@ -46,7 +48,9 @@ inline HTTPRequest createHTTPRequestTypeFromString (const String& type)
     return HTTPRequest::GET;
 }
 
-/** */
+/** @returns an amalgamated and valid string of the provided strings.
+    The result can be used in its most basic form to make native HTTP requests.
+*/
 inline String toString (const StringPairArray& headers)
 {
     String result;
@@ -57,7 +61,24 @@ inline String toString (const StringPairArray& headers)
     return result;
 }
 
-/** */
+/** @returns a well formed URL based on the provided domain and subsequent path.
+    If the domain is empty, this will return an empty string.
+    If the domain is only http, this will promote it to https for security's sake.
+*/
+String createFilteredUrl (String domain, String path);
+
+/** @returns a stream to a web connection based on the provided URL, HTTP request, combined with the headers.
+    @param timeoutMs You can adjust the timeout depending your target market's network connections.
+                     We recommend opting for a longer timeout for large files and slow connections.  
+*/
+std::unique_ptr<WebInputStream> createEndpointStream (const URL& url,
+                                                      HTTPRequest requestType,
+                                                      const StringPairArray& headers = {},
+                                                      int timeoutMs = 5000);
+
+/** Applies a "Content-Type:" header to the list of headers.
+    @note This will replace any existing "Content-Type:".
+*/
 inline void setContentType (StringPairArray& headers, const String& type)               { headers.set ("Content-Type:", type); }
 
 /** */
@@ -111,10 +132,3 @@ inline void setContentTypeHTML (StringPairArray& headers)                       
 inline void setContentTypeCalendar (StringPairArray& headers)                           { setTextContentType (headers, "calendar"); }
 inline void setContentTypeJavascript (StringPairArray& headers)                         { setTextContentType (headers, "javascript"); }
 inline void setContentTypeXMLText (StringPairArray& headers)                            { setTextContentType (headers, "xml"); }
-
-String createFilteredUrl (String domain, String path);
-
-std::unique_ptr<WebInputStream> createEndpointStream (const URL& url,
-                                                      HTTPRequest requestType,
-                                                      const StringPairArray& headers = {},
-                                                      int timeoutMs = 5000);
