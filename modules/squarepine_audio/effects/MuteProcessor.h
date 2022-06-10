@@ -1,4 +1,9 @@
-/** Use this processor to smoothly mute incoming audio and MIDI streams. */
+/** Use this processor to smoothly mute incoming audio and MIDI streams.
+
+    This will perform a fade depending on the direction:
+    1. If you were muted and then unmuted, this will fade in to avoid a click.
+    2. If you were unmuted and then muted, this will fade out to avoid a click.
+*/
 class MuteProcessor final : public InternalProcessor
 {
 public:
@@ -6,7 +11,7 @@ public:
     MuteProcessor (bool startMuted = false);
 
     //==============================================================================
-    /** Mute or unmute the incoming audio and MIDI */
+    /** Mutes or unmutes the incoming audio and MIDI. */
     void setMuted (bool shouldBeMuted);
 
     /** @returns true if this mute processor is muted. */
@@ -27,12 +32,11 @@ public:
 private:
     //==============================================================================
     AudioParameterBool* muteParameter = nullptr;
-    std::atomic<bool> shouldFadeIn { false },
-                      shouldFadeOut { false };
+    std::atomic<bool> shouldFadeIn { false }, shouldFadeOut { false };
 
     //==============================================================================
     template<typename FloatType>
-    void process (juce::AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages);
+    void process (juce::AudioBuffer<FloatType>&, MidiBuffer&);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MuteProcessor)
