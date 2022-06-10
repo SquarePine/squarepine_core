@@ -11,7 +11,10 @@ public:
     MuteProcessor (bool startMuted = false);
 
     //==============================================================================
-    /** Mutes or unmutes the incoming audio and MIDI. */
+    /** Mutes or unmutes the incoming audio and MIDI.
+
+        @param shouldBeMuted Whether this processor should be muted or not.
+    */
     void setMuted (bool shouldBeMuted);
 
     /** @returns true if this mute processor is muted. */
@@ -24,6 +27,10 @@ public:
     Identifier getIdentifier() const override { return "mute"; }
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
+    /** @internal */
+    bool acceptsMidi() const override { return true; }
+    /** @internal */
+    bool producesMidi() const override { return true; }
     /** @internal */
     void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
     /** @internal */
