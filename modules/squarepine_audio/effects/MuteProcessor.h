@@ -7,7 +7,11 @@
 class MuteProcessor final : public InternalProcessor
 {
 public:
-    /** Constructor. */
+    /** Constructor.
+
+        @param startMuted Whether this processor should started muted or not.
+                          By default, this is passing audio through as normal.
+    */
     MuteProcessor (bool startMuted = false);
 
     //==============================================================================
