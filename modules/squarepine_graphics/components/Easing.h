@@ -24,7 +24,7 @@ public:
     /** */
     CurveDisplayComponent (Generator& generator,
                            float lineThickness = 0.001f,
-                           int64 numPoints = 10000)
+                           int64 numPoints = 333)
     {
         Point<double> last;
         last.y = generator.generate (0.0);
@@ -109,7 +109,10 @@ private:
 };
 
 //==============================================================================
-/** @see https://easings.net/ */
+/** A general demonstration of all pre-configured easing functions.
+
+    @see https://easings.net/
+*/
 class EaseListComponent final : public Component
 {
 public:
@@ -175,10 +178,10 @@ public:
 
         constexpr auto numRowGroups = 3;
         for (int i = numRowGroups; --i >= 0;)
-            grid.templateRows.add (Grid::TrackInfo (1_fr));
+            grid.templateRows.add (grid.autoRows);
 
         for (int i = grid.items.size() / numRowGroups; --i >= 0;)
-            grid.templateColumns.add (Grid::TrackInfo (1_fr));
+            grid.templateColumns.add (grid.autoColumns);
     }
 
     //==============================================================================
@@ -194,9 +197,6 @@ private:
     //==============================================================================
    #if JUCE_CXX17_IS_AVAILABLE
     template<auto weightGenerationFunction>
-   #else
-    #error Fill this out...
-   #endif
     class AnyFunctionGenerator final : public CurveDisplayComponent::Generator
     {
     public:
@@ -207,6 +207,9 @@ private:
             return std::invoke (weightGenerationFunction, value);
         }
     };
+   #else
+    #error "TODO"
+   #endif
 
     //==============================================================================
     OwnedArray<CurveDisplayComponent> curves;
@@ -216,7 +219,11 @@ private:
     template<auto weightGenerationFunction>
     void addCurveDisplay (const String& name)
     {
+       #if JUCE_CXX17_IS_AVAILABLE
         AnyFunctionGenerator<weightGenerationFunction> generator;
+       #else
+        #error "TODO"
+       #endif
 
         auto* c = curves.add (new CurveDisplayComponent (generator, 0.01f));
         c->setName (name);
