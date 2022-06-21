@@ -23,6 +23,10 @@ This library is an assortment of loosely related or unrelated JUCE-based tools, 
 * Many `juce::XYZType` are available wihtin the `juce::ValueTree` ecosystem via the [`VariantConverters`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/valuetree/VariantConverters.h) provided.
 * Plenty [freestanding utilities](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/valuetree/ValueTreeHelpers.h) for the `juce::ValueTree` ecosystem.
 
+### Easing Demo
+
+![image](https://user-images.githubusercontent.com/1908886/174856790-680f1e3f-2c82-470d-a107-a590e6646c54.png)
+
 ## `squarepine_audio`
 
 ### Utilities
