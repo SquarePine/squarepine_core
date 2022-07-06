@@ -87,10 +87,9 @@ static inline void logGlInfoOnce (OpenGLContext& c)
 #endif
 
 //==============================================================================
-/** This is needed in order to deal with idiots that refuse to upgrade
-    their hardware dated from the lower 2010s and below.
+/** This is needed in order to deal with craptacular systems from the lower 2010s and below.
 
-    I suppose cheap bastards will always exist...
+    I suppose cheap people will always exist...
 */
 class HighPerformanceRendererConfigurator::DetachContextMessage final : public MessageManager::MessageBase
 {
