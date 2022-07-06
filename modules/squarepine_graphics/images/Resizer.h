@@ -19,7 +19,7 @@ Image applyResize (const Image&, float scale);
     Use setImage to give it an image, and it'll display it - simple as that!
 
     When enabled, this will use AVIR on Intel systems to resize the image.
-    It's a much higher quality result at the expense of more CPU cycles.
+    It's a much higher quality result at the expense of a few more CPU cycles.
 */
 class HighQualityImageComponent final : public Component,
                                         public SettableTooltipClient
