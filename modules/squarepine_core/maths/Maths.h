@@ -636,17 +636,10 @@ inline String createUniqueFileHash (const File& source)
         return {};
     }
 
-    FileInputStream fis (source);
-    if (fis.failedToOpen())
-    {
-        jassertfalse;
-        return {};
-    }
-
-    constexpr auto oneMiB = 1 << 20;
-    if (fis.getTotalLength() < (oneMiB * 2))
-        return HasherType (fis).toHexString();
-
-    BufferedInputStream bis (&fis, oneMiB, false);
-    return HasherType (bis).toHexString();
+    const auto string = source.getFileName() + String (source.getSize());
+    
+    HeapBlock<char> rawChars (string.length());
+    memcpy (rawChars, string.toUTF8(), static_cast<unsigned long>(string.length()) * sizeof (char));
+    
+    return HasherType (rawChars, static_cast<size_t>(string.length())).toHexString();
 }
