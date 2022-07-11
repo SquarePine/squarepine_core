@@ -14,7 +14,7 @@ public:
 
     /** Handy method to make it easy to register the formats that come with JUCE and this module.
 
-        Currently, this will add PNG, JPEG, GIF and TGA to the list.
+        Currently, this will add PNG, JPEG, GIF, BMP, and TGA to the list.
     */
     void registerBasicFormats();
 

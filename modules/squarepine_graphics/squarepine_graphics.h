@@ -41,6 +41,12 @@
     #define SQUAREPINE_USE_CUESDK 0
 #endif
 
+/** Config: SQUAREPINE_LOG_OPENGL_INFO
+*/
+#ifndef SQUAREPINE_LOG_OPENGL_INFO
+    #define SQUAREPINE_LOG_OPENGL_INFO 0
+#endif
+
 //==============================================================================
 namespace sp
 {

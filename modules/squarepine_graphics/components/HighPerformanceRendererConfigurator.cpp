@@ -36,6 +36,7 @@ void configureContextWithModernGL (OpenGLContext& context, bool shouldEnableMult
 
 void logOpenGLInfoCallback (OpenGLContext&)
 {
+   #if SQUAREPINE_LOG_OPENGL_INFO
     using namespace juce::gl;
 
     GLint major = 0, minor = 0, numExtensions = 0;
@@ -43,7 +44,7 @@ void logOpenGLInfoCallback (OpenGLContext&)
     glGetIntegerv (GL_MINOR_VERSION, &minor);
     glGetIntegerv (GL_NUM_EXTENSIONS, &numExtensions);
 
-    const char* const separatorLine = "--------------------------------------------------";
+    constexpr char separatorLine[] = "--------------------------------------------------";
 
     String stats;
     stats
@@ -76,6 +77,7 @@ void logOpenGLInfoCallback (OpenGLContext&)
     stats << newLine << separatorLine << newLine;
 
     Logger::writeToLog (stats);
+   #endif
 }
 
 static inline void logGlInfoOnce (OpenGLContext& c)

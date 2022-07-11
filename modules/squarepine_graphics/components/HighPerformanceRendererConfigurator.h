@@ -1,22 +1,27 @@
 //==============================================================================
 #if JUCE_MODULE_AVAILABLE_juce_opengl
-    /** @returns a juce::String from an OpenGL style string. */
-    String getGLString (GLenum value);
 
-    /** Attemps configuring an OpenGL context with version 3.1 and fancy things
-        like continuous repainting.
+/** @returns a juce::String from an OpenGL style string. */
+String getGLString (GLenum value);
 
-        By default, this attempts to enable multisampling.
-    */
-    void configureContextWithModernGL (OpenGLContext& context, bool shouldEnableMultisampling = true);
+/** @returns a juce::String from a list of strings in OpenGL style. */
+String getGLString (GLenum value, GLuint index);
 
-    /** Logs any GPU/driver related information it can find.
+/** Attemps configuring an OpenGL context with version 3.1 and fancy things
+    like continuous repainting.
 
-        Note that this must be called from the OpenGL rendering thread
-        or it won't work at best, or crash at worst!
-    */
-    void logOpenGLInfoCallback (OpenGLContext&);
-#endif
+    By default, this attempts to enable multisampling.
+*/
+void configureContextWithModernGL (OpenGLContext& context, bool shouldEnableMultisampling = true);
+
+/** Logs any GPU/driver related information it can find.
+
+    Note that this must be called from the OpenGL rendering thread
+    or it won't work at best, or crash at worst!
+*/
+void logOpenGLInfoCallback (OpenGLContext&);
+
+#endif // JUCE_MODULE_AVAILABLE_juce_opengl
 
 //==============================================================================
 /** A type of OpenGL configurator that will automatically select the
