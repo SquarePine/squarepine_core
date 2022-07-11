@@ -1,0 +1,94 @@
+# JUCE generated content
+[Bb]uilds
+JuceLibraryCode/*
+
+# We're going to leave this file from JUCE so as to avoid accidentally
+# deleting anything from the user code section.
+!JuceLibraryCode/AppConfig.h
+
+# Doxygen
+documentation/Doxygen/docs
+
+# Documentation Stuff
+
+documentation/doxygen/docs
+
+# Prerequisites
+
+*.d
+
+# Compiled object files
+
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled headers
+
+*.gch
+*.pch
+
+# Compiled dynamic libraries
+
+*.so
+*.dylib
+*.dll
+
+# Compiled static libraries
+
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+
+*.exe
+*.out
+*.app
+
+# Windows temp cache Files
+
+[Tt]humbs.db
+
+# macOS Finder and whatnot
+
+.DS_Store
+*.DS_Store
+*.swp
+*~
+
+# IDE stuff
+
+.vscode
+*.vs
+*.pdb
+*.tlog
+*.lastbuildstate
+*.log
+*.recipe
+
+# Fortran module files
+
+*.mod
+*.smod
+
+# Other source repository archive directories (protects when importing)
+
+.hg
+.svn
+CVS
+
+# Various other file types
+
+*.pkg
+*.zip
+*.exe
+*.app
+*.msi
+*.vst3
+*.component
+*.vst
+*.aax
+*.aaxplugin

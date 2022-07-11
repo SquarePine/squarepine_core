@@ -1,0 +1,50 @@
+* text eol=crlf
+*.gitmodules text eol=lf
+*.sh text eol=lf
+*.bat text eol=crlf
+
+# Various misc binary files:
+
+*.7z binary
+*.a binary
+*.aif binary
+*.aiff binary
+*.asf binary
+*.bmp binary
+*.crt binary
+*.dll binary
+*.dylib binary
+*.eot binary
+*.fla binary
+*.flac binary
+*.flv binary
+*.gif binary
+*.gz binary
+*.ico binary
+*.jpeg binary
+*.jpg binary
+*.la binary
+*.lai binary
+*.lib binary
+*.mid binary
+*.mov binary
+*.mp2 binary
+*.mp3 binary
+*.mp4 binary
+*.ogg binary
+*.otc binary
+*.otf binary
+*.pdf binary
+*.png binary
+*.pyc binary
+*.so binary
+*.swf binary
+*.tga binary
+*.ttc binary
+*.ttf binary
+*.wav binary
+*.wm binary
+*.wma binary
+*.wmv binary
+*.woff binary
+*.zip binary
