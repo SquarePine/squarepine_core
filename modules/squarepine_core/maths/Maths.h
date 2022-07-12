@@ -620,15 +620,15 @@ inline double midiNoteToFrequency (int midiNoteNumber) noexcept
 }
 
 //============================================================================
-/** Creates a unique hash based on the contents of the provided source file.
-
+/** Creates a hash based on the file name and the file size of the provided source file.
+    Note: Two files with identical name and size but has different audio content will have the same hash
+ 
     @param source   The source file to hash.
-    @param hash     The destination hash, which will be empty if anything failed.
 
     @returns a non-empty string if the file could be hashed.
 */
 template<typename HasherType = juce::SHA256>
-inline String createUniqueFileHash (const File& source)
+inline String createFileHashFromNameAndFileSize (const File& source)
 {
     if (! source.existsAsFile())
     {
