@@ -21,8 +21,7 @@ public:
 
         @see defaultMaximumGainLinear
     */
-    GainProcessor (const String& parameterName = "Gain",
-                   NormalisableRange<float> gainRange = { defaultMinimumGaindB, defaultMaximumGaindB , 0.01f, 6.f});
+    GainProcessor (int idNum = 1, const String& parameterName = "Gain", NormalisableRange<float> gainRange = { defaultMinimumGaindB, defaultMaximumGaindB, 0.01f, 6.f });
 
     //==============================================================================
     /** Changes the gain.
@@ -56,7 +55,7 @@ public:
     /** @internal */
     const String getName() const override { return TRANS (name); }
     /** @internal */
-    Identifier getIdentifier() const override { return "gain"; }
+    Identifier getIdentifier() const override { return "gain" + String (idNumber); }
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
@@ -71,13 +70,12 @@ public:
     void parameterGestureChanged (int, bool) override;
 
 private:
-    
     //==============================================================================
     NotifiableAudioParameterFloat* gainParameter = nullptr;
     String name;
     LinearSmoothedValue<float> floatGain { 1.0f };
     LinearSmoothedValue<double> doubleGain { 1.0 };
-
+    const int idNumber = 1;
     //==============================================================================
     template<typename FloatType>
     void process (juce::AudioBuffer<FloatType>& buffer,
