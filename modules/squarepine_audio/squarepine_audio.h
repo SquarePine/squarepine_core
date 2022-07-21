@@ -136,6 +136,7 @@ namespace sp
     #include "effects/PolarityInversionProcessor.h"
     #include "effects/SimpleDistortionProcessor.h"
     #include "effects/SEMFilter.h"
+    #include "effects/DelayProcessor.h"
     #include "effects/SimpleEQProcessor.h"
     #include "effects/StereoWidthProcessor.h"
     #include "effects/GainProcessor.h"
