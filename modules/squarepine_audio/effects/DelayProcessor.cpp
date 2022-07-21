@@ -84,18 +84,20 @@ DelayProcessor::DelayProcessor (int idNum): idNumber (idNum)
                                                                        return txt << "%";
                                                                    });
 
-    NormalisableRange<float> timeRange = { 0.001f, 5.f };
-    auto time = std::make_unique<NotifiableAudioParameterFloat> ("delayTime", "DelayTime", timeRange, 0.33f,
+    NormalisableRange<float> timeRange = { 1.f, 4000.0f };
+    auto time = std::make_unique<NotifiableAudioParameterFloat> ("delayTime", "DelayTime", timeRange, 200.f,
                                                                  true,// isAutomatable
                                                                  "Delay Time",
                                                                  AudioProcessorParameter::genericParameter,
                                                                  [] (float value, int) -> String {
-                                                                     String txt (value);
+                                                                     String txt (roundToInt (value));
                                                                      return txt << "ms";
                                                                      ;
                                                                  });
 
-    delayUnit.setDelaySamples (2000);
+    delayUnit.setDelaySamples (200);
+    wetDry.setTargetValue (0.5);
+    delayTime.setTargetValue (200);
 
     wetDryParam = wetdry.get();
     wetDryParam->addListener (this);
@@ -107,9 +109,6 @@ DelayProcessor::DelayProcessor (int idNum): idNumber (idNum)
     layout.add (std::move (wetdry));
     layout.add (std::move (time));
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
-
-    wetDry.setTargetValue (0.5);
-    delayTime.setTargetValue (0.33f);
 }
 
 DelayProcessor::~DelayProcessor()
@@ -138,10 +137,11 @@ void DelayProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&
     float dry, wet, x, y;
     for (int s = 0; s < numSamples; ++s)
     {
+        delayUnit.setDelaySamples (delayTime.getNextValue());
+        wet = wetDry.getNextValue();
+        dry = 1.f - wet;
         for (int c = 0; c < numChannels; ++c)
         {
-            wet = wetDry.getNextValue();
-            dry = 1.f - wet;
             x = buffer.getWritePointer (c)[s];
             y = (delayUnit.processSample (x, c) * wet) + (x * dry);
             buffer.getWritePointer (c)[s] = y;
@@ -157,6 +157,23 @@ bool DelayProcessor::supportsDoublePrecisionProcessing() const { return false; }
 //============================================================================== Parameter callbacks
 void DelayProcessor::parameterValueChanged (int paramNum, float value)
 {
-    // TODO - - -
-    
+    const ScopedLock sl (getCallbackLock());
+    switch (paramNum)
+    {
+        case 1:
+            //wet dry
+            wetDry.setTargetValue (jlimit (0.f, 1.f, value));
+            break;
+        case 2:
+        {
+            //delay time 
+            auto range = delayTimeParam->getNormalisableRange().getRange();
+            auto valMS = (float) jlimit ((int) range.getStart(), (int) range.getEnd(), roundToInt (value));
+            auto time = (getSampleRate() / 1000) * valMS;
+            delayTime.setTargetValue ((float) time);
+            break;
+        }
+        default:
+            break;
+    }
 }
