@@ -85,8 +85,8 @@ DelayProcessor::DelayProcessor (int idNum): idNumber (idNum)
                                                                    });
 
     NormalisableRange<float> timeRange = { 1.f, 4000.0f };
-    auto time = std::make_unique<NotifiableAudioParameterFloat> ("delayTime", "DelayTime", timeRange, 200.f,
-                                                                 true,// isAutomatable
+    auto time = std::make_unique<NotifiableAudioParameterFloat> ("delayTime", "Delay Time", timeRange, 200.f,
+                                                                 false,// isAutomatable
                                                                  "Delay Time",
                                                                  AudioProcessorParameter::genericParameter,
                                                                  [] (float value, int) -> String {
@@ -95,9 +95,9 @@ DelayProcessor::DelayProcessor (int idNum): idNumber (idNum)
                                                                      ;
                                                                  });
 
-    delayUnit.setDelaySamples (200);
+    delayUnit.setDelaySamples (200 *48);
     wetDry.setTargetValue (0.5);
-    delayTime.setTargetValue (200);
+    delayTime.setTargetValue (200*48);
 
     wetDryParam = wetdry.get();
     wetDryParam->addListener (this);
@@ -166,7 +166,7 @@ void DelayProcessor::parameterValueChanged (int paramNum, float value)
             break;
         case 2:
         {
-            //delay time 
+            //delay time
             auto range = delayTimeParam->getNormalisableRange().getRange();
             auto valMS = (float) jlimit ((int) range.getStart(), (int) range.getEnd(), roundToInt (value));
             auto time = (getSampleRate() / 1000) * valMS;
