@@ -157,7 +157,7 @@ EffectProcessor::Ptr EffectProcessorChain::getEffectProcessor (int index) const
     return {};
 }
 
-SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (String) EffectProcessorChain::getPluginInstanceName (int index) const
+std::optional<String> EffectProcessorChain::getPluginInstanceName (int index) const
 {
     return getEffectProperty<String> (index, [&] (EffectProcessor::Ptr e)
     {
@@ -168,37 +168,37 @@ SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (String) EffectProcessorChain::getPluginInst
     });
 }
 
-SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (String) EffectProcessorChain::getEffectName (int index) const
+std::optional<String> EffectProcessorChain::getEffectName (int index) const
 {
     return getEffectProperty<String> (index, [] (EffectProcessor::Ptr e) { return e->name; });
 }
 
-SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (std::shared_ptr<AudioPluginInstance>) EffectProcessorChain::getPluginInstance (int index) const
+std::optional<std::shared_ptr<AudioPluginInstance>> EffectProcessorChain::getPluginInstance (int index) const
 {
     return getEffectProperty<std::shared_ptr<AudioPluginInstance>> (index, [&] (EffectProcessor::Ptr e) { return e->plugin; });
 }
 
-SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (PluginDescription) EffectProcessorChain::getPluginDescription (int index) const
+std::optional<PluginDescription> EffectProcessorChain::getPluginDescription (int index) const
 {
     return getEffectProperty<PluginDescription> (index, [&] (EffectProcessor::Ptr e) { return e->description; });
 }
 
-SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (bool) EffectProcessorChain::isBypassed (int index) const
+std::optional<bool> EffectProcessorChain::isBypassed (int index) const
 {
     return getEffectProperty<bool> (index, [&] (EffectProcessor::Ptr e) { return e->isBypassed.load (std::memory_order_relaxed); });
 }
 
-SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (float) EffectProcessorChain::getMixLevel (int index) const
+std::optional<float> EffectProcessorChain::getMixLevel (int index) const
 {
     return getEffectProperty<float> (index, [&] (EffectProcessor::Ptr e) { return e->mixLevel.getTargetValue(); });
 }
 
-SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (juce::Point<int>) EffectProcessorChain::getLastUIPosition (int index) const
+std::optional<juce::Point<int>> EffectProcessorChain::getLastUIPosition (int index) const
 {
     return getEffectProperty<juce::Point<int>> (index, [&] (EffectProcessor::Ptr e) { return e->lastUIPosition; });
 }
 
-SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (bool) EffectProcessorChain::isPluginMissing (int index) const
+std::optional<bool> EffectProcessorChain::isPluginMissing (int index) const
 {
     return getEffectProperty<bool> (index, [&] (EffectProcessor::Ptr e) { return e->isMissing(); });
 }

@@ -171,7 +171,7 @@ public:
 
         @returns Name of effect, or String::empty if the index is out of range.
     */
-    SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (String) getEffectName (int index) const;
+    std::optional<String> getEffectName (int index) const;
 
     /** Obtain the name of a plugin that exists within the array of effect plugins.
 
@@ -179,7 +179,7 @@ public:
 
         @returns Name of plugin instance, or String::empty if the index is out of range.
     */
-    SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (String) getPluginInstanceName (int index) const;
+    std::optional<String> getPluginInstanceName (int index) const;
 
     /** Obtain the plugin instance of a contained effect.
 
@@ -191,7 +191,7 @@ public:
 
         @returns Plugin instance if the index was valid, nullptr otherwise.
     */
-    SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (std::shared_ptr<AudioPluginInstance>) getPluginInstance (int index) const;
+    std::optional<std::shared_ptr<AudioPluginInstance>> getPluginInstance (int index) const;
 
     /** Obtain the plugin description of a contained effect.
 
@@ -199,22 +199,22 @@ public:
 
         @returns Proper PluginDescription if the index was valid, PluginDescription() otherwise.
     */
-    SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (PluginDescription) getPluginDescription (int index) const;
+    std::optional<PluginDescription> getPluginDescription (int index) const;
 
     /** @returns true if the effect at the specified index is bypassed.
         This will return false if the index is out of range.
     */
-    SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (bool) isBypassed (int index) const;
+    std::optional<bool> isBypassed (int index) const;
 
     /** @returns the mix level of the effect at the specified index (normalised, 0.0f to 1.0f).
                  This will return 0.0f if the index is out of range.
     */
-    SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (float) getMixLevel (int index) const;
+    std::optional<float> getMixLevel (int index) const;
 
     /** @returns the last known top-left position of an effect's editor.
                  This will return (0, 0) if the index is out of range.
     */
-    SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (juce::Point<int>) getLastUIPosition (int index) const;
+    std::optional<juce::Point<int>> getLastUIPosition (int index) const;
 
     //==============================================================================
     /** @returns true if the effect's plugin is missing.
@@ -224,7 +224,7 @@ public:
 
         @see loadIfMissing
     */
-    SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (bool) isPluginMissing (int index) const;
+    std::optional<bool> isPluginMissing (int index) const;
 
     /** Attempt loading an effect's plugin instance if it is known to be missing.
 
@@ -329,7 +329,7 @@ private:
     EffectProcessor::Ptr insertInternal (const Type& valueOrRef, int destinationIndex, InsertionStyle insertionStyle = InsertionStyle::insert);
 
     template<typename Type>
-    SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE (Type) getEffectProperty (int index, std::function<Type (EffectProcessor::Ptr)> func) const
+    std::optional<Type) getEffectProperty (int index, std::function<Type (EffectProcessor::Ptr)> func) const
     {
         const ScopedLock sl (getCallbackLock());
 

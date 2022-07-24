@@ -25,6 +25,7 @@
 
 #include <forward_list>
 #include <list>
+#include <optional>
 #include <random>
 #include <regex>
 
@@ -117,37 +118,8 @@
    #endif
 #endif
 
-//==============================================================================
 #if JUCE_CXX20_IS_AVAILABLE
     #include <bit>
-#endif
-
-//==============================================================================
-#undef SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE
-
-#if JUCE_CXX17_IS_AVAILABLE
-    #include <optional>
-
-    #define SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE(Type) \
-        std::optional<Type>
-#else
-    #define SQUAREPINE_OPTIONALLY_OPTIONAL_TYPE(Type) \
-        Type
-
-    namespace std
-    {
-        template<class T>
-        JUCE_NODISCARD constexpr const T& clamp (const T& v, const T& lo, const T& hi) noexcept
-        {
-            return (v < lo) ? lo : (hi < v) ? hi : v;
-        }
-
-        template<class T, class Predicate>
-        JUCE_NODISCARD constexpr const T& clamp (const T& v, const T& lo, const T& hi, Predicate predicate) noexcept
-        {
-            return predicate (v, lo) ? lo : predicate (hi, v) ? hi : v;
-        }
-    }
 #endif
 
 //==============================================================================
