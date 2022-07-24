@@ -202,6 +202,17 @@ namespace std
             return std::hash<juce::String>() (key.toString());
         }
     };
+
+    /** JUCE doesn't yet provide all possible std::hash overloads, so here's one for File. */
+    template<>
+    struct hash<juce::File>
+    {
+        /** */
+        size_t operator() (const juce::File& key) const noexcept
+        {
+            return std::hash<juce::String> () (key.getFullPathName ());
+        }
+    };
 }
 
 //==============================================================================
