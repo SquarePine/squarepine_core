@@ -1,4 +1,3 @@
-//==============================================================================
 /** This is an amalgamation of a variety of standard animation easing functions,
     alongside some convenient standard audio waveform functions.
 

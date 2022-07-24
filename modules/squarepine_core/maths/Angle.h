@@ -1,4 +1,3 @@
-//============================================================================
 /** A structure representing an angle in radians.
     To convert to and from degrees, see fromDegrees and toDegrees to manipulate as such.
 */
