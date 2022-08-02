@@ -1,12 +1,12 @@
 /// This placeholder class with No DSP.  It's purpose is to provide an appropriate parameter interface for recording useful information..
 
-class BeatTemplateProcessor final : public InternalProcessor,
+class ReverbProcessor final : public InternalProcessor,
                              public AudioProcessorParameter::Listener
 {
 public:
     //Constructor with ID
-    BeatTemplateProcessor (int idNum = 1);
-    ~BeatTemplateProcessor()override;
+    ReverbProcessor (int idNum = 1);
+    ~ReverbProcessor()override;
 
     //============================================================================== Audio processing
     void prepareToPlay (double Fs, int bufferSize) override;
@@ -23,7 +23,7 @@ public:
 
 private:
     AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
-    NotifiableAudioParameterFloat* beatParam = nullptr;
+    NotifiableAudioParameterFloat* reverbAmountParam = nullptr;
     NotifiableAudioParameterFloat* timeParam = nullptr;
     NotifiableAudioParameterFloat* wetDryParam = nullptr;
     NotifiableAudioParameterFloat* xPadParam = nullptr;

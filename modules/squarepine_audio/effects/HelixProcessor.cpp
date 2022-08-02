@@ -1,9 +1,9 @@
-BeatTemplateProcessor::BeatTemplateProcessor (int idNum): idNumber (idNum)
+HelixProcessor::HelixProcessor (int idNum): idNumber (idNum)
 {
     reset();
 
     NormalisableRange<float> wetDryRange = { 0.f, 1.f };
-    auto wetdry = std::make_unique<NotifiableAudioParameterFloat> ("dryWetDelay", "Dry/Wet", wetDryRange, 0.5f,
+    auto wetdry = std::make_unique<NotifiableAudioParameterFloat> ("dryWet", "Dry/Wet", wetDryRange, 0.5f,
                                                                    true,// isAutomatable
                                                                    "Dry/Wet",
                                                                    AudioProcessorParameter::genericParameter,
@@ -113,6 +113,19 @@ BeatTemplateProcessor::BeatTemplateProcessor (int idNum): idNumber (idNum)
 
                                                                       return txt;
                                                                   });
+    
+    NormalisableRange<float> onoffRange = { 0.f, 1.0f };
+
+    auto onoff = std::make_unique<NotifiableAudioParameterFloat> ("onoff", "On/Off", onoffRange, 0,
+                                                                  true,// isAutomatable
+                                                                  "On/Off ",
+                                                                  AudioProcessorParameter::genericParameter,
+                                                                  [] (float value, int) -> String {
+                                                                      if (value > 0)
+                                                                          return "On";
+                                                                      return "Off";
+                                                                      ;
+                                                                  });
 
     wetDryParam = wetdry.get();
     wetDryParam->addListener (this);
@@ -126,6 +139,10 @@ BeatTemplateProcessor::BeatTemplateProcessor (int idNum): idNumber (idNum)
     xPadParam = other.get();
     xPadParam->addListener (this);
 
+    
+    onOffParam = onoff.get();
+    onOffParam->addListener(this);
+    
     auto layout = createDefaultParameterLayout (false);
     layout.add (std::move (wetdry));
     layout.add (std::move (beat));
@@ -137,29 +154,30 @@ BeatTemplateProcessor::BeatTemplateProcessor (int idNum): idNumber (idNum)
     setPrimaryParameter (wetDryParam);
 }
 
-BeatTemplateProcessor::~BeatTemplateProcessor()
+HelixProcessor::~HelixProcessor()
 {
     wetDryParam->removeListener (this);
     beatParam->removeListener (this);
     timeParam->removeListener (this);
     xPadParam->removeListener (this);
+    onOffParam->removeListener (this);
 }
 
 //============================================================================== Audio processing
-void BeatTemplateProcessor::prepareToPlay (double, int)
+void HelixProcessor::prepareToPlay (double, int)
 {
 }
-void BeatTemplateProcessor::processBlock (juce::AudioBuffer<float>&, MidiBuffer&)
+void HelixProcessor::processBlock (juce::AudioBuffer<float>&, MidiBuffer&)
 {
 }
 
-const String BeatTemplateProcessor::getName() const { return TRANS ("BeatTemplateProcessor"); }
+const String HelixProcessor::getName() const { return TRANS ("HelixProcessor"); }
 /** @internal */
-Identifier BeatTemplateProcessor::getIdentifier() const { return "BeatTemplateProcessor" + String (idNumber); }
+Identifier HelixProcessor::getIdentifier() const { return "HelixProcessor" + String (idNumber); }
 /** @internal */
-bool BeatTemplateProcessor::supportsDoublePrecisionProcessing() const { return false; }
+bool HelixProcessor::supportsDoublePrecisionProcessing() const { return false; }
 //============================================================================== Parameter callbacks
-void BeatTemplateProcessor::parameterValueChanged (int, float)
+void HelixProcessor::parameterValueChanged (int, float)
 {
     //If the beat division is changed, the delay time should be set.
     //If the X Pad is used, the beat div and subsequently, time, should be updated.
