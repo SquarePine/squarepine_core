@@ -257,6 +257,7 @@ AudioProcessorValueTreeState::ParameterLayout SimpleEQProcessor::createParameter
                                                                        c.frequency,
                                                                        false);
 
+        
         auto resonance = std::make_unique<NotifiableAudioParameterFloat> (String ("qXYZ").replace ("XYZ", c.name),
                                                                           TRANS ("Q (XYZ)").replace ("XYZ", TRANS (c.name)),
                                                                           0.00001f,

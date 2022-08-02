@@ -86,7 +86,7 @@ DelayProcessor::DelayProcessor (int idNum): idNumber (idNum)
 
     NormalisableRange<float> timeRange = { 1.f, 4000.0f };
     auto time = std::make_unique<NotifiableAudioParameterFloat> ("delayTime", "Delay Time", timeRange, 200.f,
-                                                                 false,// isAutomatable
+                                                                 true,// isAutomatable
                                                                  "Delay Time",
                                                                  AudioProcessorParameter::genericParameter,
                                                                  [] (float value, int) -> String {
@@ -95,6 +95,7 @@ DelayProcessor::DelayProcessor (int idNum): idNumber (idNum)
                                                                      ;
                                                                  });
 
+    
     delayUnit.setDelaySamples (200 *48);
     wetDry.setTargetValue (0.5);
     delayTime.setTargetValue (200*48);
@@ -109,6 +110,10 @@ DelayProcessor::DelayProcessor (int idNum): idNumber (idNum)
     layout.add (std::move (wetdry));
     layout.add (std::move (time));
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
+    
+    setPrimaryParameter(wetDryParam);
+
+    
 }
 
 DelayProcessor::~DelayProcessor()

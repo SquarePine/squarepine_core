@@ -5,7 +5,7 @@ inline Array<AudioProcessorParameter*> getAllParametersExcludingBypass (AudioPro
 {
     Array<AudioProcessorParameter*> params;
 
-    for (auto* param : processor.getParameters())
+    for (auto* param: processor.getParameters())
         if (param != processor.getBypassParameter())
             params.addIfNotAlreadyThere (param);
 
@@ -13,7 +13,7 @@ inline Array<AudioProcessorParameter*> getAllParametersExcludingBypass (AudioPro
 }
 
 //==============================================================================
-/** A base class for basic internal processors; processors which you 
+/** A base class for basic internal processors; processors which you
     don't typically expose to the user.
 
     This class fills out typically unused methods for you,
@@ -158,7 +158,7 @@ public:
     /** @internal */
     void prepareToPlay (double, int) override;
     /** @internal */
-    void releaseResources() override { }
+    void releaseResources() override {}
     /** @internal */
     double getTailLengthSeconds() const override { return 0.0; }
     /** @internal */
@@ -170,11 +170,11 @@ public:
     /** @internal */
     int getCurrentProgram() override { return 0; }
     /** @internal */
-    void setCurrentProgram (int) override { }
+    void setCurrentProgram (int) override {}
     /** @internal */
     const String getProgramName (int) override { return NEEDS_TRANS ("Default"); }
     /** @internal */
-    void changeProgramName (int, const String&) override { }
+    void changeProgramName (int, const String&) override {}
     /** @internal */
     void fillInPluginDescription (PluginDescription&) const final;
     /** @internal */
@@ -183,6 +183,9 @@ public:
     void setStateInformation (const void*, int) override;
     /** @internal */
     AudioProcessorParameter* getBypassParameter() const override { return bypassParameter; }
+
+    void setPrimaryParameter (AudioParameterFloat* param){ primaryParameter = param;}
+    AudioParameterFloat* getPrimaryParameter() const { return primaryParameter; }
 
 protected:
     //==============================================================================
@@ -198,6 +201,8 @@ protected:
     [[nodiscard]] AudioProcessorValueTreeState::ParameterLayout createDefaultParameterLayout (bool addBypassParam = true);
 
 private:
+    AudioParameterFloat* primaryParameter = nullptr;
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (InternalProcessor)
 };
@@ -221,7 +226,7 @@ public:
     /** @internal */
     Identifier getIdentifier() const override { return "Dummy"; }
     /** @internal */
-    void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override { }
+    void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override {}
 
 private:
     //==============================================================================
