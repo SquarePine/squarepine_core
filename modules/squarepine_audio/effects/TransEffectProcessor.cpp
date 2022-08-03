@@ -15,7 +15,7 @@ TransEffectProcessor::TransEffectProcessor (int idNum): idNumber (idNum)
 
     NormalisableRange<float> beatRange = { 0.f, 8.0 };
     auto beat = std::make_unique<NotifiableAudioParameterFloat> ("beat", "Beat Division", beatRange, 3,
-                                                                 true,// isAutomatable
+                                                                 false,// isAutomatable
                                                                  "Beat Division ",
                                                                  AudioProcessorParameter::genericParameter,
                                                                  [] (float value, int) -> String {
@@ -65,7 +65,7 @@ TransEffectProcessor::TransEffectProcessor (int idNum): idNumber (idNum)
                                                                  AudioProcessorParameter::genericParameter,
                                                                  [] (float value, int) -> String {
                                                                      String txt (roundToInt (value));
-                                                                     return txt;
+                                                                     return txt<< "ms";
                                                                      ;
                                                                  });
 
@@ -131,7 +131,7 @@ TransEffectProcessor::TransEffectProcessor (int idNum): idNumber (idNum)
     layout.add (std::move (beat));
     layout.add (std::move (time));
     layout.add (std::move (other));
-
+    setupBandParameters(layout);
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 
     setPrimaryParameter (wetDryParam);
@@ -146,22 +146,25 @@ TransEffectProcessor::~TransEffectProcessor()
 }
 
 //============================================================================== Audio processing
-void TransEffectProcessor::prepareToPlay (double, int)
+void TransEffectProcessor::prepareToPlay (double Fs, int bufferSize)
 {
+    BandProcessor::prepareToPlay(Fs, bufferSize);
 }
-void TransEffectProcessor::processBlock (juce::AudioBuffer<float>&, MidiBuffer&)
+void TransEffectProcessor::processAudioBlock (juce::AudioBuffer<float>&, MidiBuffer&)
 {
 }
 
-const String TransEffectProcessor::getName() const { return TRANS ("TransProcessor"); }
+const String TransEffectProcessor::getName() const { return TRANS ("Trans"); }
 /** @internal */
-Identifier TransEffectProcessor::getIdentifier() const { return "TransProcessor" + String (idNumber); }
+Identifier TransEffectProcessor::getIdentifier() const { return "Trans" + String (idNumber); }
 /** @internal */
 bool TransEffectProcessor::supportsDoublePrecisionProcessing() const { return false; }
 //============================================================================== Parameter callbacks
-void TransEffectProcessor::parameterValueChanged (int, float)
+void TransEffectProcessor::parameterValueChanged (int id, float value)
 {
     //If the beat division is changed, the delay time should be set.
     //If the X Pad is used, the beat div and subsequently, time, should be updated.
     
+    //Subtract the number of new parameters in this processor
+    BandProcessor::parameterValueChanged (id, value);
 }

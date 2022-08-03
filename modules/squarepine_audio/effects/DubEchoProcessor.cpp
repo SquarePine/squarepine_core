@@ -13,18 +13,6 @@ DubEchoProcessor::DubEchoProcessor (int idNum): idNumber (idNum)
                                                                        return txt << "%";
                                                                    });
 
-    NormalisableRange<float> fxRange = { 0.f, 1.0f };
-    auto fx = std::make_unique<NotifiableAudioParameterFloat> ("fx frequency", "FX Frequency", fxRange, 0.f,
-                                                               true,// isAutomatable
-                                                               "FX Frequency ",
-                                                               AudioProcessorParameter::genericParameter,
-                                                               [] (float value, int) -> String {
-                                                                   int percentage = roundToInt (value * 100);
-                                                                   String txt (percentage);
-                                                                   return txt << "%";
-                                                                   ;
-                                                               });
-
     NormalisableRange<float> colourRange = { -1.f, 1.0f };
     auto colour = std::make_unique<NotifiableAudioParameterFloat> ("colour", "Colour", colourRange, 0.f,
                                                                    true,// isAutomatable
@@ -53,15 +41,11 @@ DubEchoProcessor::DubEchoProcessor (int idNum): idNumber (idNum)
     echoColourParam = colour.get();
     echoColourParam->addListener (this);
 
-    fxFrequencyParam = fx.get();
-    fxFrequencyParam->addListener (this);
-
     feedbackParam = feedback.get();
     feedbackParam->addListener (this);
 
     auto layout = createDefaultParameterLayout (false);
     layout.add (std::move (wetdry));
-    layout.add (std::move (fx));
     layout.add (std::move (colour));
     layout.add (std::move (feedback));
 
@@ -73,7 +57,6 @@ DubEchoProcessor::DubEchoProcessor (int idNum): idNumber (idNum)
 DubEchoProcessor::~DubEchoProcessor()
 {
     wetDryParam->removeListener (this);
-    fxFrequencyParam->removeListener (this);
     echoColourParam->removeListener (this);
     feedbackParam->removeListener (this);
 }
@@ -86,9 +69,9 @@ void DubEchoProcessor::processBlock (juce::AudioBuffer<float>&, MidiBuffer&)
 {
 }
 
-const String DubEchoProcessor::getName() const { return TRANS ("DubEchoProcessor"); }
+const String DubEchoProcessor::getName() const { return TRANS ("Dub Echo"); }
 /** @internal */
-Identifier DubEchoProcessor::getIdentifier() const { return "DubEchoProcessor" + String (idNumber); }
+Identifier DubEchoProcessor::getIdentifier() const { return "Dub Echo" + String (idNumber); }
 /** @internal */
 bool DubEchoProcessor::supportsDoublePrecisionProcessing() const { return false; }
 //============================================================================== Parameter callbacks

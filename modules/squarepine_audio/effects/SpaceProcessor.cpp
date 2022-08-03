@@ -13,23 +13,10 @@ SpaceProcessor::SpaceProcessor (int idNum): idNumber (idNum)
                                                                        return txt << "%";
                                                                    });
 
-    NormalisableRange<float> fxRange = { 0.f, 1.0f };
-    auto fx = std::make_unique<NotifiableAudioParameterFloat> ("fx frequency", "FX Frequency", fxRange, 0.f,
-                                                               true,// isAutomatable
-                                                               "FX Frequency ",
-                                                               AudioProcessorParameter::genericParameter,
-                                                               [] (float value, int) -> String {
-                                                                   int percentage = roundToInt (value * 100);
-                                                                   String txt (percentage);
-                                                                   return txt << "%";
-                                                                   ;
-                                                                   ;
-                                                               });
-
     NormalisableRange<float> reverbRange = { -1.0, 1.0f };
-    auto reverbColour = std::make_unique<NotifiableAudioParameterFloat> ("reverb colour", "Reverb Colour", reverbRange, 0.f,
+    auto reverbColour = std::make_unique<NotifiableAudioParameterFloat> ("reverb colour", "Colour", reverbRange, 0.f,
                                                                          true,// isAutomatable
-                                                                         "Reverb Colour ",
+                                                                         "Colour ",
                                                                          AudioProcessorParameter::genericParameter,
                                                                          [] (float value, int) -> String {
                                                                              String txt (value);
@@ -43,10 +30,9 @@ SpaceProcessor::SpaceProcessor (int idNum): idNumber (idNum)
                                                                      "Feedback ",
                                                                      AudioProcessorParameter::genericParameter,
                                                                      [] (float value, int) -> String {
-                                                                         String txt (roundToInt (value));
+                                                                         int percentage = roundToInt (value * 100);
+                                                                         String txt (percentage);
                                                                          return txt << "%";
-                                                                         ;
-                                                                         ;
                                                                      });
 
     wetDryParam = wetdry.get();
@@ -55,15 +41,11 @@ SpaceProcessor::SpaceProcessor (int idNum): idNumber (idNum)
     reverbColourParam = reverbColour.get();
     reverbColourParam->addListener (this);
 
-    fxFrequencyParam = fx.get();
-    fxFrequencyParam->addListener (this);
-
     feedbackParam = feedback.get();
     feedbackParam->addListener (this);
 
     auto layout = createDefaultParameterLayout (false);
     layout.add (std::move (wetdry));
-    layout.add (std::move (fx));
     layout.add (std::move (reverbColour));
     layout.add (std::move (feedback));
 
@@ -76,7 +58,6 @@ SpaceProcessor::~SpaceProcessor()
 {
     wetDryParam->removeListener (this);
     reverbColourParam->removeListener (this);
-    fxFrequencyParam->removeListener (this);
     feedbackParam->removeListener (this);
 }
 
@@ -88,9 +69,9 @@ void SpaceProcessor::processBlock (juce::AudioBuffer<float>&, MidiBuffer&)
 {
 }
 
-const String SpaceProcessor::getName() const { return TRANS ("SpaceProcessor"); }
+const String SpaceProcessor::getName() const { return TRANS ("Space"); }
 /** @internal */
-Identifier SpaceProcessor::getIdentifier() const { return "SpaceProcessor" + String (idNumber); }
+Identifier SpaceProcessor::getIdentifier() const { return "Space" + String (idNumber); }
 /** @internal */
 bool SpaceProcessor::supportsDoublePrecisionProcessing() const { return false; }
 //============================================================================== Parameter callbacks

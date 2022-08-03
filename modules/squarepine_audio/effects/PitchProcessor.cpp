@@ -61,7 +61,7 @@ PitchProcessor::PitchProcessor (int idNum): idNumber (idNum)
     layout.add (std::move (beat));
     layout.add (std::move (time));
     layout.add (std::move (other));
-
+    setupBandParameters(layout);
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 
     setPrimaryParameter (wetDryParam);
@@ -76,21 +76,25 @@ PitchProcessor::~PitchProcessor()
 }
 
 //============================================================================== Audio processing
-void PitchProcessor::prepareToPlay (double, int)
+void PitchProcessor::prepareToPlay (double Fs, int bufferSize)
 {
+    BandProcessor::prepareToPlay(Fs, bufferSize);
 }
-void PitchProcessor::processBlock (juce::AudioBuffer<float>&, MidiBuffer&)
+void PitchProcessor::processAudioBlock (juce::AudioBuffer<float>&, MidiBuffer&)
 {
 }
 
-const String PitchProcessor::getName() const { return TRANS ("PitchProcessor"); }
+const String PitchProcessor::getName() const { return TRANS ("Pitch"); }
 /** @internal */
-Identifier PitchProcessor::getIdentifier() const { return "PitchProcessor" + String (idNumber); }
+Identifier PitchProcessor::getIdentifier() const { return "Pitch" + String (idNumber); }
 /** @internal */
 bool PitchProcessor::supportsDoublePrecisionProcessing() const { return false; }
 //============================================================================== Parameter callbacks
-void PitchProcessor::parameterValueChanged (int, float)
+void PitchProcessor::parameterValueChanged (int id, float value)
 {
     //If the beat division is changed, the delay time should be set.
     //If the X Pad is used, the beat div and subsequently, time, should be updated.
+    
+    //Subtract the number of new parameters in this processor
+    BandProcessor::parameterValueChanged (id, value);
 }

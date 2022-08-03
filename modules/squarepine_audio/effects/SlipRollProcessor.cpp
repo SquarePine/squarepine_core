@@ -15,7 +15,7 @@ SlipRollProcessor::SlipRollProcessor (int idNum): idNumber (idNum)
 
     NormalisableRange<float> beatRange = { 0.f, 8.0 };
     auto beat = std::make_unique<NotifiableAudioParameterFloat> ("beat", "Beat Division", beatRange, 3,
-                                                                 true,// isAutomatable
+                                                                 false,// isAutomatable
                                                                  "Beat Division ",
                                                                  AudioProcessorParameter::genericParameter,
                                                                  [] (float value, int) -> String {
@@ -65,7 +65,7 @@ SlipRollProcessor::SlipRollProcessor (int idNum): idNumber (idNum)
                                                                  AudioProcessorParameter::genericParameter,
                                                                  [] (float value, int) -> String {
                                                                      String txt (roundToInt (value));
-                                                                     return txt;
+                                                                     return txt << "ms";
                                                                      ;
                                                                  });
 
@@ -137,17 +137,17 @@ SlipRollProcessor::SlipRollProcessor (int idNum): idNumber (idNum)
 
     xPadParam = other.get();
     xPadParam->addListener (this);
-    
+
     onOffParam = onoff.get();
-    onOffParam->addListener(this);
-    
+    onOffParam->addListener (this);
+
     auto layout = createDefaultParameterLayout (false);
     layout.add (std::move (wetdry));
     layout.add (std::move (beat));
     layout.add (std::move (time));
     layout.add (std::move (other));
     layout.add (std::move (onoff));
-
+    setupBandParameters (layout);
 
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 
@@ -161,25 +161,28 @@ SlipRollProcessor::~SlipRollProcessor()
     timeParam->removeListener (this);
     xPadParam->removeListener (this);
     onOffParam->removeListener (this);
-
 }
 
 //============================================================================== Audio processing
-void SlipRollProcessor::prepareToPlay (double, int)
+void SlipRollProcessor::prepareToPlay (double Fs, int bufferSize)
 {
+    BandProcessor::prepareToPlay (Fs, bufferSize);
 }
-void SlipRollProcessor::processBlock (juce::AudioBuffer<float>&, MidiBuffer&)
+void SlipRollProcessor::processAudioBlock (juce::AudioBuffer<float>&, MidiBuffer&)
 {
 }
 
-const String SlipRollProcessor::getName() const { return TRANS ("SlipRollProcessor"); }
+const String SlipRollProcessor::getName() const { return TRANS ("Slip Roll"); }
 /** @internal */
-Identifier SlipRollProcessor::getIdentifier() const { return "SlipRollProcessor" + String (idNumber); }
+Identifier SlipRollProcessor::getIdentifier() const { return "Slip Roll" + String (idNumber); }
 /** @internal */
 bool SlipRollProcessor::supportsDoublePrecisionProcessing() const { return false; }
 //============================================================================== Parameter callbacks
-void SlipRollProcessor::parameterValueChanged (int, float)
+void SlipRollProcessor::parameterValueChanged (int id, float value)
 {
     //If the beat division is changed, the delay time should be set.
     //If the X Pad is used, the beat div and subsequently, time, should be updated.
+
+    //Subtract the number of new parameters in this processor
+    BandProcessor::parameterValueChanged (id, value);
 }

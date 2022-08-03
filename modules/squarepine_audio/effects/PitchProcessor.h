@@ -1,7 +1,6 @@
 /// This placeholder class with No DSP.  It's purpose is to provide an appropriate parameter interface for recording useful information..
 
-class PitchProcessor final : public InternalProcessor,
-                             public AudioProcessorParameter::Listener
+class PitchProcessor final : public BandProcessor
 {
 public:
     //Constructor with ID
@@ -10,7 +9,7 @@ public:
 
     //============================================================================== Audio processing
     void prepareToPlay (double Fs, int bufferSize) override;
-    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&) override;
+    void processAudioBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&) override;
     //============================================================================== House keeping
     const String getName() const override;
     /** @internal */

@@ -15,7 +15,7 @@ EchoProcessor::EchoProcessor (int idNum): idNumber (idNum)
 
     NormalisableRange<float> beatRange = { 0.f, 8.0 };
     auto beat = std::make_unique<NotifiableAudioParameterFloat> ("beat", "Beat Division", beatRange, 3,
-                                                                 true,// isAutomatable
+                                                                 false,// isAutomatable
                                                                  "Beat Division ",
                                                                  AudioProcessorParameter::genericParameter,
                                                                  [] (float value, int) -> String {
@@ -58,14 +58,14 @@ EchoProcessor::EchoProcessor (int idNum): idNumber (idNum)
                                                                      return txt;
                                                                  });
 
-    NormalisableRange<float> timeRange = { 1.f, 4000.f };
+    NormalisableRange<float> timeRange = { 10.f, 4000.f };
     auto time = std::make_unique<NotifiableAudioParameterFloat> ("time", "Time", timeRange, 10.f,
                                                                  true,// isAutomatable
                                                                  "Time ",
                                                                  AudioProcessorParameter::genericParameter,
                                                                  [] (float value, int) -> String {
                                                                      String txt (roundToInt (value));
-                                                                     return txt;
+                                                                     return txt<< "ms";
                                                                      ;
                                                                  });
 
@@ -131,7 +131,7 @@ EchoProcessor::EchoProcessor (int idNum): idNumber (idNum)
     layout.add (std::move (beat));
     layout.add (std::move (time));
     layout.add (std::move (other));
-
+    setupBandParameters (layout);
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 
     setPrimaryParameter (wetDryParam);
@@ -146,22 +146,25 @@ EchoProcessor::~EchoProcessor()
 }
 
 //============================================================================== Audio processing
-void EchoProcessor::prepareToPlay (double, int)
+void EchoProcessor::prepareToPlay (double fS, int bufferSize)
 {
+    BandProcessor::prepareToPlay(fS, bufferSize);
 }
-void EchoProcessor::processBlock (juce::AudioBuffer<float>&, MidiBuffer&)
+void EchoProcessor::processAudioBlock (juce::AudioBuffer<float>&, MidiBuffer&)
 {
 }
 
-const String EchoProcessor::getName() const { return TRANS ("EchoProcessor"); }
+const String EchoProcessor::getName() const { return TRANS ("Echo"); }
 /** @internal */
-Identifier EchoProcessor::getIdentifier() const { return "EchoProcessor" + String (idNumber); }
+Identifier EchoProcessor::getIdentifier() const { return "Echo" + String (idNumber); }
 /** @internal */
 bool EchoProcessor::supportsDoublePrecisionProcessing() const { return false; }
 //============================================================================== Parameter callbacks
-void EchoProcessor::parameterValueChanged (int, float)
+void EchoProcessor::parameterValueChanged (int id, float value)
 {
     //If the beat division is changed, the delay time should be set.
     //If the X Pad is used, the beat div and subsequently, time, should be updated.
-    
+
+    //Subtract the number of new parameters in this processor
+    BandProcessor::parameterValueChanged (id, value);
 }

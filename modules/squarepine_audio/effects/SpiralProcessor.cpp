@@ -17,7 +17,7 @@ SpiralProcessor::SpiralProcessor (int idNum): idNumber (idNum)
 
     NormalisableRange<float> beatRange = { 0.f, 8.0 };
     auto beat = std::make_unique<NotifiableAudioParameterFloat> ("beat", "Beat Division", beatRange, 3,
-                                                                 true,// isAutomatable
+                                                                 false,// isAutomatable
                                                                  "Beat Division ",
                                                                  AudioProcessorParameter::genericParameter,
                                                                  [] (float value, int) -> String {
@@ -60,14 +60,14 @@ SpiralProcessor::SpiralProcessor (int idNum): idNumber (idNum)
                                                                      return txt;
                                                                  });
 
-    NormalisableRange<float> timeRange = { 1.f, 4000.f };
+    NormalisableRange<float> timeRange = { 10.f, 4000.f };
     auto time = std::make_unique<NotifiableAudioParameterFloat> ("time", "Time", timeRange, 10.f,
                                                                  true,// isAutomatable
                                                                  "Time ",
                                                                  AudioProcessorParameter::genericParameter,
                                                                  [] (float value, int) -> String {
                                                                      String txt (roundToInt (value));
-                                                                     return txt;
+                                                                     return txt<< "ms";
                                                                      ;
                                                                  });
 
@@ -133,7 +133,7 @@ SpiralProcessor::SpiralProcessor (int idNum): idNumber (idNum)
     layout.add (std::move (beat));
     layout.add (std::move (time));
     layout.add (std::move (other));
-
+    setupBandParameters(layout);
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 
     setPrimaryParameter (wetDryParam);
@@ -148,22 +148,25 @@ SpiralProcessor::~SpiralProcessor()
 }
 
 //============================================================================== Audio processing
-void SpiralProcessor::prepareToPlay (double, int)
+void SpiralProcessor::prepareToPlay (double Fs, int bufferSize)
 {
+    BandProcessor::prepareToPlay(Fs, bufferSize);
 }
-void SpiralProcessor::processBlock (juce::AudioBuffer<float>&, MidiBuffer&)
+void SpiralProcessor::processAudioBlock (juce::AudioBuffer<float>&, MidiBuffer&)
 {
 }
 
-const String SpiralProcessor::getName() const { return TRANS ("SpiralProcessor"); }
+const String SpiralProcessor::getName() const { return TRANS ("Spiral"); }
 /** @internal */
-Identifier SpiralProcessor::getIdentifier() const { return "SpiralProcessor" + String (idNumber); }
+Identifier SpiralProcessor::getIdentifier() const { return "Spiral" + String (idNumber); }
 /** @internal */
 bool SpiralProcessor::supportsDoublePrecisionProcessing() const { return false; }
 //============================================================================== Parameter callbacks
-void SpiralProcessor::parameterValueChanged (int, float)
+void SpiralProcessor::parameterValueChanged (int id, float value)
 {
     //If the beat division is changed, the delay time should be set.
     //If the X Pad is used, the beat div and subsequently, time, should be updated.
     
+    //Subtract the number of new parameters in this processor
+    BandProcessor::parameterValueChanged (id, value);
 }

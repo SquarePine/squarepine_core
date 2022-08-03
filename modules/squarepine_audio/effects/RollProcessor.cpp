@@ -15,7 +15,7 @@ RollProcessor::RollProcessor (int idNum): idNumber (idNum)
 
     NormalisableRange<float> beatRange = { 0.f, 8.0 };
     auto beat = std::make_unique<NotifiableAudioParameterFloat> ("beat", "Beat Division", beatRange, 3,
-                                                                 true,// isAutomatable
+                                                                 false,// isAutomatable
                                                                  "Beat Division ",
                                                                  AudioProcessorParameter::genericParameter,
                                                                  [] (float value, int) -> String {
@@ -126,8 +126,7 @@ RollProcessor::RollProcessor (int idNum): idNumber (idNum)
                                                                       return "Off";
                                                                       ;
                                                                   });
-    
-    
+
     wetDryParam = wetdry.get();
     wetDryParam->addListener (this);
 
@@ -139,17 +138,17 @@ RollProcessor::RollProcessor (int idNum): idNumber (idNum)
 
     xPadParam = other.get();
     xPadParam->addListener (this);
-    
+
     onOffParam = onoff.get();
-    onOffParam->addListener(this);
-    
+    onOffParam->addListener (this);
+
     auto layout = createDefaultParameterLayout (false);
     layout.add (std::move (wetdry));
     layout.add (std::move (beat));
     layout.add (std::move (time));
     layout.add (std::move (other));
     layout.add (std::move (onoff));
-
+    setupBandParameters (layout);
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 
     setPrimaryParameter (wetDryParam);
@@ -165,22 +164,25 @@ RollProcessor::~RollProcessor()
 }
 
 //============================================================================== Audio processing
-void RollProcessor::prepareToPlay (double, int)
+void RollProcessor::prepareToPlay (double Fs, int bufferSize)
 {
+    BandProcessor::prepareToPlay (Fs, bufferSize);
 }
-void RollProcessor::processBlock (juce::AudioBuffer<float>&, MidiBuffer&)
+void RollProcessor::processAudioBlock (juce::AudioBuffer<float>&, MidiBuffer&)
 {
 }
 
-const String RollProcessor::getName() const { return TRANS ("RollProcessor"); }
+const String RollProcessor::getName() const { return TRANS ("Roll"); }
 /** @internal */
-Identifier RollProcessor::getIdentifier() const { return "RollProcessor" + String (idNumber); }
+Identifier RollProcessor::getIdentifier() const { return "Roll" + String (idNumber); }
 /** @internal */
 bool RollProcessor::supportsDoublePrecisionProcessing() const { return false; }
 //============================================================================== Parameter callbacks
-void RollProcessor::parameterValueChanged (int, float)
+void RollProcessor::parameterValueChanged (int id, float value)
 {
     //If the beat division is changed, the delay time should be set.
     //If the X Pad is used, the beat div and subsequently, time, should be updated.
-    
+
+    //Subtract the number of new parameters in this processor
+    BandProcessor::parameterValueChanged (id, value);
 }

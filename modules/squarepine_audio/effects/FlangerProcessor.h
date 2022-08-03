@@ -1,11 +1,11 @@
 /// This placeholder class with No DSP.  It's purpose is to provide an appropriate parameter interface for recording useful information..
 
-class EchoProcessor final : public BandProcessor
+class FlangerProcessor final : public BandProcessor
 {
 public:
     //Constructor with ID
-    EchoProcessor (int idNum = 1);
-    ~EchoProcessor() override;
+    FlangerProcessor (int idNum = 1);
+    ~FlangerProcessor()override;
 
     //============================================================================== Audio processing
     void prepareToPlay (double Fs, int bufferSize) override;
@@ -18,7 +18,7 @@ public:
     bool supportsDoublePrecisionProcessing() const override;
     //============================================================================== Parameter callbacks
     void parameterValueChanged (int paramNum, float value) override;
-    void parameterGestureChanged (int, bool) override {}
+    void parameterGestureChanged (int, bool) override{}
 
 private:
     AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -27,5 +27,9 @@ private:
     NotifiableAudioParameterFloat* wetDryParam = nullptr;
     NotifiableAudioParameterFloat* xPadParam = nullptr;
 
+    
     int idNumber = 1;
+
+  
 };
+

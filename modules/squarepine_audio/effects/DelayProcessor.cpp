@@ -18,7 +18,7 @@ float FractionalDelay::processSample (float x, int channel)
     {
         // Delay Buffer
         // "delay" can be fraction
-        int d1 = floor (smoothDelay[channel]);
+        int d1 = (int)floor (smoothDelay[channel]);
         int d2 = d1 + 1;
         float g2 = smoothDelay[channel] - (float) d1;
         float g1 = 1.0f - g2;
@@ -95,10 +95,9 @@ DelayProcessor::DelayProcessor (int idNum): idNumber (idNum)
                                                                      ;
                                                                  });
 
-    
-    delayUnit.setDelaySamples (200 *48);
+    delayUnit.setDelaySamples (200 * 48);
     wetDry.setTargetValue (0.5);
-    delayTime.setTargetValue (200*48);
+    delayTime.setTargetValue (200 * 48);
 
     wetDryParam = wetdry.get();
     wetDryParam->addListener (this);
@@ -109,11 +108,11 @@ DelayProcessor::DelayProcessor (int idNum): idNumber (idNum)
     auto layout = createDefaultParameterLayout (false);
     layout.add (std::move (wetdry));
     layout.add (std::move (time));
+    setupBandParameters(layout);
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
-    
-    setPrimaryParameter(wetDryParam);
 
     
+    setPrimaryParameter (wetDryParam);
 }
 
 DelayProcessor::~DelayProcessor()
@@ -126,12 +125,14 @@ DelayProcessor::~DelayProcessor()
 void DelayProcessor::prepareToPlay (double Fs, int bufferSize)
 {
     const ScopedLock lock (getCallbackLock());
+    BandProcessor::prepareToPlay(Fs, bufferSize);
+    
     delayUnit.setFs ((float) Fs);
     wetDry.reset (Fs, 0.001f);
     delayTime.reset (Fs, 0.001f);
     setRateAndBufferSizeDetails (Fs, bufferSize);
 }
-void DelayProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
+void DelayProcessor::processAudioBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
     //TODO
     const auto numChannels = buffer.getNumChannels();
@@ -163,6 +164,7 @@ bool DelayProcessor::supportsDoublePrecisionProcessing() const { return false; }
 void DelayProcessor::parameterValueChanged (int paramNum, float value)
 {
     const ScopedLock sl (getCallbackLock());
+    
     switch (paramNum)
     {
         case 1:
@@ -181,4 +183,6 @@ void DelayProcessor::parameterValueChanged (int paramNum, float value)
         default:
             break;
     }
+    //Subtract the number of new parameters in this processor
+    BandProcessor::parameterValueChanged(paramNum - 2, value);
 }

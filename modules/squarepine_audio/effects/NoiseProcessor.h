@@ -25,7 +25,6 @@ private:
     AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     NotifiableAudioParameterFloat* wetDryParam = nullptr;
-    NotifiableAudioParameterFloat* fxFrequencyParam = nullptr;
     NotifiableAudioParameterFloat* colourParam = nullptr;
     NotifiableAudioParameterFloat* volumeParam = nullptr;
 

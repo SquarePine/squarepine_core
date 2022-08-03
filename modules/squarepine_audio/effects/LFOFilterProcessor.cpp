@@ -15,7 +15,7 @@ LFOFilterProcessor::LFOFilterProcessor (int idNum): idNumber (idNum)
 
     NormalisableRange<float> beatRange = { 0.f, 8.0 };
     auto beat = std::make_unique<NotifiableAudioParameterFloat> ("beat", "Beat Division", beatRange, 3,
-                                                                 true,// isAutomatable
+                                                                 false,// isAutomatable
                                                                  "Beat Division ",
                                                                  AudioProcessorParameter::genericParameter,
                                                                  [] (float value, int) -> String {
@@ -65,53 +65,19 @@ LFOFilterProcessor::LFOFilterProcessor (int idNum): idNumber (idNum)
                                                                  AudioProcessorParameter::genericParameter,
                                                                  [] (float value, int) -> String {
                                                                      String txt (roundToInt (value));
-                                                                     return txt;
+                                                                     return txt << "ms";
                                                                      ;
                                                                  });
 
     NormalisableRange<float> otherRange = { 0.f, 1.0f };
-    auto other = std::make_unique<NotifiableAudioParameterFloat> ("x Pad", "X Pad Division", beatRange, 3,
-                                                                  false,// isAutomatable
-                                                                  "X Pad Division ",
+    auto other = std::make_unique<NotifiableAudioParameterFloat> ("x Pad", "Modulation", beatRange, 3,
+                                                                  true,// isAutomatable
+                                                                  "Modulation ",
                                                                   AudioProcessorParameter::genericParameter,
                                                                   [] (float value, int) -> String {
-                                                                      int val = roundToInt (value);
-                                                                      String txt;
-                                                                      switch (val)
-                                                                      {
-                                                                          case 0:
-                                                                              txt = "1/16";
-                                                                              break;
-                                                                          case 1:
-                                                                              txt = "1/8";
-                                                                              break;
-                                                                          case 2:
-                                                                              txt = "1/4";
-                                                                              break;
-                                                                          case 3:
-                                                                              txt = "1/2";
-                                                                              break;
-                                                                          case 4:
-                                                                              txt = "1";
-                                                                              break;
-                                                                          case 5:
-                                                                              txt = "2";
-                                                                              break;
-                                                                          case 6:
-                                                                              txt = "4";
-                                                                              break;
-                                                                          case 7:
-                                                                              txt = "8";
-                                                                              break;
-                                                                          case 8:
-                                                                              txt = "16";
-                                                                              break;
-                                                                          default:
-                                                                              txt = "1";
-                                                                              break;
-                                                                      }
-
-                                                                      return txt;
+                                                                      int percentage = roundToInt (value * 100);
+                                                                      String txt (percentage);
+                                                                      return txt << "%";
                                                                   });
 
     wetDryParam = wetdry.get();
@@ -131,7 +97,7 @@ LFOFilterProcessor::LFOFilterProcessor (int idNum): idNumber (idNum)
     layout.add (std::move (beat));
     layout.add (std::move (time));
     layout.add (std::move (other));
-
+    setupBandParameters (layout);
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 
     setPrimaryParameter (wetDryParam);
@@ -146,22 +112,25 @@ LFOFilterProcessor::~LFOFilterProcessor()
 }
 
 //============================================================================== Audio processing
-void LFOFilterProcessor::prepareToPlay (double, int)
+void LFOFilterProcessor::prepareToPlay (double Fs, int bufferSize)
 {
+    BandProcessor::prepareToPlay (Fs, bufferSize);
 }
-void LFOFilterProcessor::processBlock (juce::AudioBuffer<float>&, MidiBuffer&)
+void LFOFilterProcessor::processAudioBlock (juce::AudioBuffer<float>&, MidiBuffer&)
 {
 }
 
-const String LFOFilterProcessor::getName() const { return TRANS ("LFOFilterProcessor"); }
+const String LFOFilterProcessor::getName() const { return TRANS ("LFO Filter"); }
 /** @internal */
-Identifier LFOFilterProcessor::getIdentifier() const { return "LFOFilterProcessor" + String (idNumber); }
+Identifier LFOFilterProcessor::getIdentifier() const { return "LFO Filter" + String (idNumber); }
 /** @internal */
 bool LFOFilterProcessor::supportsDoublePrecisionProcessing() const { return false; }
 //============================================================================== Parameter callbacks
-void LFOFilterProcessor::parameterValueChanged (int, float)
+void LFOFilterProcessor::parameterValueChanged (int id, float value)
 {
     //If the beat division is changed, the delay time should be set.
     //If the X Pad is used, the beat div and subsequently, time, should be updated.
     
+    //Subtract the number of new parameters in this processor
+    BandProcessor::parameterValueChanged (id, value);
 }

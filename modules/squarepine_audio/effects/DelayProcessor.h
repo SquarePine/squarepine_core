@@ -38,8 +38,7 @@ private:
 
 //This is a wrapper around Eric Tarr's Fractional Delay class that can be integrated with Juce/Squarepine processors
 
-class DelayProcessor final : public InternalProcessor,
-                             public AudioProcessorParameter::Listener
+class DelayProcessor final : public BandProcessor
 {
 public:
     //Constructor with ID
@@ -48,7 +47,7 @@ public:
 
     //============================================================================== Audio processing
     void prepareToPlay (double Fs, int bufferSize) override;
-    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&) override;
+    void processAudioBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&) override;
     //============================================================================== House keeping
     const String getName() const override;
     /** @internal */

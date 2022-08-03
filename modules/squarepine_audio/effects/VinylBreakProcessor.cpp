@@ -21,7 +21,7 @@ VinylBreakProcessor::VinylBreakProcessor (int idNum): idNumber (idNum)
 
     NormalisableRange<float> beatRange = { 0.f, 8.0 };
     auto beat = std::make_unique<NotifiableAudioParameterFloat> ("beat", "Beat Division", beatRange, 3,
-                                                                 true,// isAutomatable
+                                                                 false,// isAutomatable
                                                                  "Beat Division ",
                                                                  AudioProcessorParameter::genericParameter,
                                                                  [] (float value, int) -> String {
@@ -64,14 +64,14 @@ VinylBreakProcessor::VinylBreakProcessor (int idNum): idNumber (idNum)
                                                                      return txt;
                                                                  });
 
-    NormalisableRange<float> timeRange = { 1.f, 4000.f };
+    NormalisableRange<float> timeRange = { 10.f, 4000.f };
     auto time = std::make_unique<NotifiableAudioParameterFloat> ("time", "Time", timeRange, 10.f,
                                                                  true,// isAutomatable
                                                                  "Time ",
                                                                  AudioProcessorParameter::genericParameter,
                                                                  [] (float value, int) -> String {
                                                                      String txt (roundToInt (value));
-                                                                     return txt;
+                                                                     return txt<<"ms";
                                                                      ;
                                                                  });
 
@@ -137,7 +137,7 @@ VinylBreakProcessor::VinylBreakProcessor (int idNum): idNumber (idNum)
     layout.add (std::move (beat));
     layout.add (std::move (time));
     layout.add (std::move (other));
-
+    setupBandParameters(layout);
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 
     setPrimaryParameter (wetDryParam);
@@ -152,22 +152,25 @@ VinylBreakProcessor::~VinylBreakProcessor()
 }
 
 //============================================================================== Audio processing
-void VinylBreakProcessor::prepareToPlay (double, int)
+void VinylBreakProcessor::prepareToPlay (double Fs, int bufferSize)
 {
+    BandProcessor::prepareToPlay(Fs, bufferSize);
 }
-void VinylBreakProcessor::processBlock (juce::AudioBuffer<float>&, MidiBuffer&)
+void VinylBreakProcessor::processAudioBlock (juce::AudioBuffer<float>&, MidiBuffer&)
 {
 }
 
-const String VinylBreakProcessor::getName() const { return TRANS ("VinylBreakProcessor"); }
+const String VinylBreakProcessor::getName() const { return TRANS ("Vinyl Break"); }
 /** @internal */
-Identifier VinylBreakProcessor::getIdentifier() const { return "VinylBreakProcessor" + String (idNumber); }
+Identifier VinylBreakProcessor::getIdentifier() const { return "Vinyl Break" + String (idNumber); }
 /** @internal */
 bool VinylBreakProcessor::supportsDoublePrecisionProcessing() const { return false; }
 //============================================================================== Parameter callbacks
-void VinylBreakProcessor::parameterValueChanged (int, float)
+void VinylBreakProcessor::parameterValueChanged (int id, float value)
 {
     //If the beat division is changed, the delay time should be set.
     //If the X Pad is used, the beat div and subsequently, time, should be updated.
     
+    //Subtract the number of new parameters in this processor
+    BandProcessor::parameterValueChanged (id, value);
 }

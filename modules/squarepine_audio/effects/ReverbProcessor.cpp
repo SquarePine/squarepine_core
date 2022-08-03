@@ -14,15 +14,15 @@ ReverbProcessor::ReverbProcessor (int idNum): idNumber (idNum)
                                                                    });
 
     NormalisableRange<float> reverbAmountRange = { 0.f, 1 };
-    auto reverbAmount = std::make_unique<NotifiableAudioParameterFloat> ("amount", "Reverb Amount ", reverbAmountRange, 0.5,
-                                                                              true,// isAutomatable
-                                                                              "Amount ",
-                                                                              AudioProcessorParameter::genericParameter,
-                                                                              [] (float value, int) -> String {
-                                                                                  int percentage = roundToInt (value * 100);
-                                                                                  String txt (percentage);
-                                                                                  return txt << "%";
-                                                                              });
+    auto reverbAmount = std::make_unique<NotifiableAudioParameterFloat> ("amount", "Reverb Filter Amount ", reverbAmountRange, 0.5,
+                                                                         true,// isAutomatable
+                                                                         "Reverb Filter Amount ",
+                                                                         AudioProcessorParameter::genericParameter,
+                                                                         [] (float value, int) -> String {
+                                                                             int percentage = roundToInt (value * 100);
+                                                                             String txt (percentage);
+                                                                             return txt << "%";
+                                                                         });
 
     NormalisableRange<float> timeRange = { 1.f, 4000.f };
     auto time = std::make_unique<NotifiableAudioParameterFloat> ("time", "Time", timeRange, 10.f,
@@ -97,7 +97,7 @@ ReverbProcessor::ReverbProcessor (int idNum): idNumber (idNum)
     layout.add (std::move (reverbAmount));
     layout.add (std::move (time));
     layout.add (std::move (other));
-
+    setupBandParameters (layout);
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 
     setPrimaryParameter (wetDryParam);
@@ -112,21 +112,25 @@ ReverbProcessor::~ReverbProcessor()
 }
 
 //============================================================================== Audio processing
-void ReverbProcessor::prepareToPlay (double, int)
+void ReverbProcessor::prepareToPlay (double Fs, int bufferSize)
 {
+    BandProcessor::prepareToPlay (Fs, bufferSize);
 }
-void ReverbProcessor::processBlock (juce::AudioBuffer<float>&, MidiBuffer&)
+void ReverbProcessor::processAudioBlock (juce::AudioBuffer<float>&, MidiBuffer&)
 {
 }
 
-const String ReverbProcessor::getName() const { return TRANS ("ReverbProcessor"); }
+const String ReverbProcessor::getName() const { return TRANS ("Reverb"); }
 /** @internal */
-Identifier ReverbProcessor::getIdentifier() const { return "ReverbProcessor" + String (idNumber); }
+Identifier ReverbProcessor::getIdentifier() const { return "Reverb" + String (idNumber); }
 /** @internal */
 bool ReverbProcessor::supportsDoublePrecisionProcessing() const { return false; }
 //============================================================================== Parameter callbacks
-void ReverbProcessor::parameterValueChanged (int, float)
+void ReverbProcessor::parameterValueChanged (int id, float value)
 {
     //If the beat division is changed, the delay time should be set.
     //If the X Pad is used, the beat div and subsequently, time, should be updated.
+
+    //Subtract the number of new parameters in this processor
+    BandProcessor::parameterValueChanged (id, value);
 }

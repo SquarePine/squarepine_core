@@ -13,18 +13,10 @@ CrushProcessor::CrushProcessor (int idNum): idNumber (idNum)
                                                                        return txt << "%";
                                                                    });
 
-    NormalisableRange<float> fxRange = { 0.f, 1.0f };
-    auto fx = std::make_unique<NotifiableAudioParameterFloat> ("fx frequency", "FX Frequency", fxRange, 0.5f,
-                                                               true,// isAutomatable
-                                                               "FX Frequency ",
-                                                               AudioProcessorParameter::genericParameter,
-                                                               [] (float value, int) -> String {
-                                                                   String txt (roundToInt (value));
-                                                                   return txt << "%";
-                                                                   ;
-                                                                   ;
-                                                               });
-
+    /*
+     Turn counterclockwise: Increases the sound’s distortion.
+     Turn clockwise: The sound is crushed before passing through the high pass filter.
+     */
     NormalisableRange<float> colourRange = { -1.0, 1.0f };
     auto colour = std::make_unique<NotifiableAudioParameterFloat> ("colour", "Colour", colourRange, 0.f,
                                                                    true,// isAutomatable
@@ -53,15 +45,11 @@ CrushProcessor::CrushProcessor (int idNum): idNumber (idNum)
     colourParam = colour.get();
     colourParam->addListener (this);
 
-    fxFrequencyParam = fx.get();
-    fxFrequencyParam->addListener (this);
-
     emphasisParam = other.get();
     emphasisParam->addListener (this);
 
     auto layout = createDefaultParameterLayout (false);
     layout.add (std::move (wetdry));
-    layout.add (std::move (fx));
     layout.add (std::move (colour));
     layout.add (std::move (other));
 
@@ -73,7 +61,6 @@ CrushProcessor::CrushProcessor (int idNum): idNumber (idNum)
 CrushProcessor::~CrushProcessor()
 {
     wetDryParam->removeListener (this);
-    fxFrequencyParam->removeListener (this);
     colourParam->removeListener (this);
     emphasisParam->removeListener (this);
 }
@@ -86,9 +73,9 @@ void CrushProcessor::processBlock (juce::AudioBuffer<float>&, MidiBuffer&)
 {
 }
 
-const String CrushProcessor::getName() const { return TRANS ("CrushProcessor"); }
+const String CrushProcessor::getName() const { return TRANS ("Crush"); }
 /** @internal */
-Identifier CrushProcessor::getIdentifier() const { return "CrushProcessor" + String (idNumber); }
+Identifier CrushProcessor::getIdentifier() const { return "Crush" + String (idNumber); }
 /** @internal */
 bool CrushProcessor::supportsDoublePrecisionProcessing() const { return false; }
 //============================================================================== Parameter callbacks

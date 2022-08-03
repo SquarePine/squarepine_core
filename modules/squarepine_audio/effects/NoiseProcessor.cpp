@@ -12,19 +12,10 @@ NoiseProcessor::NoiseProcessor (int idNum): idNumber (idNum)
                                                                        String txt (percentage);
                                                                        return txt << "%";
                                                                    });
-
-    NormalisableRange<float> fxRange = { 0.f, 1.0f };
-    auto fx = std::make_unique<NotifiableAudioParameterFloat> ("fx frequency", "FX Frequency", fxRange, 0.5f,
-                                                               true,// isAutomatable
-                                                               "FX Frequency ",
-                                                               AudioProcessorParameter::genericParameter,
-                                                               [] (float value, int) -> String {
-                                                                   String txt (roundToInt (value));
-                                                                   return txt << "%";
-                                                                   ;
-                                                                   ;
-                                                               });
-
+    /*
+     Turn counterclockwise: The cut-off frequency of the filter through which the white noise passes gradually descends.
+     Turn clockwise: The cut-off frequency of the filter through which the white noise passes gradually rises.
+     */
     NormalisableRange<float> colourRange = { -1.0, 1.0f };
     auto colour = std::make_unique<NotifiableAudioParameterFloat> ("colour", "Colour", colourRange, 0.f,
                                                                    true,// isAutomatable
@@ -57,15 +48,12 @@ NoiseProcessor::NoiseProcessor (int idNum): idNumber (idNum)
     colourParam = colour.get();
     colourParam->addListener (this);
 
-    fxFrequencyParam = fx.get();
-    fxFrequencyParam->addListener (this);
 
     volumeParam = noise.get();
     volumeParam->addListener (this);
 
     auto layout = createDefaultParameterLayout (false);
     layout.add (std::move (wetdry));
-    layout.add (std::move (fx));
     layout.add (std::move (colour));
     layout.add (std::move (noise));
 
@@ -77,7 +65,6 @@ NoiseProcessor::NoiseProcessor (int idNum): idNumber (idNum)
 NoiseProcessor::~NoiseProcessor()
 {
     wetDryParam->removeListener (this);
-    fxFrequencyParam->removeListener (this);
     colourParam->removeListener (this);
     volumeParam->removeListener (this);
 }
