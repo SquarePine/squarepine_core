@@ -52,16 +52,16 @@ float FractionalDelay::processSample (float x, int channel)
     }
 }
 
-void FractionalDelay::setFs (float Fs)
+void FractionalDelay::setFs (float _Fs)
 {
-    this->Fs = Fs;
+    this->Fs = _Fs;
 }
 
-void FractionalDelay::setDelaySamples (float delay)
+void FractionalDelay::setDelaySamples (float _delay)
 {
     if (delay >= 1.f)
     {
-        this->delay = delay;
+        this->delay = _delay;
     }
     else
     {

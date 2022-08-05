@@ -71,9 +71,9 @@ HelixProcessor::HelixProcessor (int idNum): idNumber (idNum)
                                                                      ;
                                                                  });
 
-    NormalisableRange<float> otherRange = { 0.f, 1.0f };
-    auto other = std::make_unique<NotifiableAudioParameterFloat> ("pitch", "Pitch", beatRange, 3,
-                                                                  false,// isAutomatable
+    NormalisableRange<float> pitchRange = { -50.f, 100.0f };
+    auto other = std::make_unique<NotifiableAudioParameterFloat> ("pitch", "Pitch", pitchRange, 3,
+                                                                  true,// isAutomatable
                                                                   "Pitch ",
                                                                   AudioProcessorParameter::genericParameter,
                                                                   [] (float value, int) -> String {

@@ -30,7 +30,7 @@ CrushProcessor::CrushProcessor (int idNum): idNumber (idNum)
 
     NormalisableRange<float> otherRange = { 0.f, 1.0f };
     auto other = std::make_unique<NotifiableAudioParameterFloat> ("other", "other", otherRange, 0.5f,
-                                                                  true,// isAutomatable
+                                                                  false,// isAutomatable
                                                                   "Other ",
                                                                   AudioProcessorParameter::genericParameter,
                                                                   [] (float value, int) -> String {

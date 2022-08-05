@@ -77,9 +77,9 @@ void NoiseProcessor::processBlock (juce::AudioBuffer<float>&, MidiBuffer&)
 {
 }
 
-const String NoiseProcessor::getName() const { return TRANS ("NoiseProcessor"); }
+const String NoiseProcessor::getName() const { return TRANS ("Noise"); }
 /** @internal */
-Identifier NoiseProcessor::getIdentifier() const { return "NoiseProcessor" + String (idNumber); }
+Identifier NoiseProcessor::getIdentifier() const { return "Noise" + String (idNumber); }
 /** @internal */
 bool NoiseProcessor::supportsDoublePrecisionProcessing() const { return false; }
 //============================================================================== Parameter callbacks

@@ -16,9 +16,9 @@ public:
     
     float processSample(float x,int channel);
 
-    void setFs(float Fs);
+    void setFs(float _Fs);
     
-    void setDelaySamples(float delay);
+    void setDelaySamples(float _delay);
 
     
 private:
