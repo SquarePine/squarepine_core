@@ -49,6 +49,8 @@ String getInternalProcessorTypeName()
 #include "effects/DitherProcessor.cpp"
 #include "effects/HissingProcessor.cpp"
 #include "effects/JUCEReverbProcessor.cpp"
+#include "effects/EffectiveTempoProcessor.cpp"
+#include "effects/VariableBPMProcessor.cpp"
 #include "effects/LevelsProcessor.cpp"
 #include "effects/LFOProcessor.cpp"
 #include "effects/MuteProcessor.cpp"

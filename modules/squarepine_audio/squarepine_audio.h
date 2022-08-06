@@ -129,6 +129,8 @@ String getInternalProcessorTypeName();
 #include "effects/DitherProcessor.h"
 #include "effects/HissingProcessor.h"
 #include "effects/JUCEReverbProcessor.h"
+#include "effects/EffectiveTempoProcessor.h"
+#include "effects/VariableBPMProcessor.h"
 #include "effects/LevelsProcessor.h"
 #include "effects/LFOProcessor.h"
 #include "effects/MuteProcessor.h"
