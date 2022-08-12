@@ -1,4 +1,4 @@
-DubEchoProcessor::DubEchoProcessor (int idNum): idNumber (idNum)
+ShortDelayProcessor::ShortDelayProcessor (int idNum): idNumber (idNum)
 {
     reset();
 
@@ -12,8 +12,8 @@ DubEchoProcessor::DubEchoProcessor (int idNum): idNumber (idNum)
                                                                        String txt (percentage);
                                                                        return txt << "%";
                                                                    });
-    NormalisableRange<float> timeRange = { 1.f, 4000.0f };
-    auto time = std::make_unique<NotifiableAudioParameterFloat> ("delayTime", "Echo Time", timeRange, 200.f,
+    NormalisableRange<float> timeRange = { 1.f, 400.0f };
+    auto time = std::make_unique<NotifiableAudioParameterFloat> ("delayTime", "Delay Time", timeRange, 200.f,
                                                                  true,// isAutomatable
                                                                  "Delay Time",
                                                                  AudioProcessorParameter::genericParameter,
@@ -47,8 +47,8 @@ DubEchoProcessor::DubEchoProcessor (int idNum): idNumber (idNum)
     wetDryParam = wetdry.get();
     wetDryParam->addListener (this);
 
-    echoColourParam = colour.get();
-    echoColourParam->addListener (this);
+    colourParam = colour.get();
+    colourParam->addListener (this);
 
     feedbackParam = feedback.get();
     feedbackParam->addListener (this);
@@ -67,28 +67,28 @@ DubEchoProcessor::DubEchoProcessor (int idNum): idNumber (idNum)
     setPrimaryParameter (wetDryParam);
 }
 
-DubEchoProcessor::~DubEchoProcessor()
+ShortDelayProcessor::~ShortDelayProcessor()
 {
     wetDryParam->removeListener (this);
-    echoColourParam->removeListener (this);
+    colourParam->removeListener (this);
     feedbackParam->removeListener (this);
     timeParam->removeListener(this);
 }
 
 //============================================================================== Audio processing
-void DubEchoProcessor::prepareToPlay (double, int)
+void ShortDelayProcessor::prepareToPlay (double, int)
 {
 }
-void DubEchoProcessor::processBlock (juce::AudioBuffer<float>&, MidiBuffer&)
+void ShortDelayProcessor::processBlock (juce::AudioBuffer<float>&, MidiBuffer&)
 {
 }
 
-const String DubEchoProcessor::getName() const { return TRANS ("Dub Echo"); }
+const String ShortDelayProcessor::getName() const { return TRANS ("Short Delay"); }
 /** @internal */
-Identifier DubEchoProcessor::getIdentifier() const { return "Dub Echo" + String (idNumber); }
+Identifier ShortDelayProcessor::getIdentifier() const { return "Short Delay" + String (idNumber); }
 /** @internal */
-bool DubEchoProcessor::supportsDoublePrecisionProcessing() const { return false; }
+bool ShortDelayProcessor::supportsDoublePrecisionProcessing() const { return false; }
 //============================================================================== Parameter callbacks
-void DubEchoProcessor::parameterValueChanged (int, float)
+void ShortDelayProcessor::parameterValueChanged (int, float)
 {
 }

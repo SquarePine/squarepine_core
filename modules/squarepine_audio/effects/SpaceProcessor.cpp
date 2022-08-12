@@ -13,8 +13,19 @@ SpaceProcessor::SpaceProcessor (int idNum): idNumber (idNum)
                                                                        return txt << "%";
                                                                    });
 
+    NormalisableRange<float> timeRange = { 1.f, 4000.0f };
+    auto time = std::make_unique<NotifiableAudioParameterFloat> ("delayTime", "Reverb/Space Time", timeRange, 200.f,
+                                                                 true,// isAutomatable
+                                                                 "Delay Time",
+                                                                 AudioProcessorParameter::genericParameter,
+                                                                 [] (float value, int) -> String {
+                                                                     String txt (roundToInt (value));
+                                                                     return txt << "ms";
+                                                                     ;
+                                                                 });
+    
     NormalisableRange<float> reverbRange = { -1.0, 1.0f };
-    auto reverbColour = std::make_unique<NotifiableAudioParameterFloat> ("reverb colour", "Colour", reverbRange, 0.f,
+    auto reverbColour = std::make_unique<NotifiableAudioParameterFloat> ("reverb colour", "Colour/Tone", reverbRange, 0.f,
                                                                          true,// isAutomatable
                                                                          "Colour ",
                                                                          AudioProcessorParameter::genericParameter,
@@ -43,9 +54,13 @@ SpaceProcessor::SpaceProcessor (int idNum): idNumber (idNum)
 
     feedbackParam = feedback.get();
     feedbackParam->addListener (this);
+    
+    timeParam = time.get();
+    timeParam->addListener(this);
 
     auto layout = createDefaultParameterLayout (false);
     layout.add (std::move (wetdry));
+    layout.add (std::move (time));
     layout.add (std::move (reverbColour));
     layout.add (std::move (feedback));
 
@@ -59,6 +74,7 @@ SpaceProcessor::~SpaceProcessor()
     wetDryParam->removeListener (this);
     reverbColourParam->removeListener (this);
     feedbackParam->removeListener (this);
+    timeParam->removeListener(this);
 }
 
 //============================================================================== Audio processing

@@ -1,12 +1,12 @@
 /// This placeholder class with No DSP.  It's purpose is to provide an appropriate parameter interface for recording useful information..
 
-class SpaceProcessor final : public InternalProcessor,
+class LongDelayProcessor final : public InternalProcessor,
                              public AudioProcessorParameter::Listener
 {
 public:
     //Constructor with ID
-    SpaceProcessor (int idNum = 1);
-    ~SpaceProcessor()override;
+    LongDelayProcessor (int idNum = 1);
+    ~LongDelayProcessor()override;
 
     //============================================================================== Audio processing
     void prepareToPlay (double Fs, int bufferSize) override;
@@ -26,7 +26,7 @@ private:
 
     NotifiableAudioParameterFloat* wetDryParam = nullptr;
     NotifiableAudioParameterFloat* timeParam = nullptr;
-    NotifiableAudioParameterFloat* reverbColourParam = nullptr;
+    NotifiableAudioParameterFloat* colourParam = nullptr;
     NotifiableAudioParameterFloat* feedbackParam = nullptr;
 
     

@@ -1,16 +1,15 @@
 /// This placeholder class with No DSP.  It's purpose is to provide an appropriate parameter interface for recording useful information..
 
-class SpaceProcessor final : public InternalProcessor,
-                             public AudioProcessorParameter::Listener
+class ShimmerProcessor final : public BandProcessor
 {
 public:
     //Constructor with ID
-    SpaceProcessor (int idNum = 1);
-    ~SpaceProcessor()override;
+    ShimmerProcessor (int idNum = 1);
+    ~ShimmerProcessor()override;
 
     //============================================================================== Audio processing
     void prepareToPlay (double Fs, int bufferSize) override;
-    void processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&) override;
+    void processAudioBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&) override;
     //============================================================================== House keeping
     const String getName() const override;
     /** @internal */
@@ -23,11 +22,10 @@ public:
 
 private:
     AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
-
-    NotifiableAudioParameterFloat* wetDryParam = nullptr;
+    NotifiableAudioParameterFloat* reverbAmountParam = nullptr;
     NotifiableAudioParameterFloat* timeParam = nullptr;
-    NotifiableAudioParameterFloat* reverbColourParam = nullptr;
-    NotifiableAudioParameterFloat* feedbackParam = nullptr;
+    NotifiableAudioParameterFloat* wetDryParam = nullptr;
+    NotifiableAudioParameterFloat* xPadParam = nullptr;
 
     
     int idNumber = 1;

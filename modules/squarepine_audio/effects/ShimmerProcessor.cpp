@@ -1,4 +1,4 @@
-ReverbProcessor::ReverbProcessor (int idNum): idNumber (idNum)
+ShimmerProcessor::ShimmerProcessor (int idNum): idNumber (idNum)
 {
     reset();
 
@@ -68,7 +68,7 @@ ReverbProcessor::ReverbProcessor (int idNum): idNumber (idNum)
     setPrimaryParameter (wetDryParam);
 }
 
-ReverbProcessor::~ReverbProcessor()
+ShimmerProcessor::~ShimmerProcessor()
 {
     wetDryParam->removeListener (this);
     reverbAmountParam->removeListener (this);
@@ -77,21 +77,21 @@ ReverbProcessor::~ReverbProcessor()
 }
 
 //============================================================================== Audio processing
-void ReverbProcessor::prepareToPlay (double Fs, int bufferSize)
+void ShimmerProcessor::prepareToPlay (double Fs, int bufferSize)
 {
     BandProcessor::prepareToPlay (Fs, bufferSize);
 }
-void ReverbProcessor::processAudioBlock (juce::AudioBuffer<float>&, MidiBuffer&)
+void ShimmerProcessor::processAudioBlock (juce::AudioBuffer<float>&, MidiBuffer&)
 {
 }
 
-const String ReverbProcessor::getName() const { return TRANS ("Reverb"); }
+const String ShimmerProcessor::getName() const { return TRANS ("Shimmer"); }
 /** @internal */
-Identifier ReverbProcessor::getIdentifier() const { return "Reverb" + String (idNumber); }
+Identifier ShimmerProcessor::getIdentifier() const { return "Shimmer" + String (idNumber); }
 /** @internal */
-bool ReverbProcessor::supportsDoublePrecisionProcessing() const { return false; }
+bool ShimmerProcessor::supportsDoublePrecisionProcessing() const { return false; }
 //============================================================================== Parameter callbacks
-void ReverbProcessor::parameterValueChanged (int id, float value)
+void ShimmerProcessor::parameterValueChanged (int id, float value)
 {
     //If the beat division is changed, the delay time should be set.
     //If the X Pad is used, the beat div and subsequently, time, should be updated.
