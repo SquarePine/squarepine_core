@@ -31,6 +31,7 @@ public:
 
     constexpr static const float LOWFREQCUTOFF  = 70.f;
     constexpr static const float MIDFREQPEAK    = 1200.f;
+    constexpr static const float HIGHMIDFREQPEAK  = 2000.f;
     constexpr static const float HIGHFREQCUTOFF = 13000.f;
     
     void parameterValueChanged (int, float) override;
