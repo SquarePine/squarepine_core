@@ -65,6 +65,7 @@ private:
     NotifiableAudioParameterFloat* delayTimeParam = nullptr;
     NotifiableAudioParameterFloat* beatParam = nullptr;
     NotifiableAudioParameterFloat* xPadParam = nullptr;
+    NotifiableAudioParameterFloat* fxOnParam = nullptr;
 
     SmoothedValue<float, ValueSmoothingTypes::Linear> wetDry { 0.0f };
     SmoothedValue<float, ValueSmoothingTypes::Linear> delayTime{ 0.0f };

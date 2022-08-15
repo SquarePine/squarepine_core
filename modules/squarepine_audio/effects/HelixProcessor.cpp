@@ -14,7 +14,18 @@ HelixProcessor::HelixProcessor (int idNum): idNumber (idNum)
                                                                        String txt (percentage);
                                                                        return txt << "%";
                                                                    });
+    NormalisableRange<float> fxOnRange = { 0.f, 1.0f };
 
+    auto fxon = std::make_unique<NotifiableAudioParameterFloat> ("fxonoff", "FX On", fxOnRange, 1,
+                                                                  true,// isAutomatable
+                                                                  "FX On/Off ",
+                                                                  AudioProcessorParameter::genericParameter,
+                                                                  [] (float value, int) -> String {
+                                                                      if (value > 0)
+                                                                          return "On";
+                                                                      return "Off";
+                                                                      ;
+                                                                  });
     NormalisableRange<float> beatRange = { 0.f, 8.0 };
     auto beat = std::make_unique<NotifiableAudioParameterFloat> ("beat", "Beat Division", beatRange, 3,
                                                                  false,// isAutomatable
@@ -96,6 +107,10 @@ HelixProcessor::HelixProcessor (int idNum): idNumber (idNum)
 
     wetDryParam = wetdry.get();
     wetDryParam->addListener (this);
+    
+    fxOnParam = fxon.get();
+    fxOnParam->addListener(this);
+    
 
     beatParam = beat.get();
     beatParam->addListener (this);
@@ -111,6 +126,7 @@ HelixProcessor::HelixProcessor (int idNum): idNumber (idNum)
     onOffParam->addListener(this);
     
     auto layout = createDefaultParameterLayout (false);
+    layout.add (std::move (fxon));
     layout.add (std::move (wetdry));
     layout.add (std::move (beat));
     layout.add (std::move (time));
@@ -130,6 +146,8 @@ HelixProcessor::~HelixProcessor()
     timeParam->removeListener (this);
     xPadParam->removeListener (this);
     onOffParam->removeListener (this);
+    fxOnParam->removeListener(this);
+
 }
 
 //============================================================================== Audio processing

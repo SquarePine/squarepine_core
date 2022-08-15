@@ -27,6 +27,7 @@ private:
     NotifiableAudioParameterFloat* wetDryParam = nullptr;
     NotifiableAudioParameterFloat* colourParam = nullptr;
     NotifiableAudioParameterFloat* volumeParam = nullptr;
+    NotifiableAudioParameterFloat* fxOnParam = nullptr;
 
     
     int idNumber = 1;

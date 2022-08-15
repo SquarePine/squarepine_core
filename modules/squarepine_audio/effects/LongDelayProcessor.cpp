@@ -12,6 +12,20 @@ LongDelayProcessor::LongDelayProcessor (int idNum): idNumber (idNum)
                                                                        String txt (percentage);
                                                                        return txt << "%";
                                                                    });
+    
+    NormalisableRange<float> fxOnRange = { 0.f, 1.0f };
+
+    auto fxon = std::make_unique<NotifiableAudioParameterFloat> ("fxonoff", "FX On", fxOnRange, 1,
+                                                                  true,// isAutomatable
+                                                                  "FX On/Off ",
+                                                                  AudioProcessorParameter::genericParameter,
+                                                                  [] (float value, int) -> String {
+                                                                      if (value > 0)
+                                                                          return "On";
+                                                                      return "Off";
+                                                                      ;
+                                                                  });
+    
     NormalisableRange<float> timeRange = { 400.f, 4000.0f };
     auto time = std::make_unique<NotifiableAudioParameterFloat> ("delayTime", "Delay Time", timeRange, 200.f,
                                                                  true,// isAutomatable
@@ -47,6 +61,9 @@ LongDelayProcessor::LongDelayProcessor (int idNum): idNumber (idNum)
     wetDryParam = wetdry.get();
     wetDryParam->addListener (this);
 
+    fxOnParam = fxon.get();
+    fxOnParam->addListener(this);
+    
     colourParam = colour.get();
     colourParam->addListener (this);
 
@@ -57,6 +74,7 @@ LongDelayProcessor::LongDelayProcessor (int idNum): idNumber (idNum)
     timeParam->addListener(this);
     
     auto layout = createDefaultParameterLayout (false);
+    layout.add (std::move (fxon));
     layout.add (std::move (wetdry));
     layout.add (std::move (colour));
     layout.add (std::move (feedback));
@@ -71,6 +89,7 @@ LongDelayProcessor::LongDelayProcessor (int idNum): idNumber (idNum)
 LongDelayProcessor::~LongDelayProcessor()
 {
     wetDryParam->removeListener (this);
+    fxOnParam->removeListener(this);
     colourParam->removeListener (this);
     feedbackParam->removeListener (this);
     timeParam->removeListener(this);

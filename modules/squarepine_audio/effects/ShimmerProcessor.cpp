@@ -12,6 +12,19 @@ ShimmerProcessor::ShimmerProcessor (int idNum): idNumber (idNum)
                                                                        String txt (percentage);
                                                                        return txt << "%";
                                                                    });
+    
+    NormalisableRange<float> fxOnRange = { 0.f, 1.0f };
+
+    auto fxon = std::make_unique<NotifiableAudioParameterFloat> ("fxonoff", "FX On", fxOnRange, 1,
+                                                                  true,// isAutomatable
+                                                                  "FX On/Off ",
+                                                                  AudioProcessorParameter::genericParameter,
+                                                                  [] (float value, int) -> String {
+                                                                      if (value > 0)
+                                                                          return "On";
+                                                                      return "Off";
+                                                                      ;
+                                                                  });
 
     NormalisableRange<float> reverbAmountRange = { 0.f, 1 };
     auto reverbAmount = std::make_unique<NotifiableAudioParameterFloat> ("amount", "Reverb Filter Amount ", reverbAmountRange, 0.5,
@@ -48,6 +61,9 @@ ShimmerProcessor::ShimmerProcessor (int idNum): idNumber (idNum)
     wetDryParam = wetdry.get();
     wetDryParam->addListener (this);
 
+    fxOnParam = fxon.get();
+    fxOnParam->addListener(this);
+    
     reverbAmountParam = reverbAmount.get();
     reverbAmountParam->addListener (this);
 
@@ -58,6 +74,7 @@ ShimmerProcessor::ShimmerProcessor (int idNum): idNumber (idNum)
     xPadParam->addListener (this);
 
     auto layout = createDefaultParameterLayout (false);
+    layout.add (std::move (fxon));
     layout.add (std::move (wetdry));
     layout.add (std::move (reverbAmount));
     layout.add (std::move (time));
@@ -71,6 +88,7 @@ ShimmerProcessor::ShimmerProcessor (int idNum): idNumber (idNum)
 ShimmerProcessor::~ShimmerProcessor()
 {
     wetDryParam->removeListener (this);
+    fxOnParam->removeListener(this);
     reverbAmountParam->removeListener (this);
     timeParam->removeListener (this);
     xPadParam->removeListener (this);

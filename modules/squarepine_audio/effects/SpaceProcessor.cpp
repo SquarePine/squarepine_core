@@ -13,6 +13,20 @@ SpaceProcessor::SpaceProcessor (int idNum): idNumber (idNum)
                                                                        return txt << "%";
                                                                    });
 
+    NormalisableRange<float> fxOnRange = { 0.f, 1.0f };
+
+    auto fxon = std::make_unique<NotifiableAudioParameterFloat> ("fxonoff", "FX On", fxOnRange, 1,
+                                                                  true,// isAutomatable
+                                                                  "FX On/Off ",
+                                                                  AudioProcessorParameter::genericParameter,
+                                                                  [] (float value, int) -> String {
+                                                                      if (value > 0)
+                                                                          return "On";
+                                                                      return "Off";
+                                                                      ;
+                                                                  });
+    
+    
     NormalisableRange<float> timeRange = { 1.f, 4000.0f };
     auto time = std::make_unique<NotifiableAudioParameterFloat> ("delayTime", "Reverb/Space Time", timeRange, 200.f,
                                                                  true,// isAutomatable
@@ -49,6 +63,9 @@ SpaceProcessor::SpaceProcessor (int idNum): idNumber (idNum)
     wetDryParam = wetdry.get();
     wetDryParam->addListener (this);
 
+    fxOnParam = fxon.get();
+    fxOnParam->addListener(this);
+    
     reverbColourParam = reverbColour.get();
     reverbColourParam->addListener (this);
 
@@ -59,6 +76,7 @@ SpaceProcessor::SpaceProcessor (int idNum): idNumber (idNum)
     timeParam->addListener(this);
 
     auto layout = createDefaultParameterLayout (false);
+    layout.add (std::move (fxon));
     layout.add (std::move (wetdry));
     layout.add (std::move (reverbColour));
     layout.add (std::move (feedback));
@@ -73,6 +91,7 @@ SpaceProcessor::SpaceProcessor (int idNum): idNumber (idNum)
 SpaceProcessor::~SpaceProcessor()
 {
     wetDryParam->removeListener (this);
+    fxOnParam->removeListener(this);
     reverbColourParam->removeListener (this);
     feedbackParam->removeListener (this);
     timeParam->removeListener(this);

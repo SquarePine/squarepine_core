@@ -13,6 +13,19 @@ SweepProcessor::SweepProcessor (int idNum): idNumber (idNum)
                                                                        return txt << "%";
                                                                    });
 
+    NormalisableRange<float> fxOnRange = { 0.f, 1.0f };
+
+    auto fxon = std::make_unique<NotifiableAudioParameterFloat> ("fxonoff", "FX On", fxOnRange, 1,
+                                                                  true,// isAutomatable
+                                                                  "FX On/Off ",
+                                                                  AudioProcessorParameter::genericParameter,
+                                                                  [] (float value, int) -> String {
+                                                                      if (value > 0)
+                                                                          return "On";
+                                                                      return "Off";
+                                                                      ;
+                                                                  });
+    
     /*Turning the control to the left produces a gate effect, and turning it to the right produces a band pass filter effect.
     Turn counterclockwise: A gate effect makes the sound tighter, with a reduced sense of volume.
     Turn to right: The band pass filter bandwidth decreases steadily.
@@ -49,6 +62,10 @@ SweepProcessor::SweepProcessor (int idNum): idNumber (idNum)
     wetDryParam = wetdry.get();
     wetDryParam->addListener (this);
 
+    fxOnParam = fxon.get();
+    fxOnParam->addListener(this);
+    
+    
     colourParam = colour.get();
     colourParam->addListener (this);
 
@@ -56,6 +73,7 @@ SweepProcessor::SweepProcessor (int idNum): idNumber (idNum)
     otherParam->addListener (this);
 
     auto layout = createDefaultParameterLayout (false);
+    layout.add (std::move (fxon));
     layout.add (std::move (wetdry));
     layout.add (std::move (colour));
     layout.add (std::move (other));
@@ -68,6 +86,7 @@ SweepProcessor::SweepProcessor (int idNum): idNumber (idNum)
 SweepProcessor::~SweepProcessor()
 {
     wetDryParam->removeListener (this);
+    fxOnParam->removeListener(this);
     colourParam->removeListener (this);
     otherParam->removeListener (this);
 }

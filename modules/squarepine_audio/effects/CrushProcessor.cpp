@@ -13,6 +13,20 @@ CrushProcessor::CrushProcessor (int idNum): idNumber (idNum)
                                                                        return txt << "%";
                                                                    });
 
+    NormalisableRange<float> fxOnRange = { 0.f, 1.0f };
+
+    auto fxon = std::make_unique<NotifiableAudioParameterFloat> ("fxonoff", "FX On", fxOnRange, 1,
+                                                                  true,// isAutomatable
+                                                                  "FX On/Off ",
+                                                                  AudioProcessorParameter::genericParameter,
+                                                                  [] (float value, int) -> String {
+                                                                      if (value > 0)
+                                                                          return "On";
+                                                                      return "Off";
+                                                                      ;
+                                                                  });
+    
+    
     /*
      Turn counterclockwise: Increases the sound’s distortion.
      Turn clockwise: The sound is crushed before passing through the high pass filter.
@@ -42,6 +56,9 @@ CrushProcessor::CrushProcessor (int idNum): idNumber (idNum)
     wetDryParam = wetdry.get();
     wetDryParam->addListener (this);
 
+    fxOnParam = fxon.get();
+    fxOnParam->addListener(this);
+    
     colourParam = colour.get();
     colourParam->addListener (this);
 
@@ -49,6 +66,7 @@ CrushProcessor::CrushProcessor (int idNum): idNumber (idNum)
     emphasisParam->addListener (this);
 
     auto layout = createDefaultParameterLayout (false);
+    layout.add (std::move (fxon));
     layout.add (std::move (wetdry));
     layout.add (std::move (colour));
     layout.add (std::move (other));
@@ -61,6 +79,7 @@ CrushProcessor::CrushProcessor (int idNum): idNumber (idNum)
 CrushProcessor::~CrushProcessor()
 {
     wetDryParam->removeListener (this);
+    fxOnParam->removeListener(this);
     colourParam->removeListener (this);
     emphasisParam->removeListener (this);
 }
