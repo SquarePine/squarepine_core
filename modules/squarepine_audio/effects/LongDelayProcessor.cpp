@@ -58,9 +58,10 @@ LongDelayProcessor::LongDelayProcessor (int idNum): idNumber (idNum)
     
     auto layout = createDefaultParameterLayout (false);
     layout.add (std::move (wetdry));
-    layout.add (std::move (time));
     layout.add (std::move (colour));
     layout.add (std::move (feedback));
+    layout.add (std::move (time));
+
 
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 

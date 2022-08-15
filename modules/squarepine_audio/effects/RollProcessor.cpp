@@ -147,8 +147,8 @@ RollProcessor::RollProcessor (int idNum): idNumber (idNum)
     layout.add (std::move (beat));
     layout.add (std::move (time));
     layout.add (std::move (other));
-    layout.add (std::move (onoff));
     setupBandParameters (layout);
+    layout.add (std::move (onoff));
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 
     setPrimaryParameter (wetDryParam);
