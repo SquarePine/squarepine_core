@@ -35,12 +35,12 @@ public:
                                     automatable (automate) {}
     
     bool isAutomatable() const override { return automatable; }
-    
+    void setAutomatable(const bool state){automatable = state;}
 protected:
     void valueChanged (float newValue) override
     {
         sendValueChangedMessageToListeners (newValue);
     }
 private:
-    const bool automatable;
+    bool automatable;
 };

@@ -141,6 +141,7 @@ String getInternalProcessorTypeName();
 #include "effects/SimpleEQProcessor.h"
 #include "effects/StereoWidthProcessor.h"
 #include "effects/GainProcessor.h"
+#include "effects/V10SendProcessor.h"
 #include "effects/SpaceProcessor.h"
 #include "effects/DubEchoProcessor.h"
 #include "effects/ShortDelayProcessor.h"

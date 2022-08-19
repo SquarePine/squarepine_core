@@ -284,14 +284,13 @@ bool DelayProcessor::supportsDoublePrecisionProcessing() const { return false; }
 void DelayProcessor::parameterValueChanged (int paramNum, float value)
 {
     const ScopedLock sl (getCallbackLock());
-
     switch (paramNum)
     {
-        case 1:
+        case 2:
             //wet dry
             wetDry.setTargetValue (jlimit (0.f, 1.f, value));
             break;
-        case 2:
+        case 4:
         {
             //delay time
             auto range = delayTimeParam->getNormalisableRange().getRange();
@@ -304,5 +303,5 @@ void DelayProcessor::parameterValueChanged (int paramNum, float value)
             break;
     }
     //Subtract the number of new parameters in this processor
-    BandProcessor::parameterValueChanged (paramNum - 2, value);
+    BandProcessor::parameterValueChanged (paramNum - 5, value);
 }

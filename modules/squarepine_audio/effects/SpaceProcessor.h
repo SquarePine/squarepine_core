@@ -1,7 +1,6 @@
 /// This placeholder class with No DSP.  It's purpose is to provide an appropriate parameter interface for recording useful information..
 
-class SpaceProcessor final : public InternalProcessor,
-                             public AudioProcessorParameter::Listener
+class SpaceProcessor final : public V10SendProcessor
 {
 public:
     //Constructor with ID

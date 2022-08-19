@@ -78,7 +78,7 @@ DubEchoProcessor::DubEchoProcessor (int idNum): idNumber (idNum)
     layout.add (std::move (colour));
     layout.add (std::move (feedback));
     layout.add (std::move (time));
-
+    appendExtraParams(layout);
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 
     setPrimaryParameter (wetDryParam);

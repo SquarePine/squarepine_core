@@ -1,12 +1,12 @@
 /// This placeholder class with No DSP.  It's purpose is to provide an appropriate parameter interface for recording useful information..
 
-class DubEchoProcessor final : public InternalProcessor,
-                             public AudioProcessorParameter::Listener
+class DubEchoProcessor final : public V10SendProcessor
+
 {
 public:
     //Constructor with ID
     DubEchoProcessor (int idNum = 1);
-    ~DubEchoProcessor()override;
+    ~DubEchoProcessor() override;
 
     //============================================================================== Audio processing
     void prepareToPlay (double Fs, int bufferSize) override;
@@ -19,7 +19,7 @@ public:
     bool supportsDoublePrecisionProcessing() const override;
     //============================================================================== Parameter callbacks
     void parameterValueChanged (int paramNum, float value) override;
-    void parameterGestureChanged (int, bool) override{}
+    void parameterGestureChanged (int, bool) override {}
 
 private:
     AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -30,9 +30,5 @@ private:
     NotifiableAudioParameterFloat* feedbackParam = nullptr;
     NotifiableAudioParameterFloat* fxOnParam = nullptr;
 
-    
     int idNumber = 1;
-
-  
 };
-
