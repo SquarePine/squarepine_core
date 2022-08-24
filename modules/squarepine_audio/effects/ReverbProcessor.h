@@ -10,6 +10,8 @@ public:
     //============================================================================== Audio processing
     void prepareToPlay (double Fs, int bufferSize) override;
     void processAudioBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&) override;
+    /** @internal */
+    void releaseResources() override;
     //============================================================================== House keeping
     const String getName() const override;
     /** @internal */
@@ -27,7 +29,9 @@ private:
     NotifiableAudioParameterFloat* wetDryParam = nullptr;
     NotifiableAudioParameterFloat* xPadParam = nullptr;
     NotifiableAudioParameterFloat* fxOnParam = nullptr;
-
+    //Using the Juce reverb
+    Reverb reverb;
+    void updateReverbParams();
     
     int idNumber = 1;
 

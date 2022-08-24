@@ -15,17 +15,16 @@ ReverbProcessor::ReverbProcessor (int idNum): idNumber (idNum)
     NormalisableRange<float> fxOnRange = { 0.f, 1.0f };
 
     auto fxon = std::make_unique<NotifiableAudioParameterFloat> ("fxonoff", "FX On", fxOnRange, 1,
-                                                                  true,// isAutomatable
-                                                                  "FX On/Off ",
-                                                                  AudioProcessorParameter::genericParameter,
-                                                                  [] (float value, int) -> String {
-                                                                      if (value > 0)
-                                                                          return "On";
-                                                                      return "Off";
-                                                                      ;
-                                                                  });
-    
-    
+                                                                 true,// isAutomatable
+                                                                 "FX On/Off ",
+                                                                 AudioProcessorParameter::genericParameter,
+                                                                 [] (float value, int) -> String {
+                                                                     if (value > 0)
+                                                                         return "On";
+                                                                     return "Off";
+                                                                     ;
+                                                                 });
+
     NormalisableRange<float> reverbAmountRange = { 0.f, 1 };
     auto reverbAmount = std::make_unique<NotifiableAudioParameterFloat> ("amount", "Reverb Filter Amount ", reverbAmountRange, 0.5,
                                                                          true,// isAutomatable
@@ -37,15 +36,15 @@ ReverbProcessor::ReverbProcessor (int idNum): idNumber (idNum)
                                                                              return txt << "%";
                                                                          });
 
-    NormalisableRange<float> timeRange = { 1.f, 4000.f };
-    auto time = std::make_unique<NotifiableAudioParameterFloat> ("time", "Time", timeRange, 10.f,
+    NormalisableRange<float> timeRange = { 0, 1.0f };
+    auto time = std::make_unique<NotifiableAudioParameterFloat> ("time", "Time", timeRange, 0.5f,
                                                                  true,// isAutomatable
                                                                  "Time ",
                                                                  AudioProcessorParameter::genericParameter,
                                                                  [] (float value, int) -> String {
-                                                                     String txt (roundToInt (value));
-                                                                     return txt;
-                                                                     ;
+                                                                     int percentage = roundToInt (value * 100);
+                                                                     String txt (percentage);
+                                                                     return txt << "%";
                                                                  });
 
     NormalisableRange<float> otherRange = { 0.f, 1.0f };
@@ -54,8 +53,8 @@ ReverbProcessor::ReverbProcessor (int idNum): idNumber (idNum)
                                                                   "X Pad Division ",
                                                                   AudioProcessorParameter::genericParameter,
                                                                   [] (float value, int) -> String {
-        String txt (roundToInt (value));
-        return txt;
+                                                                      String txt (roundToInt (value));
+                                                                      return txt;
                                                                   });
 
     wetDryParam = wetdry.get();
@@ -85,7 +84,7 @@ ReverbProcessor::ReverbProcessor (int idNum): idNumber (idNum)
 ReverbProcessor::~ReverbProcessor()
 {
     wetDryParam->removeListener (this);
-    fxOnParam->removeListener(this);
+    fxOnParam->removeListener (this);
     reverbAmountParam->removeListener (this);
     timeParam->removeListener (this);
     xPadParam->removeListener (this);
@@ -94,10 +93,41 @@ ReverbProcessor::~ReverbProcessor()
 //============================================================================== Audio processing
 void ReverbProcessor::prepareToPlay (double Fs, int bufferSize)
 {
+    setRateAndBufferSizeDetails (Fs, bufferSize);
     BandProcessor::prepareToPlay (Fs, bufferSize);
+    reverb.reset();
+    reverb.setSampleRate (Fs);
 }
-void ReverbProcessor::processAudioBlock (juce::AudioBuffer<float>&, MidiBuffer&)
+void ReverbProcessor::processAudioBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
+    const auto numChannels = buffer.getNumChannels();
+    const auto numSamples = buffer.getNumSamples();
+
+    if (isBypassed()
+        || buffer.hasBeenCleared()
+        || numChannels <= 0
+        || numSamples <= 0)
+        return;
+
+    updateReverbParams();
+
+    auto** chans = buffer.getArrayOfWritePointers();
+
+    const ScopedLock sl (getCallbackLock());
+
+    switch (numChannels)
+    {
+        case 1:
+            reverb.processMono (chans[0], numSamples);
+            break;
+
+        case 2:
+            reverb.processStereo (chans[0], chans[1], numSamples);
+            break;
+
+        default:
+            break;
+    }
 }
 
 const String ReverbProcessor::getName() const { return TRANS ("Reverb"); }
@@ -110,7 +140,32 @@ void ReverbProcessor::parameterValueChanged (int id, float value)
 {
     //If the beat division is changed, the delay time should be set.
     //If the X Pad is used, the beat div and subsequently, time, should be updated.
-
+    if (id == 1)
+    {
+        setBypass (value > 0);
+    }
     //Subtract the number of new parameters in this processor
     BandProcessor::parameterValueChanged (id, value);
+}
+void ReverbProcessor::releaseResources()
+{
+    const ScopedLock sl (getCallbackLock());
+    reverb.reset();
+}
+
+void ReverbProcessor::updateReverbParams()
+{
+    Reverb::Parameters localParams;
+
+    localParams.roomSize = timeParam->get();
+    localParams.damping = 0.5;
+    localParams.wetLevel = wetDryParam->get();
+    localParams.dryLevel = 1 - wetDryParam->get();
+    localParams.width = 1;
+    localParams.freezeMode = 0;
+
+    {
+        const ScopedLock sl (getCallbackLock());
+        reverb.setParameters (localParams);
+    }
 }

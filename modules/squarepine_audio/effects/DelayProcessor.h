@@ -20,7 +20,7 @@ public:
     
     void setDelaySamples(float _delay);
 
-    
+    void clearDelay();
 private:
     
     float Fs = 48000.f;
@@ -48,6 +48,8 @@ public:
     //============================================================================== Audio processing
     void prepareToPlay (double Fs, int bufferSize) override;
     void processAudioBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&) override;
+    /** @internal */
+    void releaseResources() override;
     //============================================================================== House keeping
     const String getName() const override;
     /** @internal */
@@ -66,6 +68,7 @@ private:
     NotifiableAudioParameterFloat* beatParam = nullptr;
     NotifiableAudioParameterFloat* xPadParam = nullptr;
     NotifiableAudioParameterFloat* fxOnParam = nullptr;
+    NotifiableAudioParameterFloat* feedbackParam = nullptr;
 
     SmoothedValue<float, ValueSmoothingTypes::Linear> wetDry { 0.0f };
     SmoothedValue<float, ValueSmoothingTypes::Linear> delayTime{ 0.0f };
