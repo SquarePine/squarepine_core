@@ -26,7 +26,7 @@ ReverbProcessor::ReverbProcessor (int idNum): idNumber (idNum)
                                                                  });
 
     NormalisableRange<float> reverbAmountRange = { 0.f, 1 };
-    auto reverbAmount = std::make_unique<NotifiableAudioParameterFloat> ("amount", "Reverb Filter Amount ", reverbAmountRange, 0.5,
+    auto reverbAmount = std::make_unique<NotifiableAudioParameterFloat> ("amount", "Reverb Amount ", reverbAmountRange, 0.5,
                                                                          true,// isAutomatable
                                                                          "Reverb Filter Amount ",
                                                                          AudioProcessorParameter::genericParameter,
@@ -49,7 +49,7 @@ ReverbProcessor::ReverbProcessor (int idNum): idNumber (idNum)
 
     NormalisableRange<float> otherRange = { 0.f, 1.0f };
     auto other = std::make_unique<NotifiableAudioParameterFloat> ("x Pad", "Cutoff", otherRange, 3,
-                                                                  false,// isAutomatable
+                                                                  true,// isAutomatable
                                                                   "X Pad Division ",
                                                                   AudioProcessorParameter::genericParameter,
                                                                   [] (float value, int) -> String {
@@ -158,7 +158,7 @@ void ReverbProcessor::updateReverbParams()
     Reverb::Parameters localParams;
 
     localParams.roomSize = timeParam->get();
-    localParams.damping = 0.5;
+    localParams.damping = 1 - reverbAmountParam->get();
     localParams.wetLevel = wetDryParam->get();
     localParams.dryLevel = 1 - wetDryParam->get();
     localParams.width = 1;
