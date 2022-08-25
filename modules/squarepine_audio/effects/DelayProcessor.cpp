@@ -93,63 +93,17 @@ DelayProcessor::DelayProcessor (int idNum): idNumber (idNum)
                                                                        return txt << "%";
                                                                    });
 
-    NormalisableRange<float> fxOnRange = { 0.f, 1.0f };
-
-    auto fxon = std::make_unique<NotifiableAudioParameterFloat> ("fxonoff", "FX On", fxOnRange, 1,
-                                                                 true,// isAutomatable
+    auto fxon = std::make_unique<AudioParameterBool> ("fxonoff", "FX On",true,
                                                                  "FX On/Off ",
-                                                                 AudioProcessorParameter::genericParameter,
-                                                                 [] (float value, int) -> String {
+                                                                 [] (bool value, int) -> String {
                                                                      if (value > 0)
-                                                                         return "On";
-                                                                     return "Off";
+                                                                         return TRANS("On");
+                                                                     return TRANS("Off");
                                                                      ;
                                                                  });
-
-    NormalisableRange<float> beatRange = { 0.f, 8.0 };
-    auto beat = std::make_unique<NotifiableAudioParameterFloat> ("beat", "Beat Division", beatRange, 3,
-                                                                 false,// isAutomatable
-                                                                 "Beat Division ",
-                                                                 AudioProcessorParameter::genericParameter,
-                                                                 [] (float value, int) -> String {
-                                                                     int val = roundToInt (value);
-                                                                     String txt;
-                                                                     switch (val)
-                                                                     {
-                                                                         case 0:
-                                                                             txt = "1/16";
-                                                                             break;
-                                                                         case 1:
-                                                                             txt = "1/8";
-                                                                             break;
-                                                                         case 2:
-                                                                             txt = "1/4";
-                                                                             break;
-                                                                         case 3:
-                                                                             txt = "1/2";
-                                                                             break;
-                                                                         case 4:
-                                                                             txt = "1";
-                                                                             break;
-                                                                         case 5:
-                                                                             txt = "2";
-                                                                             break;
-                                                                         case 6:
-                                                                             txt = "4";
-                                                                             break;
-                                                                         case 7:
-                                                                             txt = "8";
-                                                                             break;
-                                                                         case 8:
-                                                                             txt = "16";
-                                                                             break;
-                                                                         default:
-                                                                             txt = "1";
-                                                                             break;
-                                                                     }
-
-                                                                     return txt;
-                                                                 });
+    
+    StringArray options{"1/16","1/8","1/4","1/2","1","2","4","8","16"};
+    auto beat = std::make_unique<AudioParameterChoice> ("beat", "Beat Division", options, 3);
 
     NormalisableRange<float> timeRange = { 1.f, 4000.0f };
     auto time = std::make_unique<NotifiableAudioParameterFloat> ("delayTime", "Delay Time", timeRange, 200.f,
@@ -162,7 +116,7 @@ DelayProcessor::DelayProcessor (int idNum): idNumber (idNum)
                                                                      ;
                                                                  });
 
-    NormalisableRange<float> otherRange = { 0.f, 1.0f };
+    NormalisableRange<float> beatRange = { 0.f, 8.0 };
     auto other = std::make_unique<NotifiableAudioParameterFloat> ("x Pad", "X Pad Division", beatRange, 3,
                                                                   false,// isAutomatable
                                                                   "X Pad Division ",
@@ -279,7 +233,7 @@ void DelayProcessor::processAudioBlock (juce::AudioBuffer<float>& buffer, MidiBu
     //TODO
     const auto numChannels = buffer.getNumChannels();
     const auto numSamples = buffer.getNumSamples();
-
+    
     const ScopedLock lock (getCallbackLock());
 
     float dry, wet, x, y, z;
@@ -311,6 +265,7 @@ void DelayProcessor::parameterValueChanged (int paramNum, float value)
     switch (paramNum)
     {
         case 1:
+            DBG(value);
             //fx on
             setBypass (value > 0);
         case 2:
