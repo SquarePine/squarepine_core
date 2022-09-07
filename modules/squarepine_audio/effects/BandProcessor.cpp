@@ -14,40 +14,26 @@ BandProcessor::~BandProcessor()
 
 void BandProcessor::setupBandParameters (AudioProcessorValueTreeState::ParameterLayout& layout)
 {
-    NormalisableRange<float> onoffRange = { 0.f, 1.0f };
-    auto lowFrequencyToggle = std::make_unique<NotifiableAudioParameterFloat> ("lowonoff", "Low Frequency Processing", onoffRange, 0,
-                                                                               true,// isAutomatable
-                                                                               "Low Frequency Processing",
-                                                                               AudioProcessorParameter::genericParameter,
-                                                                               [] (float value, int) -> String {
-                                                                                   if (value > 0)
-                                                                                       return "On";
-                                                                                   return "Off";
-                                                                                   ;
-                                                                               });
-    NormalisableRange<float> onoffRange2 = { 0.f, 1.0f };
-    auto midFrequencyToggle = std::make_unique<NotifiableAudioParameterFloat> ("midonoff", "Mid Frequency Processing", onoffRange2, 0,
-                                                                               true,// isAutomatable
-                                                                               "Mid Frequency Processing",
-                                                                               AudioProcessorParameter::genericParameter,
-                                                                               [] (float value, int) -> String {
-                                                                                   if (value > 0)
-                                                                                       return "On";
-                                                                                   return "Off";
-                                                                                   ;
-                                                                               });
-    NormalisableRange<float> onoffRange3 = { 0.f, 1.0f };
+    auto lowFrequencyToggle = std::make_unique<AudioParameterBool> ("lowonoff", "Low Frequency Processing", true, "Low Frequency Processing ", [] (bool value, int) -> String {
+        if (value > 0)
+            return TRANS ("On");
+        return TRANS ("Off");
+        ;
+    });
 
-    auto highFrequencyToggle = std::make_unique<NotifiableAudioParameterFloat> ("highonoff", "High Frequency Processing", onoffRange3, 0,
-                                                                                true,// isAutomatable
-                                                                                "High Frequency Processing",
-                                                                                AudioProcessorParameter::genericParameter,
-                                                                                [] (float value, int) -> String {
-                                                                                    if (value > 0)
-                                                                                        return "On";
-                                                                                    return "Off";
-                                                                                    ;
-                                                                                });
+    auto midFrequencyToggle = std::make_unique<AudioParameterBool> ("midonoff", "Mid Frequency Processing", true, "Mid Frequency Processing ", [] (bool value, int) -> String {
+        if (value > 0)
+            return TRANS ("On");
+        return TRANS ("Off");
+        ;
+    });
+
+    auto highFrequencyToggle = std::make_unique<AudioParameterBool> ("highonoff", "High Frequency Processing", true, "High Frequency Processing ", [] (bool value, int) -> String {
+        if (value > 0)
+            return TRANS ("On");
+        return TRANS ("Off");
+        ;
+    });
 
     lowFrequencyToggleParam = lowFrequencyToggle.get();
     lowFrequencyToggleParam->addListener (this);

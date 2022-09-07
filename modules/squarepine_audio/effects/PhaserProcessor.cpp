@@ -13,70 +13,18 @@ PhaserProcessor::PhaserProcessor (int idNum): idNumber (idNum)
                                                                        return txt << "%";
                                                                    });
     
-    NormalisableRange<float> fxOnRange = { 0.f, 1.0f };
-
-    auto fxon = std::make_unique<NotifiableAudioParameterFloat> ("fxonoff", "FX On", fxOnRange, 1,
-                                                                  true,// isAutomatable
-                                                                  "FX On/Off ",
-                                                                  AudioProcessorParameter::genericParameter,
-                                                                  [] (float value, int) -> String {
-                                                                      if (value > 0)
-                                                                          return "On";
-                                                                      return "Off";
-                                                                      ;
-                                                                  });
-
-    NormalisableRange<float> beatRange = { 0.f, 10.f };
-    auto beat = std::make_unique<NotifiableAudioParameterFloat> ("beat", "Beat Division", beatRange, 3,
-                                                                 false,// isAutomatable
-                                                                 "Beat Division ",
-                                                                 AudioProcessorParameter::genericParameter,
-                                                                 [] (float value, int) -> String {
-                                                                     int val = roundToInt (value);
-                                                                     String txt;
-                                                                     switch (val)
-                                                                     {
-                                                                         case 0:
-                                                                             txt = "1/16";
-                                                                             break;
-                                                                         case 1:
-                                                                             txt = "1/8";
-                                                                             break;
-                                                                         case 2:
-                                                                             txt = "1/4";
-                                                                             break;
-                                                                         case 3:
-                                                                             txt = "1/2";
-                                                                             break;
-                                                                         case 4:
-                                                                             txt = "1";
-                                                                             break;
-                                                                         case 5:
-                                                                             txt = "2";
-                                                                             break;
-                                                                         case 6:
-                                                                             txt = "4";
-                                                                             break;
-                                                                         case 7:
-                                                                             txt = "8";
-                                                                             break;
-                                                                         case 8:
-                                                                             txt = "16";
-                                                                             break;
-                                                                         case 9:
-                                                                             txt = "32";
-                                                                             break;
-                                                                         case 10:
-                                                                             txt = "64";
-                                                                             break;
-                                                                         default:
-                                                                             txt = "1";
-                                                                             break;
-                                                                     }
-
-                                                                     return txt;
+    auto fxon = std::make_unique<AudioParameterBool> ("fxonoff", "FX On",true,
+                                                                 "FX On/Off ",
+                                                                 [] (bool value, int) -> String {
+                                                                     if (value > 0)
+                                                                         return TRANS("On");
+                                                                     return TRANS("Off");
+                                                                     ;
                                                                  });
-
+    
+    StringArray options{"1/16","1/8","1/4","1/2","1","2","4","8","16"};
+    auto beat = std::make_unique<AudioParameterChoice> ("beat", "Beat Division", options, 3);
+    
     NormalisableRange<float> timeRange = { 10.f, 32000.f };
     auto time = std::make_unique<NotifiableAudioParameterFloat> ("time", "Time", timeRange, 10.f,
                                                                  true,// isAutomatable

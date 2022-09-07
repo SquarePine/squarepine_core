@@ -12,65 +12,16 @@ LFOFilterProcessor::LFOFilterProcessor (int idNum): idNumber (idNum)
                                                                        String txt (percentage);
                                                                        return txt << "%";
                                                                    });
-    
-    NormalisableRange<float> fxOnRange = { 0.f, 1.0f };
 
-    auto fxon = std::make_unique<NotifiableAudioParameterFloat> ("fxonoff", "FX On", fxOnRange, 1,
-                                                                  true,// isAutomatable
-                                                                  "FX On/Off ",
-                                                                  AudioProcessorParameter::genericParameter,
-                                                                  [] (float value, int) -> String {
-                                                                      if (value > 0)
-                                                                          return "On";
-                                                                      return "Off";
-                                                                      ;
-                                                                  });
-    
-    
-    NormalisableRange<float> beatRange = { 0.f, 8.0 };
-    auto beat = std::make_unique<NotifiableAudioParameterFloat> ("beat", "Beat Division", beatRange, 3,
-                                                                 false,// isAutomatable
-                                                                 "Beat Division ",
-                                                                 AudioProcessorParameter::genericParameter,
-                                                                 [] (float value, int) -> String {
-                                                                     int val = roundToInt (value);
-                                                                     String txt;
-                                                                     switch (val)
-                                                                     {
-                                                                         case 0:
-                                                                             txt = "1/16";
-                                                                             break;
-                                                                         case 1:
-                                                                             txt = "1/8";
-                                                                             break;
-                                                                         case 2:
-                                                                             txt = "1/4";
-                                                                             break;
-                                                                         case 3:
-                                                                             txt = "1/2";
-                                                                             break;
-                                                                         case 4:
-                                                                             txt = "1";
-                                                                             break;
-                                                                         case 5:
-                                                                             txt = "2";
-                                                                             break;
-                                                                         case 6:
-                                                                             txt = "4";
-                                                                             break;
-                                                                         case 7:
-                                                                             txt = "8";
-                                                                             break;
-                                                                         case 8:
-                                                                             txt = "16";
-                                                                             break;
-                                                                         default:
-                                                                             txt = "1";
-                                                                             break;
-                                                                     }
+    auto fxon = std::make_unique<AudioParameterBool> ("fxonoff", "FX On", true, "FX On/Off ", [] (bool value, int) -> String {
+        if (value > 0)
+            return TRANS ("On");
+        return TRANS ("Off");
+        ;
+    });
 
-                                                                     return txt;
-                                                                 });
+    StringArray options { "1/16", "1/8", "1/4", "1/2", "1", "2", "4", "8", "16" };
+    auto beat = std::make_unique<AudioParameterChoice> ("beat", "Beat Division", options, 3);
 
     NormalisableRange<float> timeRange = { 10.f, 32000.f };
     auto time = std::make_unique<NotifiableAudioParameterFloat> ("time", "Time", timeRange, 10.f,
@@ -84,7 +35,7 @@ LFOFilterProcessor::LFOFilterProcessor (int idNum): idNumber (idNum)
                                                                  });
 
     NormalisableRange<float> otherRange = { 0.f, 1.0f };
-    auto other = std::make_unique<NotifiableAudioParameterFloat> ("x Pad", "Modulation", beatRange, 3,
+    auto other = std::make_unique<NotifiableAudioParameterFloat> ("x Pad", "Modulation", otherRange, 3,
                                                                   true,// isAutomatable
                                                                   "Modulation ",
                                                                   AudioProcessorParameter::genericParameter,
@@ -97,10 +48,9 @@ LFOFilterProcessor::LFOFilterProcessor (int idNum): idNumber (idNum)
     wetDryParam = wetdry.get();
     wetDryParam->addListener (this);
 
-    
     fxOnParam = fxon.get();
-    fxOnParam->addListener(this);
-    
+    fxOnParam->addListener (this);
+
     beatParam = beat.get();
     beatParam->addListener (this);
 
@@ -125,7 +75,7 @@ LFOFilterProcessor::LFOFilterProcessor (int idNum): idNumber (idNum)
 LFOFilterProcessor::~LFOFilterProcessor()
 {
     wetDryParam->removeListener (this);
-    fxOnParam->removeListener(this);
+    fxOnParam->removeListener (this);
     beatParam->removeListener (this);
     timeParam->removeListener (this);
     xPadParam->removeListener (this);
@@ -150,7 +100,7 @@ void LFOFilterProcessor::parameterValueChanged (int id, float value)
 {
     //If the beat division is changed, the delay time should be set.
     //If the X Pad is used, the beat div and subsequently, time, should be updated.
-    
+
     //Subtract the number of new parameters in this processor
     BandProcessor::parameterValueChanged (id, value);
 }

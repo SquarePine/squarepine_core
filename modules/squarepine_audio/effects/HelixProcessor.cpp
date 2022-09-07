@@ -2,7 +2,6 @@ HelixProcessor::HelixProcessor (int idNum): idNumber (idNum)
 {
     reset();
 
-    
     //Set the ratio of sound overlay. Turn fully left to return to the original sound. Turn right from the fully left position to records input sound from its default state.
     NormalisableRange<float> wetDryRange = { 0.f, 1.f };
     auto wetdry = std::make_unique<NotifiableAudioParameterFloat> ("dryWet", "Dry/Wet", wetDryRange, 0.5f,
@@ -14,62 +13,14 @@ HelixProcessor::HelixProcessor (int idNum): idNumber (idNum)
                                                                        String txt (percentage);
                                                                        return txt << "%";
                                                                    });
-    NormalisableRange<float> fxOnRange = { 0.f, 1.0f };
-
-    auto fxon = std::make_unique<NotifiableAudioParameterFloat> ("fxonoff", "FX On", fxOnRange, 1,
-                                                                  true,// isAutomatable
-                                                                  "FX On/Off ",
-                                                                  AudioProcessorParameter::genericParameter,
-                                                                  [] (float value, int) -> String {
-                                                                      if (value > 0)
-                                                                          return "On";
-                                                                      return "Off";
-                                                                      ;
-                                                                  });
-    NormalisableRange<float> beatRange = { 0.f, 8.0 };
-    auto beat = std::make_unique<NotifiableAudioParameterFloat> ("beat", "Beat Division", beatRange, 3,
-                                                                 false,// isAutomatable
-                                                                 "Beat Division ",
-                                                                 AudioProcessorParameter::genericParameter,
-                                                                 [] (float value, int) -> String {
-                                                                     int val = roundToInt (value);
-                                                                     String txt;
-                                                                     switch (val)
-                                                                     {
-                                                                         case 0:
-                                                                             txt = "1/16";
-                                                                             break;
-                                                                         case 1:
-                                                                             txt = "1/8";
-                                                                             break;
-                                                                         case 2:
-                                                                             txt = "1/4";
-                                                                             break;
-                                                                         case 3:
-                                                                             txt = "1/2";
-                                                                             break;
-                                                                         case 4:
-                                                                             txt = "1";
-                                                                             break;
-                                                                         case 5:
-                                                                             txt = "2";
-                                                                             break;
-                                                                         case 6:
-                                                                             txt = "4";
-                                                                             break;
-                                                                         case 7:
-                                                                             txt = "8";
-                                                                             break;
-                                                                         case 8:
-                                                                             txt = "16";
-                                                                             break;
-                                                                         default:
-                                                                             txt = "1";
-                                                                             break;
-                                                                     }
-
-                                                                     return txt;
-                                                                 });
+    auto fxon = std::make_unique<AudioParameterBool> ("fxonoff", "FX On", true, "FX On/Off ", [] (bool value, int) -> String {
+        if (value > 0)
+            return TRANS ("On");
+        return TRANS ("Off");
+        ;
+    });
+    StringArray options { "1/16", "1/8", "1/4", "1/2", "1", "2", "4", "8", "16" };
+    auto beat = std::make_unique<AudioParameterChoice> ("beat", "Beat Division", options, 3);
 
     NormalisableRange<float> timeRange = { 1.f, 4000.f };
     auto time = std::make_unique<NotifiableAudioParameterFloat> ("time", "Time", timeRange, 10.f,
@@ -88,29 +39,21 @@ HelixProcessor::HelixProcessor (int idNum): idNumber (idNum)
                                                                   "Pitch ",
                                                                   AudioProcessorParameter::genericParameter,
                                                                   [] (float value, int) -> String {
-        String txt (roundToInt (value));
-        return txt;
-                                                                  });
-    
-    NormalisableRange<float> onoffRange = { 0.f, 1.0f };
-
-    auto onoff = std::make_unique<NotifiableAudioParameterFloat> ("onoff", "On/Off", onoffRange, 0,
-                                                                  true,// isAutomatable
-                                                                  "On/Off ",
-                                                                  AudioProcessorParameter::genericParameter,
-                                                                  [] (float value, int) -> String {
-                                                                      if (value > 0)
-                                                                          return "On";
-                                                                      return "Off";
-                                                                      ;
+                                                                      String txt (roundToInt (value));
+                                                                      return txt;
                                                                   });
 
+    auto onoff = std::make_unique<AudioParameterBool> ("fx active", "FX Active", true, "FX Active ", [] (bool value, int) -> String {
+        if (value > 0)
+            return TRANS ("Active");
+        return TRANS ("Disabled");
+        ;
+    });
     wetDryParam = wetdry.get();
     wetDryParam->addListener (this);
-    
+
     fxOnParam = fxon.get();
-    fxOnParam->addListener(this);
-    
+    fxOnParam->addListener (this);
 
     beatParam = beat.get();
     beatParam->addListener (this);
@@ -121,17 +64,16 @@ HelixProcessor::HelixProcessor (int idNum): idNumber (idNum)
     xPadParam = other.get();
     xPadParam->addListener (this);
 
-    
     onOffParam = onoff.get();
-    onOffParam->addListener(this);
-    
+    onOffParam->addListener (this);
+
     auto layout = createDefaultParameterLayout (false);
     layout.add (std::move (fxon));
     layout.add (std::move (wetdry));
     layout.add (std::move (beat));
     layout.add (std::move (time));
     layout.add (std::move (other));
-    setupBandParameters(layout);
+    setupBandParameters (layout);
     layout.add (std::move (onoff));
 
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
@@ -146,14 +88,13 @@ HelixProcessor::~HelixProcessor()
     timeParam->removeListener (this);
     xPadParam->removeListener (this);
     onOffParam->removeListener (this);
-    fxOnParam->removeListener(this);
-
+    fxOnParam->removeListener (this);
 }
 
 //============================================================================== Audio processing
 void HelixProcessor::prepareToPlay (double Fs, int bufferSize)
 {
-    BandProcessor::prepareToPlay(Fs, bufferSize);
+    BandProcessor::prepareToPlay (Fs, bufferSize);
 }
 void HelixProcessor::processAudioBlock (juce::AudioBuffer<float>&, MidiBuffer&)
 {
@@ -169,5 +110,4 @@ void HelixProcessor::parameterValueChanged (int, float)
 {
     //If the beat division is changed, the delay time should be set.
     //If the X Pad is used, the beat div and subsequently, time, should be updated.
-    
 }

@@ -13,18 +13,14 @@ PitchProcessor::PitchProcessor (int idNum): idNumber (idNum)
                                                                        return txt << "%";
                                                                    });
     
-    NormalisableRange<float> fxOnRange = { 0.f, 1.0f };
-
-    auto fxon = std::make_unique<NotifiableAudioParameterFloat> ("fxonoff", "FX On", fxOnRange, 1,
-                                                                  true,// isAutomatable
-                                                                  "FX On/Off ",
-                                                                  AudioProcessorParameter::genericParameter,
-                                                                  [] (float value, int) -> String {
-                                                                      if (value > 0)
-                                                                          return "On";
-                                                                      return "Off";
-                                                                      ;
-                                                                  });
+    auto fxon = std::make_unique<AudioParameterBool> ("fxonoff", "FX On",true,
+                                                                 "FX On/Off ",
+                                                                 [] (bool value, int) -> String {
+                                                                     if (value > 0)
+                                                                         return TRANS("On");
+                                                                     return TRANS("Off");
+                                                                     ;
+                                                                 });
     
 
     NormalisableRange<float> beatRange = { -50, 100 };

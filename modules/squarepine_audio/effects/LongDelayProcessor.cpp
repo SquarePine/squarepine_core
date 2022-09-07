@@ -12,20 +12,14 @@ LongDelayProcessor::LongDelayProcessor (int idNum): idNumber (idNum)
                                                                        String txt (percentage);
                                                                        return txt << "%";
                                                                    });
-    
-    NormalisableRange<float> fxOnRange = { 0.f, 1.0f };
 
-    auto fxon = std::make_unique<NotifiableAudioParameterFloat> ("fxonoff", "FX On", fxOnRange, 1,
-                                                                  true,// isAutomatable
-                                                                  "FX On/Off ",
-                                                                  AudioProcessorParameter::genericParameter,
-                                                                  [] (float value, int) -> String {
-                                                                      if (value > 0)
-                                                                          return "On";
-                                                                      return "Off";
-                                                                      ;
-                                                                  });
-    
+    auto fxon = std::make_unique<AudioParameterBool> ("fxonoff", "FX On", true, "FX On/Off ", [] (bool value, int) -> String {
+        if (value > 0)
+            return TRANS ("On");
+        return TRANS ("Off");
+        ;
+    });
+
     NormalisableRange<float> timeRange = { 400.f, 4000.0f };
     auto time = std::make_unique<NotifiableAudioParameterFloat> ("delayTime", "Delay Time", timeRange, 200.f,
                                                                  true,// isAutomatable
@@ -62,8 +56,8 @@ LongDelayProcessor::LongDelayProcessor (int idNum): idNumber (idNum)
     wetDryParam->addListener (this);
 
     fxOnParam = fxon.get();
-    fxOnParam->addListener(this);
-    
+    fxOnParam->addListener (this);
+
     colourParam = colour.get();
     colourParam->addListener (this);
 
@@ -71,15 +65,15 @@ LongDelayProcessor::LongDelayProcessor (int idNum): idNumber (idNum)
     feedbackParam->addListener (this);
 
     timeParam = time.get();
-    timeParam->addListener(this);
-    
+    timeParam->addListener (this);
+
     auto layout = createDefaultParameterLayout (false);
     layout.add (std::move (fxon));
     layout.add (std::move (wetdry));
     layout.add (std::move (colour));
     layout.add (std::move (feedback));
     layout.add (std::move (time));
-    appendExtraParams(layout);
+    appendExtraParams (layout);
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 
     setPrimaryParameter (wetDryParam);
@@ -88,10 +82,10 @@ LongDelayProcessor::LongDelayProcessor (int idNum): idNumber (idNum)
 LongDelayProcessor::~LongDelayProcessor()
 {
     wetDryParam->removeListener (this);
-    fxOnParam->removeListener(this);
+    fxOnParam->removeListener (this);
     colourParam->removeListener (this);
     feedbackParam->removeListener (this);
-    timeParam->removeListener(this);
+    timeParam->removeListener (this);
 }
 
 //============================================================================== Audio processing

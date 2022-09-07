@@ -13,20 +13,13 @@ SpaceProcessor::SpaceProcessor (int idNum): idNumber (idNum)
                                                                        return txt << "%";
                                                                    });
 
-    NormalisableRange<float> fxOnRange = { 0.f, 1.0f };
+    auto fxon = std::make_unique<AudioParameterBool> ("fxonoff", "FX On", true, "FX On/Off ", [] (bool value, int) -> String {
+        if (value > 0)
+            return TRANS ("On");
+        return TRANS ("Off");
+        ;
+    });
 
-    auto fxon = std::make_unique<NotifiableAudioParameterFloat> ("fxonoff", "FX On", fxOnRange, 1,
-                                                                  true,// isAutomatable
-                                                                  "FX On/Off ",
-                                                                  AudioProcessorParameter::genericParameter,
-                                                                  [] (float value, int) -> String {
-                                                                      if (value > 0)
-                                                                          return "On";
-                                                                      return "Off";
-                                                                      ;
-                                                                  });
-    
-    
     NormalisableRange<float> timeRange = { 1.f, 4000.0f };
     auto time = std::make_unique<NotifiableAudioParameterFloat> ("delayTime", "Reverb/Space Time", timeRange, 200.f,
                                                                  true,// isAutomatable
@@ -37,7 +30,7 @@ SpaceProcessor::SpaceProcessor (int idNum): idNumber (idNum)
                                                                      return txt << "ms";
                                                                      ;
                                                                  });
-    
+
     NormalisableRange<float> reverbRange = { -1.0, 1.0f };
     auto reverbColour = std::make_unique<NotifiableAudioParameterFloat> ("reverb colour", "Colour/Tone", reverbRange, 0.f,
                                                                          true,// isAutomatable
@@ -64,16 +57,16 @@ SpaceProcessor::SpaceProcessor (int idNum): idNumber (idNum)
     wetDryParam->addListener (this);
 
     fxOnParam = fxon.get();
-    fxOnParam->addListener(this);
-    
+    fxOnParam->addListener (this);
+
     reverbColourParam = reverbColour.get();
     reverbColourParam->addListener (this);
 
     feedbackParam = feedback.get();
     feedbackParam->addListener (this);
-    
+
     timeParam = time.get();
-    timeParam->addListener(this);
+    timeParam->addListener (this);
 
     auto layout = createDefaultParameterLayout (false);
     layout.add (std::move (fxon));
@@ -81,7 +74,7 @@ SpaceProcessor::SpaceProcessor (int idNum): idNumber (idNum)
     layout.add (std::move (reverbColour));
     layout.add (std::move (feedback));
     layout.add (std::move (time));
-    appendExtraParams(layout);
+    appendExtraParams (layout);
 
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 
@@ -91,10 +84,10 @@ SpaceProcessor::SpaceProcessor (int idNum): idNumber (idNum)
 SpaceProcessor::~SpaceProcessor()
 {
     wetDryParam->removeListener (this);
-    fxOnParam->removeListener(this);
+    fxOnParam->removeListener (this);
     reverbColourParam->removeListener (this);
     feedbackParam->removeListener (this);
-    timeParam->removeListener(this);
+    timeParam->removeListener (this);
 }
 
 //============================================================================== Audio processing

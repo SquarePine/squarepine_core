@@ -28,7 +28,7 @@ private:
     NotifiableAudioParameterFloat* timeParam = nullptr;
     NotifiableAudioParameterFloat* wetDryParam = nullptr;
     NotifiableAudioParameterFloat* xPadParam = nullptr;
-    NotifiableAudioParameterFloat* fxOnParam = nullptr;
+    AudioParameterBool* fxOnParam = nullptr;
     //Using the Juce reverb
     Reverb reverb;
     void updateReverbParams();

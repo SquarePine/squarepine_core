@@ -12,16 +12,12 @@ ReverbProcessor::ReverbProcessor (int idNum): idNumber (idNum)
                                                                        String txt (percentage);
                                                                        return txt << "%";
                                                                    });
-    NormalisableRange<float> fxOnRange = { 0.f, 1.0f };
-
-    auto fxon = std::make_unique<NotifiableAudioParameterFloat> ("fxonoff", "FX On", fxOnRange, 1,
-                                                                 true,// isAutomatable
+    auto fxon = std::make_unique<AudioParameterBool> ("fxonoff", "FX On",true,
                                                                  "FX On/Off ",
-                                                                 AudioProcessorParameter::genericParameter,
-                                                                 [] (float value, int) -> String {
+                                                                 [] (bool value, int) -> String {
                                                                      if (value > 0)
-                                                                         return "On";
-                                                                     return "Off";
+                                                                         return TRANS("On");
+                                                                     return TRANS("Off");
                                                                      ;
                                                                  });
 

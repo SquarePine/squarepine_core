@@ -13,18 +13,12 @@ DubEchoProcessor::DubEchoProcessor (int idNum): idNumber (idNum)
                                                                        return txt << "%";
                                                                    });
 
-    NormalisableRange<float> fxOnRange = { 0.f, 1.0f };
-
-    auto fxon = std::make_unique<NotifiableAudioParameterFloat> ("fxonoff", "FX On", fxOnRange, 1,
-                                                                 true,// isAutomatable
-                                                                 "FX On/Off ",
-                                                                 AudioProcessorParameter::genericParameter,
-                                                                 [] (float value, int) -> String {
-                                                                     if (value > 0)
-                                                                         return "On";
-                                                                     return "Off";
-                                                                     ;
-                                                                 });
+    auto fxon = std::make_unique<AudioParameterBool> ("fxonoff", "FX On", true, "FX On/Off ", [] (bool value, int) -> String {
+        if (value > 0)
+            return TRANS ("On");
+        return TRANS ("Off");
+        ;
+    });
     NormalisableRange<float> timeRange = { 1.f, 4000.0f };
     auto time = std::make_unique<NotifiableAudioParameterFloat> ("delayTime", "Echo Time", timeRange, 200.f,
                                                                  true,// isAutomatable
@@ -62,7 +56,7 @@ DubEchoProcessor::DubEchoProcessor (int idNum): idNumber (idNum)
 
     fxOnParam = fxon.get();
     fxOnParam->addListener (this);
-    
+
     echoColourParam = colour.get();
     echoColourParam->addListener (this);
 
@@ -78,7 +72,7 @@ DubEchoProcessor::DubEchoProcessor (int idNum): idNumber (idNum)
     layout.add (std::move (colour));
     layout.add (std::move (feedback));
     layout.add (std::move (time));
-    appendExtraParams(layout);
+    appendExtraParams (layout);
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 
     setPrimaryParameter (wetDryParam);
@@ -87,7 +81,7 @@ DubEchoProcessor::DubEchoProcessor (int idNum): idNumber (idNum)
 DubEchoProcessor::~DubEchoProcessor()
 {
     wetDryParam->removeListener (this);
-    fxOnParam->removeListener(this);
+    fxOnParam->removeListener (this);
     echoColourParam->removeListener (this);
     feedbackParam->removeListener (this);
     timeParam->removeListener (this);

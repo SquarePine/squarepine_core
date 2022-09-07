@@ -14,18 +14,14 @@ ShortDelayProcessor::ShortDelayProcessor (int idNum): idNumber (idNum)
                                                                    });
     
     
-    NormalisableRange<float> fxOnRange = { 0.f, 1.0f };
-
-    auto fxon = std::make_unique<NotifiableAudioParameterFloat> ("fxonoff", "FX On", fxOnRange, 1,
-                                                                  true,// isAutomatable
-                                                                  "FX On/Off ",
-                                                                  AudioProcessorParameter::genericParameter,
-                                                                  [] (float value, int) -> String {
-                                                                      if (value > 0)
-                                                                          return "On";
-                                                                      return "Off";
-                                                                      ;
-                                                                  });
+    auto fxon = std::make_unique<AudioParameterBool> ("fxonoff", "FX On",true,
+                                                                 "FX On/Off ",
+                                                                 [] (bool value, int) -> String {
+                                                                     if (value > 0)
+                                                                         return TRANS("On");
+                                                                     return TRANS("Off");
+                                                                     ;
+                                                                 });
     NormalisableRange<float> timeRange = { 1.f, 400.0f };
     auto time = std::make_unique<NotifiableAudioParameterFloat> ("delayTime", "Delay Time", timeRange, 200.f,
                                                                  true,// isAutomatable

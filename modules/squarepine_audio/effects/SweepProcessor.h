@@ -28,7 +28,7 @@ private:
     NotifiableAudioParameterFloat* fxFrequencyParam = nullptr;
     NotifiableAudioParameterFloat* colourParam = nullptr;
     NotifiableAudioParameterFloat* otherParam = nullptr;
-    NotifiableAudioParameterFloat* fxOnParam = nullptr;
+    AudioParameterBool* fxOnParam = nullptr;
 
     
     int idNumber = 1;

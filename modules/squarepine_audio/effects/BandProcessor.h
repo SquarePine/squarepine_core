@@ -20,5 +20,5 @@ public:
     virtual void parameterValueChanged (int paramNum, float value) override;
 
 private:
-    NotifiableAudioParameterFloat *lowFrequencyToggleParam, *midFrequencyToggleParam, *highFrequencyToggleParam;
+    AudioParameterBool *lowFrequencyToggleParam, *midFrequencyToggleParam, *highFrequencyToggleParam;
 };
