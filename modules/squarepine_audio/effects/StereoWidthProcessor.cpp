@@ -5,7 +5,8 @@ StereoWidthProcessor::StereoWidthProcessor() :
 
     auto vp = std::make_unique<AudioParameterFloat> (getIdentifier().toString(), getName(),
                                                      NormalisableRange<float> (minimumValue, maximumValue),
-                                                     defaultValue, getName());
+                                                     defaultValue,
+                                                     AudioParameterFloatAttributes ().withLabel (getName()));
     widthParameter = vp.get();
     widthParameter->addListener (this);
 

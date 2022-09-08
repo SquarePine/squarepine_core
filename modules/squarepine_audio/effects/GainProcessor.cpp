@@ -1,18 +1,25 @@
+namespace
+{
+    String toStringFromGainValue (float value, int)
+    {
+        if (approximatelyEqual (value, 1.0f))
+            return "0 dB";
+
+        return Decibels::toString (Decibels::gainToDecibels (value));
+    }
+}
+
+//==============================================================================
 GainProcessor::GainProcessor (NormalisableRange<float> gainRange) :
     InternalProcessor (false)
 {
     auto layout = createDefaultParameterLayout();
 
-    auto vp = std::make_unique<AudioParameterFloat> (getIdentifier().toString(), getName(),
-                                                     gainRange, 1.0f, getName(),
-                                                     AudioProcessorParameter::outputGain,
-                                                     [] (float value, int) -> String
-                                                     {
-                                                        if (approximatelyEqual (value, 1.0f))
-                                                            return "0 dB";
-
-                                                        return Decibels::toString (Decibels::gainToDecibels (value));
-                                                     });
+    auto vp = std::make_unique<AudioParameterFloat> (getIdentifier().toString(), getName(), gainRange, 1.0f,
+                                                     AudioParameterFloatAttributes ()
+                                                        .withCategory (AudioParameterFloatAttributes::Category::outputGain)
+                                                        .withLabel (getName())
+                                                        .withStringFromValueFunction (toStringFromGainValue));
 
     gainParameter = vp.get();
     gainParameter->addListener (this);
