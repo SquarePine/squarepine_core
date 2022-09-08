@@ -6,6 +6,11 @@
               maxBinaryFileSize="20971520" cppLanguageStandard="latest">
   <MAINGROUP id="m6sryU" name="SquarePine Demo">
     <GROUP id="{A87106D4-97C8-8B6E-ABEF-2127F24885D5}" name="assets">
+      <GROUP id="{AA4AFFDE-833A-2EE9-7061-76FBD8E33B4A}" name="Android">
+        <GROUP id="{27791290-92A5-E209-E215-53E3FCEB6273}" name="values">
+          <FILE id="HUGoh6" name="styles.xml" compile="0" resource="1" file="assets/Android/values/styles.xml"/>
+        </GROUP>
+      </GROUP>
       <FILE id="jqPxuh" name="SquarePine Logo.png" compile="0" resource="1"
             file="assets/SquarePine Logo.png"/>
     </GROUP>
@@ -25,10 +30,13 @@
                JUCE_PLUGINHOST_AU="1" JUCE_PLUGINHOST_LADSPA="1" JUCE_USE_WIN_WEBVIEW2="1"
                SQUAREPINE_COMPILE_UNIT_TESTS="1"/>
   <EXPORTFORMATS>
-    <ANDROIDSTUDIO targetFolder="builds/android" smallIcon="jqPxuh" bigIcon="jqPxuh">
+    <ANDROIDSTUDIO targetFolder="builds/android" smallIcon="jqPxuh" bigIcon="jqPxuh"
+                   androidAdditionalResourceFolders="assets/Android/res" androidTheme="@style/ActivityTheme"
+                   microphonePermissionNeeded="1" cameraPermissionNeeded="1" androidInAppBilling="1"
+                   androidVibratePermissionNeeded="1" androidEnableContentSharing="1">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_analytics" path="../../JUCE/modules"/>
@@ -57,8 +65,10 @@
     </ANDROIDSTUDIO>
     <LINUX_MAKE targetFolder="builds/linux" smallIcon="jqPxuh" bigIcon="jqPxuh">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"
+                       linuxArchitecture="-march=native"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"
+                       linuxArchitecture="-march=native"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_analytics" path="../../JUCE/modules"/>
@@ -88,7 +98,8 @@
     <VS2022 targetFolder="builds/vs2022" smallIcon="jqPxuh" bigIcon="jqPxuh">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" characterSet="Unicode"
+                       useRuntimeLibDLL="0"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_analytics" path="../../JUCE/modules"/>
@@ -122,8 +133,9 @@
                   iosBackgroundAudio="1" iosBackgroundBle="1" smallIcon="jqPxuh"
                   bigIcon="jqPxuh">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"
+                       stripLocalSymbols="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_analytics" path="../../JUCE/modules"/>
@@ -154,8 +166,9 @@
                microphonePermissionNeeded="1" cameraPermissionNeeded="1" iosBluetoothPermissionNeeded="1"
                smallIcon="jqPxuh" bigIcon="jqPxuh">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"
+                       stripLocalSymbols="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_analytics" path="../../JUCE/modules"/>
