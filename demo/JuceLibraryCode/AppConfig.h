@@ -23,12 +23,12 @@
 /*
   ==============================================================================
 
-   In accordance with the terms of the JUCE 6 End-Use License Agreement, the
+   In accordance with the terms of the JUCE 7 End-Use License Agreement, the
    JUCE Code in SECTION A cannot be removed, changed or otherwise rendered
    ineffective unless you have a JUCE Indie or Pro license, or are using JUCE
    under the GPL v3 license.
 
-   End User License Agreement: www.juce.com/juce-6-licence
+   End User License Agreement: www.juce.com/juce-7-licence
 
   ==============================================================================
 */
@@ -43,7 +43,7 @@
 
 #define JUCE_USE_DARK_SPLASH_SCREEN 1
 
-#define JUCE_PROJUCER_VERSION 0x60106
+#define JUCE_PROJUCER_VERSION 0x70002
 
 //==============================================================================
 #define JUCE_MODULE_AVAILABLE_juce_analytics              1
@@ -160,6 +160,14 @@
  #define   JUCE_PLUGINHOST_LADSPA 1
 #endif
 
+#ifndef    JUCE_PLUGINHOST_LV2
+ //#define JUCE_PLUGINHOST_LV2 0
+#endif
+
+#ifndef    JUCE_PLUGINHOST_ARA
+ //#define JUCE_PLUGINHOST_ARA 0
+#endif
+
 #ifndef    JUCE_CUSTOM_VST3_SDK
  //#define JUCE_CUSTOM_VST3_SDK 0
 #endif
@@ -168,11 +176,11 @@
 // juce_audio_utils flags:
 
 #ifndef    JUCE_USE_CDREADER
- #define   JUCE_USE_CDREADER 1
+ //#define JUCE_USE_CDREADER 0
 #endif
 
 #ifndef    JUCE_USE_CDBURNER
- #define   JUCE_USE_CDBURNER 1
+ //#define JUCE_USE_CDBURNER 0
 #endif
 
 //==============================================================================
@@ -375,6 +383,10 @@
 
 #ifndef    SQUAREPINE_USE_CUESDK
  //#define SQUAREPINE_USE_CUESDK 0
+#endif
+
+#ifndef    SQUAREPINE_LOG_OPENGL_INFO
+ //#define SQUAREPINE_LOG_OPENGL_INFO 0
 #endif
 
 //==============================================================================

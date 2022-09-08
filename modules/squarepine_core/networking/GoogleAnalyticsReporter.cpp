@@ -379,7 +379,7 @@ GoogleAnalyticsMetadata& GoogleAnalyticsMetadata::withCustomDimension (int index
 
 String GoogleAnalyticsMetadata::getDefaultClientId()
 {
-    const auto deviceId = SystemStats::getDeviceIdentifiers().joinIntoString (":").trim().hashCode64();
+    const auto deviceId = SystemStats::getUniqueDeviceID().trim().hashCode64();
     return String::toHexString (deviceId).trim();
 }
 
@@ -390,17 +390,30 @@ GoogleAnalyticsReporter::GoogleAnalyticsReporter (const URL& endPointAddress) :
     jassert (address.isWellFormed() && URL::isProbablyAWebsiteURL (endPointAddress.toString (true)));
 }
 
+GoogleAnalyticsReporter::~GoogleAnalyticsReporter()
+{
+    endSession();
+}
+
 void GoogleAnalyticsReporter::setConnectionTimeoutMs (int newTimeoutMs)
 {
     timeoutMs = jmax (1000, newTimeoutMs);
 }
 
-bool GoogleAnalyticsReporter::sendReport (const StringPairArray& parameters, ReportType type)
+void GoogleAnalyticsReporter::startSession()
 {
-    return sendReport (networking::createUserAgentValue(), parameters, type);
 }
 
-bool GoogleAnalyticsReporter::sendReport (const String& userAgent, const StringPairArray& parameters, ReportType type)
+void GoogleAnalyticsReporter::endSession()
+{
+}
+
+bool GoogleAnalyticsReporter::sendReport (const StringPairArray& parameters, ReportMethod method)
+{
+    return sendReport (networking::createUserAgentValue(), parameters, method);
+}
+
+bool GoogleAnalyticsReporter::sendReport (const String& userAgent, const StringPairArray& parameters, ReportMethod method)
 {
     if (userAgent.isEmpty() || parameters.size() < 4)
     {
@@ -449,14 +462,14 @@ bool GoogleAnalyticsReporter::sendReport (const String& userAgent, const StringP
 
     if (auto sender = std::make_unique<Sender> (address, userAgent, timeoutMs, postData))
     {
-        switch (type)
+        switch (method)
         {
-            case ReportType::synchronousReport:     return sender->createAndConnect();
-            case ReportType::asynchronousReport:    (new Message (sender.release()))->post(); break;
-            case ReportType::threadedReport:        ReportPool::getInstance()->queue (sender.release()); break;
+            case ReportMethod::synchronous:     return sender->createAndConnect();
+            case ReportMethod::asynchronous:    (new Message (sender.release()))->post(); break;
+            case ReportMethod::threaded:        ReportPool::getInstance()->queue (sender.release()); break;
 
             default:
-                jassertfalse; //Unknown type!
+                jassertfalse; //Unknown method!
                 return false;
         };
     }
@@ -465,7 +478,7 @@ bool GoogleAnalyticsReporter::sendReport (const String& userAgent, const StringP
 }
 
 bool GoogleAnalyticsReporter::sendSystemReport (const String& trackingId, const String& clientId, const String& eventAction,
-                                                const String& screenName, ReportType type)
+                                                const String& screenName, ReportMethod method)
 {
     String appType, appName, appVersion;
 
@@ -523,7 +536,7 @@ bool GoogleAnalyticsReporter::sendSystemReport (const String& trackingId, const 
         .withViewportSize()
         .withCustomDimensions (1, customDims);
 
-    return GoogleAnalyticsReporter().sendReport (data, type);
+    return GoogleAnalyticsReporter().sendReport (data, method);
 }
 
 #endif //SQUAREPINE_USE_GOOGLE_ANALYTICS

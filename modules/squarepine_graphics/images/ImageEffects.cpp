@@ -61,7 +61,7 @@ void applyVignette (Image& img, float amountIn, float radiusIn, float fallOff, T
 
     Ellipse<double> outE { outA, outB }, inE { inA, inB };
 
-    multiThreadedFor<int> (0, h, 1, threadPool, [&] (int y)
+    multithreadedFor<int> (0, h, 1, threadPool, [&] (int y)
     {
         auto* p = data.getLinePointer (y);
 
@@ -118,7 +118,7 @@ void applySepia (Image& img, ThreadPool* threadPool)
 
     Image::BitmapData data (img, Image::BitmapData::readWrite);
 
-    multiThreadedFor<int> (0, h, 1, threadPool, [&] (int y)
+    multithreadedFor<int> (0, h, 1, threadPool, [&] (int y)
     {
         auto* p = data.getLinePointer (y);
 
@@ -150,7 +150,7 @@ void applyGreyScale (Image& img, ThreadPool* threadPool)
 
     Image::BitmapData data (img, Image::BitmapData::readWrite);
 
-    multiThreadedFor<int> (0, h, 1, threadPool, [&] (int y)
+    multithreadedFor<int> (0, h, 1, threadPool, [&] (int y)
     {
         auto* p = data.getLinePointer (y);
 
@@ -188,7 +188,7 @@ void applySoften (Image& img, ThreadPool* threadPool)
     Image::BitmapData srcData (img, Image::BitmapData::readOnly);
     Image::BitmapData dstData (dst, Image::BitmapData::writeOnly);
 
-    multiThreadedFor<int> (0, h, 1, threadPool, [&] (int y)
+    multithreadedFor<int> (0, h, 1, threadPool, [&] (int y)
     {
         for (int x = 0; x < w; x++)
         {
@@ -233,7 +233,7 @@ void applySharpen (Image& img, ThreadPool* threadPool)
     Image::BitmapData srcData (img, Image::BitmapData::readOnly);
     Image::BitmapData dstData (dst, Image::BitmapData::writeOnly);
 
-    multiThreadedFor<int> (0, h, 1, threadPool, [&] (int y)
+    multithreadedFor<int> (0, h, 1, threadPool, [&] (int y)
     {
         for (int x = 0; x < w; x++)
         {
@@ -293,7 +293,7 @@ void applyGamma (Image& img, float gamma, ThreadPool* threadPool)
 
     Image::BitmapData data (img, Image::BitmapData::readWrite);
 
-    multiThreadedFor<int> (0, h, 1, threadPool, [&] (int y)
+    multithreadedFor<int> (0, h, 1, threadPool, [&] (int y)
     {
         auto* p = data.getLinePointer (y);
 
@@ -325,7 +325,7 @@ void applyInvert (Image& img, ThreadPool* threadPool)
 
     Image::BitmapData data (img, Image::BitmapData::readWrite);
 
-    multiThreadedFor<int> (0, h, 1, threadPool, [&] (int y)
+    multithreadedFor<int> (0, h, 1, threadPool, [&] (int y)
     {
         auto* p = data.getLinePointer (y);
 
@@ -360,7 +360,7 @@ void applyContrast (Image& img, float contrast, ThreadPool* threadPool)
 
     Image::BitmapData data (img, Image::BitmapData::readWrite);
 
-    multiThreadedFor<int> (0, h, 1, threadPool, [&] (int y)
+    multithreadedFor<int> (0, h, 1, threadPool, [&] (int y)
     {
         auto* p = data.getLinePointer (y);
 
@@ -471,7 +471,7 @@ void applyBrightnessContrast (Image& img, float brightness, float contrast, Thre
         }
     }
 
-    multiThreadedFor<int> (0, h, 1, threadPool, [&] (int y)
+    multithreadedFor<int> (0, h, 1, threadPool, [&] (int y)
     {
         auto* p = data.getLinePointer (y);
 
@@ -531,7 +531,7 @@ void applyHueSaturationLightness (Image& img, float hueIn, float saturation, flo
 
     Image::BitmapData data (img, Image::BitmapData::readWrite);
 
-    multiThreadedFor<int> (0, h, 1, threadPool, [&] (int y)
+    multithreadedFor<int> (0, h, 1, threadPool, [&] (int y)
     {
         auto* p = data.getLinePointer (y);
 
@@ -593,7 +593,7 @@ void applyGradientMap (Image& img, const ColourGradient& gradient, ThreadPool* t
 
     Image::BitmapData data (img, Image::BitmapData::readWrite);
 
-    multiThreadedFor<int> (0, h, 1, threadPool, [&] (int y)
+    multithreadedFor<int> (0, h, 1, threadPool, [&] (int y)
     {
         auto* p = data.getLinePointer (y);
 
@@ -637,7 +637,7 @@ void applyColour (Image& img, Colour c, ThreadPool* threadPool)
 
     Image::BitmapData data (img, Image::BitmapData::readWrite);
 
-    multiThreadedFor<int> (0, h, 1, threadPool, [&] (int y)
+    multithreadedFor<int> (0, h, 1, threadPool, [&] (int y)
     {
         auto* p = data.getLinePointer (y);
 

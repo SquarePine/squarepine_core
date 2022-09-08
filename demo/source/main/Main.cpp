@@ -5,7 +5,6 @@ public:
     const String getApplicationName() override              { return ProjectInfo::projectName; }
     const String getApplicationVersion() override           { return ProjectInfo::versionString; }
     bool moreThanOneInstanceAllowed() override              { return false; }
-    void shutdown() override                                { mainWindow = nullptr; }
     void systemRequestedQuit() override                     { quit(); }
     void anotherInstanceStarted (const String&) override    { }
 
@@ -22,6 +21,14 @@ public:
        #endif
 
         mainWindow.reset (new MainWindow (windowName));
+
+        googleAnalyticsReporter->startSession();
+    }
+
+    void shutdown() override
+    {
+        googleAnalyticsReporter->endSession();
+        mainWindow = nullptr;
     }
 
 private:
@@ -58,6 +65,7 @@ private:
 
     //==============================================================================
     std::unique_ptr<MainWindow> mainWindow;
+    SharedResourcePointer<sp::GoogleAnalyticsReporter> googleAnalyticsReporter;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SquarePineDemoApplication)

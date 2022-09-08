@@ -329,7 +329,7 @@ private:
     EffectProcessor::Ptr insertInternal (const Type& valueOrRef, int destinationIndex, InsertionStyle insertionStyle = InsertionStyle::insert);
 
     template<typename Type>
-    std::optional<Type) getEffectProperty (int index, std::function<Type (EffectProcessor::Ptr)> func) const
+    std::optional<Type> getEffectProperty (int index, std::function<Type (EffectProcessor::Ptr)> func) const
     {
         const ScopedLock sl (getCallbackLock());
 

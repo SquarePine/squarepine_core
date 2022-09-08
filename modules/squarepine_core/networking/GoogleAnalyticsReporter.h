@@ -277,38 +277,61 @@ private:
 };
 
 //==============================================================================
-/**
+/** Use a an instance of this class to manage sending Google Analytics reports.
+
+    You can use this to manage a session, which will be automatically ended if present
+    on the destruction of the reporter instance.
+
+    For ease of use, you may want to try using a single instance of
+    this across your plugin or application via the juce::SharedResourcePointer:
+    @code
+        juce::SharedResourcePointer<sp::GoogleAnalyticsReporter> googleAnalyticsReporter;
+    @endcode
 
     @see https://developers.google.com/analytics/devguides/collection/protocol/v1/reference#endpoint
 
-    @see GoogleAnalyticsMetadata
+    @see GoogleAnalyticsMetadata, NetworkConnectivityChecker
 */
 class GoogleAnalyticsReporter final
 {
 public:
     /** Constructor.
 
-        @param address Typically this is the default Google Analytics end-point to POST to,
-                       but Google doesn't change this so a default parameter has been set.
+        @param address By default, this is set to the default Google Analytics end-point
+                       which will be POSTed to. Google doesn't change this, so it's not recommended
+                       to play with this unless you know what you're doing!
     */
     GoogleAnalyticsReporter (const URL& endPointAddress = URL ("https://www.google-analytics.com/collect"));
 
+    /** Destructor.
+
+        Ends the session in progress if one was present.
+        @see startSession, endSession
+    */
+    ~GoogleAnalyticsReporter();
+
     //==============================================================================
-    enum class ReportType
+    /** The type of method to use to send a Google Analytics report. */
+    enum class ReportMethod
     {
         /** Sends off the report synchronously.
 
-            You should be careful with this, as this will block the calling thread.
-            And if there isn't an internet connection, this will be blocking for the amount of
-            time the connection timeout is set to!
+            You should be careful with this as this will block the calling thread.
+
+            If there isn't an internet connection, this will be blocking for the amount of
+            time the connection timeout is set to! You can use a NetworkConnectivityChecker
+            to work around this, or use the threaded method instead.
         */
-        synchronousReport,
+        synchronous,
 
         /** Sends off the report asynchronously.
 
             This will use the MessageManager to queue up a network request.
+
+            Similar to the synchronous method, this will block the message thread till
+            the connection is made or connection timeout is reached.
         */
-        asynchronousReport,
+        asynchronous,
 
         /** Sends off the report asynchronously, on a different thread.
 
@@ -316,15 +339,17 @@ public:
             Note that queue many requests at once may bring up the CPU load quickly,
             especially if the requests are having to wait for an internet connection.
         */
-        threadedReport
+        threaded
     };
 
     /** Sends a customised report.
 
         @param parameters The group of parameters Google Analytics can understand.
                           For an easier means of filling these out, use GoogleAnalyticsMetadata.
+        @param method     @see ReportMethod
     */
-    bool sendReport (const StringPairArray& parameters, ReportType type = ReportType::threadedReport);
+    bool sendReport (const StringPairArray& parameters,
+                     ReportMethod type = ReportMethod::threaded);
 
     /** Sends a customised report.
 
@@ -332,8 +357,11 @@ public:
                             use the other version of this method.
         @param parameters   The group of parameters Google Analytics can understand.
                             For an easier means of filling these out, use GoogleAnalyticsMetadata.
+        @param method       @see ReportMethod
     */
-    bool sendReport (const String& userAgent, const StringPairArray& parameters, ReportType type = ReportType::threadedReport);
+    bool sendReport (const String& userAgent,
+                     const StringPairArray& parameters,
+                     ReportMethod type = ReportMethod::threaded);
 
     //==============================================================================
     /** Change the connection timeout to something else, in milliseconds.
@@ -347,6 +375,13 @@ public:
 
     /** @returns the current timeout in milliseconds. */
     int getConnectionTimeoutMs() const noexcept { return timeoutMs; }
+
+    //==============================================================================
+    /** Starts or restarts your session's time. */
+    void startSession();
+
+    /** Ends your session if one was started. */
+    void endSession();
 
     //==============================================================================
     /** Sends a standardised and detailed system report.
@@ -363,12 +398,13 @@ public:
                             @see GoogleAnalyticsMetadata::withEventAction.
         @param screenName   This is the 'cd' that will be set in the parameters.
                             @see GoogleAnalyticsMetadata::withScreenName.
+        @param method       @see ReportMethod
     */
     static bool sendSystemReport (const String& trackingId,
                                   const String& clientId = GoogleAnalyticsMetadata::getDefaultClientId(),
                                   const String& eventAction = "AppStart",
                                   const String& screenName = "Main",
-                                  ReportType type = ReportType::threadedReport);
+                                  ReportMethod method = ReportMethod::threaded);
 
 private:
     //==============================================================================
@@ -378,6 +414,7 @@ private:
 
     const URL address;
     int timeoutMs = 3000;
+    std::unique_ptr<Time> sessionStart;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GoogleAnalyticsReporter)

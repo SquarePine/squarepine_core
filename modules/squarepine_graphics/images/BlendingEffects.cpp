@@ -16,10 +16,10 @@ void applyBlend (Image& dest, const Image& source, float alpha, Point<int> posit
 
     threadPool = (w >= 256 || h >= 256) ? threadPool : nullptr;
 
-    Image::BitmapData srcData (source, Image::BitmapData::readOnly);
-    Image::BitmapData dstData (dest, Image::BitmapData::readWrite);
+    Image::BitmapData srcData (source, Image::BitmapData::readOnly),
+                      dstData (dest, Image::BitmapData::readWrite);
 
-    multiThreadedFor<int> (0, h, 1, threadPool, [&] (int y)
+    multithreadedFor<int> (0, h, 1, threadPool, [&] (int y)
     {
         auto* lineSource = srcData.getLinePointer (cropY + y);
         auto* lineDest = dstData.getLinePointer (rcOverlap.getY() + y);
@@ -133,7 +133,7 @@ void applyBlend (Image& dest, Colour c, ThreadPool* threadPool)
     const auto ab = c.getBlue();
     const auto aa = c.getAlpha();
 
-    multiThreadedFor<int> (0, h, 1, threadPool, [&] (int y)
+    multithreadedFor<int> (0, h, 1, threadPool, [&] (int y)
     {
         auto* lineDest = dstData.getLinePointer (y);
 
