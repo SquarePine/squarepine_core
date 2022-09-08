@@ -101,43 +101,43 @@ namespace
 
         struct ifaddrs* interfaces = nullptr;
     };
+}
 
-    inline NetworkConnectivityChecker::NetworkType getCurrentSystemNetworkType()
+NetworkConnectivityChecker::NetworkType getCurrentSystemNetworkType()
+{
+    IfAddrsRAII instance;
+
+    for (auto* iter = instance.interfaces; iter != nullptr; iter = iter->ifa_next)
     {
-        IfAddrsRAII instance;
-
-        for (auto* iter = instance.interfaces; iter != nullptr; iter = iter->ifa_next)
+        if ((iter->ifa_flags & IFF_LOOPBACK) == 0
+            && (iter->ifa_flags & IFF_RUNNING) != 0
+            && iter->ifa_addr != nullptr
+            && iter->ifa_addr->sa_family == AF_PACKET)
         {
-            if ((iter->ifa_flags & IFF_LOOPBACK) == 0
-                && (iter->ifa_flags & IFF_RUNNING) != 0
-                && iter->ifa_addr != nullptr
-                && iter->ifa_addr->sa_family == AF_PACKET)
-            {
-               return isProbablyWifiConnection (iter->ifa_name)
-                    ? NetworkConnectivityChecker::NetworkType::wifi
-                    : NetworkConnectivityChecker::NetworkType::wired;
-            }
+            return isProbablyWifiConnection (iter->ifa_name)
+                ? NetworkConnectivityChecker::NetworkType::wifi
+                : NetworkConnectivityChecker::NetworkType::wired;
         }
-
-        return NetworkConnectivityChecker::NetworkType::none;
     }
 
-    double getCurrentSystemRSSI()
+    return NetworkConnectivityChecker::NetworkType::none;
+}
+
+double getCurrentSystemRSSI()
+{
+    IfAddrsRAII instance;
+
+    for (auto* iter = instance.interfaces; iter != nullptr; iter = iter->ifa_next)
     {
-        IfAddrsRAII instance;
-
-        for (auto* iter = instance.interfaces; iter != nullptr; iter = iter->ifa_next)
+        if ((iter->ifa_flags & IFF_LOOPBACK) == 0
+            && (iter->ifa_flags & IFF_RUNNING) != 0
+            && isProbablyWifiConnection (iter->ifa_name))
         {
-            if ((iter->ifa_flags & IFF_LOOPBACK) == 0
-                && (iter->ifa_flags & IFF_RUNNING) != 0
-                && isProbablyWifiConnection (iter->ifa_name))
-            {
-               return getSSID (iter->ifa_name);
-            }
+            return getSSID (iter->ifa_name);
         }
-
-        return 0.0;
     }
+
+    return 0.0;
 }
 
 #endif
