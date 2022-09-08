@@ -123,13 +123,13 @@ inline void callInBackground (std::function<void (void)> function)
     becomes
 
     @code
-        multiThreadedFor<int> (0, 10, 1, threadPool, [&] (int i) {});
+        multithreadedFor<int> (0, 10, 1, threadPool, [&] (int i) {});
     @endcode
 
     @note Make sure each iteration of the loop is independant!
 */
 template<typename Type>
-inline void multiThreadedFor (Type start, Type end, Type interval, ThreadPool* threadPool, std::function<void (Type)> callback)
+inline void multithreadedFor (Type start, Type end, Type interval, ThreadPool* threadPool, std::function<void (Type)> callback)
 {
     if (threadPool == nullptr)
     {
