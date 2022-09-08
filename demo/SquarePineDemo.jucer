@@ -7,8 +7,10 @@
   <MAINGROUP id="m6sryU" name="SquarePine Demo">
     <GROUP id="{A87106D4-97C8-8B6E-ABEF-2127F24885D5}" name="assets">
       <GROUP id="{AA4AFFDE-833A-2EE9-7061-76FBD8E33B4A}" name="Android">
-        <GROUP id="{27791290-92A5-E209-E215-53E3FCEB6273}" name="values">
-          <FILE id="HUGoh6" name="styles.xml" compile="0" resource="1" file="assets/Android/values/styles.xml"/>
+        <GROUP id="{A003AD11-9ED9-9C43-9A4A-21E3F2F1C16E}" name="res">
+          <GROUP id="{3AF388FA-F1BD-A4DA-8E76-8A4E287ACEFE}" name="values">
+            <FILE id="MfV8cO" name="styles.xml" compile="0" resource="1" file="assets/Android/res/values/styles.xml"/>
+          </GROUP>
         </GROUP>
       </GROUP>
       <FILE id="jqPxuh" name="SquarePine Logo.png" compile="0" resource="1"
@@ -33,7 +35,8 @@
     <ANDROIDSTUDIO targetFolder="builds/android" smallIcon="jqPxuh" bigIcon="jqPxuh"
                    androidAdditionalResourceFolders="assets/Android/res" androidTheme="@style/ActivityTheme"
                    microphonePermissionNeeded="1" cameraPermissionNeeded="1" androidInAppBilling="1"
-                   androidVibratePermissionNeeded="1" androidEnableContentSharing="1">
+                   androidVibratePermissionNeeded="1" androidEnableContentSharing="1"
+                   androidCustomAppBuildGradleContent="    buildTypes&#10;    {&#10;        release&#10;        {&#10;            minifyEnabled true&#10;            shrinkResources true&#10;            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'&#10;        }&#10;    }">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"/>
