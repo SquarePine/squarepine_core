@@ -8,7 +8,7 @@ class Identifiable
 {
 public:
     /** */
-    Identifiable() noexcept : identifier (String (Random::getSystemRandom ().nextInt64 ())) { }
+    Identifiable() noexcept : identifier (String (Random::getSystemRandom().nextInt64())) { }
 
     /** */
     Identifiable (const Identifier& id) noexcept : identifier (id) { }

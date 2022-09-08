@@ -1,5 +1,5 @@
 //==============================================================================
-/** Add this to your class to give users access to shorcuts for writing
+/** Add this to your class to give users access to shortcuts for writing
     std::shared_ptr and std::weak_ptr instances.
 */
 #define SQUAREPINE_MAKE_SHAREABLE(ClassName) \
@@ -14,6 +14,7 @@
 #define SQUAREPINE_DECLARE_TOOL_CLASS(ClassName) \
     JUCE_PREVENT_HEAP_ALLOCATION \
     JUCE_DECLARE_NON_COPYABLE (ClassName) \
+    JUCE_DECLARE_NON_MOVEABLE (ClassName) \
     ClassName() = delete;
 
 //==============================================================================

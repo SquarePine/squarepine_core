@@ -182,7 +182,7 @@ namespace std
         /** */
         size_t operator() (const juce::File& key) const noexcept
         {
-            return std::hash<juce::String> () (key.getFullPathName ());
+            return std::hash<juce::String>() (key.getFullPathName());
         }
     };
 }
