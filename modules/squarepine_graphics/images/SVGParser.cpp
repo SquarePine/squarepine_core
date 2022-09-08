@@ -43,13 +43,13 @@ bool isIdentifierChar (juce_wchar c)
 }
 
 //==============================================================================
-bool isNone (const String& s) noexcept
+inline bool isNone (const String& s) noexcept
 {
     return s.equalsIgnoreCase ("none");
 }
 
 //==============================================================================
-void setCommonAttributes (Drawable& d, const XmlPath& xml)
+inline void setCommonAttributes (Drawable& d, const XmlPath& xml)
 {
     const auto compID = xml->getStringAttribute ("id");
     d.setName (compID);
@@ -60,7 +60,7 @@ void setCommonAttributes (Drawable& d, const XmlPath& xml)
 }
 
 //==============================================================================
-String getLink (const XmlPath& xml)
+inline String getLink (const XmlPath& xml)
 {
     auto link = xml->getStringAttribute ("href").trim();
 
@@ -70,7 +70,7 @@ String getLink (const XmlPath& xml)
     return link;
 }
 
-String getLinkedID (const XmlPath& xml)
+inline String getLinkedID (const XmlPath& xml)
 {
     const auto link = getLink (xml);
 
@@ -81,7 +81,7 @@ String getLinkedID (const XmlPath& xml)
 }
 
 //==============================================================================
-bool pathContainsClosedSubPath (const Path& path) noexcept
+inline bool pathContainsClosedSubPath (const Path& path) noexcept
 {
     for (Path::Iterator iter (path); iter.next();)
         if (iter.elementType == Path::Iterator::closePath)
@@ -91,7 +91,7 @@ bool pathContainsClosedSubPath (const Path& path) noexcept
 }
 
 //==============================================================================
-String parseURL (const String& str)
+inline String parseURL (const String& str)
 {
     if (str.startsWithIgnoreCase ("url"))
         return str
@@ -105,7 +105,7 @@ String parseURL (const String& str)
 }
 
 //==============================================================================
-int parsePlacementFlags (const String& align) noexcept
+inline int parsePlacementFlags (const String& align) noexcept
 {
     if (align.isEmpty())
         return 0;
@@ -123,7 +123,7 @@ int parsePlacementFlags (const String& align) noexcept
 }
 
 //==============================================================================
-String getAttributeFromStyleList (const String& list, StringRef attributeName, const String& defaultValue)
+inline String getAttributeFromStyleList (const String& list, StringRef attributeName, const String& defaultValue)
 {
     int i = 0;
 
@@ -157,13 +157,13 @@ String getAttributeFromStyleList (const String& list, StringRef attributeName, c
 }
 
 //==============================================================================
-bool isStartOfNumber (juce_wchar c) noexcept
+inline bool isStartOfNumber (juce_wchar c) noexcept
 {
     return CharacterFunctions::isDigit (c) || c == '-' || c == '+';
 }
 
 //==============================================================================
-bool parseNextNumber (String::CharPointerType& text, String& value, bool allowUnits)
+inline bool parseNextNumber (String::CharPointerType& text, String& value, bool allowUnits)
 {
     auto s = text;
 
@@ -214,7 +214,7 @@ bool parseNextNumber (String::CharPointerType& text, String& value, bool allowUn
 }
 
 //==============================================================================
-bool parseNextFlag (String::CharPointerType& text, bool& value)
+inline bool parseNextFlag (String::CharPointerType& text, bool& value)
 {
     while (text.isWhitespace() || *text == ',')
         ++text;
@@ -231,7 +231,7 @@ bool parseNextFlag (String::CharPointerType& text, bool& value)
 }
 
 //==============================================================================
-PathStrokeType::JointStyle getJointStyle (const String& join) noexcept
+inline PathStrokeType::JointStyle getJointStyle (const String& join) noexcept
 {
     if (join.equalsIgnoreCase ("round"))  return PathStrokeType::curved;
     if (join.equalsIgnoreCase ("bevel"))  return PathStrokeType::beveled;
@@ -239,7 +239,7 @@ PathStrokeType::JointStyle getJointStyle (const String& join) noexcept
     return PathStrokeType::mitered;
 }
 
-PathStrokeType::EndCapStyle getEndCapStyle (const String& cap) noexcept
+inline PathStrokeType::EndCapStyle getEndCapStyle (const String& cap) noexcept
 {
     if (cap.equalsIgnoreCase ("round"))   return PathStrokeType::rounded;
     if (cap.equalsIgnoreCase ("square"))  return PathStrokeType::square;
@@ -248,14 +248,14 @@ PathStrokeType::EndCapStyle getEndCapStyle (const String& cap) noexcept
 }
 
 //==============================================================================
-float parseSafeFloat (const String& s) noexcept
+inline float parseSafeFloat (const String& s) noexcept
 {
     const auto n = s.getFloatValue();
     return (std::isnan (n) || std::isinf (n)) ? 0.0f : n;
 }
 
 //==============================================================================
-String::CharPointerType findStyleItem (String::CharPointerType source, String::CharPointerType name)
+inline String::CharPointerType findStyleItem (String::CharPointerType source, String::CharPointerType name)
 {
     const auto nameLength = (int) name.length();
 
@@ -278,7 +278,7 @@ String::CharPointerType findStyleItem (String::CharPointerType source, String::C
 }
 
 //==============================================================================
-AffineTransform parseTransform (String t)
+inline AffineTransform parseTransform (String t)
 {
     AffineTransform result;
 
@@ -319,13 +319,13 @@ AffineTransform parseTransform (String t)
 }
 
 //==============================================================================
-void endpointToCentreParameters (double x1, double y1,
-                                 double x2, double y2,
-                                 double angle,
-                                 bool largeArc, bool sweep,
-                                 double& rx, double& ry,
-                                 double& centreX, double& centreY,
-                                 double& startAngle, double& deltaAngle) noexcept
+inline void endpointToCentreParameters (double x1, double y1,
+                                        double x2, double y2,
+                                        double angle,
+                                        bool largeArc, bool sweep,
+                                        double& rx, double& ry,
+                                        double& centreX, double& centreY,
+                                        double& startAngle, double& deltaAngle) noexcept
 {
     const auto midX = (x1 - x2) * 0.5;
     const auto midY = (y1 - y2) * 0.5;
@@ -397,7 +397,7 @@ void endpointToCentreParameters (double x1, double y1,
 }
 
 //==============================================================================
-void assertOnUnsupportedTags (const XmlElement& topLevel)
+inline void assertOnUnsupportedTags (const XmlElement& topLevel)
 {
     ignoreUnused (topLevel);
 
@@ -414,7 +414,7 @@ void assertOnUnsupportedTags (const XmlElement& topLevel)
    #endif
 }
 
-StringPairArray scanForMetadata (const XmlElement& topLevel)
+inline StringPairArray scanForMetadata (const XmlElement& topLevel)
 {
     StringPairArray metadata;
 

@@ -40,7 +40,7 @@ static const int stackblur_shr[255] =
     24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24
 };
 
-void applyStackBlurBW (Image& img, uint32 radius)
+inline void applyStackBlurBW (Image& img, uint32 radius)
 {
     const auto w = (uint32)img.getWidth();
     const auto h = (uint32)img.getHeight();
@@ -208,7 +208,7 @@ void applyStackBlurBW (Image& img, uint32 radius)
     }
 }
 
-void applyStackBlurRGB (Image& img, uint32 radius)
+inline void applyStackBlurRGB (Image& img, uint32 radius)
 {
     const auto w = (uint32)img.getWidth();
     const auto h = (uint32)img.getHeight();
@@ -437,7 +437,7 @@ void applyStackBlurRGB (Image& img, uint32 radius)
     }
 }
 
-void applyStackBlurARGB (Image& img, uint32 radius)
+inline void applyStackBlurARGB (Image& img, uint32 radius)
 {
     const auto w = (uint32)img.getWidth();
     const auto h = (uint32)img.getHeight();
