@@ -145,32 +145,6 @@ GoogleAnalyticsMetadata::GoogleAnalyticsMetadata (const String& trackingId,
     withHitType (hitType);
 }
 
-GoogleAnalyticsMetadata::GoogleAnalyticsMetadata (const GoogleAnalyticsMetadata& other) :
-    data (other.data)
-{
-}
-
-GoogleAnalyticsMetadata::GoogleAnalyticsMetadata (GoogleAnalyticsMetadata&& other) :
-    data (std::move (other.data))
-{
-}
-
-GoogleAnalyticsMetadata::~GoogleAnalyticsMetadata()
-{
-}
-
-GoogleAnalyticsMetadata& GoogleAnalyticsMetadata::operator= (const GoogleAnalyticsMetadata& other)
-{
-    data = other.data;
-    return *this;
-}
-
-GoogleAnalyticsMetadata& GoogleAnalyticsMetadata::operator= (GoogleAnalyticsMetadata&& other)
-{
-    data = std::move (other.data);
-    return *this;
-}
-
 GoogleAnalyticsMetadata& GoogleAnalyticsMetadata::with (const String& key, const String& value, int maxSizeBytes)
 {
     if (key.isNotEmpty())
@@ -201,6 +175,11 @@ GoogleAnalyticsMetadata& GoogleAnalyticsMetadata::with (const String& key, int i
 
     return *this;
 }
+
+#undef GA_IMPLEMENT_BOOL_METHOD
+#undef GA_IMPLEMENT_INTEGER_METHOD
+#undef GA_IMPLEMENT_METHOD_DEFAULT
+#undef GA_IMPLEMENT_METHOD
 
 #define GA_IMPLEMENT_METHOD(name, keyValue, maxSizeBytes) \
     GoogleAnalyticsMetadata& GoogleAnalyticsMetadata:: JUCE_JOIN_MACRO (with, name) (const String& keyValue) \

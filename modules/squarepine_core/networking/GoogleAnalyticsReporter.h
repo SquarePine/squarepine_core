@@ -49,17 +49,17 @@ public:
                              HitType hitType = HitType::event);
 
     /** */
-    GoogleAnalyticsMetadata (const GoogleAnalyticsMetadata&);
+    GoogleAnalyticsMetadata (const GoogleAnalyticsMetadata&) = default;
     /** */
-    GoogleAnalyticsMetadata (GoogleAnalyticsMetadata&&);
+    GoogleAnalyticsMetadata (GoogleAnalyticsMetadata&&) = default;
     /** */
-    ~GoogleAnalyticsMetadata();
+    ~GoogleAnalyticsMetadata() = default;
 
     //==============================================================================
     /** */
-    GoogleAnalyticsMetadata& operator= (const GoogleAnalyticsMetadata&);
+    GoogleAnalyticsMetadata& operator= (const GoogleAnalyticsMetadata&) = default;
     /** */
-    GoogleAnalyticsMetadata& operator= (GoogleAnalyticsMetadata&&);
+    GoogleAnalyticsMetadata& operator= (GoogleAnalyticsMetadata&&) = default;
 
     //==============================================================================
     /** @returns a default, typical client ID. */
