@@ -263,7 +263,6 @@ private:
     DynamicLibrary library;
 
     bool open (const String& filePath) { return library.open (filePath); }
-
    #else
     CFBundleRef bundleRef;
 
@@ -597,7 +596,7 @@ private:
 
 void REXAudioFormat::REXSystemDeleter::operator() (REXSystem* rs)
 {
-    delete rs;
+    deleteAndZero (rs);
 }
 
 //==============================================================================
@@ -667,7 +666,7 @@ public:
         if (numSamples <= 0)
             return true;
 
-        const int localNumChannels = safeNumChannels.load();
+        const auto localNumChannels = safeNumChannels.load();
 
         if (safeUsesFloatingPointData)
         {
@@ -675,7 +674,7 @@ public:
 
             for (int i = numDestChannels; --i >= 0;)
             {
-                if (int* targetChannel = destSamples[i])
+                if (auto* targetChannel = destSamples[i])
                 {
                     const float* sourceChannel = nullptr;
 
@@ -876,7 +875,7 @@ AudioFormatReader* REXAudioFormat::createReaderFor (InputStream* sourceStream, c
         if (! canHandleFile (fis->getFile()))
         {
             if (deleteStreamIfOpeningFails)
-                delete sourceStream;
+                deleteAndZero (sourceStream);
 
             return nullptr;
         }
@@ -900,7 +899,7 @@ AudioFormatReader* REXAudioFormat::createReaderFor (InputStream* sourceStream, c
     }
 
     if (deleteStreamIfOpeningFails)
-        delete sourceStream;
+        deleteAndZero (sourceStream);
 
     return nullptr;
 }
