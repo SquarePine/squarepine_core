@@ -176,7 +176,6 @@ namespace sp
     #include "components/ColourPropertyComponent.h"
     #include "components/ComponentViewer.h"
     #include "components/ComponentWindow.h"
-    #include "components/Easing.h"
     #include "components/GoogleAnalyticsAttachment.h"
     #include "components/JavascriptEditor.h"
     #include "components/HighPerformanceRendererConfigurator.h"

@@ -1,4 +1,5 @@
-//==============================================================================
+#pragma once
+
 /** @returns a string representing a given price, formatted as per the user's locale.
 */
 inline String createLocaleFormattedPrice (double value)

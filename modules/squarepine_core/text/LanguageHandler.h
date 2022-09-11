@@ -1,90 +1,24 @@
-//==============================================================================
-/** ISO 639-3 language code.
+#pragma once
 
-    @see https://en.wikipedia.org/wiki/ISO_639-1
-    @see https://iso639-3.sil.org/code_tables/639/data
+/** A basic representation of a standardised IETF language tags.
+
+    Use one of these to indicate the language of text or
+    other items in HTML documents, XML documents.
+    Use the lang attribute to specify language tags in HTML,
+    and the xml:lang attribute for XML.
+
+    More importantly, this serves as a basis for managing languages,
+    ie: translation files, in your application. You can do so via
+    the combination of a IETFLanguageFile and a single instance of
+    a LanguageHandler.
+
+    @see IETFLanguageFile, LanguageHandler
 */
-enum class ISO6393
-{
-    unknown = -1,
-    eng,
-    fre,
-    spa,
-    epo,
-    por,
-    deu,
-    nld,
-    tlh //< Klingon
-};
-
-/** A more descriptive alternative to ISO 639-3. */
-using LanguageCode = ISO6393;
-
-/** @returns a language code from the provided string, or English if not matched.
-    @see https://en.wikipedia.org/wiki/ISO_639-1
-*/
-LanguageCode getLanguageCodeFromISO6391 (const String&);
-
-/** @returns a language code from the provided string, or English if not matched.
-    @see https://en.wikipedia.org/wiki/ISO_639-2
-*/
-LanguageCode getLanguageCodeFromISO6392 (const String&);
-
-/** @returns a language code from the provided string, or English if not matched.
-    This will try to search via ISO 639-1 and ISO 639-2 codes.
-*/
-LanguageCode getLanguageCode (const String&);
-
-/** @returns an ISO6393 formatted string representing the provided language code,
-    or an empty string if it's unknown.
-*/
-String toString (LanguageCode);
-
-//==============================================================================
-/** ISO 3166-1 Alpha-2 country code.
-
-    @see https://www.iban.com/country-codes
-    
-*/
-enum class ISO31661Alpha2
-{
-    unknown = -1,
-    us,
-    ca,
-    gb,
-    fr,
-    de,
-    nl
-};
-
-/** A more descriptive alternative to ISO3166-1 Alpha-2. */
-using CountryCode = ISO31661Alpha2;
-
-/** @returns a country code from the provided string, or 'US' if not matched.
-    @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
-*/
-CountryCode getCountryCodeFromISO3166Alpha2 (const String&);
-
-/** @returns a country code from the provided string, or 'US' if not matched.
-    @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
-*/
-CountryCode getCountryCodeFromISO3166Alpha3 (const String&);
-
-/** @returns a country code from the provided string, or 'US' if not matched.
-    This will try to search via ISO3166-1 Alpha-2 and ISO3166-1 Alpha-3 codes.
-*/
-CountryCode getCountryCode (const String&);
-
-/** @returns an ISO3166-1 Alpha 2 formatted string representing the provided country code,
-    or an empty string if it's unknown.
-*/
-String toString (CountryCode);
-
-//==============================================================================
-/** */
 struct IETFLanguageTag final
 {
-    /** */
+    /** Constructs a default language tag of the Canadian English variety,
+        represented as "eng-ca".
+    */
     IETFLanguageTag() noexcept = default;
 
     /** */
@@ -94,12 +28,21 @@ struct IETFLanguageTag final
     {
     }
 
-    /** @returns */
-    bool operator== (const IETFLanguageTag& other) const noexcept { return code == other.code && country == other.country; }
-    /** @returns */
+    /** @returns true if this language tag matches the given other one. */
+    bool operator== (const IETFLanguageTag& other) const noexcept
+    {
+        return code == other.code
+            && country == other.country;
+    }
+
+    /** @returns true if this language tag does not match the given other one. */
     bool operator!= (const IETFLanguageTag& other) const noexcept { return ! operator== (other); }
 
-    /** @returns */
+    /** @returns a valid language tag if the string was understandible.
+
+        Otherwise, the tag will be made up of an unknown language code
+        and unknown contry code.
+    */
     static IETFLanguageTag fromString (const String& s)
     {
         const auto toks = StringArray::fromTokens (s, "-", "");
@@ -109,11 +52,17 @@ struct IETFLanguageTag final
         return { getLanguageCode (toks[0]), getCountryCode (toks[1]) };
     }
 
-    /** @returns */
+    /** @returns a printable string of the format "language code-country code";
+        more specifically, this will look like "eng-ca".
+    */
     String getDescription() const { return toString (code) + "-" + toString (country); }
 
-    /** @returns */
-    bool isValid() const noexcept { return code != LanguageCode::unknown && country != CountryCode::unknown; }
+    /** @returns true if language tag*/
+    bool isValid() const noexcept
+    {
+        return code != LanguageCode::unknown
+            && country != CountryCode::unknown;
+    }
 
     LanguageCode code = LanguageCode::eng;
     CountryCode country = CountryCode::ca;
@@ -122,6 +71,10 @@ struct IETFLanguageTag final
 //==============================================================================
 /** A representation of an IETF-compatible file for an app's
     set of translations in a particular language.
+
+    Simply put, this maps a IETFLanguageTag to a file on disk.
+
+    @see IETFLanguageFile, LanguageHandler
 */
 struct IETFLanguageFile final
 {
@@ -165,12 +118,9 @@ class LanguageHandler final
 {
 public:
     /** Constructor. */
-    LanguageHandler() = default;
+    LanguageHandler (const File& languageDirectory);
 
     //==============================================================================
-    /** */
-    void initialise (const File& languageDirectory);
-
     /** @returns */
     const File& getLanguageDirectory() const noexcept { return languageDirectory; }
 
@@ -209,38 +159,24 @@ public:
     };
 
     /** */
-    void addListener (Listener* listener)
-    {
-        jassert (listener != nullptr);
-        jassert (listener->parent == nullptr);
-
-        listener->parent = this;
-        listeners.add (listener);
-
-        // To sync with this language handler.
-        listener->languageChanged (getCurrentLanguage());
-    }
+    void addListener (Listener*);
 
     /** */
-    void removeListener (Listener* listener) { listeners.remove (listener); }
+    void removeListener (Listener*);
+
+    /** */
+    void refresh();
 
 private:
     //==============================================================================
-    File languageDirectory;
+    const File languageDirectory;
     OwnedArray<IETFLanguageFile> languages;
     int activeLanguageIndex = -1;
     ListenerList<Listener> listeners;
 
-    /** */
+    //==============================================================================
     static bool isValid (const IETFLanguageFile& lf);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LanguageHandler)
 };
-
-//==============================================================================
-/** */
-inline void updateLanguageManually (LanguageHandler& handler, LanguageHandler::Listener& listener)
-{
-    listener.languageChanged (handler.getCurrentLanguage());
-}

@@ -1,127 +1,17 @@
+//==============================================================================
 namespace
 {
     const auto languageFileExtension = String (".language");
 }
 
 //==============================================================================
-LanguageCode getLanguageCodeFromISO6391 (const String& s)
+LanguageHandler::LanguageHandler (const File& langDir) :
+    languageDirectory (langDir)
 {
-    if (s.equalsIgnoreCase ("en")) return LanguageCode::eng;
-    if (s.equalsIgnoreCase ("fr")) return LanguageCode::fre;
-    if (s.equalsIgnoreCase ("es")) return LanguageCode::spa;
-    if (s.equalsIgnoreCase ("eo")) return LanguageCode::epo;
-    if (s.equalsIgnoreCase ("pt")) return LanguageCode::por;
-    if (s.equalsIgnoreCase ("de")) return LanguageCode::deu;
-    if (s.equalsIgnoreCase ("nl")) return LanguageCode::nld;
-
-    // "klingon", tlh // ISO 639-1 is not available.
-
-    return LanguageCode::unknown;
-}
-
-LanguageCode getLanguageCodeFromISO6392 (const String& s)
-{
-    if (s.equalsIgnoreCase ("eng")) return LanguageCode::eng;
-    if (s.equalsIgnoreCase ("fre")) return LanguageCode::fre;
-    if (s.equalsIgnoreCase ("spa")) return LanguageCode::spa;
-    if (s.equalsIgnoreCase ("epo")) return LanguageCode::epo;
-    if (s.equalsIgnoreCase ("por")) return LanguageCode::por;
-    if (s.equalsIgnoreCase ("deu")) return LanguageCode::deu;
-    if (s.equalsIgnoreCase ("nld")) return LanguageCode::nld;
-    if (s.equalsIgnoreCase ("tlh")) return LanguageCode::tlh;
-
-    return LanguageCode::unknown;
-}
-
-LanguageCode getLanguageCode (const String& s)
-{
-    const auto lc = getLanguageCodeFromISO6392 (s);
-    if (lc != LanguageCode::unknown)
-        return lc;
-
-    return getLanguageCodeFromISO6391 (s);
-}
-
-String toString (LanguageCode lc)
-{
-    switch (lc)
-    {
-        case LanguageCode::eng: return "eng";
-        case LanguageCode::fre: return "fre";
-        case LanguageCode::spa: return "spa";
-        case LanguageCode::epo: return "epo";
-        case LanguageCode::por: return "por";
-        case LanguageCode::deu: return "deu";
-        case LanguageCode::nld: return "nld";
-        case LanguageCode::tlh: return "tlh";
-
-        default: break;
-    };
-
-    return {};
-}
-
-//==============================================================================
-CountryCode getCountryCodeFromISO3166Alpha2 (const String& s)
-{
-    if (s.equalsIgnoreCase ("us")) return CountryCode::us;
-    if (s.equalsIgnoreCase ("ca")) return CountryCode::ca;
-    if (s.equalsIgnoreCase ("gb")) return CountryCode::gb;
-    if (s.equalsIgnoreCase ("fr")) return CountryCode::fr;
-    if (s.equalsIgnoreCase ("de")) return CountryCode::de;
-    if (s.equalsIgnoreCase ("nl")) return CountryCode::nl;
-
-    return CountryCode::unknown;
-}
-
-CountryCode getCountryCodeFromISO3166Alpha3 (const String& s)
-{
-    if (s.equalsIgnoreCase ("usa")) return CountryCode::us;
-    if (s.equalsIgnoreCase ("can")) return CountryCode::ca;
-    if (s.equalsIgnoreCase ("gbr")) return CountryCode::gb;
-    if (s.equalsIgnoreCase ("fra")) return CountryCode::fr;
-    if (s.equalsIgnoreCase ("deu")) return CountryCode::de;
-    if (s.equalsIgnoreCase ("nld")) return CountryCode::nl;
-
-    return CountryCode::unknown;
-}
-
-CountryCode getCountryCode (const String& s)
-{
-    const auto lc = getCountryCodeFromISO3166Alpha3 (s);
-    if (lc != CountryCode::unknown)
-        return lc;
-
-    return getCountryCodeFromISO3166Alpha2 (s);
-}
-
-String toString (CountryCode cc)
-{
-    switch (cc)
-    {
-        case CountryCode::us: return "us";
-        case CountryCode::ca: return "ca";
-        case CountryCode::gb: return "gb";
-        case CountryCode::fr: return "fr";
-        case CountryCode::de: return "de";
-        case CountryCode::nl: return "nl";
-
-        default: break;
-    };
-
-    return {};
-}
-
-//==============================================================================
-void LanguageHandler::initialise (const File& langDir)
-{
-    if (languageDirectory == langDir)
-        return;
-
-    languageDirectory = langDir;
-
     if (! languageDirectory.isDirectory())
     {
+        languageDirectory.deleteRecursively (true);
+
         const auto r = languageDirectory.createDirectory();
 
         if (! r.wasOk())
@@ -132,7 +22,6 @@ void LanguageHandler::initialise (const File& langDir)
                 Logger::writeToLog ("Message: " + r.getErrorMessage());
 
             jassertfalse;
-            languageDirectory = File();
             return;
         }
     }
@@ -226,13 +115,13 @@ void LanguageHandler::setCurrentLanguage (const IETFLanguageTag& lt)
 
                 activeLanguageIndex = i;
 
-                listeners.call ([&] (Listener& l) { l.languageChanged (*lang); });
+                refresh();
                 return;
             }
         }
     }
 
-    Logger::writeToLog (String ("Error! Tried to switch to an unknown language: ")
+    Logger::writeToLog ("Error! Tried to switch to an unknown language: "
                         + String ((int) lt.code) + "-" + String ((int) lt.country));
     jassertfalse;
 }
@@ -264,4 +153,27 @@ const IETFLanguageFile& LanguageHandler::getCurrentLanguage() const
     jassert (! languages.isEmpty() && activeLanguageIndex >= 0);
 
     return *languages.getFirst();
+}
+
+void LanguageHandler::addListener (Listener* listener)
+{
+    jassert (listener != nullptr);
+    jassert (listener->parent == nullptr);
+
+    listener->parent = this;
+    listeners.add (listener);
+
+    // To sync with this language handler.
+    listener->languageChanged (getCurrentLanguage());
+}
+
+void LanguageHandler::removeListener (Listener* listener)
+{
+    listeners.remove (listener);
+}
+
+void LanguageHandler::refresh()
+{
+    const auto& lang = getCurrentLanguage();
+    listeners.call ([lang] (Listener& l) { l.languageChanged (lang); });
 }
