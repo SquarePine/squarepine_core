@@ -1,58 +1,10 @@
-//==============================================================================
-SharedFonts::SharedFonts()
+DemoLookAndFeel::DemoLookAndFeel (SharedObjects& sharedObjs) :
+    sharedObjects (sharedObjs)
 {
-}
-
-void SharedFonts::initialise()
-{
-    Typeface::Ptr typefaceToCheck;
-
-    if (defaultFamily != nullptr)
-        typefaceToCheck = defaultFamily->regular.normal;
-
-    if (typefaceToCheck != nullptr)
-        return;
-
-    using namespace BinaryData;
-
-    lato.regular.thin         = Typeface::createSystemTypefaceFor (LatoThin_ttf,                LatoThin_ttfSize);
-    lato.regular.light        = Typeface::createSystemTypefaceFor (LatoLight_ttf,               LatoLight_ttfSize);
-    lato.regular.normal       = Typeface::createSystemTypefaceFor (LatoRegular_ttf,             LatoRegular_ttfSize);
-    lato.regular.bold         = Typeface::createSystemTypefaceFor (LatoBold_ttf,                LatoBold_ttfSize);
-    lato.regular.black        = Typeface::createSystemTypefaceFor (LatoBlack_ttf,               LatoBlack_ttfSize);
-    lato.italic.thin          = Typeface::createSystemTypefaceFor (LatoThinItalic_ttf,          LatoThin_ttfSize);
-    lato.italic.light         = Typeface::createSystemTypefaceFor (LatoLightItalic_ttf,         LatoLightItalic_ttfSize);
-    lato.italic.normal        = Typeface::createSystemTypefaceFor (LatoItalic_ttf,              LatoItalic_ttfSize);
-    lato.italic.bold          = Typeface::createSystemTypefaceFor (LatoBoldItalic_ttf,          LatoBoldItalic_ttfSize);
-    lato.italic.black         = Typeface::createSystemTypefaceFor (LatoBlackItalic_ttf,         LatoBlackItalic_ttfSize);
-
-    lato.assignAllToNormal (lato.regular.normal);
-
-    if (defaultFamily == nullptr && lato.isValid())
-        defaultFamily = &lato;
-}
-
-//==============================================================================
-void SharedResources::initialise()
-{
-    if (hasInitialised)
-        return;
-
-    hasInitialised = true;
-
-    sharedFonts.initialise();
-}
-
-//==============================================================================
-DemoLookAndFeel::DemoLookAndFeel()
-{
-    jassert (sharedResources != nullptr);
-    sharedResources->initialise();
-
     Font::setDefaultMinimumHorizontalScaleFactor (1.0f);
 
-    jassert (sharedResources->sharedFonts.defaultFamily != nullptr);
-    setDefaultSansSerifTypefaceName (sharedResources->sharedFonts.defaultFamily->name);
+    jassert (sharedObjects.defaultFamily != nullptr);
+    setDefaultSansSerifTypefaceName (sharedObjects.defaultFamily->name);
 
     const auto darkest = colours::darkest;
 
@@ -89,20 +41,18 @@ Typeface::Ptr DemoLookAndFeel::getTypefaceForFont (const Font& f)
 {
     Typeface::Ptr typefaceToUse;
 
-    auto& sharedFonts = sharedResources->sharedFonts;
-
     if (f.getTypefaceName() == Font::getDefaultSansSerifFontName()
         || f.getTypefaceName() == Font::getDefaultSerifFontName()
         || f.getTypefaceName() == Font::getDefaultMonospacedFontName())
     {
         Font fo (f);
-        fo.setTypefaceName (sharedFonts.defaultFamily->name);
+        fo.setTypefaceName (sharedObjects.defaultFamily->name);
 
-        typefaceToUse = getTypefaceFromFamily (fo, *sharedFonts.defaultFamily);
+        typefaceToUse = getTypefaceFromFamily (fo, *sharedObjects.defaultFamily);
     }
 
-    if (typefaceToUse == nullptr) typefaceToUse = getTypefaceFromFamily (f, *sharedFonts.defaultFamily);
-    if (typefaceToUse == nullptr) typefaceToUse = getTypefaceFromFamily (f, sharedFonts.lato);
+    if (typefaceToUse == nullptr) typefaceToUse = getTypefaceFromFamily (f, *sharedObjects.defaultFamily);
+    if (typefaceToUse == nullptr) typefaceToUse = getTypefaceFromFamily (f, sharedObjects.lato);
 
     if (typefaceToUse != nullptr)
         return typefaceToUse;

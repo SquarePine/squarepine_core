@@ -62,7 +62,8 @@ class MainWindow final : public DocumentWindow
 {
 public:
     MainWindow (SharedObjects& sharedObjects, const String& name) :
-        DocumentWindow (name, Colours::black, DocumentWindow::allButtons)
+        DocumentWindow (name, Colours::black, DocumentWindow::allButtons),
+        customLookAndFeel (sharedObjects)
     {
         setAccessible (false);
         setUsingNativeTitleBar (true);
@@ -137,7 +138,7 @@ public:
 
         String windowName;
         windowName
-            << getApplicationName()
+            << ProjectInfo::companyName
             << " - " << getApplicationName()
             << " - v"
             << getApplicationVersion();

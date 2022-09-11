@@ -12,6 +12,22 @@ SharedObjects::SharedObjects() :
     populate (audioFormatManager);
     languageHandler = std::make_unique<LanguageHandler> (GlobalPaths::getLanguagesFolder());
     fullscreen.setValue (false);
+
+    using namespace BinaryData;
+
+    lato.regular.thin         = Typeface::createSystemTypefaceFor (LatoThin_ttf,                LatoThin_ttfSize);
+    lato.regular.light        = Typeface::createSystemTypefaceFor (LatoLight_ttf,               LatoLight_ttfSize);
+    lato.regular.normal       = Typeface::createSystemTypefaceFor (LatoRegular_ttf,             LatoRegular_ttfSize);
+    lato.regular.bold         = Typeface::createSystemTypefaceFor (LatoBold_ttf,                LatoBold_ttfSize);
+    lato.regular.black        = Typeface::createSystemTypefaceFor (LatoBlack_ttf,               LatoBlack_ttfSize);
+    lato.italic.thin          = Typeface::createSystemTypefaceFor (LatoThinItalic_ttf,          LatoThin_ttfSize);
+    lato.italic.light         = Typeface::createSystemTypefaceFor (LatoLightItalic_ttf,         LatoLightItalic_ttfSize);
+    lato.italic.normal        = Typeface::createSystemTypefaceFor (LatoItalic_ttf,              LatoItalic_ttfSize);
+    lato.italic.bold          = Typeface::createSystemTypefaceFor (LatoBoldItalic_ttf,          LatoBoldItalic_ttfSize);
+    lato.italic.black         = Typeface::createSystemTypefaceFor (LatoBlackItalic_ttf,         LatoBlackItalic_ttfSize);
+
+    lato.assignAllToNormal (lato.regular.normal);
+    jassert (lato.isValid());
 }
 
 SharedObjects::~SharedObjects()

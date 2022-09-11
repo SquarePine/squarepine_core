@@ -92,7 +92,7 @@ public:
     Value fullscreen;
 
     FontFamily lato { "Lato" };
-    FontFamily* defaultFamily = nullptr;
+    FontFamily* defaultFamily = &lato;
 
 private:
     //==============================================================================

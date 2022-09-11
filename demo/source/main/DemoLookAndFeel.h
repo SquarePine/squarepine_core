@@ -27,55 +27,6 @@ namespace colours
 }
 
 //==============================================================================
-/** The global and all-encompassing set of shared fonts for the application. */
-class SharedFonts final
-{
-public:
-    //==============================================================================
-    /** */
-    SharedFonts();
-
-    //==============================================================================
-    /** Loads up the typeface and font instances.
-
-        This will only load up things once by checking
-        if the objects are valid or not.
-    */
-    void initialise();
-
-    //==============================================================================
-    FontFamily lato { "Lato" };
-    FontFamily* defaultFamily = nullptr;
-
-private:
-    //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SharedFonts)
-};
-
-//==============================================================================
-/** The global and all-encompassing set of shared graphical resources for the application. */
-class SharedResources final
-{
-public:
-    /** */
-    SharedResources() = default;
-
-    //==============================================================================
-    /** */
-    void initialise();
-
-    //==============================================================================
-    SharedFonts sharedFonts;
-
-private:
-    //==============================================================================
-    bool hasInitialised = false;
-
-    //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SharedResources)
-};
-
-//==============================================================================
 /** */
 class DemoLookAndFeel final : public LookAndFeel_V4
 {
@@ -94,7 +45,7 @@ public:
 
     //==============================================================================
     /** */
-    DemoLookAndFeel();
+    DemoLookAndFeel (SharedObjects&);
 
     /** */
     ~DemoLookAndFeel() override;
@@ -197,10 +148,10 @@ public:
     /** @internal */
     void drawStretchableLayoutResizerBar (Graphics&, int, int, bool, bool, bool) override;
 
-    //==============================================================================
-    SharedResourcePointer<SharedResources> sharedResources;
-
 private:
+    //==============================================================================
+    SharedObjects& sharedObjects;
+
     //==============================================================================
     TextLayout layoutTooltipText (const String& text, Colour textColour) const;
     Rectangle<float> getTooltipBoundsFloat (const String& tipText, Point<int> screenPos, Rectangle<int> parentArea) const;
