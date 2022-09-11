@@ -11,7 +11,7 @@ public:
     using Type = ValueType;
 
     //==============================================================================
-    /** Creates a blank MovingAccumulator. */
+    /** Creates an empty MovingAccumulator. */
     MovingAccumulator() noexcept = default;
 
     /** Creates a copy of another MovingAccumulator. */

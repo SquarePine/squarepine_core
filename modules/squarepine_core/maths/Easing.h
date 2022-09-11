@@ -8,34 +8,37 @@
 */
 namespace ease
 {
-    /** This namespace provides an assortment of fairly standard easing functions. */
+    /** This namespace provides an assortment of the standard CSS easing functions.
+
+        @see https://easings.net/
+    */
     namespace cubic
     {
         /** */
         namespace in
         {
             /** @returns */
-            inline constexpr double quad (double weight) noexcept   { return square (weight); }
+            inline JUCE_NODISCARD constexpr double quad (double weight) noexcept    { return square (weight); }
             /** @returns */
-            inline constexpr double cubic (double weight) noexcept  { return cube (weight); }
+            inline JUCE_NODISCARD constexpr double cubic (double weight) noexcept   { return cube (weight); }
             /** @returns */
-            inline constexpr double quart (double weight) noexcept  { return biquadrate (weight); }
+            inline JUCE_NODISCARD constexpr double quart (double weight) noexcept   { return biquadrate (weight); }
             /** @returns */
-            inline constexpr double quint (double weight) noexcept  { return sursolid (weight); }
+            inline JUCE_NODISCARD constexpr double quint (double weight) noexcept   { return sursolid (weight); }
             /** @returns */
-            inline double expo (double weight)                      { return approximatelyEqual (weight, 0.0) ? 0.0 : std::pow (2.0, 10.0 * weight - 10.0); }
+            inline JUCE_NODISCARD constexpr double expo (double weight)             { return capproximatelyEqual (weight, 0.0) ? 0.0 : std::pow (2.0, 10.0 * weight - 10.0); }
             /** @returns */
-            inline double circ (double weight)                      { return 1.0 - std::sqrt (1.0 - square (weight)); }
+            inline JUCE_NODISCARD double circ (double weight)                       { return 1.0 - std::sqrt (1.0 - square (weight)); }
             /** @returns */
-            inline double sine (double weight)                      { return 1.0 - std::cos ((weight * MathConstants<double>::pi) / 2.0); }
+            inline JUCE_NODISCARD double sine (double weight)                       { return 1.0 - std::cos ((weight * MathConstants<double>::pi) / 2.0); }
             /** @returns */
-            inline double back (double weight)                      { return 2.70158 * cube (weight) - 1.70158 * square (weight); }
+            inline JUCE_NODISCARD double back (double weight)                       { return 2.70158 * cube (weight) - 1.70158 * square (weight); }
 
             /** @returns a value that may be negative! */
-            inline double elastic (double weight)
+            inline JUCE_NODISCARD double elastic (double weight)
             {
-                if (approximatelyEqual (weight, 0.0))   return 0.0;
-                if (approximatelyEqual (weight, 1.0))   return 1.0;
+                if (capproximatelyEqual (weight, 0.0)) return 0.0;
+                if (capproximatelyEqual (weight, 1.0)) return 1.0;
 
                 constexpr auto c5 = MathConstants<double>::twoPi / 3.0;
 
@@ -48,37 +51,37 @@ namespace ease
         namespace out
         {
             /** @returns */
-            inline constexpr double quad (double weight) noexcept   { return 1.0 - square (1.0 - weight); }
+            inline JUCE_NODISCARD constexpr double quad (double weight) noexcept    { return 1.0 - square (1.0 - weight); }
             /** @returns */
-            inline constexpr double cubic (double weight) noexcept  { return 1.0 - cube (1.0 - weight); }
+            inline JUCE_NODISCARD constexpr double cubic (double weight) noexcept   { return 1.0 - cube (1.0 - weight); }
             /** @returns */
-            inline constexpr double quart (double weight) noexcept  { return 1.0 - biquadrate (1.0 - weight); }
+            inline JUCE_NODISCARD constexpr double quart (double weight) noexcept   { return 1.0 - biquadrate (1.0 - weight); }
             /** @returns */
-            inline constexpr double quint (double weight) noexcept  { return 1.0 - sursolid (1.0 - weight); }
+            inline JUCE_NODISCARD constexpr double quint (double weight) noexcept   { return 1.0 - sursolid (1.0 - weight); }
             /** @returns */
-            inline double expo (double weight)                      { return approximatelyEqual (weight, 1.0) ? 1.0 : 1.0 - std::pow (2.0, -10.0 * weight); }
+            inline JUCE_NODISCARD double expo (double weight)                       { return capproximatelyEqual (weight, 1.0) ? 1.0 : 1.0 - std::pow (2.0, -10.0 * weight); }
             /** @returns */
-            inline double circ (double weight)                      { return std::sqrt (1.0 - square (weight - 1.0)); }
+            inline JUCE_NODISCARD double circ (double weight)                       { return std::sqrt (1.0 - square (weight - 1.0)); }
             /** @returns */
-            inline double sine (double weight)                      { return std::sin ((weight * MathConstants<double>::pi) / 2.0); }
+            inline JUCE_NODISCARD double sine (double weight)                       { return std::sin ((weight * MathConstants<double>::pi) / 2.0); }
             /** @returns */
-            inline constexpr double back (double weight) noexcept   { return 1.0 + 2.70158 * cube (weight - 1.0) + 1.70158 * square (weight - 1.0); }
+            inline JUCE_NODISCARD constexpr double back (double weight) noexcept    { return 1.0 + 2.70158 * cube (weight - 1.0) + 1.70158 * square (weight - 1.0); }
 
             /** @returns a value that may be negative! */
-            inline double elastic (double weight)
+            inline JUCE_NODISCARD double elastic (double weight)
             {
-                if (approximatelyEqual (weight, 0.0))   return 0.0;
-                if (approximatelyEqual (weight, 1.0))   return 1.0;
+                if (capproximatelyEqual (weight, 0.0)) return 0.0;
+                if (capproximatelyEqual (weight, 1.0)) return 1.0;
 
                 constexpr auto c5 = MathConstants<double>::twoPi / 3.0;
 
-                return 1.0 +
-                       (-std::pow (2.0, -10.0 * weight)
+                return 1.0
+                     + (-std::pow (2.0, -10.0 * weight)
                         * std::sin ((weight * 10.0 - 10.75) * c5));
             }
 
             /** @returns */
-            inline constexpr double bounce (double weight) noexcept
+            inline JUCE_NODISCARD constexpr double bounce (double weight) noexcept
             {
                 constexpr auto n1 = 7.5625;
                 constexpr auto d1 = 2.75;
@@ -98,19 +101,27 @@ namespace ease
         namespace inOut
         {
             /** @returns */
-            inline constexpr double quad (double weight) noexcept  { return weight < 0.5 ? 2.0  * square (weight)     : 1.0 - square (-2.0 * weight + 2.0) / 2.0; }
-            /** @returns */
-            inline constexpr double cubic (double weight) noexcept { return weight < 0.5 ? 4.0  * cube (weight)       : 1.0 - cube (-2.0 * weight + 2.0) / 2.0; }
-            /** @returns */
-            inline constexpr double quart (double weight) noexcept { return weight < 0.5 ? 8.0  * biquadrate (weight) : 1.0 - biquadrate (-2.0 * weight + 2.0) / 2.0; }
-            /** @returns */
-            inline constexpr double quint (double weight) noexcept { return weight < 0.5 ? 16.0 * sursolid (weight)   : 1.0 - sursolid (-2.0 * weight + 2.0) / 2.0; }
+            inline JUCE_NODISCARD double inOutPre (double pre, double weight, std::function<double (double)> func) noexcept
+            {
+                return weight < 0.5
+                        ? pre * func (weight)
+                        : 1.0 - func (-2.0 * weight + 2.0) / 2.0;
+            }
 
             /** @returns */
-            inline double expo (double weight)
+            inline JUCE_NODISCARD double quad (double weight) noexcept  { return inOutPre (2.0, weight, square<double>); }
+            /** @returns */
+            inline JUCE_NODISCARD double cubic (double weight) noexcept { return inOutPre (4.0, weight, cube<double>); }
+            /** @returns */
+            inline JUCE_NODISCARD double quart (double weight) noexcept { return inOutPre (8.0, weight, biquadrate<double>); }
+            /** @returns */
+            inline JUCE_NODISCARD double quint (double weight) noexcept { return inOutPre (16.0, weight, sursolid<double>); }
+
+            /** @returns */
+            inline JUCE_NODISCARD double expo (double weight)
             {
-                if (approximatelyEqual (weight, 0.0))   return 0.0;
-                if (approximatelyEqual (weight, 1.0))   return 1.0;
+                if (capproximatelyEqual (weight, 0.0)) return 0.0;
+                if (capproximatelyEqual (weight, 1.0)) return 1.0;
 
                 return weight < 0.5
                         ? std::pow (2.0, 20.0 * weight - 10.0) / 2.0
@@ -118,7 +129,7 @@ namespace ease
             }
 
             /** @returns */
-            inline double circ (double weight)
+            inline JUCE_NODISCARD double circ (double weight)
             {
                 return weight < 0.5
                         ? (1.0 - std::sqrt (1.0 - square (2.0 * weight))) / 2.0
@@ -126,13 +137,13 @@ namespace ease
             }
 
             /** @returns */
-            inline double sine (double weight)
+            inline JUCE_NODISCARD double sine (double weight)
             {
                 return -(std::cos (MathConstants<double>::pi * weight) - 1.0) / 2.0;
             }
 
             /** @returns */
-            constexpr double back (double weight) noexcept
+            inline JUCE_NODISCARD constexpr double back (double weight) noexcept
             {
                 constexpr auto c1 = 1.70158;
                 constexpr auto c2 = c1 * 1.525;
@@ -143,10 +154,10 @@ namespace ease
             }
 
             /** @returns a value that may be negative! */
-            inline double elastic (double weight)
+            inline JUCE_NODISCARD double elastic (double weight)
             {
-                if (approximatelyEqual (weight, 0.0))   return 0.0;
-                if (approximatelyEqual (weight, 1.0))   return 1.0;
+                if (capproximatelyEqual (weight, 0.0)) return 0.0;
+                if (capproximatelyEqual (weight, 1.0)) return 1.0;
 
                 constexpr auto c5 = MathConstants<double>::twoPi / 4.5;
 
@@ -156,7 +167,7 @@ namespace ease
             }
 
             /** @returns */
-            inline constexpr double bounce (double weight) noexcept
+            inline JUCE_NODISCARD constexpr double bounce (double weight) noexcept
             {
                  return weight < 0.5
                         ? (1.0 - ease::cubic::out::bounce (1.0 - 2.0 * weight)) / 2.0
@@ -167,47 +178,51 @@ namespace ease
         namespace in
         {
             /** @returns */
-            inline constexpr double bounce (double weight) noexcept
+            inline JUCE_NODISCARD constexpr double bounce (double weight) noexcept
             {
                 return 1.0 - ease::cubic::out::bounce (1.0 - std::clamp (weight, 0.0, 1.0));
             }
         }
     }
 
-    /** */
+    /** Contains a group of audio tone generation functions
+        in the form of normalised/easing functions.
+
+        You probably don't want to use these for audio purposes!
+    */
     namespace audio
     {
         /** @returns */
-        inline double convertWeightToRads (double weight, double frequencyHz = 1.0)
+        inline JUCE_NODISCARD double convertWeightToRads (double weight, double frequencyHz = 1.0)
         {
             return weight * frequencyHz * MathConstants<double>::twoPi;
         }
 
         /** @returns */
-        inline double linear (double weight)            { return weight; }
+        inline JUCE_NODISCARD constexpr double linear (double weight) noexcept              { return weight; }
         /** @returns */
-        inline double smoothstepEase (double weight)    { return smoothstep (0.0, 1.0, weight); }
+        inline JUCE_NODISCARD constexpr double smoothstepEase (double weight) noexcept      { return smoothstep (0.0, 1.0, weight); }
         /** @returns */
-        inline double smootherstepEase (double weight)  { return smootherstep (0.0, 1.0, weight); }
+        inline JUCE_NODISCARD constexpr double smootherstepEase (double weight) noexcept    { return smootherstep (0.0, 1.0, weight); }
         /** @returns */
-        inline double sgnEase (double weight)           { return sgn (weight); }
+        inline JUCE_NODISCARD constexpr double sgnEase (double weight) noexcept             { return sgn (weight); }
         /** @returns */
-        inline double sinEase (double weight)           { return std::sin (convertWeightToRads (weight)); }
+        inline JUCE_NODISCARD double sinEase (double weight)                                { return std::sin (convertWeightToRads (weight)); }
         /** @returns */
-        inline double cosEase (double weight)           { return std::cos (convertWeightToRads (weight)); }
+        inline JUCE_NODISCARD double cosEase (double weight)                                { return std::cos (convertWeightToRads (weight)); }
         /** @returns */
-        inline double sincEase (double weight)          { return sinc (convertWeightToRads (weight * 10.0)); }
+        inline JUCE_NODISCARD double sincEase (double weight) noexcept                      { return sinc (convertWeightToRads (weight * 10.0)); }
         /** @returns */
-        inline double squareWave (double weight)        { return weight >= 0.5 ? 1.0 : 0.0; }
+        inline JUCE_NODISCARD constexpr double squareWave (double weight) noexcept          { return weight >= 0.5 ? 1.0 : 0.0; }
 
         /** @returns */
-        inline double sawtoothWave (double weight)
+        inline JUCE_NODISCARD double sawtoothWave (double weight)
         {
             return std::acos (std::sin (convertWeightToRads (weight))) / 1.5708;
         }
 
         /** @returns */
-        inline double triangleWave (double weight)
+        inline JUCE_NODISCARD double triangleWave (double weight)
         {
             constexpr auto frequencyHz = 1.0;
             constexpr auto fullPeriodTime = 1.0 / frequencyHz;

@@ -159,20 +159,39 @@ inline FloatType previousPowerOfTwo (FloatType x) noexcept
 }
 
 //==============================================================================
+/** A constexpr capable alternative to std::abs. */
+template<typename NumericType, std::enable_if_t<std::is_arithmetic_v<NumericType>>...>
+JUCE_NODISCARD constexpr NumericType cabs (const NumericType& value) noexcept
+{
+    return value < static_cast<NumericType> (0) ? -value : value;
+}
+
+/** A constexpr capable alternative to juce::approximatelyEqual.
+    @returns true if the two numbers are approximately equal. This is useful for floating-point
+    and double comparisons.
+*/
+template<typename Type>
+JUCE_NODISCARD constexpr bool capproximatelyEqual (Type a, Type b) noexcept
+{
+    return cabs (a - b) <= (std::numeric_limits<Type>::epsilon() * std::max (a, b))
+        || cabs (a - b) < std::numeric_limits<Type>::min();
+}
+
+//==============================================================================
 /** Signum function */
 constexpr double sgn (double x) noexcept
 {
     return x > 0.0
-        ? 1.0
-        : (x < 0.0 ? -1.0 : 0.0);
+            ? 1.0
+            : (x < 0.0 ? -1.0 : 0.0);
 }
 
 /** Signum function */
 constexpr float sgn (float x) noexcept
 {
     return x > 0.0f
-        ? 1.0f
-        : (x < 0.0f ? -1.0f : 0.0f);
+            ? 1.0f
+            : (x < 0.0f ? -1.0f : 0.0f);
 }
 
 /** Signum function */
@@ -180,8 +199,8 @@ template<typename Type>
 constexpr Type sgn (Type x) noexcept
 {
     return x > Type (0)
-        ? Type (1)
-        : (x < Type (0) ? Type (-1) : Type (0));
+            ? Type (1)
+            : (x < Type (0) ? Type (-1) : Type (0));
 }
 
 //==============================================================================

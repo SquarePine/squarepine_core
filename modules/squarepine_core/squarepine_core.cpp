@@ -52,6 +52,8 @@ namespace sp
     #include "networking/WooCommerce.cpp"
     #include "rng/ISAAC.cpp"
     #include "rng/Xorshift.cpp"
+    #include "text/LanguageCodes.cpp"
+    #include "text/CountryCodes.cpp"
     #include "text/LanguageHandler.cpp"
     #include "valuetree/JSONToValueTree.cpp"
 

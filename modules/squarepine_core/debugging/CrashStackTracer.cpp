@@ -87,7 +87,7 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GlobalCrashTracer)
 };
 
-static GlobalCrashTracer globalCrashStack;
+SharedResourcePointer<GlobalCrashTracer> globalCrashStack;
 
 //==============================================================================
 CrashStackTracer::CrashStackTracer (const char* f, const char* fn, int l) :
@@ -99,12 +99,12 @@ CrashStackTracer::CrashStackTracer (const char* f, const char* fn, int l) :
     if (auto* t = Thread::getCurrentThread())
         threadName = t->getThreadName();
 
-    globalCrashStack.push (this);
+    globalCrashStack->push (this);
 }
 
 CrashStackTracer::~CrashStackTracer()
 {
-    globalCrashStack.pop (this);
+    globalCrashStack->pop (this);
 }
 
 void CrashStackTracer::dump (void*)
@@ -112,5 +112,5 @@ void CrashStackTracer::dump (void*)
     Logger::writeToLog (newLine);
     Logger::writeToLog ("---------- APPLICATION CRASHED ----------");
     Logger::writeToLog (newLine);
-    globalCrashStack.dump();
+    globalCrashStack->dump();
 }

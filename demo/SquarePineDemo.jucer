@@ -13,11 +13,47 @@
           </GROUP>
         </GROUP>
       </GROUP>
+      <GROUP id="{E6B2F7BB-8254-BBB3-F4B4-B22FD6192B21}" name="Lato">
+        <FILE id="Emw2Nv" name="Lato-Black.ttf" compile="0" resource="1" file="assets/Lato/Lato-Black.ttf"/>
+        <FILE id="juiuxC" name="Lato-BlackItalic.ttf" compile="0" resource="1"
+              file="assets/Lato/Lato-BlackItalic.ttf"/>
+        <FILE id="jFjMSZ" name="Lato-Bold.ttf" compile="0" resource="1" file="assets/Lato/Lato-Bold.ttf"/>
+        <FILE id="jIZyhF" name="Lato-BoldItalic.ttf" compile="0" resource="1"
+              file="assets/Lato/Lato-BoldItalic.ttf"/>
+        <FILE id="Na5iqE" name="Lato-Italic.ttf" compile="0" resource="1" file="assets/Lato/Lato-Italic.ttf"/>
+        <FILE id="Inhnvd" name="Lato-Light.ttf" compile="0" resource="1" file="assets/Lato/Lato-Light.ttf"/>
+        <FILE id="Q2vjqb" name="Lato-LightItalic.ttf" compile="0" resource="1"
+              file="assets/Lato/Lato-LightItalic.ttf"/>
+        <FILE id="uWGD8M" name="Lato-Regular.ttf" compile="0" resource="1"
+              file="assets/Lato/Lato-Regular.ttf"/>
+        <FILE id="i5SCGk" name="Lato-Thin.ttf" compile="0" resource="1" file="assets/Lato/Lato-Thin.ttf"/>
+        <FILE id="iG2rro" name="Lato-ThinItalic.ttf" compile="0" resource="1"
+              file="assets/Lato/Lato-ThinItalic.ttf"/>
+        <FILE id="gBkAeX" name="OFL.txt" compile="0" resource="1" file="assets/Lato/OFL.txt"/>
+      </GROUP>
       <FILE id="jqPxuh" name="SquarePine Logo.png" compile="0" resource="1"
             file="assets/SquarePine Logo.png"/>
     </GROUP>
     <GROUP id="{BFD2FED6-75BB-68EF-1B5D-4B4C12B634B0}" name="source">
+      <GROUP id="{C323CE9A-5CBA-AC76-F470-68E2316979B2}" name="core">
+        <FILE id="Gju4Mx" name="GlobalIDs.h" compile="0" resource="0" file="source/core/GlobalIDs.h"/>
+        <FILE id="cggFea" name="GlobalPathSettings.h" compile="0" resource="0"
+              file="source/core/GlobalPathSettings.h"/>
+        <FILE id="cetfqX" name="SharedObjects.cpp" compile="0" resource="0"
+              file="source/core/SharedObjects.cpp"/>
+        <FILE id="L8YGDM" name="SharedObjects.h" compile="0" resource="0" file="source/core/SharedObjects.h"/>
+      </GROUP>
+      <GROUP id="{775B98BE-1BF2-5AF2-2E31-B17D3A9219DD}" name="demos">
+        <FILE id="IZHnpO" name="EasingsDemo.h" compile="0" resource="0" file="source/demos/EasingsDemo.h"/>
+        <FILE id="vSHEQC" name="ImageDemo.h" compile="0" resource="0" file="source/demos/ImageDemo.h"/>
+        <FILE id="hoUe5P" name="OpenGLDetailsDemo.h" compile="0" resource="0"
+              file="source/demos/OpenGLDetailsDemo.h"/>
+      </GROUP>
       <GROUP id="{B136827C-443D-9F46-D62C-F9F22179369A}" name="main">
+        <FILE id="rbIntd" name="DemoLookAndFeel.cpp" compile="0" resource="0"
+              file="source/main/DemoLookAndFeel.cpp"/>
+        <FILE id="DSnDPw" name="DemoLookAndFeel.h" compile="0" resource="0"
+              file="source/main/DemoLookAndFeel.h"/>
         <FILE id="iLpf4Q" name="Main.cpp" compile="0" resource="0" file="source/main/Main.cpp"/>
         <FILE id="BnmJ0e" name="MainComponent.cpp" compile="0" resource="0"
               file="source/main/MainComponent.cpp"/>

@@ -1,13 +1,18 @@
 #pragma once
 
+/** */
 class MainComponent final : public juce::Component
 {
 public:
-    MainComponent();
+    /** */
+    MainComponent (SharedObjects& sharedObjects);
+    /** */
     ~MainComponent() override;
 
     //==============================================================================
+    /** @internal */
     void paint (Graphics&) override;
+    /** @internal */
     void resized() override;
 
 private:

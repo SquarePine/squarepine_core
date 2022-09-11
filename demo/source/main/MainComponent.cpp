@@ -1,4 +1,4 @@
-MainComponent::MainComponent() :
+MainComponent::MainComponent (SharedObjects&) :
     tabbedComponent (TabbedButtonBar::TabsAtTop)
 {
     setOpaque (true);
@@ -8,7 +8,7 @@ MainComponent::MainComponent() :
         tabbedComponent.addTab (name, Colours::grey, comp, true);
     };
 
-    addTab (TRANS ("Easing Demo"), new sp::EaseListComponent());
+    addTab (TRANS ("Easing Demo"), new EaseListComponent());
     addTab (TRANS ("Image Demo"), new ImageDemo());
 
    #if USE_OPENGL
@@ -36,6 +36,7 @@ MainComponent::~MainComponent()
 {
 }
 
+//==============================================================================
 void MainComponent::paint (Graphics& g)
 {
     g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
