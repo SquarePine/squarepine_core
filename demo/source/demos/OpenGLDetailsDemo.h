@@ -2,11 +2,12 @@
 
 #if USE_OPENGL
 
-class OpenGLDetailsDemo final : public Component,
+class OpenGLDetailsDemo final : public DemoBase,
                                 public ListBoxModel
 {
 public:
-    OpenGLDetailsDemo (HighPerformanceRendererConfigurator& rc) :
+    OpenGLDetailsDemo (SharedObjects& sharedObjs, HighPerformanceRendererConfigurator& rc) :
+        DemoBase (sharedObjs, NEEDS_TRANS ("OpenGL Details Demo")),
         rendererConfigurator (rc)
     {
         SafePointer ptr (this);

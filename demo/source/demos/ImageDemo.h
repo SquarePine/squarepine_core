@@ -1,11 +1,14 @@
 #pragma once
 
-class ImageDemo final : public Component,
+/** */
+class ImageDemo final : public DemoBase,
                         public FileDragAndDropTarget,
                         public TextDragAndDropTarget
 {
 public:
-    ImageDemo()
+    /** */
+    ImageDemo (SharedObjects& sharedObjs) :
+        DemoBase (sharedObjs, NEEDS_TRANS ("Image Demo"))
     {
         imageFormatManager.registerBasicFormats();
 

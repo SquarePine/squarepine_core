@@ -1,4 +1,4 @@
-MainComponent::MainComponent (SharedObjects&) :
+MainComponent::MainComponent (SharedObjects& sharedObjs) :
     tabbedComponent (TabbedButtonBar::TabsAtTop)
 {
     setOpaque (true);
@@ -8,8 +8,8 @@ MainComponent::MainComponent (SharedObjects&) :
         tabbedComponent.addTab (name, Colours::grey, comp, true);
     };
 
-    addTab (TRANS ("Easing Demo"), new EaseListComponent());
-    addTab (TRANS ("Image Demo"), new ImageDemo());
+    addTab (TRANS ("Easing Demo"), new EaseListComponent (sharedObjs));
+    addTab (TRANS ("Image Demo"), new ImageDemo (sharedObjs));
 
    #if USE_OPENGL
     // Need to call this later on - once JUCE, the GL content, and the OS decide it's cool to talk to each other.
@@ -25,7 +25,7 @@ MainComponent::MainComponent (SharedObjects&) :
             }, false);
     });
 
-    addTab (TRANS ("OpenGL Info"), new OpenGLDetailsDemo (rendererConfigurator));
+    addTab (TRANS ("OpenGL Info"), new OpenGLDetailsDemo (sharedObjs, rendererConfigurator));
    #endif
 
     addAndMakeVisible (tabbedComponent);

@@ -140,22 +140,14 @@ public:
     const OwnedArray<IETFLanguageFile>& getAvailableLanguages() const noexcept { return languages; }
 
     //==============================================================================
+    /** */
     class Listener
     {
     public:
-        virtual ~Listener()
-        {
-            SQUAREPINE_CRASH_TRACER
-            if (parent != nullptr)
-                parent->removeListener (this);
-        }
+        virtual ~Listener() noexcept = default;
 
         /** */
         virtual void languageChanged (const IETFLanguageFile&) = 0;
-
-    private:
-        friend class LanguageHandler;
-        LanguageHandler* parent = nullptr;
     };
 
     /** */

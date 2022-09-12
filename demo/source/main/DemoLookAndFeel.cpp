@@ -563,6 +563,7 @@ void DemoLookAndFeel::paintToolbarBackground (Graphics& g, int, int, Toolbar& to
 }
 
 //==============================================================================
+#if 0
 void DemoLookAndFeel::drawScrollbar (Graphics& g, ScrollBar& scrollbar,
                                      int x, int y, int width, int height,
                                      bool isScrollbarVertical, int thumbStartPosition, int thumbSize,
@@ -584,6 +585,7 @@ void DemoLookAndFeel::drawScrollbar (Graphics& g, ScrollBar& scrollbar,
     g.setColour (c);
     g.fillRoundedRectangle (thumbBounds.reduced (2).toFloat(), MathConstants<float>::pi);
 }
+#endif
 
 //==============================================================================
 void DemoLookAndFeel::drawPopupMenuBackground (Graphics& g, int width, int height)

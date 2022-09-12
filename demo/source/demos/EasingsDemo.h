@@ -7,8 +7,8 @@ class CurveDisplayComponent final : public Component
 public:
     /** */
     CurveDisplayComponent (std::function<double (double)> generator,
-                           float lineThickness = 0.001f,
-                           int64 numPoints = 333)
+                           float lineThickness = 0.01f,
+                           int64 numPoints = 400)
     {
         Point<double> last;
         last.y = generator (0.0);
@@ -17,8 +17,7 @@ public:
 
         for (double x = ratio; x <= 1.0; x += ratio)
         {
-            const auto y = generator (x);
-            const auto c = Point<double> (x, y);
+            const Point<double> c (x, generator (x));
 
             plot.addLineSegment ({ last.toFloat(), c.toFloat() }, lineThickness);
             last = c;
@@ -41,7 +40,7 @@ public:
         if (getName().isNotEmpty())
         {
             g.setColour (findColour (textColourId));
-            g.setFont (Font ((float) fontHeight));
+            g.setFont ((float) fontHeight);
             g.drawFittedText (TRANS (getName()), textBounds, Justification::centred, 2, 1.0f);
         }
 
@@ -67,7 +66,7 @@ public:
             textBounds = Rectangle<int>(); 
         }
 
-        auto t = plot.getTransformToScaleToFit (b.toFloat(), true, Justification::centred);
+        auto t = plot.getTransformToScaleToFit (b.toFloat(), true);
         scalablePlot.applyTransform (t);
     }
 
@@ -94,11 +93,12 @@ private:
 
 //==============================================================================
 /** A general demonstration of all pre-configured easing functions. */
-class EaseListComponent final : public Component,
+class EaseListComponent final : public DemoBase,
                                 public ListBoxModel
 {
 public:
-    EaseListComponent()
+    EaseListComponent (SharedObjects& sharedObjs) :
+        DemoBase (sharedObjs, NEEDS_TRANS ("Ease List Demo"))
     {
         addGenerator (ease::audio::linear,           NEEDS_TRANS ("Linear"));
         addGenerator (ease::audio::smoothstepEase,   NEEDS_TRANS ("Smoothstep"));
@@ -140,6 +140,7 @@ public:
         addGenerator (ease::cubic::out::sine,        NEEDS_TRANS ("Out - Sine"));
         addGenerator (ease::cubic::inOut::sine,      NEEDS_TRANS ("InOut - Sine"));
 
+        listbox.setRowHeight (192);
         listbox.setModel (this);
         addAndMakeVisible (listbox);
     }
@@ -159,7 +160,7 @@ public:
         std::unique_ptr<CurveDisplayComponent> cdc (static_cast<CurveDisplayComponent*> (comp));
         comp = nullptr;
 
-        if (isPositiveAndBelow (row, getNumRows()))
+        if (! isPositiveAndBelow (row, getNumRows()))
             return nullptr;
 
         auto* gen = generators[row];

@@ -140,9 +140,9 @@ public:
     /** @internal */
     int getDefaultScrollbarWidth() override { return 14; }
     /** @internal */
-    bool areScrollbarButtonsVisible() override { return true; }
+    // bool areScrollbarButtonsVisible() override { return true; }
     /** @internal */
-    void drawScrollbar (Graphics&, ScrollBar&, int, int, int, int, bool, int, int, bool, bool) override;
+    // void drawScrollbar (Graphics&, ScrollBar&, int, int, int, int, bool, int, int, bool, bool) override;
     /** @internal */
     void drawPopupMenuBackground (Graphics&, int, int) override;
     /** @internal */

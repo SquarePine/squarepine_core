@@ -157,13 +157,7 @@ const IETFLanguageFile& LanguageHandler::getCurrentLanguage() const
 
 void LanguageHandler::addListener (Listener* listener)
 {
-    jassert (listener != nullptr);
-    jassert (listener->parent == nullptr);
-
-    listener->parent = this;
     listeners.add (listener);
-
-    // To sync with this language handler.
     listener->languageChanged (getCurrentLanguage());
 }
 

@@ -14,6 +14,7 @@
 #include "core/GlobalPathSettings.h"
 #include "core/SharedObjects.h"
 
+#include "demos/DemoBase.h"
 #include "demos/EasingsDemo.h"
 #include "demos/ImageDemo.h"
 #include "demos/OpenGLDetailsDemo.h"
