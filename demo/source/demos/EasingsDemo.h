@@ -6,16 +6,13 @@ class CurveDisplayComponent final : public Component
 {
 public:
     /** */
-    CurveDisplayComponent (std::function<double (double)> generator,
-                           float lineThickness = 0.01f,
-                           int64 numPoints = 400)
+    CurveDisplayComponent (std::function<double (double)> generatorToUse,
+                           int64 numPoints = 400) :
+        generator (generatorToUse),
+        ratio (1.0 / (double) numPoints)
     {
-        setInterceptsMouseClicks (false, false);
-
         Point<double> last;
         last.y = generator (0.0);
-
-        const auto ratio = 1.0 / (double) numPoints;
 
         for (double x = ratio; x <= 1.0; x += ratio)
         {
@@ -27,23 +24,48 @@ public:
 
         // Because JUCE's coords are backwards...
         plot.applyTransform (AffineTransform::verticalFlip (1.0f));
+
+        tickAnimation();
+        animTimer.callback = [this]() { tickAnimation(); };
+        animTimer.startTimerHz (60);
     }
 
     //==============================================================================
     /** @internal */
     void paint (Graphics& g) override
     {
-        g.fillAll (findColour (ListBox::backgroundColourId, true));
+        const auto bgColour = findColour (ListBox::backgroundColourId, true);
+        const auto textColour = findColour (ListBox::textColourId, true);
+
+        g.fillAll (bgColour);
 
         if (getName().isNotEmpty())
         {
-            g.setColour (findColour (ListBox::textColourId, true));
+            g.setColour (textColour);
             g.setFont ((float) fontHeight);
             g.drawFittedText (TRANS (getName()), textBounds, Justification::centred, 2, 1.0f);
         }
 
         g.setColour (findColour (ListBox::outlineColourId, true));
         g.fillPath (scalablePlot);
+
+        constexpr auto pSize = 4.5f;
+
+        if (isMouseOver())
+        {
+            g.setColour (bgColour.contrasting());
+
+            const auto mx = getMouseXYRelative().toDouble().x / (double) getWidth();
+            const auto mpos = createPoint (mx);
+            constexpr auto size = pSize * MathConstants<float>::pi;
+            g.drawEllipse (Rectangle<float> (size, size).withCentre (mpos), MathConstants<float>::pi);
+        }
+
+        if (animTimer.isTimerRunning())
+        {
+            g.setColour (textColour);
+            g.fillEllipse (Rectangle<float> (pSize, pSize).withCentre (pos));
+        }
     }
 
     /** @internal */
@@ -64,17 +86,48 @@ public:
             textBounds = Rectangle<int>(); 
         }
 
-        auto t = plot.getTransformToScaleToFit (b.toFloat(), true);
-        scalablePlot.applyTransform (t);
+        scaledTransform = plot.getTransformToScaleToFit (b.toFloat(), true);
+        scalablePlot.applyTransform (scaledTransform);
     }
 
 private:
     //==============================================================================
     enum { margin = 8 };
 
+    std::function<double (double)> generator;
+    const double ratio;
+    const float lineThickness = 0.01f;
+
     int fontHeight = 18;
     Rectangle<int> textBounds;
     Path plot, scalablePlot;
+    AffineTransform scaledTransform;
+
+    double normalisedTime { 0.0 };
+    Point<float> pos;
+    OffloadedTimer animTimer;
+
+    Point<float> createPoint (double normPos) const
+    {
+        return Point<double> (normPos, generator (normPos))
+                .transformedBy (AffineTransform::verticalFlip (1.0))
+                .toFloat()
+                .transformedBy (scaledTransform);
+    }
+
+    void tickAnimation()
+    {
+        if (scalablePlot.isEmpty())
+            return;
+
+        pos = createPoint (normalisedTime);
+        normalisedTime += ratio;
+
+        if (normalisedTime > 1.0)
+            normalisedTime = 0.0;
+
+        repaint();
+    }
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CurveDisplayComponent)
