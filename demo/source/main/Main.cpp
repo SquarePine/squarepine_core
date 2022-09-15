@@ -104,7 +104,9 @@ private:
     DemoLookAndFeel customLookAndFeel;
     TooltipWindow tooltipWindow;
 
+   #if SQUAREPINE_IS_DESKTOP
     std::unique_ptr<SystemTrayIconComponent> trayIconComponent;
+   #endif
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)

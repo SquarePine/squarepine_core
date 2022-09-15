@@ -29,7 +29,10 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
    #endif
 
     addAndMakeVisible (tabbedComponent);
+
+   #if SQUAREPINE_IS_DESKTOP
     setSize (1024, 768);
+   #endif
 }
 
 MainComponent::~MainComponent()
