@@ -1,39 +1,28 @@
 DemoLookAndFeel::DemoLookAndFeel (SharedObjects& sharedObjs) :
     sharedObjects (sharedObjs)
 {
+    Desktop::getInstance().addDarkModeSettingListener (this);
+
     Font::setDefaultMinimumHorizontalScaleFactor (1.0f);
 
     jassert (sharedObjects.defaultFamily != nullptr);
     setDefaultSansSerifTypefaceName (sharedObjects.defaultFamily->name);
+    setDefaultSansSerifTypeface (sharedObjects.defaultFamily->regular.normal);
 
-    const auto darkest = colours::darkest;
-
-    setColourScheme
-    ({
-        darkest,        darkest,                darkest,
-        darkest,        Colours::white,         darkest,
-        Colours::grey,  Colours::lightgrey,     Colours::white
-    });
-
-    setColour (CaretComponent::caretColourId,       Colours::white);
-    setColour (Slider::textBoxOutlineColourId,      Colours::transparentBlack);
-    setColour (TextButton::buttonColourId,          Colours::white);
-    setColour (TextButton::buttonOnColourId,        colours::auth::pinkish);
-    setColour (TextButton::textColourOffId,         darkest);
-    setColour (TextButton::textColourOnId,          Colours::white);
-    setColour (TextEditor::backgroundColourId,      Colours::transparentBlack);
-    setColour (TextEditor::focusedOutlineColourId,  Colours::transparentBlack);
-    setColour (TextEditor::highlightColourId,       colours::auth::pinkish);
-    setColour (TextEditor::highlightedTextColourId, Colours::white);
-    setColour (TextEditor::outlineColourId,         Colours::transparentBlack);
-    setColour (TextEditor::shadowColourId,          Colours::transparentBlack);
-    setColour (TooltipWindow::backgroundColourId,   darkest);
-    setColour (TooltipWindow::outlineColourId,      darkest);
-    setColour (TooltipWindow::textColourId,         Colours::white);
+    darkModeSettingChanged();
 }
 
 DemoLookAndFeel::~DemoLookAndFeel()
 {
+    Desktop::getInstance().removeDarkModeSettingListener (this);
+}
+
+void DemoLookAndFeel::darkModeSettingChanged()
+{
+    if (Desktop::getInstance().isDarkModeActive())
+        DarkColourScheme().applyTo (*this);
+    else
+        LightColourScheme().applyTo (*this);
 }
 
 //==============================================================================
@@ -118,7 +107,7 @@ void DemoLookAndFeel::drawTooltip (Graphics& g, const String& text, int w, int h
 void DemoLookAndFeel::drawMenuBarBackground (Graphics& g, int width, int height,
                                              bool, MenuBarComponent&)
 {
-    g.setColour (colours::darkest);
+    g.setColour (getCurrentColourScheme().getUIColour (ColourScheme::menuBackground));
     g.fillRect (Rectangle<int> (width, height));
 }
 
@@ -127,18 +116,21 @@ void DemoLookAndFeel::drawMenuBarItem (Graphics& g, int width, int height,
                                        bool isMouseOverItem, bool isMenuOpen,
                                        bool /*isMouseOverBar*/, MenuBarComponent& menuBar)
 {
+    auto menuBackground = getCurrentColourScheme().getUIColour (ColourScheme::menuBackground);
+    auto menuText = getCurrentColourScheme().getUIColour (ColourScheme::menuText);
+
     if (! menuBar.isEnabled())
     {
-        g.setColour (colours::darkest.brighter().withMultipliedAlpha (0.5f));
+        g.setColour (menuBackground.brighter().withMultipliedAlpha (0.5f));
     }
     else if (isMenuOpen || isMouseOverItem)
     {
-        g.fillAll (colours::darkest.brighter());
-        g.setColour (Colours::white);
+        g.fillAll (menuBackground.brighter());
+        g.setColour (menuText);
     }
     else
     {
-        g.setColour (Colours::white);
+        g.setColour (menuText);
     }
 
     g.setFont (getMenuBarFont (menuBar, itemIndex, itemText));
@@ -149,7 +141,7 @@ void DemoLookAndFeel::drawMenuBarItem (Graphics& g, int width, int height,
 int DemoLookAndFeel::getTabButtonBestWidth (TabBarButton& button, int tabDepth)
 {
     auto width = Font ((float) tabDepth).getStringWidth (button.getButtonText().trim())
-                    + getTabButtonOverlap (tabDepth) * 2;
+                 + getTabButtonOverlap (tabDepth) * 2;
 
     if (auto* extraComponent = button.getExtraComponent())
         width += button.getTabbedButtonBar().isVertical() ? extraComponent->getHeight()
@@ -563,7 +555,6 @@ void DemoLookAndFeel::paintToolbarBackground (Graphics& g, int, int, Toolbar& to
 }
 
 //==============================================================================
-#if 0
 void DemoLookAndFeel::drawScrollbar (Graphics& g, ScrollBar& scrollbar,
                                      int x, int y, int width, int height,
                                      bool isScrollbarVertical, int thumbStartPosition, int thumbSize,
@@ -585,7 +576,6 @@ void DemoLookAndFeel::drawScrollbar (Graphics& g, ScrollBar& scrollbar,
     g.setColour (c);
     g.fillRoundedRectangle (thumbBounds.reduced (2).toFloat(), MathConstants<float>::pi);
 }
-#endif
 
 //==============================================================================
 void DemoLookAndFeel::drawPopupMenuBackground (Graphics& g, int width, int height)

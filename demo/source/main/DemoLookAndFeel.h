@@ -1,34 +1,178 @@
-namespace colours
+//==============================================================================
+namespace lightTheme
 {
-    const auto darkest          = Colour (0xff111111);
+    const auto background       = Colours::white;
+    const auto surface          = Colours::white;
+    const auto error            = Colours::darkred;
 
-    const auto grey             = Colour (0xffbfbfbf);
-    const auto redSpace         = Colour (0xffe0007a);
-    const auto purpleShift      = Colour (0xff65106b);
-    const auto blueShape        = Colour (0xff009bca);
-    const auto greenWet         = Colour (0xff00973d);
-    const auto yellowDry        = Colour (0xffe4db00);
-    const auto purpleIrGain     = Colour (0xff6f31c4);
-    const auto yellowLimit      = Colour (0xffffaa46);
-    const auto redClip          = Colour (0xffff465a);
-    const auto mineshaft        = Colour (0xff302e2f);
-    const auto buttonSVGOn      = Colours::white;
-    const auto buttonSVGOff     = Colour (0xff464749);
-    const auto blackout         = Colours::black.withAlpha (0.75f);
-    const auto tundora          = Colour (0xff4d4d4d);
+    const auto primary          = Colour (0xff6200ee);
+    const auto primaryVariant   = Colour (0xff3700b3);
+    const auto secondary        = Colour (0xff03dac6);
+    const auto secondaryVariant = Colour (0xff018786);
 
-    namespace auth
-    {
-        const auto background           = Colour (0xff2c2c2c);
-        const auto pinkish              = Colour (0xffe7328b);
-        const auto pinkishBackground    = Colour (0xff3f2d36);
-        const auto greyish              = Colour (0xff919191);
-    }
+    const auto onBackground     = Colours::black;
+    const auto onSurface        = Colours::white;
+    const auto onError          = Colours::white;
+    const auto onPrimary        = Colours::white;
+    const auto onSecondary      = Colours::white;
+}
+
+//==============================================================================
+namespace darkTheme
+{
+    const auto background       = Colours::white;
+    const auto surface          = Colours::white;
+    const auto error            = Colours::darkred;
+
+    const auto primary          = Colour (0xff6200ee);
+    const auto primaryVariant   = Colour (0xff3700b3);
+    const auto secondary        = Colour (0xff03dac6);
+    const auto secondaryVariant = Colour (0xff018786);
+
+    const auto onBackground     = Colours::black;
+    const auto onSurface        = Colours::white;
+    const auto onError          = Colours::white;
+    const auto onPrimary        = Colours::white;
+    const auto onSecondary      = Colours::white;
 }
 
 //==============================================================================
 /** */
-class DemoLookAndFeel final : public LookAndFeel_V4
+class ColourScheme
+{
+public:
+    /** */
+    ColourScheme() = default;
+
+    /** */
+    virtual ~ColourScheme() = default;
+
+    //==============================================================================
+    /** */
+    virtual void applyTo (LookAndFeel_V4& lookAndFeel) = 0;
+
+    /** */
+    virtual LookAndFeel_V4::ColourScheme create() = 0;
+
+private:
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ColourScheme)
+};
+
+/** */
+class LightColourScheme final : public ColourScheme
+{
+public:
+    /** */
+    LightColourScheme() = default;
+
+    /** */
+    void applyTo (LookAndFeel_V4& lookAndFeel) override
+    {
+        lookAndFeel.setColourScheme (create());
+
+        lookAndFeel.setColour (CaretComponent::caretColourId,       lightTheme::onPrimary);
+        lookAndFeel.setColour (Slider::textBoxOutlineColourId,      lightTheme::onPrimary);
+        lookAndFeel.setColour (ScrollBar::thumbColourId,            lightTheme::onPrimary);
+        lookAndFeel.setColour (TextButton::buttonColourId,          lightTheme::onPrimary);
+        lookAndFeel.setColour (TextButton::buttonOnColourId,        lightTheme::onPrimary);
+        lookAndFeel.setColour (TextButton::textColourOffId,         lightTheme::onPrimary);
+        lookAndFeel.setColour (TextButton::textColourOnId,          lightTheme::onPrimary);
+        lookAndFeel.setColour (TextEditor::backgroundColourId,      lightTheme::primary);
+        lookAndFeel.setColour (TextEditor::focusedOutlineColourId,  lightTheme::onPrimary);
+        lookAndFeel.setColour (TextEditor::highlightColourId,       lightTheme::onSecondary);
+        lookAndFeel.setColour (TextEditor::highlightedTextColourId, lightTheme::onPrimary);
+        lookAndFeel.setColour (TextEditor::outlineColourId,         lightTheme::onPrimary);
+        lookAndFeel.setColour (TextEditor::shadowColourId,          Colours::transparentBlack);
+        lookAndFeel.setColour (TooltipWindow::backgroundColourId,   lightTheme::primary);
+        lookAndFeel.setColour (TooltipWindow::outlineColourId,      lightTheme::onPrimary);
+        lookAndFeel.setColour (TooltipWindow::textColourId,         lightTheme::onPrimary);
+        lookAndFeel.setColour (ListBox::backgroundColourId,         lightTheme::primary);
+        lookAndFeel.setColour (ListBox::outlineColourId,            lightTheme::onPrimary);
+        lookAndFeel.setColour (ListBox::textColourId,               lightTheme::onPrimary);
+    }
+
+    /** */
+    LookAndFeel_V4::ColourScheme create() override
+    {
+        return
+        {
+            lightTheme::background,
+            lightTheme::surface,
+            lightTheme::background,
+            lightTheme::primary,
+            lightTheme::onPrimary,
+            lightTheme::primary,
+            lightTheme::onSecondary,
+            lightTheme::secondary,
+            lightTheme::onBackground
+        };
+    }
+
+private:
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LightColourScheme)
+};
+
+/** */
+class DarkColourScheme final : public ColourScheme
+{
+public:
+    /** */
+    DarkColourScheme() = default;
+
+    /** */
+    void applyTo (LookAndFeel_V4& lookAndFeel) override
+    {
+        lookAndFeel.setColourScheme (create());
+
+        lookAndFeel.setColour (CaretComponent::caretColourId,       darkTheme::onPrimary);
+        lookAndFeel.setColour (Slider::textBoxOutlineColourId,      darkTheme::onPrimary);
+        lookAndFeel.setColour (ScrollBar::thumbColourId,            darkTheme::onPrimary);
+        lookAndFeel.setColour (TextButton::buttonColourId,          darkTheme::onPrimary);
+        lookAndFeel.setColour (TextButton::buttonOnColourId,        darkTheme::onPrimary);
+        lookAndFeel.setColour (TextButton::textColourOffId,         darkTheme::onPrimary);
+        lookAndFeel.setColour (TextButton::textColourOnId,          darkTheme::onPrimary);
+        lookAndFeel.setColour (TextEditor::backgroundColourId,      darkTheme::primary);
+        lookAndFeel.setColour (TextEditor::focusedOutlineColourId,  darkTheme::onPrimary);
+        lookAndFeel.setColour (TextEditor::highlightColourId,       darkTheme::onSecondary);
+        lookAndFeel.setColour (TextEditor::highlightedTextColourId, darkTheme::onPrimary);
+        lookAndFeel.setColour (TextEditor::outlineColourId,         darkTheme::onPrimary);
+        lookAndFeel.setColour (TextEditor::shadowColourId,          Colours::transparentBlack);
+        lookAndFeel.setColour (TooltipWindow::backgroundColourId,   darkTheme::primary);
+        lookAndFeel.setColour (TooltipWindow::outlineColourId,      darkTheme::onPrimary);
+        lookAndFeel.setColour (TooltipWindow::textColourId,         darkTheme::onPrimary);
+        lookAndFeel.setColour (ListBox::backgroundColourId,         darkTheme::primary);
+        lookAndFeel.setColour (ListBox::outlineColourId,            darkTheme::onPrimary);
+        lookAndFeel.setColour (ListBox::textColourId,               darkTheme::onPrimary);
+    }
+
+    /** */
+    LookAndFeel_V4::ColourScheme create() override
+    {
+        return
+        {
+            darkTheme::background,
+            darkTheme::surface,
+            darkTheme::background,
+            darkTheme::primary,
+            darkTheme::onPrimary,
+            darkTheme::primary,
+            darkTheme::onSecondary,
+            darkTheme::secondary,
+            darkTheme::onBackground
+        };
+    }
+
+private:
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DarkColourScheme)
+};
+
+//==============================================================================
+/** */
+class DemoLookAndFeel final : public LookAndFeel_V4,
+                              public DarkModeSettingListener
 {
 public:
     //==============================================================================
@@ -59,6 +203,8 @@ public:
     static Grid createDefaultGrid();
 
     //==============================================================================
+    /** @internal */
+    void darkModeSettingChanged() override;
     /** @internal */
     int getMenuWindowFlags() override { return 0; }
     /** @internal */
@@ -140,9 +286,9 @@ public:
     /** @internal */
     int getDefaultScrollbarWidth() override { return 14; }
     /** @internal */
-    // bool areScrollbarButtonsVisible() override { return true; }
+    bool areScrollbarButtonsVisible() override { return false; }
     /** @internal */
-    // void drawScrollbar (Graphics&, ScrollBar&, int, int, int, int, bool, int, int, bool, bool) override;
+    void drawScrollbar (Graphics&, ScrollBar&, int, int, int, int, bool, int, int, bool, bool) override;
     /** @internal */
     void drawPopupMenuBackground (Graphics&, int, int) override;
     /** @internal */

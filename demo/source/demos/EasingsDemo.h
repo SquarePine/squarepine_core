@@ -10,6 +10,8 @@ public:
                            float lineThickness = 0.01f,
                            int64 numPoints = 400)
     {
+        setInterceptsMouseClicks (false, false);
+
         Point<double> last;
         last.y = generator (0.0);
 
@@ -25,26 +27,22 @@ public:
 
         // Because JUCE's coords are backwards...
         plot.applyTransform (AffineTransform::verticalFlip (1.0f));
-
-        setColour (textColourId, Colours::darkgrey);
-        setColour (backgroundColourId, Colours::white);
-        setColour (lineColourId, Colours::darkgrey);
     }
 
     //==============================================================================
     /** @internal */
     void paint (Graphics& g) override
     {
-        g.fillAll (findColour (backgroundColourId));
+        g.fillAll (findColour (ListBox::backgroundColourId, true));
 
         if (getName().isNotEmpty())
         {
-            g.setColour (findColour (textColourId));
+            g.setColour (findColour (ListBox::textColourId, true));
             g.setFont ((float) fontHeight);
             g.drawFittedText (TRANS (getName()), textBounds, Justification::centred, 2, 1.0f);
         }
 
-        g.setColour (findColour (lineColourId));
+        g.setColour (findColour (ListBox::outlineColourId, true));
         g.fillPath (scalablePlot);
     }
 
@@ -69,15 +67,6 @@ public:
         auto t = plot.getTransformToScaleToFit (b.toFloat(), true);
         scalablePlot.applyTransform (t);
     }
-
-    //==============================================================================
-    /** */
-    enum ColourIds
-    {
-        textColourId = 0x77112200,  //<
-        backgroundColourId,         //<
-        lineColourId                //< 
-    };
 
 private:
     //==============================================================================

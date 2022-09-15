@@ -40,10 +40,10 @@ public:
             pm.addSeparator();
             pm.addCommandItem (&commandManager, StandardApplicationCommandIDs::quit);
 
-            pm.showMenuAsync (PopupMenu::Options());
+            pm.showMenuAsync ({});
         }
 
-        lastEventMods = ModifierKeys();
+        lastEventMods = {};
     }
 
 private:

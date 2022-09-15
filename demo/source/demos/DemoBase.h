@@ -27,6 +27,8 @@ public:
     /** */
     void languageChanged (const IETFLanguageFile&) override
     {
+        SQUAREPINE_CRASH_TRACER
+
         setName (TRANS (untranslatedName));
     }
 

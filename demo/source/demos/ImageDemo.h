@@ -8,7 +8,7 @@ class ImageDemo final : public DemoBase,
 public:
     /** */
     ImageDemo (SharedObjects& sharedObjs) :
-        DemoBase (sharedObjs, NEEDS_TRANS ("Image Demo"))
+        DemoBase (sharedObjs, NEEDS_TRANS ("Image Format Demo"))
     {
         imageFormatManager.registerBasicFormats();
 
