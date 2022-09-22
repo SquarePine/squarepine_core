@@ -1,5 +1,7 @@
 SimpleApplication::SimpleApplication()
 {
+    SQUAREPINE_CRASH_TRACER
+
     SystemStats::setApplicationCrashHandler (&sp::CrashStackTracer::dump);
     initSystemRandom();
     initOperatingSystemDependantSystems();
@@ -7,6 +9,8 @@ SimpleApplication::SimpleApplication()
 
 SimpleApplication::~SimpleApplication()
 {
+    SQUAREPINE_CRASH_TRACER
+
     Logger::writeToLog ("*** Shutting Down Application ***");
     disableLogging();
 }
@@ -23,7 +27,10 @@ void SimpleApplication::initialise (const String& commandLine)
     SQUAREPINE_CRASH_TRACER
 
     if (handleInternalCommandLineOperations (commandLine))
+    {
+        quit();
         return;
+    }
 
     enableLogging();
     Logger::writeToLog ("*** Starting Application ***");
@@ -84,22 +91,69 @@ void SimpleApplication::shutdown()
 {
     SQUAREPINE_CRASH_TRACER
 
+    Logger::writeToLog ("Shutdown called.");
     mainWindow = nullptr;
 }
 
 void SimpleApplication::anotherInstanceStarted (const String& commandLine)
 {
     SQUAREPINE_CRASH_TRACER
+    Logger::writeToLog ("Started new instance of application...");
 
     commandLineArguments = commandLine;
 
     handleInternalCommandLineOperations (commandLineArguments);
 }
 
-//==============================================================================
-bool SimpleApplication::handleInternalCommandLineOperations (const String& commandLine)
+void SimpleApplication::suspended()
 {
-    return handleUnitTests (commandLine);
+    SQUAREPINE_CRASH_TRACER
+    Logger::writeToLog ("Application was suspended.");
+}
+
+void SimpleApplication::resumed()
+{
+    SQUAREPINE_CRASH_TRACER
+    Logger::writeToLog ("Application was resumed.");
+}
+
+void SimpleApplication::unhandledException (const std::exception* e,
+                                            const String& sourceFilename,
+                                            int lineNumber)
+{
+    SQUAREPINE_CRASH_TRACER
+
+    String message;
+    message
+        << "ERROR --- received unhandled std::exception!" << newLine
+        << "Line Number: " << lineNumber << newLine
+        << "Source Filename: " << sourceFilename << newLine;
+
+    if (e != nullptr)
+        message << "What: " << e->what() << newLine;
+
+    Logger::writeToLog (message);
+    jassertfalse;
+}
+
+void SimpleApplication::memoryWarningReceived()
+{
+    SQUAREPINE_CRASH_TRACER
+    Logger::writeToLog ("Received memory warning from OS!");
+    jassertfalse;
+}
+
+bool SimpleApplication::backButtonPressed()
+{
+    SQUAREPINE_CRASH_TRACER
+    Logger::writeToLog ("Back button was pressed.");
+    return false;
+}
+
+//==============================================================================
+bool SimpleApplication::handleInternalCommandLineOperations (const String& args)
+{
+    return handleUnitTests (args);
 }
 
 static void appendSeparatorIfNotThere (String& s)
@@ -163,9 +217,9 @@ void SimpleApplication::disableLogging()
 }
 
 //==============================================================================
-bool SimpleApplication::handleUnitTests (const String& commandLine)
+bool SimpleApplication::handleUnitTests (const String& args)
 {
-    if (commandLine.contains ("--unit-tests"))
+    if (args.contains ("--unit-tests"))
     {
         unitTestRunner.setAbortingTests (false);
         unitTestRunner.runAllTests();
@@ -179,15 +233,11 @@ bool SimpleApplication::handleUnitTests (const String& commandLine)
             }
         }
 
-        quit();
         return true;
     }
-    else if (commandLine.contains ("--unit-tests-abort"))
-    {
-        unitTestRunner.setAbortingTests (true);
-        quit();
-        return true;
-    }
+
+    if (args.isNotEmpty())
+        Logger::writeToLog (String ("Unknown command line args given: ") + newLine + args);
 
     return false;
 }

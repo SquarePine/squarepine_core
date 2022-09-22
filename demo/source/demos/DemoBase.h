@@ -24,19 +24,32 @@ public:
         sharedObjects.languageHandler->removeListener (this);
     }
 
+    //==============================================================================
+    /** */
+    const String& getUntranslatedName() const noexcept { return untranslatedName; }
+
+    /** */
+    virtual void updateWithNewTranslations()
+    {
+        setName (TRANS (untranslatedName));
+    }
+
+    //==============================================================================
     /** */
     void languageChanged (const IETFLanguageFile&) override
     {
         SQUAREPINE_CRASH_TRACER
-
-        setName (TRANS (untranslatedName));
+        updateWithNewTranslations();
     }
 
 protected:
+    //==============================================================================
     SharedObjects& sharedObjects;
 
 private:
+    //==============================================================================
     const String untranslatedName;
 
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DemoBase)
 };

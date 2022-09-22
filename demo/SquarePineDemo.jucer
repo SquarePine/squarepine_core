@@ -44,6 +44,10 @@
         <FILE id="L8YGDM" name="SharedObjects.h" compile="0" resource="0" file="source/core/SharedObjects.h"/>
       </GROUP>
       <GROUP id="{775B98BE-1BF2-5AF2-2E31-B17D3A9219DD}" name="demos">
+        <FILE id="o8ngkO" name="CodeEditorDemo.h" compile="0" resource="0"
+              file="source/demos/CodeEditorDemo.h"/>
+        <FILE id="brHreQ" name="CueSDKDemo.h" compile="0" resource="0" file="source/demos/CueSDKDemo.h"/>
+        <FILE id="mUqbF6" name="DemoBase.h" compile="0" resource="0" file="source/demos/DemoBase.h"/>
         <FILE id="IZHnpO" name="EasingsDemo.h" compile="0" resource="0" file="source/demos/EasingsDemo.h"/>
         <FILE id="vSHEQC" name="ImageDemo.h" compile="0" resource="0" file="source/demos/ImageDemo.h"/>
         <FILE id="hoUe5P" name="OpenGLDetailsDemo.h" compile="0" resource="0"

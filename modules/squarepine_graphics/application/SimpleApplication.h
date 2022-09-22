@@ -28,11 +28,17 @@ public:
     /** @internal */
     void anotherInstanceStarted (const String&) override;
     /** @internal */
-    bool moreThanOneInstanceAllowed() override                  { return true; }
+    ApplicationCommandTarget* getNextCommandTarget() override { return mainCommandTarget; }
     /** @internal */
-    void systemRequestedQuit() override                         { quit(); }
+    void suspended();
     /** @internal */
-    ApplicationCommandTarget* getNextCommandTarget() override   { return mainCommandTarget; }
+    void resumed();
+    /** @internal */
+    void unhandledException (const std::exception*, const String&, int) override;
+    /** @internal */
+    void memoryWarningReceived();
+    /** @internal */
+    bool backButtonPressed();
 
 protected:
     //==============================================================================

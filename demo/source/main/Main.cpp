@@ -61,10 +61,13 @@ private:
 class MainWindow final : public DocumentWindow
 {
 public:
-    MainWindow (SharedObjects& sharedObjects, const String& name) :
+    MainWindow (const String& name) :
         DocumentWindow (name, Colours::black, DocumentWindow::allButtons),
-        customLookAndFeel (sharedObjects)
+        customLookAndFeel (sharedObjects),
+        mainComponent (sharedObjects)
     {
+        googleAnalyticsReporter->startSession();
+
         setAccessible (false);
         setUsingNativeTitleBar (true);
         setOpaque (true);
@@ -75,7 +78,7 @@ public:
         trayIconComponent.reset (new TrayIconComponent (sharedObjects.commandManager));
        #endif
 
-        setContentOwned (new MainComponent (sharedObjects), true);
+        setContentNonOwned (&mainComponent, true);
 
        #if SQUAREPINE_IS_MOBILE
         setFullScreen (true);
@@ -101,6 +104,8 @@ public:
 
 private:
     //==============================================================================
+    SharedObjects sharedObjects;
+    SharedResourcePointer<sp::GoogleAnalyticsReporter> googleAnalyticsReporter;
     DemoLookAndFeel customLookAndFeel;
     TooltipWindow tooltipWindow;
 
@@ -108,138 +113,48 @@ private:
     std::unique_ptr<SystemTrayIconComponent> trayIconComponent;
    #endif
 
+    MainComponent mainComponent;
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)
 };
 
 //==============================================================================
-class SquarePineDemoApplication final : public JUCEApplication
+class SquarePineDemoApplication final : public sp::SimpleApplication
 {
 public:
     /** */
-    SquarePineDemoApplication()                     { SystemStats::setApplicationCrashHandler (CrashStackTracer::dump); }
+    SquarePineDemoApplication() = default;
 
     //==============================================================================
     /** @internal */
     const String getApplicationName() override      { return ProjectInfo::projectName; }
     /** @internal */
     const String getApplicationVersion() override   { return ProjectInfo::versionString; }
-    /** @internal */
-    bool moreThanOneInstanceAllowed() override      { return false; }
-    /** @internal */
-    void systemRequestedQuit() override             { quit(); }
 
     //==============================================================================
     /** @internal */
-    void initialise (const String& commandLineArgs) override
+    DocumentWindow* createWindow() const override
     {
-        SQUAREPINE_CRASH_TRACER
-
-        if (runFromCommandLine (commandLineArgs))
-            quit();
-
         String windowName;
         windowName
             << ProjectInfo::companyName
-            << " - " << getApplicationName()
-            << " - v"
-            << getApplicationVersion();
+            << " - " << ProjectInfo::projectName
+            << " - v" << ProjectInfo::versionString;
 
        #if JUCE_DEBUG
         windowName << " [DEBUG]";
        #endif
 
-        sharedObjects.reset (new SharedObjects());
-        googleAnalyticsReporter->startSession();
-        mainWindow.reset (new MainWindow (*sharedObjects.get(), windowName));
+        return new MainWindow (windowName);
     }
 
-    void anotherInstanceStarted (const String& commandLineArgs) override
+    String getLoggerFilePath() const override
     {
-        SQUAREPINE_CRASH_TRACER
-
-        Logger::writeToLog ("Started new instance of application...");
-
-        runFromCommandLine (commandLineArgs);
-        quit();
-    }
-
-    void suspended() override
-    {
-        SQUAREPINE_CRASH_TRACER
-
-        Logger::writeToLog ("Application was suspended.");
-    }
-
-    void resumed() override
-    {
-        SQUAREPINE_CRASH_TRACER
-
-        Logger::writeToLog ("Application was resumed.");
-    }
-
-    void unhandledException (const std::exception* e,
-                             const String& sourceFilename,
-                             int lineNumber) override
-    {
-        SQUAREPINE_CRASH_TRACER
-
-        String message;
-        message
-            << "ERROR --- received unhandled std::exception!" << newLine
-            << "Line Number: " << lineNumber << newLine
-            << "Source Filename: " << sourceFilename << newLine;
-
-        if (e != nullptr)
-            message << "What: " << e->what() << newLine;
-
-        Logger::writeToLog (message);
-        jassertfalse;
-    }
-
-    void memoryWarningReceived() override
-    {
-        SQUAREPINE_CRASH_TRACER
-
-        Logger::writeToLog ("Received memory warning from OS!");
-        jassertfalse;
-    }
-
-    bool backButtonPressed() override
-    {
-        SQUAREPINE_CRASH_TRACER
-
-        Logger::writeToLog ("Back button was pressed.");
-        return false;
-    }
-
-    void shutdown() override
-    {
-        SQUAREPINE_CRASH_TRACER
-
-        Logger::writeToLog ("Shutdown called.");
-        googleAnalyticsReporter->endSession();
-        mainWindow = nullptr;
-        sharedObjects = nullptr;
+        return GlobalPaths::getLogFile().getParentDirectory().getFullPathName();
     }
 
 private:
-    //==============================================================================
-    std::unique_ptr<SharedObjects> sharedObjects;
-    std::unique_ptr<MainWindow> mainWindow;
-    SharedResourcePointer<sp::GoogleAnalyticsReporter> googleAnalyticsReporter;
-
-    //==============================================================================
-    bool runFromCommandLine (const String& commandLineArgs)
-    {
-        const auto args = commandLineArgs.trim();
-
-        if (args.isNotEmpty())
-            Logger::writeToLog (String ("Unknown command line args given: ") + newLine + args);
-
-        return false;
-    }
-
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SquarePineDemoApplication)
 };

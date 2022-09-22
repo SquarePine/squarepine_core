@@ -1,7 +1,8 @@
 #pragma once
 
 /** */
-class MainComponent final : public juce::Component
+class MainComponent final : public juce::Component,
+                            public sp::LanguageHandler::Listener
 {
 public:
     /** */
@@ -14,6 +15,8 @@ public:
     void paint (Graphics&) override;
     /** @internal */
     void resized() override;
+    /** @internal */
+    void languageChanged (const IETFLanguageFile&) override;
 
 private:
     //==============================================================================

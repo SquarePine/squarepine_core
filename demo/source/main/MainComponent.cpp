@@ -3,13 +3,18 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
 {
     setOpaque (true);
 
-    auto addTab = [&] (juce::StringRef name, Component* comp)
+    auto addTab = [&] (DemoBase* comp)
     {
-        tabbedComponent.addTab (name, Colours::grey, comp, true);
+        tabbedComponent.addTab (TRANS (comp->getName()), Colours::grey, comp, true);
     };
 
-    addTab (TRANS ("Easing Demo"), new EaseListComponent (sharedObjs));
-    addTab (TRANS ("Image Demo"), new ImageDemo (sharedObjs));
+    addTab (new EaseListComponent (sharedObjs));
+    addTab (new ImageDemo (sharedObjs));
+    addTab (new CodeEditorDemo (sharedObjs));
+
+   #if SQUAREPINE_USE_CUESDK
+    addTab (new CueSDKDemo (sharedObjs));
+   #endif
 
    #if USE_OPENGL
     // Need to call this later on - once JUCE, the GL content, and the OS decide it's cool to talk to each other.
@@ -25,7 +30,7 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
             }, false);
     });
 
-    addTab (TRANS ("OpenGL Info"), new OpenGLDetailsDemo (sharedObjs, rendererConfigurator));
+    addTab (new OpenGLDetailsDemo (sharedObjs, rendererConfigurator));
    #endif
 
     addAndMakeVisible (tabbedComponent);
@@ -48,4 +53,11 @@ void MainComponent::paint (Graphics& g)
 void MainComponent::resized()
 {
     tabbedComponent.setBounds (getLocalBounds ().reduced (4));
+}
+
+void MainComponent::languageChanged (const IETFLanguageFile&)
+{
+    for (int i = tabbedComponent.getNumTabs(); --i >= 0;)
+        if (auto* demoComp = dynamic_cast<DemoBase*> (tabbedComponent.getTabContentComponent (i)))
+            tabbedComponent.setTabName (i, TRANS (demoComp->getUntranslatedName()));
 }
