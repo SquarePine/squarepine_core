@@ -400,7 +400,8 @@ public:
                             @see GoogleAnalyticsMetadata::withScreenName.
         @param method       @see ReportMethod
     */
-    static bool sendSystemReport (const String& trackingId,
+    static bool sendSystemReport (GoogleAnalyticsReporter& reporter,
+                                  const String& trackingId,
                                   const String& clientId = GoogleAnalyticsMetadata::getDefaultClientId(),
                                   const String& eventAction = "AppStart",
                                   const String& screenName = "Main",

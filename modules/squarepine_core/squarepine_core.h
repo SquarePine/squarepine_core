@@ -56,7 +56,7 @@
 
     Enable or disable compiling unit tests into an application.
 
-    By default, this is off.
+    By default this is off.
 */
 #ifndef SQUAREPINE_COMPILE_UNIT_TESTS
     #define SQUAREPINE_COMPILE_UNIT_TESTS 0
@@ -64,7 +64,8 @@
 
 /** Config: SQUAREPINE_ARRAY_ITERATION_UNROLLER_MAKE_LINEAR
 
-    Enable this to compare performance between linear iteration and loop unrolling with the ArrayIterationUnroller.
+    Enable this to compare performance between linear iteration
+    and loop unrolling with the ArrayIterationUnroller.
 */
 #ifndef SQUAREPINE_ARRAY_ITERATION_UNROLLER_MAKE_LINEAR
     #define SQUAREPINE_ARRAY_ITERATION_UNROLLER_MAKE_LINEAR 0
@@ -80,7 +81,7 @@
 
     Enable or disable logging networking calls.
 
-    By default, this is on for debugging, and disabled in release builds.
+    By default this is on for debugging and disabled in release builds.
 */
 #ifndef SQUAREPINE_LOG_NETWORK_CALLS
     #define SQUAREPINE_LOG_NETWORK_CALLS JUCE_DEBUG
@@ -88,12 +89,24 @@
 
 /** Config: SQUAREPINE_USE_GOOGLE_ANALYTICS
 
-    Enable or disable using Google Analytics based on our own fully featured implementation.
+    Enable or disable using Google Analytics based on
+    our own fully featured implementation.
 
-    By default, this is on.
+    By default this is on.
 */
 #ifndef SQUAREPINE_USE_GOOGLE_ANALYTICS
     #define SQUAREPINE_USE_GOOGLE_ANALYTICS 1
+#endif
+
+/** Config: SQUAREPINE_ONLY_LOG_GOOGLE_ANALYTICS
+
+    Enables or disables the logging of Google Analytics events.
+    Use this to troubleshoot events and such.
+
+    By default this is off.
+*/
+#ifndef SQUAREPINE_LOG_GOOGLE_ANALYTICS
+    #define SQUAREPINE_LOG_GOOGLE_ANALYTICS 1
 #endif
 
 // This bit allows logging the host type in Google Analytics in the system logging:

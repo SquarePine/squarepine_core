@@ -374,6 +374,10 @@
  //#define SQUAREPINE_USE_GOOGLE_ANALYTICS 1
 #endif
 
+#ifndef    SQUAREPINE_ONLY_LOG_GOOGLE_ANALYTICS
+ //#define SQUAREPINE_ONLY_LOG_GOOGLE_ANALYTICS 0
+#endif
+
 //==============================================================================
 // squarepine_graphics flags:
 

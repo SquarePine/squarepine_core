@@ -45,13 +45,27 @@ public:
     {
     }
 
-    bool createAndConnect() const
+    /** @note Only for logging purposes. */
+    String toString() const
+    {
+        String s;
+        s.preallocateBytes (64);
+
+        s
+            << createURL().toString (true) << newLine
+            << "User-Agent: " << userAgent << newLine
+            << postData.joinIntoString (", ") << newLine;
+
+        return s;
+    }
+
+    bool createAndConnect (WebInputStream::Listener* listener = nullptr) const
     {
         auto stream = create();
         return stream != nullptr
             && stream->withExtraHeaders ("User-Agent: " + userAgent)
                       .withConnectionTimeout (timeoutMs)
-                      .connect (nullptr);
+                      .connect (listener);
     }
 
 private:
@@ -60,9 +74,11 @@ private:
     const int timeoutMs;
     const StringArray postData;
 
+    URL createURL() const { return URL (address).withPOSTData (postData.joinIntoString ("&")); }
+
     std::unique_ptr<WebInputStream> create() const
     {
-        return std::make_unique<WebInputStream> (URL (address).withPOSTData (postData.joinIntoString ("&")), true);
+        return std::make_unique<WebInputStream> (createURL(), true);
     }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Sender)
@@ -72,12 +88,11 @@ private:
 class GoogleAnalyticsReporter::ReportPool final : public DeletedAtShutdown
 {
 public:
-    ReportPool() : pool (jmin (2, SystemStats::getNumCpus())) { pool.setThreadPriorities (3); }
-    ~ReportPool() { clearSingletonInstance(); }
+    ReportPool()                        { pool.setThreadPriorities (3); }
+    ~ReportPool() override              { clearSingletonInstance(); }
+    void queue (Sender* senderToUse)    { pool.addJob (new ReportJob (senderToUse), true); }
 
-    void queue (Sender* senderToUse) { pool.addJob (new ReportJob (senderToUse), true); }
-
-    JUCE_DECLARE_SINGLETON_SINGLETHREADED_MINIMAL (ReportPool)
+    JUCE_DECLARE_SINGLETON (ReportPool, true)
 
 private:
     ThreadPool pool;
@@ -135,10 +150,10 @@ GoogleAnalyticsMetadata::GoogleAnalyticsMetadata (const String& trackingId,
                                                   HitType hitType)
 {
     jassert (trackingId.trim().isNotEmpty());
-    jassert (trackingId.startsWith ("UA-")); //No idea what kind of tracking ID you have here...
+    jassert (trackingId.startsWith ("UA-")); // No idea what kind of tracking ID you have here...
     jassert (clientId.trim().isNotEmpty());
 
-    //Default general requirements here:
+    // Default general requirements here:
     withProtocolVersion ("1");
     withTrackingId (trackingId);
     withClientId (clientId);
@@ -305,7 +320,7 @@ GoogleAnalyticsMetadata& GoogleAnalyticsMetadata::withHitType (HitType hitType)
         case HitType::timing:       value = "timing"; break;
 
         default:
-            jassertfalse; //New or broken hit type?
+            jassertfalse; // New or broken hit type?
         break;
     };
 
@@ -350,16 +365,16 @@ GoogleAnalyticsMetadata& GoogleAnalyticsMetadata::withCustomDimensions (int star
 
 GoogleAnalyticsMetadata& GoogleAnalyticsMetadata::withCustomDimension (int index, const String& value)
 {
-    jassert (index > 0 && index <= 200); //There is a maximum of 20 custom dimensions (200 for Analytics 360 accounts).
-                                         //The index suffix must be a positive integer greater than 0 (e.g. dimension3).
+    // There is a maximum of 20 custom dimensions (200 for Analytics 360 accounts).
+    // The index suffix must be a positive integer greater than 0 (e.g. "dimension3").
+    jassert (index > 0 && index <= 200);
 
     return with ("cd", index, value, 150);
 }
 
 String GoogleAnalyticsMetadata::getDefaultClientId()
 {
-    const auto deviceId = SystemStats::getUniqueDeviceID().trim().hashCode64();
-    return String::toHexString (deviceId).trim();
+    return SystemStats::getUniqueDeviceID().trim();
 }
 
 //==============================================================================
@@ -396,8 +411,8 @@ bool GoogleAnalyticsReporter::sendReport (const String& userAgent, const StringP
 {
     if (userAgent.isEmpty() || parameters.size() < 4)
     {
-        //If you hit this, you're missing fundamental data required
-        //for Google Analytics to parse your report!
+        // If you hit this, you're missing fundamental data required
+        // for Google Analytics to parse your report!
         jassertfalse;
         return false;
     }
@@ -433,14 +448,19 @@ bool GoogleAnalyticsReporter::sendReport (const String& userAgent, const StringP
 
     if (requiredKeysFound != allRequiredKeys || postData.isEmpty())
     {
-        //If you hit this, you're missing fundamental data required
-        //for Google Analytics to parse your report!
+        // If you hit this, you're missing fundamental data required
+        // for Google Analytics to parse your report!
         jassertfalse;
         return false;
     }
 
     if (auto sender = std::make_unique<Sender> (address, userAgent, timeoutMs, postData))
     {
+       #if SQUAREPINE_LOG_GOOGLE_ANALYTICS
+        Logger::writeToLog ("Google Analytics: Sending new event.\n" + sender->toString());
+       #endif
+
+       #if 0
         switch (method)
         {
             case ReportMethod::synchronous:     return sender->createAndConnect();
@@ -451,12 +471,14 @@ bool GoogleAnalyticsReporter::sendReport (const String& userAgent, const StringP
                 jassertfalse; //Unknown method!
                 return false;
         };
+       #endif
     }
 
     return true;
 }
 
-bool GoogleAnalyticsReporter::sendSystemReport (const String& trackingId, const String& clientId, const String& eventAction,
+bool GoogleAnalyticsReporter::sendSystemReport (GoogleAnalyticsReporter& reporter, const String& trackingId,
+                                                const String& clientId, const String& eventAction,
                                                 const String& screenName, ReportMethod method)
 {
     String appType, appName, appVersion;
@@ -506,16 +528,16 @@ bool GoogleAnalyticsReporter::sendSystemReport (const String& trackingId, const 
     customDims.minimiseStorageOverheads();
 
     GoogleAnalyticsMetadata data (trackingId, clientId);
-    data.withEventCategory ("stats")
-        .withEventAction (eventAction)
-        .withScreenName (screenName)
-        .withApplicationName (appName)
-        .withApplicationVersion (appVersion)
-        .withScreenResolution()
-        .withViewportSize()
-        .withCustomDimensions (1, customDims);
+    data = data.withEventCategory ("stats")
+               .withEventAction (eventAction)
+               .withScreenName (screenName)
+               .withApplicationName (appName)
+               .withApplicationVersion (appVersion)
+               .withScreenResolution()
+               .withViewportSize()
+               .withCustomDimensions (1, customDims);
 
-    return GoogleAnalyticsReporter().sendReport (data, method);
+    return reporter.sendReport (data, method);
 }
 
 #endif //SQUAREPINE_USE_GOOGLE_ANALYTICS
