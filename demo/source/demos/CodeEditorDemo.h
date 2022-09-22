@@ -1,5 +1,3 @@
-#pragma once
-
 /** */
 class CodeEditorDemo final : public DemoBase
 {

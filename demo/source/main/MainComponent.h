@@ -1,5 +1,3 @@
-#pragma once
-
 /** */
 class MainComponent final : public juce::Component,
                             public sp::LanguageHandler::Listener

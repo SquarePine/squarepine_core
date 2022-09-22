@@ -1,5 +1,3 @@
-#pragma once
-
 /** */
 class ImageDemo final : public DemoBase,
                         public FileDragAndDropTarget,

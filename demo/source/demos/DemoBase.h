@@ -1,5 +1,3 @@
-#pragma once
-
 /** */
 class DemoBase : public Component,
                  public LanguageHandler::Listener

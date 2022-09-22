@@ -11,12 +11,13 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
     addTab (new EaseListComponent (sharedObjs));
     addTab (new ImageDemo (sharedObjs));
     addTab (new CodeEditorDemo (sharedObjs));
+    addTab (new MediaDeviceListerDemo (sharedObjs));
 
    #if SQUAREPINE_USE_CUESDK
     addTab (new CueSDKDemo (sharedObjs));
    #endif
 
-   #if USE_OPENGL
+   #if SP_DEMO_USE_OPENGL
     // Need to call this later on - once JUCE, the GL content, and the OS decide it's cool to talk to each other.
     MessageManager::callAsync ([&]()
     {
@@ -31,7 +32,7 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
     });
 
     addTab (new OpenGLDetailsDemo (sharedObjs, rendererConfigurator));
-   #endif
+   #endif // SP_DEMO_USE_OPENGL
 
     addAndMakeVisible (tabbedComponent);
 

@@ -1,6 +1,4 @@
-#pragma once
-
-#if USE_OPENGL
+#if SP_DEMO_USE_OPENGL
 
 class OpenGLDetailsDemo final : public DemoBase,
                                 public ListBoxModel
@@ -558,4 +556,4 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OpenGLDetailsDemo)
 };
 
-#endif // USE_OPENGL
+#endif // SP_DEMO_USE_OPENGL

@@ -1,5 +1,3 @@
-#pragma once
-
 /** A set of general-purpose media application command IDs.
 
     Because these commands are likely to be used in most apps, they're defined

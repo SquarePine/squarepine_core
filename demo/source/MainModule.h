@@ -3,12 +3,12 @@
 
 #include <JuceHeader.h>
 
-/** Config: USE_OPENGL
+/** Config: SP_DEMO_USE_OPENGL
     Enables or disables setting the application up for OpenGL.
 */
-#ifndef USE_OPENGL
-    #define USE_OPENGL JUCE_MODULE_AVAILABLE_juce_opengl
-#endif
+#ifndef SP_DEMO_USE_OPENGL
+    #define SP_DEMO_USE_OPENGL JUCE_MODULE_AVAILABLE_juce_opengl
+#endif // SP_DEMO_USE_OPENGL
 
 namespace
 {
@@ -24,6 +24,7 @@ namespace
 #include "demos/CueSDKDemo.h"
 #include "demos/EasingsDemo.h"
 #include "demos/ImageDemo.h"
+#include "demos/MediaDeviceListerDemo.h"
 #include "demos/OpenGLDetailsDemo.h"
 #include "main/DemoLookAndFeel.h"
 #include "main/MainComponent.h"

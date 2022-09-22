@@ -1,5 +1,3 @@
-#pragma once
-
 /** This controls and stores an assortment of application related data.
 
     It's accessible anywhere within the UI code. Life's too short to pass
