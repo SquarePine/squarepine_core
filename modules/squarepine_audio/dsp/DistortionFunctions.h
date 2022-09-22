@@ -301,7 +301,7 @@ public:
             }
             else
             {
-                const FloatType m = inputSample * upperThreshold;
+                const auto m = inputSample * upperThreshold;
                 inputSample = upperThreshold - std::pow (lowerThreshold - m, static_cast<FloatType> (2));
                 inputSample /= upperThreshold;
             }
@@ -414,7 +414,7 @@ private:
     {
         const auto numChannels = buffer.getNumChannels();
         const auto numSamples = buffer.getNumSamples();
-        auto** chans = buffer.getArrayOfWritePointers();
+        auto chans = buffer.getArrayOfWritePointers();
 
         for (auto i = numChannels; --i >= 0;)
             for (auto f = numSamples; --f >= 0;)
@@ -426,7 +426,7 @@ private:
     {
         const auto numChannels = buffer.getNumChannels();
         const auto numSamples = buffer.getNumSamples();
-        auto** chans = buffer.getArrayOfWritePointers();
+        auto chans = buffer.getArrayOfWritePointers();
 
         for (int i = numChannels; --i >= 0;)
             for (int f = numSamples; --f >= 0;)
@@ -438,7 +438,7 @@ private:
     {
         const auto numChannels = buffer.getNumChannels();
         const auto numSamples = buffer.getNumSamples();
-        auto** chans = buffer.getArrayOfWritePointers();
+        auto chans = buffer.getArrayOfWritePointers();
 
         for (auto i = numChannels; --i >= 0;)
             for (auto f = numSamples; --f >= 0;)

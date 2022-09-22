@@ -41,12 +41,12 @@ StringArray DummyAudioIODevice::getInputChannelNames()
     return chans;
 }
 
-Array<double> DummyAudioIODevice::getAvailableSampleRates() { return { 44100.0, 48000.0 }; }
-Array<int> DummyAudioIODevice::getAvailableBufferSizes()    { return { 1024 }; }
-int DummyAudioIODevice::getDefaultBufferSize()              { return bufferSize; }
+Array<double> DummyAudioIODevice::getAvailableSampleRates() { return { 44100.0, 48000.0, 88200.0, 96000.0, 192000.0 }; }
+Array<int> DummyAudioIODevice::getAvailableBufferSizes()    { return { 64, 512, 1024, 2048, 4096, 8192 }; }
+int DummyAudioIODevice::getDefaultBufferSize()              { return 1024; }
 bool DummyAudioIODevice::isPlaying()                        { return playing; }
 bool DummyAudioIODevice::isOpen()                           { return opened; }
-String DummyAudioIODevice::getLastError()                   { return String(); }
+String DummyAudioIODevice::getLastError()                   { return {}; }
 int DummyAudioIODevice::getCurrentBufferSizeSamples()       { return bufferSize; }
 double DummyAudioIODevice::getCurrentSampleRate()           { return sampleRate; }
 int DummyAudioIODevice::getCurrentBitDepth()                { return 32; }
@@ -66,7 +66,7 @@ String DummyAudioIODevice::open (const int numOutputChannels,
     setCurrentSampleRate (sr);
     setNumChannels (numOutputChannels);
 
-    return String();
+    return {};
 }
 
 String DummyAudioIODevice::open (const BigInteger& inputChannels,
@@ -150,12 +150,12 @@ BigInteger DummyAudioIODevice::getActiveInputChannels() const
     for (int i = 0; i < numChannels; ++i)
         chan.setBit (i);
 
-    return chan; //All channels are available
+    return chan; // All channels are available.
 }
 
 BigInteger DummyAudioIODevice::getActiveOutputChannels() const
 {
-    return getActiveInputChannels(); //All channels are available
+    return getActiveInputChannels(); // All channels are available.
 }
 
 void DummyAudioIODevice::run()
@@ -164,23 +164,22 @@ void DummyAudioIODevice::run()
 
     while (! threadShouldExit())
     {
-        const int numSamples = bufferSize;
+        const auto numSamples = bufferSize.load();
 
         {
             const ScopedLock sl (callbackLock);
             if (callback != nullptr)
             {
-                const int numChans = numChannels;
+                const auto numChans = numChannels.load();
 
                 juce::AudioBuffer<float> input (numChans, numSamples);
                 input.clear();
 
                 juce::AudioBuffer<float> output (numChans, numSamples);
                 output.clear();
-
-                callback->audioDeviceIOCallback (input.getArrayOfReadPointers(), numChans,
-                                                 output.getArrayOfWritePointers(), numChans,
-                                                 numSamples);
+                callback->audioDeviceIOCallbackWithContext (input.getArrayOfReadPointers(), numChans,
+                                                            output.getArrayOfWritePointers(), numChans,
+                                                            numSamples, {});
             }
         }
 

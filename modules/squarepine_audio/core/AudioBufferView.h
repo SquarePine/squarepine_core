@@ -91,12 +91,15 @@ class AudioBufferView final
 {
 public:
     //==============================================================================
+    using ChannelPtrs = FloatType* const*;
+
+    //==============================================================================
     /** */
     class AudioChannelIterator final
     {
     public:
         /** */
-        AudioChannelIterator (FloatType** channels_, int numSamples_) noexcept :
+        AudioChannelIterator (ChannelPtrs channels_, int numSamples_) noexcept :
             channel (channels_),
             numSamples (numSamples_)
         {
@@ -118,7 +121,7 @@ public:
         }
 
         /** */
-        FloatType** operator++()                    { channel++; return channel; }
+        ChannelPtrs operator++()                    { channel++; return channel; }
         /** */
         AudioChannelView<FloatType> operator*()     { return AudioChannelView<FloatType> (*channel, numSamples); }
 
@@ -128,13 +131,13 @@ public:
         bool operator!= (const AudioChannelIterator& other) const noexcept { return channel != other.channel; }
 
     private:
-        FloatType** channel = nullptr;
+        ChannelPtrs channel = nullptr;
         int numSamples = 0;
     };
 
     //==============================================================================
     /** */
-    AudioBufferView (FloatType** channels_, int numChannels_, int numSamples_) noexcept :
+    AudioBufferView (ChannelPtrs channels_, int numChannels_, int numSamples_) noexcept :
         channels (channels_),
         numChannels (numChannels_),
         numSamples (numSamples_)
@@ -180,6 +183,6 @@ public:
     const AudioChannelIterator end() const noexcept         { return AudioChannelIterator (&channels[numChannels], numSamples); }
 
 private:
-    FloatType** channels = nullptr;
+    ChannelPtrs channels = nullptr;
     int numChannels = 0, numSamples = 0;
 };

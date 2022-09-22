@@ -26,7 +26,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    bool readSamples (int**, int, int, int64, int) override;
+    bool readSamples (int* const*, int, int, int64, int) override;
 
     //==============================================================================
     /** The original sample rate of the stream. */
@@ -46,7 +46,7 @@ private:
     int sourceBlockSize = 0;
 
     //==============================================================================
-    void writeOutputBuffers (int** destSamples, int numDestChannels, int startOffsetInDestBuffer, int numSamples);
+    void writeOutputBuffers (int* const* destSamples, int numDestChannels, int startOffsetInDestBuffer, int numSamples);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ResamplingAudioFormatReader)

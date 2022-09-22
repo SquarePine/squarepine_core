@@ -74,7 +74,7 @@ void ResamplingAudioFormatReader::prepare (double currentOutputSampleRate, int e
 }
 
 //==============================================================================
-bool ResamplingAudioFormatReader::readSamples (int** destSamples, int numDestChannels, int startOffsetInDestBuffer,
+bool ResamplingAudioFormatReader::readSamples (int* const* destSamples, int numDestChannels, int startOffsetInDestBuffer,
                                                int64 startSampleInFile, int numSamples)
 {
     jassert (reader != nullptr && sampleRate != 0.0);
@@ -114,7 +114,7 @@ bool ResamplingAudioFormatReader::readSamples (int** destSamples, int numDestCha
 }
 
 //==============================================================================
-void ResamplingAudioFormatReader::writeOutputBuffers (int** destSamples, int numDestChannels, int startOffsetInDestBuffer, int numSamples)
+void ResamplingAudioFormatReader::writeOutputBuffers (int* const* destSamples, int numDestChannels, int startOffsetInDestBuffer, int numSamples)
 {
     const auto localNumChannels = (int) numChannels;
     const bool localUsesFloatingPointData = usesFloatingPointData;
