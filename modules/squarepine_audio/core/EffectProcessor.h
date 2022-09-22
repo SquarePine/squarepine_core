@@ -19,12 +19,12 @@ public:
 
     //==============================================================================
     /** @returns true if the contained plugin is null, which is interpreted as likely missing. */
-    bool isMissing() const noexcept { return plugin == nullptr; }
+    [[nodiscard]] bool isMissing() const noexcept { return plugin == nullptr; }
 
     /** @returns true if the plugin is not missing nor bypassed,
         and can generally be run as part of a process chain.
     */
-    bool canBeProcessed() const noexcept;
+    [[nodiscard]] bool canBeProcessed() const noexcept;
 
     /** @returns true if the plugin was able to be restored from its last known state. */
     bool reloadFromStateIfValid();

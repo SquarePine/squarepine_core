@@ -51,7 +51,7 @@ struct LastKnownPluginDetails final
 
         This is mostly intended for logging purposes.
     */
-    String toString() const
+    [[nodiscard]] String toString() const
     {
         String info;
         info.preallocateBytes (320);

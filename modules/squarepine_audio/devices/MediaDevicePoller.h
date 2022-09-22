@@ -5,34 +5,34 @@ class MediaDevicePoller final : private AsyncUpdater,
                                 private Timer
 {
 public:
-    /** Constructor
+    /** Constructor.
 
         @param audioDeviceManager The device manager to use for getting the lists
-                                      of audio and MIDI devices
+                                  of audio and MIDI devices.
     */
-    MediaDevicePoller (AudioDeviceManager& audioDeviceManager);
+    MediaDevicePoller (AudioDeviceManager&);
 
     /** Destructor. */
     ~MediaDevicePoller() override;
 
     //==============================================================================
     /** Obtain the most current list of audio input devices. */
-    StringArray getListOfAudioInputDevices();
+    StringArray getListOfAudioInputDevices() const;
 
     /** Obtain the most current list of audio output devices. */
-    StringArray getListOfAudioOutputDevices();
+    StringArray getListOfAudioOutputDevices() const;
 
     /** */
-    StringArray getListOfInputChannelNames();
+    StringArray getListOfInputChannelNames() const;
 
     /** */
-    StringArray getListOfOutputChannelNames();
+    StringArray getListOfOutputChannelNames() const;
 
     /** Obtain the most current list of MIDI input devices. */
-    Array<MidiDeviceInfo> getListOfMIDIInputDevices();
+    Array<MidiDeviceInfo> getListOfMIDIInputDevices() const;
 
     /** Obtain the most current list of MIDI output devices. */
-    Array<MidiDeviceInfo> getListOfMIDIOutputDevices();
+    Array<MidiDeviceInfo> getListOfMIDIOutputDevices() const;
 
     /** */
     struct DeviceInfo
@@ -44,9 +44,9 @@ public:
     };
 
     /** */
-    DeviceInfo getCurrentInputDeviceInfo();
+    DeviceInfo getCurrentInputDeviceInfo() const;
     /** */
-    DeviceInfo getCurrentOutputDeviceInfo();
+    DeviceInfo getCurrentOutputDeviceInfo() const;
 
     //==============================================================================
     /** Inherit from this Listener to check for MIDI or audio devices being added or removed!
@@ -100,9 +100,9 @@ private:
     ChangeType changeType = ChangeType::noChange;
 
     //==============================================================================
-    StringArray getListOfAudioDevices (bool giveMeInputDevices);
-    StringArray getListOfChannelNames (bool giveMeInputDevices);
-    DeviceInfo getCurrentDeviceInfo (bool giveMeInputDevices);
+    StringArray getListOfAudioDevices (bool giveMeInputDevices) const;
+    StringArray getListOfChannelNames (bool giveMeInputDevices) const;
+    DeviceInfo getCurrentDeviceInfo (bool giveMeInputDevices) const;
     
     template<typename ArrayType>
     void checkForDeviceChange (const ArrayType& arrayNew, ArrayType& arrayOld);

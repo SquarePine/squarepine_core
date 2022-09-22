@@ -21,7 +21,7 @@ MediaDevicePoller::~MediaDevicePoller()
 }
 
 //==============================================================================
-StringArray MediaDevicePoller::getListOfAudioDevices (bool giveMeInputDevices)
+StringArray MediaDevicePoller::getListOfAudioDevices (bool giveMeInputDevices) const
 {
     if (auto* currentDevice = deviceManager.getCurrentDeviceTypeObject())
     {
@@ -32,7 +32,7 @@ StringArray MediaDevicePoller::getListOfAudioDevices (bool giveMeInputDevices)
     return {};
 }
 
-MediaDevicePoller::DeviceInfo MediaDevicePoller::getCurrentDeviceInfo (bool giveMeInputDevices)
+MediaDevicePoller::DeviceInfo MediaDevicePoller::getCurrentDeviceInfo (bool giveMeInputDevices) const
 {
     if (auto* device = deviceManager.getCurrentAudioDevice())
     {
@@ -60,7 +60,7 @@ MediaDevicePoller::DeviceInfo MediaDevicePoller::getCurrentDeviceInfo (bool give
     return {};
 }
 
-StringArray MediaDevicePoller::getListOfChannelNames (bool giveMeInputDevices)
+StringArray MediaDevicePoller::getListOfChannelNames (bool giveMeInputDevices) const
 {
     if (auto* device = deviceManager.getCurrentAudioDevice())
         return giveMeInputDevices ? device->getInputChannelNames() : device->getOutputChannelNames();
@@ -69,14 +69,14 @@ StringArray MediaDevicePoller::getListOfChannelNames (bool giveMeInputDevices)
 }
 
 //==============================================================================
-StringArray MediaDevicePoller::getListOfAudioInputDevices()                     { return getListOfAudioDevices (true); }
-StringArray MediaDevicePoller::getListOfAudioOutputDevices()                    { return getListOfAudioDevices (false); }
-Array<MidiDeviceInfo> MediaDevicePoller::getListOfMIDIInputDevices()            { return MidiInput::getAvailableDevices(); }
-Array<MidiDeviceInfo> MediaDevicePoller::getListOfMIDIOutputDevices()           { return MidiOutput::getAvailableDevices(); }
-StringArray MediaDevicePoller::getListOfInputChannelNames()                     { return getListOfChannelNames (true); }
-StringArray MediaDevicePoller::getListOfOutputChannelNames()                    { return getListOfChannelNames (false); }
-MediaDevicePoller::DeviceInfo MediaDevicePoller::getCurrentInputDeviceInfo()    { return getCurrentDeviceInfo (true); }
-MediaDevicePoller::DeviceInfo MediaDevicePoller::getCurrentOutputDeviceInfo()   { return getCurrentDeviceInfo (false); }
+StringArray MediaDevicePoller::getListOfAudioInputDevices() const                   { return getListOfAudioDevices (true); }
+StringArray MediaDevicePoller::getListOfAudioOutputDevices() const                  { return getListOfAudioDevices (false); }
+Array<MidiDeviceInfo> MediaDevicePoller::getListOfMIDIInputDevices() const          { return MidiInput::getAvailableDevices(); }
+Array<MidiDeviceInfo> MediaDevicePoller::getListOfMIDIOutputDevices() const         { return MidiOutput::getAvailableDevices(); }
+StringArray MediaDevicePoller::getListOfInputChannelNames() const                   { return getListOfChannelNames (true); }
+StringArray MediaDevicePoller::getListOfOutputChannelNames() const                  { return getListOfChannelNames (false); }
+MediaDevicePoller::DeviceInfo MediaDevicePoller::getCurrentInputDeviceInfo() const  { return getCurrentDeviceInfo (true); }
+MediaDevicePoller::DeviceInfo MediaDevicePoller::getCurrentOutputDeviceInfo() const { return getCurrentDeviceInfo (false); }
 
 void MediaDevicePoller::setupDeviceLists()
 {

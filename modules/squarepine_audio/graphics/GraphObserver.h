@@ -4,7 +4,7 @@ class GraphObserver final : public juce::Component,
 {
 public:
     /** */
-    GraphObserver (AudioProcessorGraph& g);
+    GraphObserver (AudioProcessorGraph&);
     /** */
     ~GraphObserver() override;
 

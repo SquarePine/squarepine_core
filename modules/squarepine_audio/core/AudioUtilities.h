@@ -97,7 +97,7 @@ static void addFrom (juce::AudioBuffer<FloatType>& destination, juce::AudioBuffe
 
 //==============================================================================
 /** Quick-and-dirty function to format a timecode string. */
-inline String timeToTimecodeString (double seconds)
+inline [[nodiscard]] String timeToTimecodeString (double seconds)
 {
     const auto millisecs = roundToInt (seconds * 1000.0);
     const auto absMillisecs = std::abs (millisecs);
@@ -110,7 +110,7 @@ inline String timeToTimecodeString (double seconds)
 }
 
 /** Quick-and-dirty function to format a bars/beats string. */
-inline String quarterNotePositionToBarsBeatsString (double quarterNotes, int numerator, int denominator)
+inline [[nodiscard]] String quarterNotePositionToBarsBeatsString (double quarterNotes, int numerator, int denominator)
 {
     if (numerator == 0 || denominator == 0)
         return "1|1|000";
@@ -125,7 +125,7 @@ inline String quarterNotePositionToBarsBeatsString (double quarterNotes, int num
 }
 
 /** @returns a textual description of a CurrentPositionInfo. */
-inline String getTimecodeDisplay (const AudioPlayHead::CurrentPositionInfo& pos)
+inline [[nodiscard]] String getTimecodeDisplay (const AudioPlayHead::CurrentPositionInfo& pos)
 {
     String displayText;
 

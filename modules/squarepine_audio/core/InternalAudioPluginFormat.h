@@ -12,9 +12,9 @@ public:
     void createEffectPlugins (OwnedArray<AudioPluginInstance>& results);
 
     /** */
-    PluginDescription getDescriptionFor (AudioProcessorGraph::AudioGraphIOProcessor::IODeviceType ioDeviceType) const;
+    [[nodiscard]] PluginDescription getDescriptionFor (AudioProcessorGraph::AudioGraphIOProcessor::IODeviceType ioDeviceType) const;
     /** */
-    std::unique_ptr<AudioPluginInstance> createInstanceFor (AudioProcessorGraph::AudioGraphIOProcessor::IODeviceType ioDeviceType);
+    [[nodiscard]] std::unique_ptr<AudioPluginInstance> createInstanceFor (AudioProcessorGraph::AudioGraphIOProcessor::IODeviceType ioDeviceType);
 
     //==============================================================================
     /** @internal */

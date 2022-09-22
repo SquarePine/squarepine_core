@@ -50,7 +50,7 @@ String DummyAudioIODevice::getLastError()                   { return {}; }
 int DummyAudioIODevice::getCurrentBufferSizeSamples()       { return bufferSize; }
 double DummyAudioIODevice::getCurrentSampleRate()           { return sampleRate; }
 int DummyAudioIODevice::getCurrentBitDepth()                { return 32; }
-int DummyAudioIODevice::getNumChannels()                    { return numChannels; }
+int DummyAudioIODevice::getNumChannels() const              { return numChannels; }
 int DummyAudioIODevice::getOutputLatencyInSamples()         { return 0; }
 int DummyAudioIODevice::getInputLatencyInSamples()          { return 0; }
 

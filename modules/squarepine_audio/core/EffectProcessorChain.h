@@ -21,10 +21,10 @@ public:
 
     //==============================================================================
     /** @returns the current number of effect processors in this chain. */
-    int getNumEffects() const;
+    [[nodiscard]] int getNumEffects() const;
 
     /** @returns the effect at the provided index, or nullptr if it was out of range. */
-    EffectProcessor::Ptr getEffectProcessor (int index) const;
+    [[nodiscard]] EffectProcessor::Ptr getEffectProcessor (int index) const;
 
     //==============================================================================
     /** Add a new effect at the end of the existing array of plugins.
@@ -33,7 +33,7 @@ public:
 
         @returns a new effect processor or nullptr if the index wasn't found.
     */
-    EffectProcessor::Ptr appendNewEffect (int pluginIndex);
+    [[nodiscard]] EffectProcessor::Ptr appendNewEffect (int pluginIndex);
 
     /** Add a new effect at the end of the existing array of plugins.
 
@@ -41,7 +41,7 @@ public:
 
         @returns a new effect processor or nullptr if the identifier wasn't found.
     */
-    EffectProcessor::Ptr appendNewEffect (const String& fileOrIdentifier);
+    [[nodiscard]] EffectProcessor::Ptr appendNewEffect (const String& fileOrIdentifier);
 
     //==============================================================================
     /** Sets or inserts a new effect with the given plugin index.
@@ -54,7 +54,7 @@ public:
 
         @returns a new effect processor or nullptr if the index wasn't found.
     */
-    EffectProcessor::Ptr insertNewEffect (int pluginIndex, int destinationIndex);
+    [[nodiscard]] EffectProcessor::Ptr insertNewEffect (int pluginIndex, int destinationIndex);
 
     /** Sets or inserts a new effect with the given plugin file or identifier.
 
@@ -66,7 +66,7 @@ public:
 
         @returns a new effect processor or nullptr if the identifier wasn't found.
     */
-    EffectProcessor::Ptr insertNewEffect (const String& fileOrIdentifier, int destinationIndex);
+    [[nodiscard]] EffectProcessor::Ptr insertNewEffect (const String& fileOrIdentifier, int destinationIndex);
 
     //==============================================================================
     /** Attempts replacing an effect with the given plugin index.
@@ -79,7 +79,7 @@ public:
 
         @returns a new effect processor or nullptr if the index wasn't found.
     */
-    EffectProcessor::Ptr replaceEffect (int pluginIndex, int destinationIndex);
+    [[nodiscard]] EffectProcessor::Ptr replaceEffect (int pluginIndex, int destinationIndex);
 
     /** Attempts replacing an effect with the given plugin file or identifier.
 
@@ -91,7 +91,7 @@ public:
 
         @returns a new effect processor or nullptr if the identifier wasn't found.
     */
-    EffectProcessor::Ptr replaceEffect (const String& fileOrIdentifier, int destinationIndex);
+    [[nodiscard]] EffectProcessor::Ptr replaceEffect (const String& fileOrIdentifier, int destinationIndex);
 
     //==============================================================================
     /** Enumeration that automates and simplifies reordering a plugin in a chain of plugins. */
@@ -171,7 +171,7 @@ public:
 
         @returns Name of effect, or String::empty if the index is out of range.
     */
-    std::optional<String> getEffectName (int index) const;
+    [[nodiscard]] std::optional<String> getEffectName (int index) const;
 
     /** Obtain the name of a plugin that exists within the array of effect plugins.
 
@@ -179,7 +179,7 @@ public:
 
         @returns Name of plugin instance, or String::empty if the index is out of range.
     */
-    std::optional<String> getPluginInstanceName (int index) const;
+    [[nodiscard]] std::optional<String> getPluginInstanceName (int index) const;
 
     /** Obtain the plugin instance of a contained effect.
 
@@ -191,7 +191,7 @@ public:
 
         @returns Plugin instance if the index was valid, nullptr otherwise.
     */
-    std::optional<std::shared_ptr<AudioPluginInstance>> getPluginInstance (int index) const;
+    [[nodiscard]] std::optional<std::shared_ptr<AudioPluginInstance>> getPluginInstance (int index) const;
 
     /** Obtain the plugin description of a contained effect.
 
@@ -199,22 +199,22 @@ public:
 
         @returns Proper PluginDescription if the index was valid, PluginDescription() otherwise.
     */
-    std::optional<PluginDescription> getPluginDescription (int index) const;
+    [[nodiscard]] std::optional<PluginDescription> getPluginDescription (int index) const;
 
     /** @returns true if the effect at the specified index is bypassed.
         This will return false if the index is out of range.
     */
-    std::optional<bool> isBypassed (int index) const;
+    [[nodiscard]] std::optional<bool> isBypassed (int index) const;
 
     /** @returns the mix level of the effect at the specified index (normalised, 0.0f to 1.0f).
                  This will return 0.0f if the index is out of range.
     */
-    std::optional<float> getMixLevel (int index) const;
+    [[nodiscard]] std::optional<float> getMixLevel (int index) const;
 
     /** @returns the last known top-left position of an effect's editor.
                  This will return (0, 0) if the index is out of range.
     */
-    std::optional<juce::Point<int>> getLastUIPosition (int index) const;
+    [[nodiscard]] std::optional<juce::Point<int>> getLastUIPosition (int index) const;
 
     //==============================================================================
     /** @returns true if the effect's plugin is missing.
@@ -224,7 +224,7 @@ public:
 
         @see loadIfMissing
     */
-    std::optional<bool> isPluginMissing (int index) const;
+    [[nodiscard]] std::optional<bool> isPluginMissing (int index) const;
 
     /** Attempt loading an effect's plugin instance if it is known to be missing.
 

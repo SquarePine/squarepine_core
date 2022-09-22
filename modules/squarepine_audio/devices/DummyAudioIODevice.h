@@ -38,7 +38,7 @@ public:
 
         If the device isn't actually open, this value doesn't really mean much.
     */
-    int getNumChannels();
+    int getNumChannels() const;
 
     //==============================================================================
     /** @internal */

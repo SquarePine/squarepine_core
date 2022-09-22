@@ -16,23 +16,23 @@ public:
 
     //==============================================================================
     /** */
-    PluginDescription createPluginDescription (int index) const;
+    [[nodiscard]] PluginDescription createPluginDescription (int index) const;
 
     /** */
-    PluginDescription createPluginDescription (const String& fileOrIdentifier) const;
+    [[nodiscard]] PluginDescription createPluginDescription (const String& fileOrIdentifier) const;
 
     /** Provided to help templated function - Just returns the description */
-    PluginDescription createPluginDescription (const PluginDescription& description) const;
+    [[nodiscard]] PluginDescription createPluginDescription (const PluginDescription& description) const;
 
     //==============================================================================
     /** */
-    std::shared_ptr<AudioPluginInstance> createPlugin (int index) const;
+    [[nodiscard]] std::shared_ptr<AudioPluginInstance> createPlugin (int index) const;
 
     /** */
-    std::shared_ptr<AudioPluginInstance> createPlugin (const String& fileOrIdentifier) const;
+    [[nodiscard]] std::shared_ptr<AudioPluginInstance> createPlugin (const String& fileOrIdentifier) const;
 
     /** */
-    std::shared_ptr<AudioPluginInstance> createPlugin (const PluginDescription& description) const;
+    [[nodiscard]] std::shared_ptr<AudioPluginInstance> createPlugin (const PluginDescription& description) const;
 
     //==============================================================================
     /** */

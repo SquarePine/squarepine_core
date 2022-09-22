@@ -1,6 +1,6 @@
 //==============================================================================
 /** */
-inline String getTitle (const MidiFile& midiFile)
+inline [[nodiscard]] String getTitle (const MidiFile& midiFile)
 {
     for (int i = 0; i < midiFile.getNumTracks(); ++i)
     {
@@ -18,7 +18,7 @@ inline String getTitle (const MidiFile& midiFile)
 }
 
 /** */
-inline String getTitle (const AudioFormatReader& reader)
+inline [[nodiscard]] String getTitle (const AudioFormatReader& reader)
 {
     String title;
 
@@ -63,7 +63,7 @@ inline String getTitle (const AudioFormatReader& reader)
 
 //==============================================================================
 /** @todo */
-inline int64 getNumBeats (const AudioFormatReader& reader)
+inline [[nodiscard]] int64 getNumBeats (const AudioFormatReader& reader)
 {
     if (reader.getFormatName().containsIgnoreCase ("AIFF"))
         if (reader.metadataValues.containsKey (AiffAudioFormat::appleBeats))
