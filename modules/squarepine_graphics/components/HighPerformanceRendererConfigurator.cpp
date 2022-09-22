@@ -3,7 +3,11 @@
 
 String getGLString (GLenum value)
 {
-    return reinterpret_cast<const char*> (gl::glGetString (value)); // NB: glGetString is from v2.0+.
+    // NB: glGetString is from v2.0+.
+    if (gl::glGetString != nullptr)
+        return reinterpret_cast<const char*> (gl::glGetString (value));
+
+    return {};
 }
 
 String getGLString (GLenum value, GLuint index)
