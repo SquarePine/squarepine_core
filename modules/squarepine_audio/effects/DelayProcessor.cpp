@@ -71,14 +71,17 @@ void FractionalDelay::setDelaySamples (float _delay)
 
 void FractionalDelay::clearDelay()
 {
-    for(int i = 0 ; i < MAX_BUFFER_SIZE ;++i){
-        for(int c =0 ; c < 2;++c){
+    for (int i = 0; i < MAX_BUFFER_SIZE; ++i)
+    {
+        for (int c = 0; c < 2; ++c)
+        {
             delayBuffer[i][c] = 0;
         }
     }
 }
 
-DelayProcessor::DelayProcessor (int idNum): idNumber (idNum)
+DelayProcessor::DelayProcessor (int idNum): InsertProcessor (true),
+                                            idNumber (idNum)
 {
     reset();
 
@@ -93,16 +96,7 @@ DelayProcessor::DelayProcessor (int idNum): idNumber (idNum)
                                                                        return txt << "%";
                                                                    });
 
-    auto fxon = std::make_unique<AudioParameterBool> ("fxonoff", "FX On",true,
-                                                                 "FX On/Off ",
-                                                                 [] (bool value, int) -> String {
-                                                                     if (value > 0)
-                                                                         return TRANS("On");
-                                                                     return TRANS("Off");
-                                                                     ;
-                                                                 });
-    
-    StringArray options{"1/16","1/8","1/4","1/2","1","2","4","8","16"};
+    StringArray options { "1/16", "1/8", "1/4", "1/2", "1", "2", "4", "8", "16" };
     auto beat = std::make_unique<AudioParameterChoice> ("beat", "Beat Division", options, 3);
 
     NormalisableRange<float> timeRange = { 1.f, 4000.0f };
@@ -172,18 +166,28 @@ DelayProcessor::DelayProcessor (int idNum): idNumber (idNum)
                                                                          return txt << "%";
                                                                      });
 
+    auto sync = std::make_unique<SwitchableTimeParameter>();
+
+    auto test = std::make_unique<NotifiableAudioParameterBool> ("t",
+                                                                "t",
+                                                                true,
+                                                                "Test param",
+                                                                true,
+                                                                [] (bool value, int) -> String {
+                                                                    if (value > 0)
+                                                                        return TRANS ("On");
+                                                                    return TRANS ("Off");
+                                                                    ;
+                                                                });
+
     delayUnit.setDelaySamples (200 * 48);
     wetDry.setTargetValue (0.5);
     delayTime.setTargetValue (200 * 48);
-
-    fxOnParam = fxon.get();
-    fxOnParam->addListener (this);
 
     beatParam = beat.get();
     beatParam->addListener (this);
 
     wetDryParam = wetdry.get();
-    wetDryParam->addListener (this);
 
     delayTimeParam = time.get();
     delayTimeParam->addListener (this);
@@ -194,23 +198,62 @@ DelayProcessor::DelayProcessor (int idNum): idNumber (idNum)
     feedbackParam = feedback.get();
     feedbackParam->addListener (this);
 
+    syncParam = sync.get();
+    syncParam->addListener (this);
+
+    testParam = test.get();
+    testParam->addListener (this);
+
     auto layout = createDefaultParameterLayout (false);
-    layout.add (std::move (fxon));
+    setupDefaultParametersAndCallbacks (layout);
+
     layout.add (std::move (wetdry));
+    addParameterWithCallback (wetDryParam, [&] (float& value) {
+        wetDry.setTargetValue (jlimit (0.f, 1.f, value));
+    });
+
     layout.add (std::move (beat));
+    addParameterWithCallback (beatParam, [&] (float&) {
+        DBG ("Beat");
+    });
+
     layout.add (std::move (time));
+    addParameterWithCallback (delayTimeParam, [&] (float& value) {//delay time
+        auto range = delayTimeParam->getNormalisableRange().getRange();
+        auto valMS = (float) jlimit ((int) range.getStart(), (int) range.getEnd(), roundToInt (value));
+        auto t = (getSampleRate() / 1000) * valMS;
+        delayTime.setTargetValue ((float) t);
+    });
+
     layout.add (std::move (other));
-    setupBandParameters (layout);
+    addParameterWithCallback (xPadParam, [&] (float&) {
+      
+    });
+
     layout.add (std::move (feedback));
+    addParameterWithCallback (feedbackParam, [&] (float&) {
+      
+    });
+
+    // sync->addChildrenToLayout (layout);
+
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 
     setPrimaryParameter (wetDryParam);
+    
+    ParameterLinker timeParamLinker;
+    
+    timeParamLinker.setPrimaryParameter(delayTimeParam);
+    timeParamLinker.addParameterToLink(beatParam);
+    
+    linkParameters(timeParamLinker);
+    
+    
 }
 
 DelayProcessor::~DelayProcessor()
 {
     wetDryParam->removeListener (this);
-    fxOnParam->removeListener (this);
     beatParam->removeListener (this);
     xPadParam->removeListener (this);
     delayTimeParam->removeListener (this);
@@ -221,7 +264,7 @@ DelayProcessor::~DelayProcessor()
 void DelayProcessor::prepareToPlay (double Fs, int bufferSize)
 {
     const ScopedLock lock (getCallbackLock());
-    BandProcessor::prepareToPlay (Fs, bufferSize);
+    InsertProcessor::prepareToPlay (Fs, bufferSize);
 
     delayUnit.setFs ((float) Fs);
     wetDry.reset (Fs, 0.001f);
@@ -233,7 +276,7 @@ void DelayProcessor::processAudioBlock (juce::AudioBuffer<float>& buffer, MidiBu
     //TODO
     const auto numChannels = buffer.getNumChannels();
     const auto numSamples = buffer.getNumSamples();
-    
+
     const ScopedLock lock (getCallbackLock());
 
     float dry, wet, x, y, z;
@@ -262,33 +305,10 @@ bool DelayProcessor::supportsDoublePrecisionProcessing() const { return false; }
 void DelayProcessor::parameterValueChanged (int paramNum, float value)
 {
     const ScopedLock sl (getCallbackLock());
-    switch (paramNum)
-    {
-        case 1:
-            DBG(value);
-            //fx on
-            setBypass (value > 0);
-        case 2:
-            //wet dry
-            wetDry.setTargetValue (jlimit (0.f, 1.f, value));
-            break;
-        case 4:
-        {
-            //delay time
-            auto range = delayTimeParam->getNormalisableRange().getRange();
-            auto valMS = (float) jlimit ((int) range.getStart(), (int) range.getEnd(), roundToInt (value));
-            auto time = (getSampleRate() / 1000) * valMS;
-            delayTime.setTargetValue ((float) time);
-            break;
-        }
-        case 9:
-            //feedback
-        default:
-            break;
-    }
-    //Subtract the number of new parameters in this processor
-    BandProcessor::parameterValueChanged (paramNum - 5, value);
+
+    InsertProcessor::parameterValueChanged (paramNum, value);
 }
-void DelayProcessor::releaseResources() {
+void DelayProcessor::releaseResources()
+{
     delayUnit.clearDelay();
 }

@@ -38,7 +38,7 @@ private:
 
 //This is a wrapper around Eric Tarr's Fractional Delay class that can be integrated with Juce/Squarepine processors
 
-class DelayProcessor final : public BandProcessor
+class DelayProcessor final : public InsertProcessor
 {
 public:
     //Constructor with ID
@@ -67,8 +67,9 @@ private:
     NotifiableAudioParameterFloat* delayTimeParam = nullptr;
     AudioParameterChoice* beatParam = nullptr;
     NotifiableAudioParameterFloat* xPadParam = nullptr;
-    AudioParameterBool* fxOnParam = nullptr;
     NotifiableAudioParameterFloat* feedbackParam = nullptr;
+    SwitchableTimeParameter* syncParam = nullptr;
+    NotifiableAudioParameterBool* testParam = nullptr;
 
     SmoothedValue<float, ValueSmoothingTypes::Linear> wetDry { 0.0f };
     SmoothedValue<float, ValueSmoothingTypes::Linear> delayTime{ 0.0f };

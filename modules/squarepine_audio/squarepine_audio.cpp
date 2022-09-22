@@ -43,6 +43,7 @@ String getInternalProcessorTypeName()
 #include "devices/DummyAudioIODeviceType.cpp"
 #include "devices/MediaDevicePoller.cpp"
 #include "dsp/LFO.cpp"
+#include "effects/InsertProcessor.cpp"
 #include "effects/ADSRProcessor.cpp"
 #include "effects/BitCrusherProcessor.cpp"
 #include "effects/ChorusProcessor.cpp"
