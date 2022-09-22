@@ -30,6 +30,27 @@ namespace sp
         return image;
     }
 
+    void replaceAllDrawableColours (juce::Component& component, juce::Colour colour)
+    {
+        auto replace = [colour] (juce::Drawable& child)
+        {
+            if (auto* ds = dynamic_cast<juce::DrawableShape*> (&child))
+            {
+                ds->setFill (juce::FillType (colour));
+                ds->setStrokeFill (juce::FillType (colour));
+            }
+
+            if (auto* dt = dynamic_cast<juce::DrawableText*> (&child))
+                dt->setColour (colour);
+        };
+
+        if (auto* d = dynamic_cast<juce::Drawable*> (&component))
+            replace (*d);
+
+        for (auto* c : component.getChildren ())
+            replaceAllDrawableColours (*c, colour);
+    }
+
     #include "application/SimpleApplication.cpp"
     #include "components/ComponentViewer.cpp"
     #include "components/GoogleAnalyticsAttachment.cpp"

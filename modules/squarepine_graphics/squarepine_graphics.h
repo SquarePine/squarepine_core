@@ -58,15 +58,29 @@ namespace sp
     std::unique_ptr<Drawable> createDrawableFromSVG (const char* const data);
     /** */
     Image createImageForDrawable (Drawable* drawable, int width, int height);
+    /** */
+    void replaceAllDrawableColours (juce::Component&, juce::Colour colour);
 
     /** */
-    struct WaitCursorAutoHider final
+    class WaitCursorAutoHider final
     {
+    public:
         WaitCursorAutoHider() { MouseCursor::showWaitCursor(); }
         ~WaitCursorAutoHider() { MouseCursor::hideWaitCursor(); }
 
     private:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaitCursorAutoHider)
+    };
+
+    /** */
+    class ScreenSaverAutoDisabler final
+    {
+    public:
+        ScreenSaverAutoDisabler() { Desktop::getInstance().setScreenSaverEnabled (false); }
+        ~ScreenSaverAutoDisabler() { Desktop::getInstance().setScreenSaverEnabled (true); }
+
+    private:
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ScreenSaverAutoDisabler)
     };
 
     namespace helpers
