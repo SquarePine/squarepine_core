@@ -27,14 +27,14 @@ ResamplingAudioFormatReader::ResamplingAudioFormatReader (std::shared_ptr<AudioF
 
 ResamplingAudioFormatReader::~ResamplingAudioFormatReader()
 {
-    input = nullptr; // Prevent the base-class from deleting the input...
-    source = nullptr; // Clear before the time-slice thread...
+    input = nullptr;    // Prevent the base-class from deleting the input...
+    source = nullptr;   // Clear before the time-slice thread...
 }
 
 //==============================================================================
 void ResamplingAudioFormatReader::prepare (double currentOutputSampleRate, int expectedReadBlockSize)
 {
-    if (originalSampleRate == 0.0 || currentOutputSampleRate == 0.0)
+    if (approximatelyEqual (originalSampleRate, 0.0) || approximatelyEqual (currentOutputSampleRate, 0.0))
     {
         jassertfalse;
         return;
@@ -43,12 +43,12 @@ void ResamplingAudioFormatReader::prepare (double currentOutputSampleRate, int e
     sourceRatio = currentOutputSampleRate / originalSampleRate;
 
     // We're in a resampling situation, and the block size has changed, probably due to time-stretching
-    const bool blockSizeChanged = sampleRate == currentOutputSampleRate
+    const bool blockSizeChanged = approximatelyEqual (sampleRate, currentOutputSampleRate)
                                && currentOutputSampleRate != originalSampleRate
                                && expectedReadBlockSize != sourceBlockSize;
 
     // We're currently using a sample rate that's different than the current sample rate used by the interface
-    if (sampleRate != currentOutputSampleRate || blockSizeChanged)
+    if (! approximatelyEqual (sampleRate, currentOutputSampleRate) || blockSizeChanged)
     {
         sampleRate = currentOutputSampleRate;
         lengthInSamples = std::llround (static_cast<double> (reader->lengthInSamples) * sourceRatio);
@@ -77,12 +77,12 @@ void ResamplingAudioFormatReader::prepare (double currentOutputSampleRate, int e
 bool ResamplingAudioFormatReader::readSamples (int* const* destSamples, int numDestChannels, int startOffsetInDestBuffer,
                                                int64 startSampleInFile, int numSamples)
 {
-    jassert (reader != nullptr && sampleRate != 0.0);
+    jassert (reader != nullptr && ! approximatelyEqual (sampleRate, 0.0));
     if (reader == nullptr)
         return false;
 
     // Pass through if no SRC required
-    if (sourceRatio == 1.0)
+    if (approximatelyEqual (sourceRatio, 1.0))
         return reader->readSamples (destSamples, numDestChannels, startOffsetInDestBuffer, startSampleInFile, numSamples);
 
     if (source != nullptr)

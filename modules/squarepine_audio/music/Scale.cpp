@@ -153,33 +153,51 @@ String Scale::getShortNameForType (Type type)
 
 Array<Chord> Scale::generateTriads (int offset) const
 {
-    Array<Chord> res;
-    Array<Chord> base { Chord::Type::majorTriad, Chord::Type::minorTriad, Chord::Type::minorTriad, Chord::Type::majorTriad, Chord::Type::majorTriad, Chord::Type::minorTriad, Chord::Type::diminishedTriad };
+    constexpr std::array<Chord::Type, 7> base =
+    {
+        Chord::Type::majorTriad, Chord::Type::minorTriad, Chord::Type::minorTriad,
+        Chord::Type::majorTriad, Chord::Type::majorTriad, Chord::Type::minorTriad,
+        Chord::Type::diminishedTriad
+    };
 
-    for (int i = 0; i < base.size(); ++i)
-        res.add (base[(i + offset) % base.size()]);
+    Array<Chord> res;
+
+    for (int i = 0; i < (int) base.size(); ++i)
+        res.add (base[(i + offset) % (int) base.size()]);
 
     return res;
 }
 
 Array<Chord> Scale::generateSixths (int offset) const
 {
-    Array<Chord> res;
-    Array<Chord> base { Chord::Type::majorSixth, Chord::Type::minorSixth, Chord::Type::invalid, Chord::Type::majorSixth, Chord::Type::majorSixth, Chord::Type::invalid, Chord::Type::invalid };
+    constexpr std::array<Chord::Type, 7> base =
+    {
+        Chord::Type::majorSixth, Chord::Type::minorSixth, Chord::Type::invalid,
+        Chord::Type::majorSixth, Chord::Type::majorSixth, Chord::Type::invalid,
+        Chord::Type::invalid
+    };
 
-    for (int i = 0; i < base.size(); ++i)
-        res.add (base[(i + offset) % base.size()]);
+    Array<Chord> res;
+
+    for (int i = 0; i < (int) base.size(); ++i)
+        res.add (base[(i + offset) % (int) base.size()]);
 
     return res;
 }
 
 Array<Chord> Scale::generateSevenths (int offset) const
 {
-    Array<Chord> res;
-    Array<Chord> base { Chord::Type::majorSeventh, Chord::Type::minorSeventh, Chord::Type::minorSeventh, Chord::Type::majorSeventh, Chord::Type::dominantSeventh, Chord::Type::minorSeventh, Chord::Type::halfDiminishedSeventh };
+    constexpr std::array<Chord::Type, 7> base =
+    {
+        Chord::Type::majorSeventh, Chord::Type::minorSeventh, Chord::Type::minorSeventh,
+        Chord::Type::majorSeventh, Chord::Type::dominantSeventh, Chord::Type::minorSeventh,
+        Chord::Type::halfDiminishedSeventh
+    };
 
-    for (int i = 0; i < base.size(); ++i)
-        res.add (base[(i + offset) % base.size()]);
+    Array<Chord> res;
+
+    for (int i = 0; i < (int) base.size(); ++i)
+        res.add (base[(i + offset) % (int) base.size()]);
 
     return res;
 }

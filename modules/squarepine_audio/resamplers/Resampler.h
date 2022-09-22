@@ -41,7 +41,7 @@ public:
     /** Sets the ratio directly. */
     void setRatio (double newRatio)
     {
-        if (ratio != newRatio && newRatio > 0.0)
+        if (! approximatelyEqual (ratio.load(), newRatio) && newRatio > 0.0)
         {
             ratio = newRatio;
             updateRatio();
