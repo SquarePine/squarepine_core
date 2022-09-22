@@ -46,12 +46,12 @@ InternalProcessor::InternalProcessor (bool applyDefaultBypassParam)
 }
 
 //==============================================================================
-JUCE_NODISCARD std::unique_ptr<AudioParameterBool> InternalProcessor::createBypassParameter() const
+[[nodiscard]] std::unique_ptr<AudioParameterBool> InternalProcessor::createBypassParameter() const
 {
     return std::make_unique<BypassParameter>();
 }
 
-JUCE_NODISCARD AudioProcessorValueTreeState::ParameterLayout InternalProcessor::createDefaultParameterLayout (bool addBypassParam)
+[[nodiscard]] AudioProcessorValueTreeState::ParameterLayout InternalProcessor::createDefaultParameterLayout (bool addBypassParam)
 {
     AudioProcessorValueTreeState::ParameterLayout layout;
 
@@ -66,7 +66,7 @@ JUCE_NODISCARD AudioProcessorValueTreeState::ParameterLayout InternalProcessor::
 }
 
 //==============================================================================
-JUCE_NODISCARD ValueTree InternalProcessor::getState() const
+[[nodiscard]] ValueTree InternalProcessor::getState() const
 {
     // This kind of thing is only usable from the message thread!
     JUCE_ASSERT_MESSAGE_THREAD;
@@ -76,22 +76,22 @@ JUCE_NODISCARD ValueTree InternalProcessor::getState() const
             : ValueTree();
 }
 
-JUCE_NODISCARD Value InternalProcessor::getPropertyAsValue (const Identifier& id, UndoManager* um, bool b)
+[[nodiscard]] Value InternalProcessor::getPropertyAsValue (const Identifier& id, UndoManager* um, bool b)
 {
     return getState().getPropertyAsValue (id, um, b);
 }
 
-JUCE_NODISCARD const var& InternalProcessor::getProperty (const Identifier& id) const
+[[nodiscard]] const var& InternalProcessor::getProperty (const Identifier& id) const
 {
     return getState().getProperty (id);
 }
 
-JUCE_NODISCARD var InternalProcessor::getProperty (const Identifier& id, const var& d) const
+[[nodiscard]] var InternalProcessor::getProperty (const Identifier& id, const var& d) const
 {
     return getState().getProperty (id, d);
 }
 
-JUCE_NODISCARD const var* InternalProcessor::getPropertyPointer (const Identifier& id) const
+[[nodiscard]] const var* InternalProcessor::getPropertyPointer (const Identifier& id) const
 {
     return getState().getPropertyPointer (id);
 }
@@ -102,7 +102,7 @@ InternalProcessor& InternalProcessor::setProperty (const Identifier& id, const v
     return *this;
 }
 
-JUCE_NODISCARD bool InternalProcessor::hasProperty (const Identifier& id) const
+[[nodiscard]] bool InternalProcessor::hasProperty (const Identifier& id) const
 {
     return getState().hasProperty (id);
 }
@@ -119,7 +119,7 @@ void InternalProcessor::setBypass (const bool shouldBeBypassed)
         bypassParameter->operator= (shouldBeBypassed);
 }
 
-JUCE_NODISCARD bool InternalProcessor::isBypassed() const noexcept
+[[nodiscard]] bool InternalProcessor::isBypassed() const noexcept
 {
     return bypassParameter != nullptr
             ? bypassParameter->get()

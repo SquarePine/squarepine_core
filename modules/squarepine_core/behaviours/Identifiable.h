@@ -18,10 +18,10 @@ public:
 
     //==============================================================================
     /** */
-    JUCE_NODISCARD const Identifier& getIdentifier() const noexcept { return identifier; }
+    [[nodiscard]] const Identifier& getIdentifier() const noexcept { return identifier; }
 
     /** */
-    JUCE_NODISCARD const Uuid& getUuid() const noexcept { return uuid; }
+    [[nodiscard]] const Uuid& getUuid() const noexcept { return uuid; }
 
     //==============================================================================
     /** */

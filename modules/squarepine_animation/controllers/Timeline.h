@@ -25,9 +25,9 @@ public:
     }
 
     /** */
-    JUCE_NODISCARD double getValue() const                  { return getDouble (value); }
+    [[nodiscard]] double getValue() const                   { return getDouble (value); }
     /** */
-    JUCE_NODISCARD Value& getValueValue() noexcept          { return value; }
+    [[nodiscard]] Value& getValueValue() noexcept           { return value; }
 
     /** */
     void setDefaultValue (double newDefaultValue) noexcept
@@ -35,9 +35,9 @@ public:
     }
 
     /** */
-    JUCE_NODISCARD double getDefaultValue() const           { return getDouble (defaultValue); }
+    [[nodiscard]] double getDefaultValue() const            { return getDouble (defaultValue); }
     /** */
-    JUCE_NODISCARD Value& getDefaultValueValue() noexcept   { return defaultValue; }
+    [[nodiscard]] Value& getDefaultValueValue() noexcept    { return defaultValue; }
 
 private:
     //==============================================================================
@@ -88,9 +88,9 @@ public:
 
     //==============================================================================
     /** */
-    JUCE_NODISCARD TimelinePoint& getStart() noexcept       { return start; }
+    [[nodiscard]] TimelinePoint& getStart() noexcept        { return start; }
     /** */
-    JUCE_NODISCARD TimelinePoint& getEnd() noexcept         { return end; }
+    [[nodiscard]] TimelinePoint& getEnd() noexcept          { return end; }
 
     //==============================================================================
     /** */
@@ -99,9 +99,9 @@ public:
     }
 
     /** */
-    JUCE_NODISCARD double getTime() const                   { return getDouble (time); }
+    [[nodiscard]] double getTime() const                    { return getDouble (time); }
     /** */
-    JUCE_NODISCARD Value& getTimeValue() noexcept           { return time; }
+    [[nodiscard]] Value& getTimeValue() noexcept            { return time; }
 
     /** */
     void setLengthSeconds (double newLength) noexcept
@@ -109,9 +109,9 @@ public:
     }
 
     /** */
-    JUCE_NODISCARD double getLengthSeconds() const          { return getDouble (length); }
+    [[nodiscard]] double getLengthSeconds() const           { return getDouble (length); }
     /** */
-    JUCE_NODISCARD Value& getLengthValue() noexcept         { return length; }
+    [[nodiscard]] Value& getLengthValue() noexcept          { return length; }
 
     /** */
     void setFramerate (int newFramerate) noexcept
@@ -119,9 +119,9 @@ public:
     }
 
     /** */
-    JUCE_NODISCARD double getFramerate() const              { return getInt (framerate); }
+    [[nodiscard]] double getFramerate() const               { return getInt (framerate); }
     /** */
-    JUCE_NODISCARD Value& getFramerateValue() noexcept      { return framerate; }
+    [[nodiscard]] Value& getFramerateValue() noexcept       { return framerate; }
 
     /** */
     void setPlaybackSpeed (double newSpeed) noexcept
@@ -129,9 +129,9 @@ public:
     }
 
     /** */
-    JUCE_NODISCARD double getPlaybackSpeed() const          { return getDouble (speed); }
+    [[nodiscard]] double getPlaybackSpeed() const           { return getDouble (speed); }
     /** */
-    JUCE_NODISCARD Value& getPlaybackSpeedValue() noexcept  { return speed; }
+    [[nodiscard]] Value& getPlaybackSpeedValue() noexcept   { return speed; }
 
     //==============================================================================
     /** */

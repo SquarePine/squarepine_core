@@ -161,7 +161,7 @@ inline FloatType previousPowerOfTwo (FloatType x) noexcept
 //==============================================================================
 /** A constexpr capable alternative to std::abs. */
 template<typename NumericType, std::enable_if_t<std::is_arithmetic_v<NumericType>>...>
-JUCE_NODISCARD constexpr NumericType cabs (const NumericType& value) noexcept
+[[nodiscard]] constexpr NumericType cabs (const NumericType& value) noexcept
 {
     return value < static_cast<NumericType> (0) ? -value : value;
 }
@@ -171,7 +171,7 @@ JUCE_NODISCARD constexpr NumericType cabs (const NumericType& value) noexcept
     and double comparisons.
 */
 template<typename Type>
-JUCE_NODISCARD constexpr bool capproximatelyEqual (Type a, Type b) noexcept
+[[nodiscard]] constexpr bool capproximatelyEqual (Type a, Type b) noexcept
 {
     return cabs (a - b) <= (std::numeric_limits<Type>::epsilon() * std::max (a, b))
         || cabs (a - b) < std::numeric_limits<Type>::min();
