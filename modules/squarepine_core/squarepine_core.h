@@ -98,7 +98,7 @@
     #define SQUAREPINE_USE_GOOGLE_ANALYTICS 1
 #endif
 
-/** Config: SQUAREPINE_ONLY_LOG_GOOGLE_ANALYTICS
+/** Config: SQUAREPINE_LOG_GOOGLE_ANALYTICS
 
     Enables or disables the logging of Google Analytics events.
     Use this to troubleshoot events and such.
@@ -106,6 +106,21 @@
     By default this is off.
 */
 #ifndef SQUAREPINE_LOG_GOOGLE_ANALYTICS
+    #define SQUAREPINE_LOG_GOOGLE_ANALYTICS 0
+#endif
+
+/** Config: SQUAREPINE_ONLY_LOG_GOOGLE_ANALYTICS
+
+    Enabling this forces Google Analytics to strictly
+    log the messages to the usual Logger::writeToLog;
+    no messages will be sent out.
+*/
+#ifndef SQUAREPINE_ONLY_LOG_GOOGLE_ANALYTICS
+    #define SQUAREPINE_ONLY_LOG_GOOGLE_ANALYTICS 0
+#endif
+
+#if SQUAREPINE_ONLY_LOG_GOOGLE_ANALYTICS
+    #undef SQUAREPINE_LOG_GOOGLE_ANALYTICS
     #define SQUAREPINE_LOG_GOOGLE_ANALYTICS 1
 #endif
 

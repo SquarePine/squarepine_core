@@ -460,7 +460,7 @@ bool GoogleAnalyticsReporter::sendReport (const String& userAgent, const StringP
         Logger::writeToLog ("Google Analytics: Sending new event.\n" + sender->toString());
        #endif
 
-       #if 0
+       #if ! SQUAREPINE_ONLY_LOG_GOOGLE_ANALYTICS
         switch (method)
         {
             case ReportMethod::synchronous:     return sender->createAndConnect();
@@ -471,6 +471,8 @@ bool GoogleAnalyticsReporter::sendReport (const String& userAgent, const StringP
                 jassertfalse; //Unknown method!
                 return false;
         };
+       #else
+        ignoreUnused (method);
        #endif
     }
 
