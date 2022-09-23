@@ -3,7 +3,7 @@
 <JUCERPROJECT id="jumC7J" name="SquarePine Demo" projectType="guiapp" jucerFormatVersion="1"
               companyName="SquarePine" companyCopyright="SquarePine (C)" companyWebsite="squarepine.io"
               companyEmail="joel.r.langlois@gmail.com" useAppConfig="1" addUsingNamespaceToJuceHeader="1"
-              maxBinaryFileSize="20971520" cppLanguageStandard="latest">
+              maxBinaryFileSize="20971520" cppLanguageStandard="latest" defines="_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING=1">
   <MAINGROUP id="m6sryU" name="SquarePine Demo">
     <GROUP id="{A87106D4-97C8-8B6E-ABEF-2127F24885D5}" name="assets">
       <GROUP id="{AA4AFFDE-833A-2EE9-7061-76FBD8E33B4A}" name="Android">
@@ -49,6 +49,8 @@
         <FILE id="brHreQ" name="CueSDKDemo.h" compile="0" resource="0" file="source/demos/CueSDKDemo.h"/>
         <FILE id="mUqbF6" name="DemoBase.h" compile="0" resource="0" file="source/demos/DemoBase.h"/>
         <FILE id="IZHnpO" name="EasingsDemo.h" compile="0" resource="0" file="source/demos/EasingsDemo.h"/>
+        <FILE id="KagqFb" name="EffectChainDemo.h" compile="0" resource="0"
+              file="source/demos/EffectChainDemo.h"/>
         <FILE id="vSHEQC" name="ImageDemo.h" compile="0" resource="0" file="source/demos/ImageDemo.h"/>
         <FILE id="S1SGkR" name="MediaDeviceListerDemo.h" compile="0" resource="0"
               file="source/demos/MediaDeviceListerDemo.h"/>
