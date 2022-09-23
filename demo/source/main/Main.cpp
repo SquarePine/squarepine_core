@@ -107,7 +107,6 @@ private:
     SharedObjects sharedObjects;
     SharedResourcePointer<sp::GoogleAnalyticsReporter> googleAnalyticsReporter;
     DemoLookAndFeel customLookAndFeel;
-    TooltipWindow tooltipWindow;
 
    #if SQUAREPINE_IS_DESKTOP
     std::unique_ptr<SystemTrayIconComponent> trayIconComponent;
