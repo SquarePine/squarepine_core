@@ -10,7 +10,7 @@ public:
     using Type = ValueType;
 
     /** This type will be double if the Ellipse's type is double, otherwise it will be float. */
-    using FloatType = typename TypeHelpers::SmallestFloatType<ValueType>::type;
+    using FloatType = typename TypeHelpers::SmallestFloatType<ValueType>;
 
     /** */
     static constexpr auto defaultAccuracy = static_cast<FloatType> (0.00001);
@@ -50,39 +50,39 @@ public:
 
     //==============================================================================
     /** */
-    bool isPointOn (Type x, Type y, FloatType accuracy = defaultAccuracy) const noexcept
+    constexpr bool isPointOn (Type x, Type y, FloatType accuracy = defaultAccuracy) const noexcept
     {
-        return std::abs (static_cast<FloatType> (1) - getCrossProduct (x, y)) < accuracy;
+        return cabs (static_cast<FloatType> (1) - getCrossProduct (x, y)) < accuracy;
     }
 
     /** */
-    bool isPointOn (juce::Point<Type> point, FloatType accuracy = defaultAccuracy) const noexcept
+    constexpr bool isPointOn (juce::Point<Type> point, FloatType accuracy = defaultAccuracy) const noexcept
     {
         return isPointOn (point.x, point.y, accuracy);
     }
 
     //==============================================================================
     /** */
-    bool isPointOutside (Type x, Type y) const noexcept
+    constexpr bool isPointOutside (Type x, Type y) const noexcept
     {
         return getCrossProduct (x, y) > static_cast<FloatType> (1);
     }
 
     /** */
-    bool isPointOutside (juce::Point<Type> point) const noexcept
+    constexpr bool isPointOutside (juce::Point<Type> point) const noexcept
     {
         return isPointOutside (point.x, point.y);
     }
 
     //==============================================================================
     /** */
-    bool isPointInside (Type x, Type y) const noexcept
+    constexpr bool isPointInside (Type x, Type y) const noexcept
     {
-        return getCrossProduct (x, y) < static_cast<FloatType> (1);
+        return getCrossProduct (x, y) <= static_cast<FloatType> (1);
     }
 
     /** */
-    bool isPointInside (juce::Point<Type> point) const noexcept
+    constexpr bool isPointInside (juce::Point<Type> point) const noexcept
     {
         return isPointInside (point.x, point.y);
     }
