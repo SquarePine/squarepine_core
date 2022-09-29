@@ -127,7 +127,7 @@ void HighQualityImageComponent::setImage (const Image& newImage)
     if (image != newImage)
     {
         image = newImage;
-        repaint();
+        resized();
     }
 }
 
@@ -137,7 +137,7 @@ void HighQualityImageComponent::setImage (const Image& newImage, RectanglePlacem
     {
         image = newImage;
         placement = rp;
-        repaint();
+        resized();
     }
 }
 
@@ -146,7 +146,7 @@ void HighQualityImageComponent::setImagePlacement (RectanglePlacement np)
     if (placement != np)
     {
         placement = np;
-        repaint();
+        resized();
     }
 }
 
@@ -171,12 +171,7 @@ void HighQualityImageComponent::paint (Graphics& g)
         return;
 
     g.setOpacity (1.0f);
-
-   #if SQUAREPINE_USE_AVIR_RESIZER
     g.drawImage (resizedImage, b.toFloat(), placement);
-   #else
-    g.drawImage (image, b.toFloat(), placement);
-   #endif
 }
 
 //==============================================================================
