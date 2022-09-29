@@ -43,6 +43,7 @@
 *.ttc binary
 *.ttf binary
 *.wav binary
+*.webp binary
 *.wm binary
 *.wma binary
 *.wmv binary
