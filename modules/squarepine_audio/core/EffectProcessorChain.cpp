@@ -473,7 +473,7 @@ void EffectProcessorChain::setStateInformation (const void* const data, const in
 
     if (! MessageManager::getInstance()->isThisTheMessageThread())
     {
-        /** All supported 3rd-party plugin formats (ie: VST2, VST3, AU, RTAS),
+        /** All supported 3rd-party plugin formats (eg: VST2, VST3, AU),
             for various reasons, require being created on the message thread!
             Restructure your code to make it so!
         */
@@ -488,7 +488,7 @@ void EffectProcessorChain::setStateInformation (const void* const data, const in
         InternalProcessor::setBypass (chainElement->getBoolAttribute (ChainIds::rootBypassed));
 
         for (auto* e : chainElement->getChildWithTagNameIterator (ChainIds::effectRoot))
-            createEffectProcessorFromXML (e);
+            plugins.emplace_back (createEffectProcessorFromXML (e));
 
         updateLatency();
     }

@@ -37,8 +37,9 @@ public:
     bool isInterestedInFileDrag (const StringArray& files) override
     {
         for (const auto& path : files)
-            if (imageFormatManager.findFormatForFile (File (path)) != nullptr)
-                return true;
+            if (const File file (path); file.existsAsFile())
+                if (imageFormatManager.findFormatForFile (File (path)) != nullptr)
+                    return true;
 
         return false;
     }
@@ -48,7 +49,8 @@ public:
         for (const auto& path : files)
         {
             const File file (path);
-            if (imageFormatManager.findFormatForFile (file) != nullptr)
+            if (file.existsAsFile()
+                && imageFormatManager.findFormatForFile (file) != nullptr)
             {
                 imageComponent.setImage (imageFormatManager.loadFrom (file));
                 repaint();

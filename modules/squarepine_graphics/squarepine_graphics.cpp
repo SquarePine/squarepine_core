@@ -1,5 +1,9 @@
 #include "squarepine_graphics.h"
 
+#if JUCE_MODULE_AVAILABLE_squarepine_images
+    #include <squarepine_images/squarepine_images.h>
+#endif
+
 namespace sp
 {
     using namespace juce;
@@ -64,7 +68,6 @@ namespace sp
     #include "images/StackBlurEffects.cpp"
     #include "images/SVGParser.cpp"
     #include "images/TGAImageFormat.cpp"
-    //#include "images/WebPImageFormat.cpp"
     #include "linkers/CueSDKLinker.cpp"
     #include "lookandfeels/Windows10LookAndFeel.cpp"
    // #include "tokenisers/JavascriptCodeTokeniser.cpp"

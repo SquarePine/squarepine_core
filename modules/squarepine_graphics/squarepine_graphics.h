@@ -9,8 +9,8 @@
     name:               SquarePine Graphics
     description:        A grouping of reusable graphics classes, image formats, and other utilities.
     website:            https://www.squarepine.io
-    license:            Proprietary
-    minimumCppStandard: 14
+    license:            ISC
+    minimumCppStandard: 17
     dependencies:       squarepine_core juce_gui_extra
 
     END_JUCE_MODULE_DECLARATION

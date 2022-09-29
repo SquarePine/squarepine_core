@@ -9,6 +9,7 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
     };
 
     addTab (new EaseListComponent (sharedObjs));
+    addTab (new EffectChainDemo (sharedObjs));
     addTab (new ImageDemo (sharedObjs));
     addTab (new CodeEditorDemo (sharedObjs));
     addTab (new MediaDeviceListerDemo (sharedObjs));

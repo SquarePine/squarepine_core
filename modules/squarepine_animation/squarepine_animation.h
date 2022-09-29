@@ -9,8 +9,8 @@
     name:               SquarePine Animation
     description:        A grouping of reusable classes for controlling and managing animations.
     website:            https://www.squarepine.io
-    license:            Proprietary
-    minimumCppStandard: 14
+    license:            ISC
+    minimumCppStandard: 17
     dependencies:       squarepine_graphics
 
     END_JUCE_MODULE_DECLARATION

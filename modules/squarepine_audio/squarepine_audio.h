@@ -9,8 +9,8 @@
     name:               SquarePine Audio
     description:        A great backbone for any typical audio project.
     website:            https://www.squarepine.io
-    license:            Proprietary
-    minimumCppStandard: 14
+    license:            ISC
+    minimumCppStandard: 17
     dependencies:       squarepine_core juce_dsp
 
     END_JUCE_MODULE_DECLARATION

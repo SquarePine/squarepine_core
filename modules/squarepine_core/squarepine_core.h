@@ -9,7 +9,7 @@
     name:               SquarePine Core
     description:        A decent backbone for any project.
     website:            https://www.squarepine.io
-    license:            Proprietary
+    license:            ISC
     minimumCppStandard: 17
     OSXFrameworks:      SystemConfiguration
     iOSFrameworks:      SystemConfiguration

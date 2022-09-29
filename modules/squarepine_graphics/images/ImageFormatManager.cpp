@@ -1,6 +1,6 @@
-void ImageFormatManager::registerFormat (ImageFileFormat* newFormat)
+void ImageFormatManager::registerFormat (std::unique_ptr<ImageFileFormat> newFormat)
 {
-    if (newFormat == nullptr || knownFormats.contains (newFormat))
+    if (newFormat == nullptr || knownFormats.contains (newFormat.get()))
     {
         jassertfalse;
         return;
@@ -10,23 +10,25 @@ void ImageFormatManager::registerFormat (ImageFileFormat* newFormat)
     {
         if (format->getFormatName().trim().equalsIgnoreCase (newFormat->getFormatName().trim()))
         {
-            std::unique_ptr<ImageFileFormat> deleter (newFormat);
-            newFormat = nullptr;
-            jassertfalse; //Format has already been registered!
+            jassertfalse; // Format has already been registered!
             return;
         }
     }
 
-    knownFormats.add (newFormat);
+    knownFormats.add (newFormat.release());
 }
 
 void ImageFormatManager::registerBasicFormats()
 {
-    registerFormat (new JPEGImageFormat());
-    registerFormat (new PNGImageFormat());
-    registerFormat (new GIFImageFormat());
-    registerFormat (new BMPImageFormat());
-    registerFormat (new TGAImageFormat());
+    registerFormat (std::make_unique<JPEGImageFormat>());
+    registerFormat (std::make_unique<PNGImageFormat>());
+    registerFormat (std::make_unique<GIFImageFormat>());
+    registerFormat (std::make_unique<BMPImageFormat>());
+    registerFormat (std::make_unique<TGAImageFormat>());
+
+   #if JUCE_MODULE_AVAILABLE_squarepine_images
+    registerFormat (std::make_unique<WebPImageFormat>());
+   #endif
 }
 
 void ImageFormatManager::clearFormats()

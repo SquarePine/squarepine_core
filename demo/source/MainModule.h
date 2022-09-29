@@ -23,6 +23,7 @@ namespace
 #include "demos/CodeEditorDemo.h"
 #include "demos/CueSDKDemo.h"
 #include "demos/EasingsDemo.h"
+#include "demos/EffectChainDemo.h"
 #include "demos/ImageDemo.h"
 #include "demos/MediaDeviceListerDemo.h"
 #include "demos/OpenGLDetailsDemo.h"

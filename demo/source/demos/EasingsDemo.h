@@ -1,47 +1,80 @@
-#pragma once
-
-//==============================================================================
 /** */
 class CurveDisplayComponent final : public Component
 {
 public:
     /** */
-    CurveDisplayComponent (std::function<double (double)> generatorToUse,
-                           int64 numPoints = 400) :
-        generator (generatorToUse),
-        ratio (1.0 / (double) numPoints)
+    CurveDisplayComponent() = default;
+
+    //==============================================================================
+    /** */
+    void setGenerator (std::function<double (double)> generatorToUse)
     {
+        animTimer.stopTimer();
+
+        generator = generatorToUse;
+        jassert (generator != nullptr);
+
+        genMin = genMax = 0.0;
+
         Point<double> last;
         last.y = generator (0.0);
+
+        // Using 'clear' to reduce allocations:
+        plot.clear();
+        scalablePlot.clear();
 
         for (double x = ratio; x <= 1.0; x += ratio)
         {
             const Point<double> c (x, generator (x));
-
             plot.addLineSegment ({ last.toFloat(), c.toFloat() }, lineThickness);
             last = c;
+
+            genMin = jmin (genMin, c.y);
+            genMax = jmax (genMax, c.y);
         }
 
         // Because JUCE's coords are backwards...
         plot.applyTransform (AffineTransform::verticalFlip (1.0f));
 
         tickAnimation();
+
+        if (! getLocalBounds().isEmpty())
+            resized();
+
         animTimer.callback = [this]() { tickAnimation(); };
         animTimer.startTimerHz (60);
+    }
+
+    //==============================================================================
+    /** */
+    void setUsingStroke (bool shouldStroke)
+    {
+        if (stroke != shouldStroke)
+        {
+            stroke = shouldStroke;
+            resized();
+        }
     }
 
     //==============================================================================
     /** @internal */
     void paint (Graphics& g) override
     {
-        const auto bgColour = findColour (ListBox::backgroundColourId, true);
-        const auto textColour = findColour (ListBox::textColourId, true);
+        const bool mouseOver    = isMouseOver();
+        const auto bgColour     = findColour (ListBox::backgroundColourId, true);
+        const auto textColour   = findColour (ListBox::textColourId, true);
 
         g.fillAll (bgColour);
 
         if (getName().isNotEmpty())
         {
-            g.setColour (textColour);
+            if (mouseOver)
+            {
+                g.setColour (textColour);
+                g.fillRect (textBounds);
+            }
+
+            g.setColour (mouseOver ? bgColour : textColour);
             g.setFont ((float) fontHeight);
             g.drawFittedText (TRANS (getName()), textBounds, Justification::centred, 2, 1.0f);
         }
@@ -51,12 +84,12 @@ public:
 
         constexpr auto pSize = 4.5f;
 
-        if (isMouseOver())
+        if (mouseOver)
         {
             g.setColour (bgColour.contrasting());
 
             const auto mx = getMouseXYRelative().toDouble().x / (double) getWidth();
-            const auto mpos = createPoint (mx);
+            const auto mpos = createMovingXPoint (mx, scaledTransform).toFloat();
             constexpr auto size = pSize * MathConstants<float>::pi;
             g.drawEllipse (Rectangle<float> (size, size).withCentre (mpos), MathConstants<float>::pi);
         }
@@ -64,7 +97,9 @@ public:
         if (animTimer.isTimerRunning())
         {
             g.setColour (textColour);
-            g.fillEllipse (Rectangle<float> (pSize, pSize).withCentre (pos));
+            g.fillEllipse (Rectangle<float> (pSize, pSize).withCentre (lineFollowPos));
+
+            g.fillEllipse (Rectangle<float> (pSize, pSize).withCentre (verticalBallBouncePos));
         }
     }
 
@@ -83,48 +118,121 @@ public:
         }
         else
         {
-            textBounds = Rectangle<int>(); 
+            textBounds = {};
         }
 
-        scaledTransform = plot.getTransformToScaleToFit (b.toFloat(), true);
-        scalablePlot.applyTransform (scaledTransform);
+        {
+            auto plotB = b.removeFromLeft (getWidth() / 2).reduced (halfMargin);
+
+            scaledTransform = plot.getTransformToScaleToFit (plotB.toFloat(), true);
+            scalablePlot.applyTransform (scaledTransform);
+
+            constexpr float dashPattern[] = { 30.0f, 30.0f };
+
+            if (stroke)
+                PathStrokeType (1.0f)
+                    .createDashedStroke (scalablePlot, scalablePlot, dashPattern, numElementsInArray (dashPattern));
+        }
+
+        ballArea = b.reduced (halfMargin).toFloat();
     }
 
 private:
     //==============================================================================
-    enum { margin = 8 };
+    enum
+    {
+        margin = 8,
+        halfMargin = margin / 2
+    };
+
+    static inline constexpr auto ratio          = 1.0 / 400.0;
+    static inline constexpr auto lineThickness  = 0.01f;
+
+    bool stroke = false;
 
     std::function<double (double)> generator;
-    const double ratio;
-    const float lineThickness = 0.01f;
+    double genMin = 0.0, genMax = 1.0;
+
+    bool canAnimateReverse = false;
+    double normalisedTime { 0.0 };
+    OffloadedTimer animTimer;
 
     int fontHeight = 18;
     Rectangle<int> textBounds;
     Path plot, scalablePlot;
     AffineTransform scaledTransform;
 
-    double normalisedTime { 0.0 };
-    Point<float> pos;
-    OffloadedTimer animTimer;
+    Point<float> lineFollowPos, verticalBallBouncePos;
+    Rectangle<float> ballArea;
 
-    Point<float> createPoint (double normPos) const
+    static Point<double> createPoint (double x, double y, const AffineTransform& at = {})
     {
-        return Point<double> (normPos, generator (normPos))
+        return Point<double> (x, y)
                 .transformedBy (AffineTransform::verticalFlip (1.0))
-                .toFloat()
-                .transformedBy (scaledTransform);
+                .transformedBy (at);
+    }
+
+    Point<double> createMovingXPoint (double normPos, const AffineTransform& at) const
+    {
+        return createPoint (normPos, generator (normPos), at);
+    }
+
+    Point<double> createMovingYPoint (double normPos, const AffineTransform& at) const
+    {
+        return createPoint (generator (normPos), normPos, at);
+    }
+
+    double mapTo (double v, double x, double y) const
+    {
+        return jmap (v, genMin, genMax, x, y);
     }
 
     void tickAnimation()
     {
-        if (scalablePlot.isEmpty())
+        if (scalablePlot.isEmpty()
+            || ballArea.isEmpty()
+            || approximatelyEqual (genMax, 0.0))
             return;
 
-        pos = createPoint (normalisedTime);
-        normalisedTime += ratio;
+        const auto v = generator (normalisedTime);
+        const auto rv = canAnimateReverse ? generator (1.0 - normalisedTime) : v;
 
+/*
+        auto t = scaledTransform;
+        if (canAnimateReverse)
+            t = scaledTransform.followedBy (AffineTransform::verticalFlip (-1.0));
+
+        lineFollowPos = createPoint (normalisedTime, rv, t).toFloat();
+*/
+
+        const auto pb = scalablePlot.getBounds();
+
+        {
+            auto x = mapTo (rv, 0.0, (double) pb.getWidth());
+            auto y = mapTo (rv, 0.0, (double) pb.getHeight());
+
+            lineFollowPos = { (float) x, (float) y };
+            lineFollowPos = lineFollowPos.translated (pb.getX(), pb.getY());
+            lineFollowPos = lineFollowPos.transformedBy (AffineTransform::verticalFlip (lineFollowPos.y));
+        }
+/*
+        lineFollowPos.x = (float) mapTo (rv, 0.0, (double) pb.getWidth());
+        lineFollowPos.y = (float) mapTo (rv, 0.0, (double) pb.getHeight());
+        lineFollowPos.x += pb.getX();
+        lineFollowPos.y += pb.getY();
+        lineFollowPos = lineFollowPos.transformedBy (AffineTransform::verticalFlip (1.0));
+*/
+
+        verticalBallBouncePos.x = ballArea.getCentreX();
+        verticalBallBouncePos.y = (float) mapTo (rv, 0.0, (double) ballArea.getHeight());
+        verticalBallBouncePos.y += ballArea.getY();
+
+        normalisedTime += ratio;
         if (normalisedTime > 1.0)
+        {
+            canAnimateReverse = ! canAnimateReverse;
             normalisedTime = 0.0;
+        }
 
         repaint();
     }
@@ -143,6 +251,8 @@ public:
         DemoBase (sharedObjs, NEEDS_TRANS ("Ease List Demo"))
     {
         addGenerator (ease::audio::linear,           NEEDS_TRANS ("Linear"));
+
+#if 0
         addGenerator (ease::audio::smoothstepEase,   NEEDS_TRANS ("Smoothstep"));
         addGenerator (ease::audio::smootherstepEase, NEEDS_TRANS ("Smootherstep"));
         addGenerator (ease::audio::sinEase,          NEEDS_TRANS ("sin"));
@@ -175,26 +285,65 @@ public:
         addGenerator (ease::cubic::in::quart,        NEEDS_TRANS ("In - Quart"));
         addGenerator (ease::cubic::out::quart,       NEEDS_TRANS ("Out - Quart"));
         addGenerator (ease::cubic::inOut::quart,     NEEDS_TRANS ("InOut - Quart"));
+#endif
+
         addGenerator (ease::cubic::in::quint,        NEEDS_TRANS ("In - Quint"));
+
+#if 0
         addGenerator (ease::cubic::out::quint,       NEEDS_TRANS ("Out - Quint"));
         addGenerator (ease::cubic::inOut::quint,     NEEDS_TRANS ("InOut - Quint"));
         addGenerator (ease::cubic::in::sine,         NEEDS_TRANS ("In - Sine"));
         addGenerator (ease::cubic::out::sine,        NEEDS_TRANS ("Out - Sine"));
         addGenerator (ease::cubic::inOut::sine,      NEEDS_TRANS ("InOut - Sine"));
-
+#endif
         listbox.setRowHeight (192);
         listbox.setModel (this);
         addAndMakeVisible (listbox);
+
+        showDashedLines.addListener (&dashSwitchAttachment);
+
+        showDashedLines.onClick = [this]()
+        {
+            listbox.updateContent();
+        };
+
+        showDashedLines.addShortcut (KeyPress ('d'));
+        showDashedLines.setClickingTogglesState (true);
+        addAndMakeVisible (showDashedLines);
+
+        updateWithNewTranslations();
+    }
+
+    ~EaseListComponent() override
+    {
+        showDashedLines.removeListener (&dashSwitchAttachment);
     }
 
     //==============================================================================
-    int getNumRows() override { return generators.size(); }
+    void updateWithNewTranslations() override
+    {
+        SQUAREPINE_CRASH_TRACER
 
-    void paintListBoxItem (int, Graphics&, int, int, bool) override {}
+        DemoBase::updateWithNewTranslations();
+
+        showDashedLines.setName (TRANS ("Show Dashed Lines"));
+        showDashedLines.setButtonText (showDashedLines.getName());
+    }
+
+    int getNumRows() override                                       { return generators.size(); }
+    void paintListBoxItem (int, Graphics&, int, int, bool) override { }
 
     void resized() override
     {
-        listbox.setBounds (getLocalBounds().reduced (margin));
+        auto b = getLocalBounds().reduced (margin);
+
+        {
+            auto top = b.removeFromTop (32);
+            showDashedLines.setBounds (top.removeFromLeft (192));
+        }
+
+        b.removeFromTop (margin);
+        listbox.setBounds (b);
     }
 
     Component* refreshComponentForRow (int row, bool, Component* comp) override
@@ -207,8 +356,12 @@ public:
 
         auto* gen = generators[row];
 
-        cdc.reset (new CurveDisplayComponent (gen->generator));
+        if (cdc == nullptr)
+            cdc.reset (new CurveDisplayComponent ());
+
         cdc->setName (gen->name);
+        cdc->setGenerator (gen->generator);
+        cdc->setUsingStroke (showDashedLines.getToggleState());
         return cdc.release();
     }
 
@@ -221,6 +374,9 @@ private:
         std::function<double (double)> generator;
         String name;
     };
+
+    TextButton showDashedLines;
+    GoogleAnalyticsAttachment dashSwitchAttachment { trackingId, "button", "dash" };
 
     ListBox listbox;
     OwnedArray<Generator> generators;

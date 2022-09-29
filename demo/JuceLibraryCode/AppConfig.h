@@ -68,6 +68,7 @@
 #define JUCE_MODULE_AVAILABLE_squarepine_audio            1
 #define JUCE_MODULE_AVAILABLE_squarepine_core             1
 #define JUCE_MODULE_AVAILABLE_squarepine_graphics         1
+#define JUCE_MODULE_AVAILABLE_squarepine_images           1
 
 #define JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED 1
 
@@ -372,6 +373,10 @@
 
 #ifndef    SQUAREPINE_USE_GOOGLE_ANALYTICS
  //#define SQUAREPINE_USE_GOOGLE_ANALYTICS 1
+#endif
+
+#ifndef    SQUAREPINE_LOG_GOOGLE_ANALYTICS
+ //#define SQUAREPINE_LOG_GOOGLE_ANALYTICS 0
 #endif
 
 #ifndef    SQUAREPINE_ONLY_LOG_GOOGLE_ANALYTICS

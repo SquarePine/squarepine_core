@@ -10,7 +10,7 @@ public:
 
         The object passed-in will be deleted by this object, so don't keep a pointer to it!
     */
-    void registerFormat (ImageFileFormat* newFormat);
+    void registerFormat (std::unique_ptr<ImageFileFormat> newFormat);
 
     /** Handy method to make it easy to register the formats that come with JUCE and this module.
 
@@ -50,7 +50,7 @@ public:
 
         @see canUnderstand, decodeImage, loadFrom
     */
-    ImageFileFormat* findFormatForStream (InputStream& input);
+    ImageFileFormat* findFormatForStream (InputStream&);
 
     /** Looks for a format that can handle the given file extension.
 
@@ -59,7 +59,7 @@ public:
 
         @see canUnderstand, decodeImage, loadFrom
     */
-    ImageFileFormat* findFormatForFile (const File& file) const;
+    ImageFileFormat* findFormatForFile (const File&) const;
 
     //==============================================================================
     /** Tries to load an image from a stream.
@@ -69,7 +69,7 @@ public:
 
         @returns The image that was decoded, or an invalid image if it fails.
     */
-    Image loadFrom (InputStream& input);
+    Image loadFrom (InputStream&);
 
     /** Tries to load an image from a file.
 
@@ -78,7 +78,7 @@ public:
 
         @returns The image that was decoded, or an invalid image if it fails.
     */
-    Image loadFrom (const File& file);
+    Image loadFrom (const File&);
 
     /** Tries to load an image from a block of raw image data.
 
