@@ -251,17 +251,17 @@ public:
     /** @internal */
     void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
     /** @internal */
-    bool supportsDoublePrecisionProcessing() const override { return true; }
+    [[nodiscard]] bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
-    double getTailLengthSeconds() const override;
+    [[nodiscard]] double getTailLengthSeconds() const override;
     /** @internal */
-    Identifier getIdentifier() const override;
+    [[nodiscard]] Identifier getIdentifier() const override;
     /** @internal */
-    const String getName() const override;
+    [[nodiscard]] const String getName() const override;
     /** @internal */
-    bool acceptsMidi() const override;
+    [[nodiscard]] bool acceptsMidi() const override;
     /** @internal */
-    bool producesMidi() const override;
+    [[nodiscard]] bool producesMidi() const override;
     /** @internal */
     void getStateInformation (MemoryBlock&) override;
     /** @internal */
@@ -294,7 +294,7 @@ private:
 
     //==============================================================================
     std::shared_ptr<EffectProcessorFactory> factory;
-    
+
     using ContainerType = std::vector<EffectProcessor::Ptr>;
     ContainerType plugins;
 
@@ -311,12 +311,12 @@ private:
         replace
     };
 
-    bool isWholeChainBypassed() const;
+    [[nodiscard]] bool isWholeChainBypassed() const;
     void updateLatency();
     void updateChannelCount();
-    XmlElement* createElementForEffect (EffectProcessor::Ptr effect);
-    EffectProcessor::Ptr createEffectProcessorFromXML (XmlElement* state);
-    bool setEffectProperty (int index, std::function<void (EffectProcessor::Ptr)> func);
+    [[nodiscard]] XmlElement* createElementForEffect (EffectProcessor::Ptr effect);
+    [[nodiscard]] EffectProcessor::Ptr createEffectProcessorFromXML (XmlElement* state);
+    [[nodiscard]] bool setEffectProperty (int index, std::function<void (EffectProcessor::Ptr)> func);
 
     template<typename FloatType>
     void process (juce::AudioBuffer<FloatType>&, MidiBuffer&, BufferPackage<FloatType>&);
@@ -326,7 +326,7 @@ private:
                           BufferPackage<FloatType>& bufferPackage, int numChannels, int numSamples);
 
     template<typename Type>
-    EffectProcessor::Ptr insertInternal (const Type& valueOrRef, int destinationIndex, InsertionStyle insertionStyle = InsertionStyle::insert);
+    [[nodiscard]] EffectProcessor::Ptr insertInternal (const Type& valueOrRef, int destinationIndex, InsertionStyle insertionStyle = InsertionStyle::insert);
 
     template<typename Type>
     std::optional<Type> getEffectProperty (int index, std::function<Type (EffectProcessor::Ptr)> func) const

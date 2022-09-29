@@ -10,11 +10,11 @@ public:
     static void performScan (const String& commandLine, OwnedArray<AudioPluginFormat> customFormats = {});
 
     /** */
-    static bool shouldScan (const String& commandLine);
+    static [[nodiscard]] bool shouldScan (const String& commandLine);
 
     //==============================================================================
     /** @internal */
-    bool findPluginTypesFor (AudioPluginFormat& format, OwnedArray<PluginDescription>& result, const String& fileOrIdentifier) override;
+    [[nodiscard]] bool findPluginTypesFor (AudioPluginFormat&, OwnedArray<PluginDescription>&, const String&) override;
 
 private:
     //==============================================================================
@@ -22,9 +22,9 @@ private:
     bool handleResultsFile (const File& resultsFile, OwnedArray<PluginDescription>& result);
     void handleResultXml (const XmlElement& xml, OwnedArray<PluginDescription>& found);
 
-    static String createCommandArgument (AudioPluginFormat& format,
-                                         const String& fileOrIdentifier,
-                                         const File& tempResultsFile);
+    static [[nodiscard]] String createCommandArgument (AudioPluginFormat&,
+                                                       const String& fileOrIdentifier,
+                                                       const File& tempResultsFile);
 
     static void performScanInChildProcess (const String& fileOrIdentifier, 
                                            const String& formatName, 

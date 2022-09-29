@@ -32,7 +32,7 @@ public:
     }
 
     /** */
-    FloatType processDecibels (FloatType sample) noexcept
+    [[nodiscard]] FloatType processDecibels (FloatType sample) noexcept
     {
         EnvelopeComponent& ec = sample > envelope ? attack : release;
         envelope = ec.process (envelope, sample);
@@ -40,7 +40,7 @@ public:
     }
 
     /** */
-    FloatType process (FloatType sample) noexcept
+    [[nodiscard]] FloatType process (FloatType sample) noexcept
     {
         sample = std::abs (sample);
         return processDecibels (sample);
@@ -58,7 +58,7 @@ private:
         }
 
         /** */
-        FloatType process (FloatType sample, FloatType envelope_) const noexcept
+        [[nodiscard]] FloatType process (FloatType sample, FloatType envelope_) const noexcept
         {
             return coefficient * (envelope_ - sample) + sample;
         }

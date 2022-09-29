@@ -28,7 +28,7 @@ struct LastKnownPluginDetails final
 
     //==============================================================================
     /** @returns true if the details match those provided. */
-    bool operator== (const LastKnownPluginDetails& other) const noexcept
+    [[nodiscard]] bool operator== (const LastKnownPluginDetails& other) const noexcept
     {
         return approximatelyEqual (sampleRate, other.sampleRate)
             && blockSize == other.blockSize
@@ -41,7 +41,7 @@ struct LastKnownPluginDetails final
     }
 
     /** @returns true if these details don't match the provided details. */
-    bool operator!= (const LastKnownPluginDetails& other) const noexcept
+    [[nodiscard]] bool operator!= (const LastKnownPluginDetails& other) const noexcept
     {
         return ! operator== (other);
     }

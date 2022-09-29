@@ -11,7 +11,7 @@ public:
         @returns a distorted sample.
     */
     template<typename FloatType>
-    static FloatType simple (FloatType inputSample, FloatType amount) noexcept
+    [[nodiscard]] static FloatType simple (FloatType inputSample, FloatType amount) noexcept
     {
         constexpr auto one = (FloatType) 1;
         constexpr auto two = (FloatType) 2;
@@ -31,7 +31,7 @@ public:
 
         @returns a distorted sample.
     */
-    static float simple (float inputSample, float amount) noexcept
+    [[nodiscard]] static float simple (float inputSample, float amount) noexcept
     {
         return (float) simple (static_cast<double> (inputSample),
                                static_cast<double> (amount));
@@ -56,7 +56,7 @@ public:
         @returns a distorted sample.
     */
     template<typename FloatType>
-    static FloatType hyperbolicTangentSoftClipping (FloatType inputSample) noexcept
+    [[nodiscard]] static FloatType hyperbolicTangentSoftClipping (FloatType inputSample) noexcept
     {
         return std::tanh (inputSample * (FloatType) 5);
     }
@@ -68,7 +68,7 @@ public:
 
         @returns a distorted sample.
     */
-    static double sinusoidalSoftClipping (double inputSample) noexcept
+    [[nodiscard]] static double sinusoidalSoftClipping (double inputSample) noexcept
     {
         if (std::abs (inputSample) > (2.0 / 3.0))
             return sgn (inputSample);
@@ -84,7 +84,7 @@ public:
         @returns a distorted sample.
     */
     template<typename FloatType>
-    static FloatType sinusoidalSoftClipping (FloatType inputSample) noexcept
+    [[nodiscard]] static FloatType sinusoidalSoftClipping (FloatType inputSample) noexcept
     {
         return static_cast<FloatType> (sinusoidalSoftClipping ((double) inputSample));
     }
@@ -96,7 +96,7 @@ public:
 
         @returns a distorted sample.
     */
-    static double exponential2SoftClipping (double inputSample) noexcept
+    [[nodiscard]] static double exponential2SoftClipping (double inputSample) noexcept
     {
         if (std::abs (inputSample) > (2.0 / 3.0))
             return sgn (inputSample);
@@ -113,7 +113,7 @@ public:
         @returns a distorted sample.
     */
     template<typename FloatType>
-    static FloatType exponential2SoftClipping (FloatType inputSample) noexcept
+    [[nodiscard]] static FloatType exponential2SoftClipping (FloatType inputSample) noexcept
     {
         return static_cast<FloatType> (exponential2SoftClipping ((double) inputSample));
     }
@@ -125,7 +125,7 @@ public:
 
         @returns a distorted sample.
     */
-    static double twoStageQuadraticSoftClipping (double inputSample) noexcept
+    [[nodiscard]] static double twoStageQuadraticSoftClipping (double inputSample) noexcept
     {
         if (std::abs (inputSample) > (2.0 / 3.0))
             return sgn (inputSample);
@@ -144,7 +144,7 @@ public:
         @returns a distorted sample.
     */
     template<typename FloatType>
-    static FloatType twoStageQuadraticSoftClipping (FloatType inputSample) noexcept
+    [[nodiscard]] static FloatType twoStageQuadraticSoftClipping (FloatType inputSample) noexcept
     {
         return static_cast<FloatType> (twoStageQuadraticSoftClipping ((double) inputSample));
     }
@@ -156,7 +156,7 @@ public:
 
         @returns a distorted sample.
     */
-    static double cubicSoftClipping (double inputSample) noexcept
+    [[nodiscard]] static double cubicSoftClipping (double inputSample) noexcept
     {
         if (std::abs (inputSample) > (2.0 / 3.0))
             return sgn (inputSample);
@@ -173,7 +173,7 @@ public:
         @returns a distorted sample.
     */
     template<typename FloatType>
-    static FloatType cubicSoftClipping (FloatType inputSample) noexcept
+    [[nodiscard]] static FloatType cubicSoftClipping (FloatType inputSample) noexcept
     {
         return static_cast<FloatType> (cubicSoftClipping ((double) inputSample));
     }
@@ -185,7 +185,7 @@ public:
 
         @returns a distorted sample.
     */
-    static double reciprocalSoftClipping (double inputSample) noexcept
+    [[nodiscard]] static double reciprocalSoftClipping (double inputSample) noexcept
     {
         if (std::abs (inputSample) > (2.0 / 3.0))
             return sgn (inputSample);
@@ -201,7 +201,7 @@ public:
         @returns a distorted sample.
     */
     template<typename FloatType>
-    static FloatType reciprocalSoftClipping (FloatType inputSample) noexcept
+    [[nodiscard]] static FloatType reciprocalSoftClipping (FloatType inputSample) noexcept
     {
         return static_cast<FloatType> (cubicSoftClipping ((double) inputSample));
     }
@@ -215,7 +215,7 @@ public:
         @returns a distorted sample.
     */
     template<typename FloatType>
-    static FloatType foldBack (FloatType inputSample, FloatType threshold) noexcept
+    [[nodiscard]] static FloatType foldBack (FloatType inputSample, FloatType threshold) noexcept
     {
         if (threshold <= FloatType (0))
             return FloatType (0);
@@ -233,7 +233,7 @@ public:
 
         @returns a distorted sample.
     */
-    static float foldBack (float inputSample, float threshold) noexcept
+    [[nodiscard]] static float foldBack (float inputSample, float threshold) noexcept
     {
         return (float) foldBack (static_cast<double> (inputSample),
                                  static_cast<double> (threshold));
@@ -259,7 +259,7 @@ public:
         @returns a distorted sample.
     */
     template<typename FloatType>
-    static constexpr FloatType hardClipping (FloatType inputSample, FloatType threshold = FloatType (1)) noexcept
+    [[nodiscard]] static constexpr FloatType hardClipping (FloatType inputSample, FloatType threshold = FloatType (1)) noexcept
     {
         return std::clamp (inputSample, -threshold, threshold);
     }
@@ -285,9 +285,9 @@ public:
         @returns a distorted sample.
     */
     template<typename FloatType>
-    static FloatType softClipping (FloatType inputSample,
-                                   FloatType lowerThreshold,
-                                   FloatType upperThreshold) noexcept
+    [[nodiscard]] static FloatType softClipping (FloatType inputSample,
+                                                 FloatType lowerThreshold,
+                                                 FloatType upperThreshold) noexcept
     {
         const bool isNegativeClipping = inputSample < -lowerThreshold;
 
@@ -343,7 +343,7 @@ public:
         @returns a distorted sample.
     */
     template<typename FloatType>
-    static FloatType softClippingExp (FloatType inputSample) noexcept
+    [[nodiscard]] static FloatType softClippingExp (FloatType inputSample) noexcept
     {
         if (inputSample > static_cast<FloatType> (0))
             return static_cast<FloatType> (1) - std::exp (-inputSample);
@@ -392,7 +392,7 @@ public:
         @returns a distorted sample.
     */
     template<typename FloatType>
-    static FloatType fullWaveRectification (FloatType inputSample) noexcept
+    [[nodiscard]] static FloatType fullWaveRectification (FloatType inputSample) noexcept
     {
         return std::abs (inputSample);
     }

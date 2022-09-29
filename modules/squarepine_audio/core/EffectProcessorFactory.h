@@ -9,7 +9,7 @@ public:
 
         @param knownPluginList The list of plugins to refer to.
     */
-    EffectProcessorFactory (KnownPluginList& knownPluginList);
+    EffectProcessorFactory (KnownPluginList&);
 
     /** Destructor. */
     virtual ~EffectProcessorFactory();

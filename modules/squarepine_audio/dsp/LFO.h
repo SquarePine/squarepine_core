@@ -53,7 +53,10 @@ public:
         void prepare (double sampleRate, double frequency);
 
         //==============================================================================
-        double getPhasePerSample() const noexcept { return MathConstants<double>::twoPi / (sampleRate / frequency); }
+        [[nodiscard]] double getPhasePerSample() const noexcept
+        {
+            return MathConstants<double>::twoPi / (sampleRate / frequency);
+        }
 
         //==============================================================================
         double sampleRate = 44100.0,
