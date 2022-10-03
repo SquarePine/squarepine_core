@@ -28,6 +28,7 @@ void ImageFormatManager::registerBasicFormats()
 
    #if JUCE_MODULE_AVAILABLE_squarepine_images
     registerFormat (std::make_unique<WebPImageFormat>());
+    registerFormat (std::make_unique<TIFFImageFormat>());
    #endif
 }
 
