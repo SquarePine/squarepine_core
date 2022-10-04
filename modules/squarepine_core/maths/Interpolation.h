@@ -64,13 +64,13 @@ template<typename Type>
 
 //==============================================================================
 /** */
-inline [[nodiscard]] float inverseSmoothstep (float x) noexcept
+[[nodiscard]] inline float inverseSmoothstep (float x) noexcept
 {
     return 0.5f - std::sin (std::asin (1.0f - 2.0f * x) / 3.0f);
 }
 
 /** */
-inline [[nodiscard]] double inverseSmoothstep (double x) noexcept
+[[nodiscard]] inline double inverseSmoothstep (double x) noexcept
 {
     return 0.5 - std::sin (std::asin (1.0 - 2.0 * x) / 3.0);
 }
@@ -88,7 +88,7 @@ template<typename Type>
 
 /** */
 template<typename Type>
-inline [[nodiscard]] Type catmullRomInterpolation (Type x, Type y, Type z, Type w, Type weight) noexcept
+[[nodiscard]] inline Type catmullRomInterpolation (Type x, Type y, Type z, Type w, Type weight) noexcept
 {
     constexpr auto half = static_cast<Type> (0.5);
     constexpr auto opf  = static_cast<Type> (1.5);

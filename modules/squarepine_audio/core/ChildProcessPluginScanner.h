@@ -10,7 +10,7 @@ public:
     static void performScan (const String& commandLine, OwnedArray<AudioPluginFormat> customFormats = {});
 
     /** */
-    static [[nodiscard]] bool shouldScan (const String& commandLine);
+    [[nodiscard]] static bool shouldScan (const String& commandLine);
 
     //==============================================================================
     /** @internal */
@@ -22,7 +22,7 @@ private:
     bool handleResultsFile (const File& resultsFile, OwnedArray<PluginDescription>& result);
     void handleResultXml (const XmlElement& xml, OwnedArray<PluginDescription>& found);
 
-    static [[nodiscard]] String createCommandArgument (AudioPluginFormat&,
+    [[nodiscard]] static String createCommandArgument (AudioPluginFormat&,
                                                        const String& fileOrIdentifier,
                                                        const File& tempResultsFile);
 
