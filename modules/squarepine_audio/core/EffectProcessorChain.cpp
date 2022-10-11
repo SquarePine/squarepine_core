@@ -404,9 +404,6 @@ void EffectProcessorChain::numChannelsChanged()         { loopThroughEffectsAndC
 void EffectProcessorChain::numBusesChanged()            { loopThroughEffectsAndCall<&AudioProcessor::numBusesChanged>(); }
 void EffectProcessorChain::processorLayoutsChanged()    { loopThroughEffectsAndCall<&AudioProcessor::processorLayoutsChanged>(); }
 const String EffectProcessorChain::getName() const      { return TRANS ("Effect Processor Chain"); }
-Identifier EffectProcessorChain::getIdentifier() const  { return "EffectProcessorChain"; }
-bool EffectProcessorChain::acceptsMidi() const          { return true; }
-bool EffectProcessorChain::producesMidi() const         { return true; }
 
 //==============================================================================
 namespace ChainIds

@@ -1,4 +1,4 @@
-/** An AudioSource object wrapped nicely in an AudioProcessor.
+/** An AudioTransportSource object wrapped nicely in an AudioProcessor.
 
     Simply call setSource() to change the source!
 */
@@ -35,14 +35,14 @@ public:
     void setResamplingRatio (double newRatio);
 
     /** */
-    double getLengthSeconds() const noexcept;
+    double getLengthSeconds() const;
     /** */
-    int64 getLengthSamples() const noexcept;
+    int64 getLengthSamples() const;
 
     /** */
-    double getCurrentTimeSeconds() const noexcept;
+    double getCurrentTimeSeconds() const;
     /** */
-    int64 getCurrentTimeSamples() const noexcept;
+    int64 getCurrentTimeSamples() const;
 
     /** */
     void clear();

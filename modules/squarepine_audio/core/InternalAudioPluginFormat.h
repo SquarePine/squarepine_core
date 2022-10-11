@@ -51,7 +51,7 @@ private:
     AudioProcessorGraph& graph;
     PluginCreationMap pluginCreationMap;
     OwnedArray<PluginDescription> descriptions;
-    int numGraphPlugins;
+    int numGraphPlugins = 0;
 
     //==============================================================================
     void addInternalPluginDescriptions();

@@ -1,4 +1,153 @@
 /** */
+class DemoEffectFormat final : public AudioPluginFormat
+{
+public:
+    /** */
+    DemoEffectFormat()
+    {
+    }
+
+    //==============================================================================
+    /** */
+    void fill (KnownPluginList& kpl)
+    {
+        addPlugin<BitCrusherProcessor> (kpl);
+        addPlugin<ChorusProcessor> (kpl);
+        addPlugin<DitherProcessor> (kpl);
+        addPlugin<GainProcessor> (kpl);
+        addPlugin<HissingProcessor> (kpl);
+        addPlugin<JUCEReverbProcessor> (kpl);
+        addPlugin<LFOProcessor> (kpl);
+        addPlugin<MuteProcessor> (kpl);
+        addPlugin<PanProcessor> (kpl);
+        addPlugin<PolarityInversionProcessor> (kpl);
+        addPlugin<SimpleDistortionProcessor> (kpl);
+        addPlugin<SimpleEQProcessor> (kpl);
+        addPlugin<StereoWidthProcessor> (kpl);
+    }
+
+    //==============================================================================
+    String getName() const override                                                             { return "SquarePine"; }
+    bool isTrivialToScan() const override                                                       { return true; }
+    bool canScanForPlugins() const override                                                     { return false; }
+    bool pluginNeedsRescanning (const PluginDescription&) override                              { return false; }
+    bool doesPluginStillExist (const PluginDescription&) override                               { return true; }
+    StringArray searchPathsForPlugins (const FileSearchPath&, bool, bool) override              { return {}; }
+    FileSearchPath getDefaultLocationsToSearch() override                                       { return {}; }
+    bool requiresUnblockedMessageThreadDuringCreation (const PluginDescription&) const override { return true; }
+
+    void findAllTypesForFile (OwnedArray<PluginDescription>& results,
+                              const String& fileOrIdentifier) override
+    {
+        for (const auto& ed : effectDetails)
+            if (ed->description.fileOrIdentifier == fileOrIdentifier)
+                results.add (new PluginDescription (ed->description));
+    }
+
+    bool fileMightContainThisPluginType (const String& fileOrIdentifier) override
+    {
+        for (const auto& ed : effectDetails)
+            if (ed->description.fileOrIdentifier == fileOrIdentifier)
+                return true;
+
+        return false;
+    }
+
+    String getNameOfPluginFromIdentifier (const String& fileOrIdentifier) override
+    {
+        for (const auto& ed : effectDetails)
+            if (ed->description.fileOrIdentifier == fileOrIdentifier)
+                return TRANS (ed->description.name);
+
+        return {};
+    }
+
+    void createPluginInstance (const PluginDescription& description, double initialSampleRate,
+                               int initialBufferSize, PluginCreationCallback callback) override
+    {
+        jassert (callback != nullptr);
+
+        for (const auto& ed : effectDetails)
+        {
+            if (ed->description.fileOrIdentifier == description.fileOrIdentifier)
+            {
+                auto plugin = ed->createInstance();
+                jassert (plugin != nullptr);
+
+                plugin->prepareToPlay (initialSampleRate, initialBufferSize);
+                callback (std::move (plugin), {});
+                return;
+            }
+        }
+
+        callback (nullptr, TRANS ("Failed!"));
+    }
+
+private:
+    //==============================================================================
+    struct EffectDetails final
+    {
+        EffectDetails() = default;
+
+        template<typename PluginClass>
+        void init()
+        {
+            static_assert (std::is_base_of_v<InternalProcessor, PluginClass>);
+
+            description = PluginClass().getPluginDescription();
+            createInstance = []()
+            {
+                return std::make_unique<PluginClass> ();
+            };
+        }
+
+        PluginDescription description;
+        std::function<std::unique_ptr<AudioPluginInstance> ()> createInstance;
+    };
+
+    OwnedArray<EffectDetails> effectDetails;
+
+    //==============================================================================
+    template<typename PluginClass>
+    void addPlugin (KnownPluginList& kpl)
+    {
+        auto* ed = effectDetails.add (new EffectDetails());
+        ed->init<PluginClass> ();
+        kpl.addType (ed->description);
+    }
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DemoEffectFormat)
+};
+
+//==============================================================================
+/** */
+class DemoEffectFactory final : public EffectProcessorFactory
+{
+public:
+    /** */
+    DemoEffectFactory (KnownPluginList& kpl) :
+        EffectProcessorFactory (kpl)
+    {
+        auto* effectFormat = new DemoEffectFormat();
+        effectFormat->fill (kpl);
+        apfm.addFormat (effectFormat);
+    }
+
+    //==============================================================================
+    /** */
+    const AudioPluginFormatManager& getAudioPluginFormatManager() const override { return apfm; }
+
+private:
+    //==============================================================================
+    AudioPluginFormatManager apfm;
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DemoEffectFactory)
+};
+
+//==============================================================================
+/** */
 class EffectChainDemo final : public DemoBase
 {
 public:
@@ -8,17 +157,17 @@ public:
     {
         clear();
 
-        sharedObjects.audioDeviceManager.addAudioCallback (&audioSourcePlayer);
-        audioSourcePlayer.setSource (&audioTransportSource);
+        sharedObjects.audioDeviceManager.addAudioCallback (&audioProcessorPlayer);
+        audioProcessorPlayer.setProcessor (&graph);
 
         play.onClick = [&]()
         {
             if (! play.isEnabled())
                 rewindAndStop();
-            else if (audioTransportSource.isPlaying())
-                audioTransportSource.stop();
+            else if (transport->isPlaying())
+                transport->stop();
             else
-                audioTransportSource.start();
+                transport->play();
         };
 
         play.addShortcut (KeyPress (KeyPress::spaceKey));
@@ -42,9 +191,22 @@ public:
 
         playbackRepainter.callback = [this]()
         {
-            if (audioTransportSource.isPlaying())
+            if (transport->isPlaying())
                 repaint();
         };
+
+        using GraphProcessor = AudioProcessorGraph::AudioGraphIOProcessor;
+        auto addGraphPlugin = [&] (GraphProcessor::IODeviceType type)
+        {
+            return graph.addNode (std::make_unique<GraphProcessor> (type));
+        };
+
+        audioOut        = addGraphPlugin (GraphProcessor::audioOutputNode);
+        midiIn          = addGraphPlugin (GraphProcessor::midiInputNode);
+        transportNode   = graph.addNode (std::unique_ptr<AudioProcessor> (transport));
+        effectChainNode = graph.addNode (std::unique_ptr<AudioProcessor> (effectChain));
+
+        reconnect();
 
         addAndMakeVisible (play);
         addAndMakeVisible (goToStart);
@@ -55,16 +217,18 @@ public:
     /** */
     ~EffectChainDemo() override
     {
-        sharedObjects.audioDeviceManager.removeAudioCallback (&audioSourcePlayer);
-        audioSourcePlayer.setSource (nullptr);
+        sharedObjects.audioDeviceManager.removeAudioCallback (&audioProcessorPlayer);
+        audioProcessorPlayer.setProcessor (nullptr);
+
+        graph.clear();
     }
 
     //==============================================================================
     /** */
     void mouseDown (const MouseEvent& e) override
     {
-        wasPlaying = audioTransportSource.isPlaying();
-        audioTransportSource.stop();
+        wasPlaying = transport->isPlaying();
+        transport->stop();
         movePlayhead (e);
     }
 
@@ -83,7 +247,7 @@ public:
     void mouseUp (const MouseEvent&) override
     {
         if (wasPlaying)
-            audioTransportSource.start();
+            transport->play();
 
         wasPlaying = false;
         isDraggingPlayhead = false;
@@ -123,7 +287,7 @@ public:
             return;
 
         const auto lengthSeconds = audioThumbnail->getTotalLength();
-        const auto timeSeconds = audioTransportSource.getCurrentPosition();
+        const auto timeSeconds = transport->getCurrentTimeSeconds();
 
         g.setColour (Colours::darkgrey);
         audioThumbnail->drawChannels (g, audioThumbnailArea, 0.0, lengthSeconds, 0.9f);
@@ -140,50 +304,32 @@ public:
 
 private:
     //==============================================================================
-    class EffectSource final : public AudioSource
-    {
-    public:
-        EffectSource()
-        {
-        }
+    using Node = AudioProcessorGraph::Node::Ptr;
 
-        ~EffectSource()
-        {
-        }
-
-        void prepareToPlay (int samplesPerBlockExpected, double sampleRate) override
-        {
-        }
-
-        void releaseResources() override
-        {
-        }
-
-        void getNextAudioBlock (const AudioSourceChannelInfo& bufferToFill) override
-        {
-        }
-
-        std::unique_ptr<EffectProcessorChain> chain;
-
-    private:
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EffectSource)
-    };
-
-    std::unique_ptr<FileChooser> chooser;
-
+    // Audio bits:
     KnownPluginList internalPluginsList;
-    std::shared_ptr<EffectProcessorFactory> factory;
-
-    File lastLoadedFile;
-    std::unique_ptr<AudioThumbnail> audioThumbnail;
+    std::shared_ptr<EffectProcessorFactory> factory { std::make_shared<DemoEffectFactory> (internalPluginsList) };
 
     std::unique_ptr<AudioFormatReaderSource> readerSource;
     TimeSliceThread readAheadThread { "FancyReadAheadThread" };
-    AudioTransportSource audioTransportSource;
-    AudioSourcePlayer audioSourcePlayer;
 
+    Node audioOut, midiIn;
+
+    AudioTransportProcessor* transport { new AudioTransportProcessor() };
+    Node transportNode;
+
+    EffectProcessorChain* effectChain { new EffectProcessorChain (factory) };
+    Node effectChainNode;
+
+    AudioProcessorGraph graph;
+    AudioProcessorPlayer audioProcessorPlayer;
+
+    // UI bits:
     bool wasPlaying = false,
          isDraggingPlayhead = false;
+
+    File lastLoadedFile;
+    std::unique_ptr<AudioThumbnail> audioThumbnail;
 
     Label filePath;
     Rectangle<int> audioThumbnailArea;
@@ -195,23 +341,71 @@ private:
     OffloadedTimer thumbnailRepainter,
                    playbackRepainter;
 
+    std::unique_ptr<FileChooser> chooser;
+
     //==============================================================================
-    void stopTransports()
+    void reconnect()
     {
-        audioTransportSource.stop();
+        auto nodes = graph.getNodes();
+
+        for (const auto& node : graph.getNodes())
+            graph.disconnectNode (node->nodeID);
+
+        auto connect = [&] (Node& source, Node& dest, bool isMidi = false)
+        {
+            // This trash heap of a graph node/connection API
+            // is tedious at best, so let's try to somewhat
+            // reduce the cognitive load...
+            auto addConnection = [&] (int channelIndex)
+            {
+                using NAC = AudioProcessorGraph::NodeAndChannel;
+
+                NAC sourceNAC;
+                sourceNAC.nodeID = source->nodeID;
+                sourceNAC.channelIndex = channelIndex;
+
+                NAC destNAC;
+                destNAC.nodeID = dest->nodeID;
+                destNAC.channelIndex = channelIndex;
+
+                if (isMidi)
+                {
+                    // Just skip the whole connection thing...
+                    if (channelIndex > 0)
+                        return true;
+
+                    sourceNAC.channelIndex = destNAC.channelIndex = AudioProcessorGraph::midiChannelIndex;
+                }
+
+                return graph.addConnection ({ sourceNAC, destNAC });
+            };
+
+            const bool succeeded = addConnection (0) && addConnection (1);
+            jassert (succeeded);
+            return succeeded;
+        };
+
+        connect (midiIn, effectChainNode, true);
+        connect (transportNode, effectChainNode);
+        connect (effectChainNode, audioOut);
+    }
+
+    void stop()
+    {
+        transport->stop();
     }
 
     void rewindAndStop()
     {
-        stopTransports();
-        audioTransportSource.setPosition (0.0);
+        stop();
+        transport->setCurrentTime (0.0);
         repaint();
     }
 
     void clear()
     {
         rewindAndStop();
-        audioTransportSource.setSource (nullptr);
+        transport->clear();
         readerSource.reset();
         play.setEnabled (false);
         goToStart.setEnabled (false);
@@ -228,7 +422,7 @@ private:
                                        (double) audioThumbnailArea.getWidth(),
                                        0.0, audioThumbnail->getTotalLength());
 
-        audioTransportSource.setPosition (timeSeconds);
+        transport->setCurrentTime (timeSeconds);
     }
 
     void setFile (const File& file, AudioFormatManager* audioFormatManager = nullptr)
@@ -242,8 +436,8 @@ private:
         {
             readerSource.reset (new AudioFormatReaderSource (reader, true));
 
-            audioTransportSource.setSource (readerSource.get(), 0, nullptr,
-                                            sharedObjects.audioDeviceManager.getAudioDeviceSetup().sampleRate);
+            transport->setSource (readerSource.get(), 0, nullptr,
+                                  sharedObjects.audioDeviceManager.getAudioDeviceSetup().sampleRate);
             play.setEnabled (true);
             goToStart.setEnabled (true);
         }
@@ -254,7 +448,7 @@ private:
         if (chooser != nullptr)
             return;
 
-        stopTransports();
+        stop();
 
         chooser.reset (new FileChooser (TRANS ("Load an audio file to process."),
                                         File::getSpecialLocation (File::userMusicDirectory),

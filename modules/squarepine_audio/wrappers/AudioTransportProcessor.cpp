@@ -62,22 +62,22 @@ bool AudioTransportProcessor::isPlaying() const
     return transport->isPlaying();
 }
 
-double AudioTransportProcessor::getLengthSeconds() const noexcept
+double AudioTransportProcessor::getLengthSeconds() const
 {
     return transport->getLengthInSeconds();
 }
 
-int64 AudioTransportProcessor::getLengthSamples() const noexcept
+int64 AudioTransportProcessor::getLengthSamples() const
 {
     return transport->getTotalLength();
 }
 
-double AudioTransportProcessor::getCurrentTimeSeconds() const noexcept
+double AudioTransportProcessor::getCurrentTimeSeconds() const
 {
     return transport->getCurrentPosition();
 }
 
-int64 AudioTransportProcessor::getCurrentTimeSamples() const noexcept
+int64 AudioTransportProcessor::getCurrentTimeSamples() const
 {
     return (int64) (getCurrentTimeSeconds() * getSampleRate());
 }

@@ -139,7 +139,7 @@ void InternalProcessor::fillInPluginDescription (PluginDescription& description)
     description.descriptiveName     = description.name;
     description.pluginFormatName    = getInternalProcessorTypeName();
     description.category            = isInstrument() ? TRANS ("Synth") : TRANS ("Effect");
-    description.manufacturerName    = "";
+    description.manufacturerName    = {};
     description.version             = getVersion();
     description.fileOrIdentifier    = getIdentifier().toString();
     description.lastFileModTime     = Time::getCurrentTime();

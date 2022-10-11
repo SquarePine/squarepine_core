@@ -255,13 +255,13 @@ public:
     /** @internal */
     [[nodiscard]] double getTailLengthSeconds() const override;
     /** @internal */
-    [[nodiscard]] Identifier getIdentifier() const override;
+    [[nodiscard]] Identifier getIdentifier() const override{ return "EffectProcessorChain"; }
     /** @internal */
     [[nodiscard]] const String getName() const override;
     /** @internal */
-    [[nodiscard]] bool acceptsMidi() const override;
+    [[nodiscard]] bool acceptsMidi() const override { return true; }
     /** @internal */
-    [[nodiscard]] bool producesMidi() const override;
+    [[nodiscard]] bool producesMidi() const override { return false; }
     /** @internal */
     void getStateInformation (MemoryBlock&) override;
     /** @internal */

@@ -150,7 +150,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return TRANS (getIdentifier().toString()); }
+    const String getName() const override { return getIdentifier().toString(); }
     /** @internal */
     bool acceptsMidi() const override { return false; }
     /** @internal */
@@ -172,7 +172,7 @@ public:
     /** @internal */
     void setCurrentProgram (int) override { }
     /** @internal */
-    const String getProgramName (int) override { return TRANS ("Default"); }
+    const String getProgramName (int) override { return NEEDS_TRANS ("Default"); }
     /** @internal */
     void changeProgramName (int, const String&) override { }
     /** @internal */

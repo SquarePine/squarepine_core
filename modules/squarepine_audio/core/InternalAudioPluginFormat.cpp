@@ -110,8 +110,7 @@ private:
 
 //==============================================================================
 InternalAudioPluginFormat::InternalAudioPluginFormat (AudioProcessorGraph& g) :
-    graph (g),
-    numGraphPlugins (-1)
+    graph (g)
 {
     addInternalPluginDescriptions();
 }
@@ -119,11 +118,11 @@ InternalAudioPluginFormat::InternalAudioPluginFormat (AudioProcessorGraph& g) :
 //==============================================================================
 void InternalAudioPluginFormat::addInternalPluginDescriptions()
 {
-    //Internal JUCE plugins:
+    // Internal JUCE plugins:
     CreationHelpers::addGraphPlugins (pluginCreationMap, descriptions);
     numGraphPlugins = descriptions.size();
 
-    //Effects:
+    // Effects:
     CreationHelpers::addPlugin<ADSRProcessor> (pluginCreationMap, descriptions);
     CreationHelpers::addPlugin<BitCrusherProcessor> (pluginCreationMap, descriptions);
     CreationHelpers::addPlugin<ChorusProcessor> (pluginCreationMap, descriptions);

@@ -14,7 +14,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return TRANS ("BitCrusher"); }
+    const String getName() const override { return NEEDS_TRANS ("BitCrusher"); }
     /** @internal */
     Identifier getIdentifier() const override { return "bitCrusher"; }
     /** @internal */

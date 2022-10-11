@@ -197,13 +197,11 @@ private:
         const auto v = generator (normalisedTime);
         const auto rv = canAnimateReverse ? generator (1.0 - normalisedTime) : v;
 
-/*
         auto t = scaledTransform;
         if (canAnimateReverse)
             t = scaledTransform.followedBy (AffineTransform::verticalFlip (-1.0));
 
         lineFollowPos = createPoint (normalisedTime, rv, t).toFloat();
-*/
 
         const auto pb = scalablePlot.getBounds();
 
@@ -215,13 +213,12 @@ private:
             lineFollowPos = lineFollowPos.translated (pb.getX(), pb.getY());
             lineFollowPos = lineFollowPos.transformedBy (AffineTransform::verticalFlip (lineFollowPos.y));
         }
-/*
+
         lineFollowPos.x = (float) mapTo (rv, 0.0, (double) pb.getWidth());
         lineFollowPos.y = (float) mapTo (rv, 0.0, (double) pb.getHeight());
         lineFollowPos.x += pb.getX();
         lineFollowPos.y += pb.getY();
         lineFollowPos = lineFollowPos.transformedBy (AffineTransform::verticalFlip (1.0));
-*/
 
         verticalBallBouncePos.x = ballArea.getCentreX();
         verticalBallBouncePos.y = (float) mapTo (rv, 0.0, (double) ballArea.getHeight());
@@ -250,9 +247,9 @@ public:
     EaseListComponent (SharedObjects& sharedObjs) :
         DemoBase (sharedObjs, NEEDS_TRANS ("Ease List Demo"))
     {
-        addGenerator (ease::audio::linear,           NEEDS_TRANS ("Linear"));
+        generators.ensureStorageAllocated (64);
 
-#if 0
+        addGenerator (ease::audio::linear,           NEEDS_TRANS ("Linear"));
         addGenerator (ease::audio::smoothstepEase,   NEEDS_TRANS ("Smoothstep"));
         addGenerator (ease::audio::smootherstepEase, NEEDS_TRANS ("Smootherstep"));
         addGenerator (ease::audio::sinEase,          NEEDS_TRANS ("sin"));
@@ -285,17 +282,15 @@ public:
         addGenerator (ease::cubic::in::quart,        NEEDS_TRANS ("In - Quart"));
         addGenerator (ease::cubic::out::quart,       NEEDS_TRANS ("Out - Quart"));
         addGenerator (ease::cubic::inOut::quart,     NEEDS_TRANS ("InOut - Quart"));
-#endif
-
         addGenerator (ease::cubic::in::quint,        NEEDS_TRANS ("In - Quint"));
-
-#if 0
         addGenerator (ease::cubic::out::quint,       NEEDS_TRANS ("Out - Quint"));
         addGenerator (ease::cubic::inOut::quint,     NEEDS_TRANS ("InOut - Quint"));
         addGenerator (ease::cubic::in::sine,         NEEDS_TRANS ("In - Sine"));
         addGenerator (ease::cubic::out::sine,        NEEDS_TRANS ("Out - Sine"));
         addGenerator (ease::cubic::inOut::sine,      NEEDS_TRANS ("InOut - Sine"));
-#endif
+
+        generators.minimiseStorageOverheads();
+
         listbox.setRowHeight (192);
         listbox.setModel (this);
         addAndMakeVisible (listbox);
@@ -348,6 +343,11 @@ public:
 
     Component* refreshComponentForRow (int row, bool, Component* comp) override
     {
+       #if JUCE_DEBUG && ! JUCE_DISABLE_ASSERTIONS
+        if (comp != nullptr)
+            jassert (dynamic_cast<CurveDisplayComponent*> (comp) != nullptr);
+       #endif
+
         std::unique_ptr<CurveDisplayComponent> cdc (static_cast<CurveDisplayComponent*> (comp));
         comp = nullptr;
 

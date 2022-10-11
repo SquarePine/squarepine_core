@@ -5,7 +5,7 @@ class OpenGLDetailsDemo final : public DemoBase,
 {
 public:
     OpenGLDetailsDemo (SharedObjects& sharedObjs, HighPerformanceRendererConfigurator& rc) :
-        DemoBase (sharedObjs, NEEDS_TRANS ("OpenGL Details Demo")),
+        DemoBase (sharedObjs, NEEDS_TRANS ("OpenGL Details")),
         rendererConfigurator (rc)
     {
         SafePointer ptr (this);

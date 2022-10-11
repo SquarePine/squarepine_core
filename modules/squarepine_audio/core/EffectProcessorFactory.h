@@ -22,7 +22,7 @@ public:
     [[nodiscard]] PluginDescription createPluginDescription (const String& fileOrIdentifier) const;
 
     /** Provided to help templated function - Just returns the description */
-    [[nodiscard]] PluginDescription createPluginDescription (const PluginDescription& description) const;
+    [[nodiscard]] PluginDescription createPluginDescription (const PluginDescription&) const;
 
     //==============================================================================
     /** */
@@ -32,20 +32,20 @@ public:
     [[nodiscard]] std::shared_ptr<AudioPluginInstance> createPlugin (const String& fileOrIdentifier) const;
 
     /** */
-    [[nodiscard]] std::shared_ptr<AudioPluginInstance> createPlugin (const PluginDescription& description) const;
+    [[nodiscard]] std::shared_ptr<AudioPluginInstance> createPlugin (const PluginDescription&) const;
 
     //==============================================================================
     /** */
     using PluginCreationCallback = std::function<void (std::shared_ptr<AudioPluginInstance>, const String&)>;
 
     /** */
-    void createPluginAsync (int index, PluginCreationCallback callback);
+    void createPluginAsync (int index, PluginCreationCallback);
 
     /** */
-    void createPluginAsync (const String& fileOrIdentifier, PluginCreationCallback callback);
+    void createPluginAsync (const String& fileOrIdentifier, PluginCreationCallback);
 
     /** */
-    void createPluginAsync (const PluginDescription& description, PluginCreationCallback callback);
+    void createPluginAsync (const PluginDescription&, PluginCreationCallback);
 
 protected:
     //==============================================================================
