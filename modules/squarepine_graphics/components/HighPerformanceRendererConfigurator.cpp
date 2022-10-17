@@ -52,17 +52,17 @@ void logOpenGLInfoCallback (OpenGLContext&)
 
     String stats;
     stats
-    << newLine << separatorLine << newLine << newLine
-    << "=== OpenGL/GPU Information ===" << newLine << newLine
-    << "Vendor: " << getGLString (GL_VENDOR) << newLine
-    << "Renderer: " << getGLString (GL_RENDERER) << newLine
-    << "OpenGL Version: " << getGLString (GL_VERSION) << newLine
-    << "OpenGL Major: " << String (major) << newLine
-    << "OpenGL Minor: " << String (minor) << newLine
-    << "OpenGL Shading Language Version: " << getGLString (GL_SHADING_LANGUAGE_VERSION) << newLine
-    << "OpenGL Num Extensions Found: " << numExtensions << newLine
-    << "OpenGL Extensions:" << newLine
-    << newLine;
+        << newLine << separatorLine << newLine << newLine
+        << "=== OpenGL/GPU Information ===" << newLine << newLine
+        << "Vendor: " << getGLString (GL_VENDOR) << newLine
+        << "Renderer: " << getGLString (GL_RENDERER) << newLine
+        << "OpenGL Version: " << getGLString (GL_VERSION) << newLine
+        << "OpenGL Major: " << String (major) << newLine
+        << "OpenGL Minor: " << String (minor) << newLine
+        << "OpenGL Shading Language Version: " << getGLString (GL_SHADING_LANGUAGE_VERSION) << newLine
+        << "OpenGL Num Extensions Found: " << numExtensions << newLine
+        << "OpenGL Extensions:" << newLine
+        << newLine;
 
     auto extensionsFromGL = getGLString (GL_EXTENSIONS).trim();
     if (extensionsFromGL.isEmpty())
@@ -75,7 +75,7 @@ void logOpenGLInfoCallback (OpenGLContext&)
     ext.removeDuplicates (true);
     ext.sort (true);
 
-    for (const auto& s : ext)
+    for (const auto& s: ext)
         stats << "\t- " << s << newLine;
 
     stats << newLine << separatorLine << newLine;
@@ -100,17 +100,16 @@ static inline void logGlInfoOnce (OpenGLContext& c)
 class HighPerformanceRendererConfigurator::DetachContextMessage final : public MessageManager::MessageBase
 {
 public:
-    DetachContextMessage (HighPerformanceRendererConfigurator& c) :
-        configurator (&c)
+    DetachContextMessage (HighPerformanceRendererConfigurator& c): configurator (&c)
     {
     }
 
     void messageCallback() override
     {
-       #if JUCE_MODULE_AVAILABLE_juce_opengl
+#if JUCE_MODULE_AVAILABLE_juce_opengl
         if (auto* c = configurator.get())
             c->context = nullptr;
-       #endif
+#endif
     }
 
 private:
@@ -122,21 +121,21 @@ private:
 //==============================================================================
 void HighPerformanceRendererConfigurator::configureWithOpenGLIfAvailable (Component& component)
 {
-   #if JUCE_MODULE_AVAILABLE_juce_opengl
+#if JUCE_MODULE_AVAILABLE_juce_opengl
     context.reset (new OpenGLContext());
     configureContextWithModernGL (*context.get());
 
     context->setContinuousRepainting (false);
 
     context->attachTo (component);
-   #else
+#else
     ignoreUnused (component);
-   #endif
+#endif
 }
 
 void HighPerformanceRendererConfigurator::paintCallback()
 {
-   #if JUCE_MODULE_AVAILABLE_juce_opengl
+#if JUCE_MODULE_AVAILABLE_juce_opengl
     if (! hasContextBeenForciblyDetached
         && context != nullptr
         && context->isActive()
@@ -156,5 +155,5 @@ void HighPerformanceRendererConfigurator::paintCallback()
             context->executeOnGLThread (logGlInfoOnce, false);
         }
     }
-   #endif
+#endif
 }

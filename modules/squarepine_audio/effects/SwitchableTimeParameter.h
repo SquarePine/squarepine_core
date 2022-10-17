@@ -4,13 +4,11 @@ public:
     SwitchableTimeParameter(): AudioParameterBool ("syncswitch",
                                                    "syncswitch",
                                                    false,
-                                                   "Time Sync ",
-                                                   [] (bool value, int) -> String {
+                                                   AudioParameterBoolAttributes().withLabel ("Time Sync ").withStringFromValueFunction ([] (bool value, int) -> String {
                                                        if (value > 0)
                                                            return TRANS ("Sync On");
                                                        return TRANS ("Sync Off");
-                                                       ;
-                                                   })
+                                                   }))
     {
     }
 

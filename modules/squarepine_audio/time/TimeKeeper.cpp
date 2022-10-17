@@ -3,14 +3,15 @@ TimeKeeper::TimeKeeper (double sr)
     setSamplingRate (sr);
 }
 
-TimeKeeper::TimeKeeper (const AudioPlayHead::CurrentPositionInfo& info, double sr) :
+TimeKeeper::TimeKeeper (const AudioPlayHead::PositionInfo& info, double sr) :
     TimeKeeper (sr)
 {
-    timeSeconds = info.timeInSeconds;
-    tempo = Tempo (info.bpm);
-    timeSignature = TimeSignature (info.timeSigNumerator, info.timeSigDenominator);
-    setFrameRate (info.frameRate.getType());
+    timeSeconds = *info.getTimeInSeconds();
+    tempo = Tempo (*info.getBpm());
+    timeSignature = TimeSignature ((*info.getTimeSignature()).numerator, (*info.getTimeSignature()).denominator);
+    setFrameRate ((*info.getFrameRate()).getType());
 }
+
 
 //==============================================================================
 TimeKeeper& TimeKeeper::setSamplingRate (double rate)

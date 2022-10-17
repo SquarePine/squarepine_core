@@ -1,54 +1,51 @@
 //==============================================================================
 namespace user
 {
-    ValueTree parse (const var& s)
+ValueTree parse (const var& s)
+{
+    auto v = ValueTree (user::userId);
+
+    if (auto* object = s.getDynamicObject())
+        for (const auto& prop: object->getProperties())
+            v.setProperty (prop.name, prop.value, nullptr);
+
+    return v;
+}
+
+ValueTree parse (const OAuth2AccessPoint& accessPoint, const OAuth2Token& token)
+{
+    if (token.isValid())
     {
-        auto v = ValueTree (user::userId);
-
-        if (auto* object = s.getDynamicObject())
-            for (const auto& prop : object->getProperties())
-                v.setProperty (prop.name, prop.value, nullptr);
-
-        return v;
-    }
-
-    ValueTree parse (const OAuth2AccessPoint& accessPoint, const OAuth2Token& token)
-    {
-        if (token.isValid())
+        const auto url = accessPoint.createOAuth2MeURL (token);
+        if (auto s = createEndpointStream (url, HTTPRequest::GET))
         {
-            const auto url = accessPoint.createOAuth2MeURL (token);
-            if (auto s = createEndpointStream (url, HTTPRequest::GET))
-            {
-                //NB: Although this isn't technically a URL, the result
-                //    may contain URLs inside the (potential) JSON.
-                const auto result = unescapeUrls (s->readEntireStreamAsString());
-                return parse (JSON::parse (result));
-            }
+            //NB: Although this isn't technically a URL, the result
+            //    may contain URLs inside the (potential) JSON.
+            const auto result = unescapeUrls (s->readEntireStreamAsString());
+            return parse (JSON::parse (result));
         }
-
-        return {};
     }
+
+    return {};
+}
 }
 
 //==============================================================================
-User::User() :
-    state (user::userId)
+User::User(): state (user::userId)
 {
 }
 
-User::User (const ValueTree& s) :
-    state (s)
+User::User (const ValueTree& s): state (s)
 {
     if (! state.hasType (user::userId))
     {
-        jassertfalse; //Not sure what happened here...
-        state = ValueTree (user::userId); //Dirty invalidation and recovery...
+        jassertfalse;//Not sure what happened here...
+        state = ValueTree (user::userId);//Dirty invalidation and recovery...
     }
 }
 
-User::User (const User& other) :
-    token (other.token),
-    state (other.state)
+User::User (const User& other): token (other.token),
+                                state (other.state)
 {
 }
 
@@ -111,7 +108,7 @@ User& User::operator= (const User& other)
     return *this;
 }
 
-bool User::operator== (const User& other) const noexcept        { return token == other.token; }
-bool User::operator== (const User::Ptr other) const noexcept    { return other != nullptr && operator== (*other.get()); }
-bool User::operator!= (const User& other) const noexcept        { return ! operator== (other); }
-bool User::operator!= (const User::Ptr other) const noexcept    { return ! operator== (other); }
+bool User::operator== (const User& other) const noexcept { return token == other.token; }
+bool User::operator== (const User::Ptr other) const noexcept { return other != nullptr && operator== (*other.get()); }
+bool User::operator!= (const User& other) const noexcept { return ! operator== (other); }
+bool User::operator!= (const User::Ptr other) const noexcept { return ! operator== (other); }

@@ -23,9 +23,9 @@ PixelType blend (const PixelType& c1, const PixelType& c2)
 {
     const auto a = c1.getAlpha();
     const auto invA = 255 - a;
-    const auto r = ((c2.getRed()   * invA) + (c1.getRed()   * a)) / 256;
+    const auto r = ((c2.getRed() * invA) + (c1.getRed() * a)) / 256;
     const auto g = ((c2.getGreen() * invA) + (c1.getGreen() * a)) / 256;
-    const auto b = ((c2.getBlue()  * invA) + (c1.getBlue()  * a)) / 256;
+    const auto b = ((c2.getBlue() * invA) + (c1.getBlue() * a)) / 256;
     const auto a2 = computeAlpha (c2.getAlpha(), c1.getAlpha());
 
     PixelType res;
@@ -72,7 +72,7 @@ void applyVignette (Image& img, float amountIn, float radiusIn, float fallOff, T
             const auto dx = x - cx;
 
             const bool outside = outE.isPointOutside ({ dx, dy });
-            const bool inside  = inE.isPointInside ({ dx, dy });
+            const bool inside = inE.isPointInside ({ dx, dy });
 
             auto* s = (Type*) p;
 
@@ -124,15 +124,15 @@ void applySepia (Image& img, ThreadPool* threadPool)
 
         for (int x = 0; x < w; x++)
         {
-            auto* s = (PixelARGB*)p;
+            auto* s = (PixelARGB*) p;
 
             auto r = s->getRed();
             auto g = s->getGreen();
             auto b = s->getBlue();
             auto a = s->getAlpha();
-            auto ro = toByte ((r * .393) + (g *.769) + (b * .189));
-            auto go = toByte ((r * .349) + (g *.686) + (b * .168));
-            auto bo = toByte ((r * .272) + (g *.534) + (b * .131));
+            auto ro = toByte ((r * .393) + (g * .769) + (b * .189));
+            auto go = toByte ((r * .349) + (g * .686) + (b * .168));
+            auto bo = toByte ((r * .272) + (g * .534) + (b * .131));
 
             s->setARGB (a, ro, go, bo);
 
@@ -156,7 +156,7 @@ void applyGreyScale (Image& img, ThreadPool* threadPool)
 
         for (int x = 0; x < w; x++)
         {
-            auto* s = (T*)p;
+            auto* s = (T*) p;
 
             auto r = s->getRed();
             auto g = s->getGreen();
@@ -237,8 +237,7 @@ void applySharpen (Image& img, ThreadPool* threadPool)
     {
         for (int x = 0; x < w; x++)
         {
-            auto getPixelPointer = [&] (int cx, int cy) -> T*
-            {
+            auto getPixelPointer = [&] (int cx, int cy) -> T* {
                 cx = jlimit (0, w - 1, cx);
                 cy = jlimit (0, h - 1, cy);
 
@@ -250,9 +249,9 @@ void applySharpen (Image& img, ThreadPool* threadPool)
 
             auto* s = getPixelPointer (x, y);
 
-            ro = s->getRed()   * 5;
+            ro = s->getRed() * 5;
             go = s->getGreen() * 5;
-            bo = s->getBlue()  * 5;
+            bo = s->getBlue() * 5;
             ao = s->getAlpha();
 
             s = getPixelPointer (x, y - 1);
@@ -299,7 +298,7 @@ void applyGamma (Image& img, float gamma, ThreadPool* threadPool)
 
         for (int x = 0; x < w; x++)
         {
-            auto* s = (T*)p;
+            auto* s = (T*) p;
 
             auto r = s->getRed();
             auto g = s->getGreen();
@@ -366,7 +365,7 @@ void applyContrast (Image& img, float contrast, ThreadPool* threadPool)
 
         for (int x = 0; x < w; x++)
         {
-            auto* s = (T*)p;
+            auto* s = (T*) p;
 
             auto r = s->getRed();
             auto g = s->getGreen();
@@ -477,7 +476,7 @@ void applyBrightnessContrast (Image& img, float brightness, float contrast, Thre
 
         for (int x = 0; x < w; x++)
         {
-            auto* s = (T*)p;
+            auto* s = (T*) p;
 
             auto r = s->getRed();
             auto g = s->getGreen();
@@ -537,7 +536,7 @@ void applyHueSaturationLightness (Image& img, float hueIn, float saturation, flo
 
         for (int x = 0; x < w; x++)
         {
-            auto* s = (T*)p;
+            auto* s = (T*) p;
 
             auto r = s->getRed();
             auto g = s->getGreen();
@@ -553,8 +552,10 @@ void applyHueSaturationLightness (Image& img, float hueIn, float saturation, flo
             auto hue = c.getHue();
             hue += hueIn;
 
-            while (hue < 0.0f)  hue += 1.0f;
-            while (hue >= 1.0f) hue -= 1.0f;
+            while (hue < 0.0f)
+                hue += 1.0f;
+            while (hue >= 1.0f)
+                hue -= 1.0f;
 
             c = Colour::fromHSV (hue, c.getSaturation(), c.getBrightness(), float (a));
             ro = c.getRed();
@@ -599,7 +600,7 @@ void applyGradientMap (Image& img, const ColourGradient& gradient, ThreadPool* t
 
         for (int x = 0; x < w; x++)
         {
-            auto* s = (T*)p;
+            auto* s = (T*) p;
 
             auto r = s->getRed();
             auto g = s->getGreen();
@@ -643,7 +644,7 @@ void applyColour (Image& img, Colour c, ThreadPool* threadPool)
 
         for (int x = 0; x < w; x++)
         {
-            auto* s = (T*)p;
+            auto* s = (T*) p;
             s->setARGB (a, r, g, b);
             p += data.pixelStride;
         }
@@ -656,7 +657,7 @@ void applyVignette (Image& img, float amountIn, float radiusIn, float fallOff, T
     if (img.getFormat() == Image::ARGB)
         applyVignette<PixelARGB> (img, amountIn, radiusIn, fallOff, threadPool);
     else if (img.getFormat() == Image::RGB)
-        applyVignette<PixelRGB>  (img, amountIn, radiusIn, fallOff, threadPool);
+        applyVignette<PixelRGB> (img, amountIn, radiusIn, fallOff, threadPool);
     else
         jassertfalse;
 }
@@ -666,7 +667,7 @@ void applySepia (Image& img, ThreadPool* threadPool)
     if (img.getFormat() == Image::ARGB)
         applySepia<PixelARGB> (img, threadPool);
     else if (img.getFormat() == Image::RGB)
-        applySepia<PixelRGB>  (img, threadPool);
+        applySepia<PixelRGB> (img, threadPool);
     else
         jassertfalse;
 }
@@ -676,8 +677,9 @@ void applyGreyScale (Image& img, ThreadPool* threadPool)
     if (img.getFormat() == Image::ARGB)
         applyGreyScale<PixelARGB> (img, threadPool);
     else if (img.getFormat() == Image::RGB)
-        applyGreyScale<PixelRGB>  (img, threadPool);
-    else jassertfalse;
+        applyGreyScale<PixelRGB> (img, threadPool);
+    else
+        jassertfalse;
 }
 
 void applySoften (Image& img, ThreadPool* threadPool)
@@ -685,7 +687,7 @@ void applySoften (Image& img, ThreadPool* threadPool)
     if (img.getFormat() == Image::ARGB)
         applySoften<PixelARGB> (img, threadPool);
     else if (img.getFormat() == Image::RGB)
-        applySoften<PixelRGB>  (img, threadPool);
+        applySoften<PixelRGB> (img, threadPool);
     else
         jassertfalse;
 }
@@ -695,7 +697,7 @@ void applySharpen (Image& img, ThreadPool* threadPool)
     if (img.getFormat() == Image::ARGB)
         applySharpen<PixelARGB> (img, threadPool);
     else if (img.getFormat() == Image::RGB)
-        applySharpen<PixelRGB>  (img, threadPool);
+        applySharpen<PixelRGB> (img, threadPool);
     else
         jassertfalse;
 }
@@ -705,7 +707,7 @@ void applyGamma (Image& img, float gamma, ThreadPool* threadPool)
     if (img.getFormat() == Image::ARGB)
         applyGamma<PixelARGB> (img, gamma, threadPool);
     else if (img.getFormat() == Image::RGB)
-        applyGamma<PixelRGB>  (img, gamma, threadPool);
+        applyGamma<PixelRGB> (img, gamma, threadPool);
     else
         jassertfalse;
 }
@@ -715,7 +717,7 @@ void applyInvert (Image& img, ThreadPool* threadPool)
     if (img.getFormat() == Image::ARGB)
         applyInvert<PixelARGB> (img, threadPool);
     else if (img.getFormat() == Image::RGB)
-        applyInvert<PixelRGB>  (img, threadPool);
+        applyInvert<PixelRGB> (img, threadPool);
     else
         jassertfalse;
 }
@@ -725,7 +727,7 @@ void applyContrast (Image& img, float contrast, ThreadPool* threadPool)
     if (img.getFormat() == Image::ARGB)
         applyContrast<PixelARGB> (img, contrast, threadPool);
     else if (img.getFormat() == Image::RGB)
-        applyContrast<PixelRGB>  (img, contrast, threadPool);
+        applyContrast<PixelRGB> (img, contrast, threadPool);
     else
         jassertfalse;
 }
@@ -735,7 +737,7 @@ void applyBrightnessContrast (Image& img, float brightness, float contrast, Thre
     if (img.getFormat() == Image::ARGB)
         applyBrightnessContrast<PixelARGB> (img, brightness, contrast, threadPool);
     else if (img.getFormat() == Image::RGB)
-        applyBrightnessContrast<PixelRGB>  (img, brightness, contrast, threadPool);
+        applyBrightnessContrast<PixelRGB> (img, brightness, contrast, threadPool);
     else
         jassertfalse;
 }
@@ -745,7 +747,7 @@ void applyHueSaturationLightness (Image& img, float hue, float saturation, float
     if (img.getFormat() == Image::ARGB)
         applyHueSaturationLightness<PixelARGB> (img, hue, saturation, lightness, threadPool);
     else if (img.getFormat() == Image::RGB)
-        applyHueSaturationLightness<PixelRGB>  (img, hue, saturation, lightness, threadPool);
+        applyHueSaturationLightness<PixelRGB> (img, hue, saturation, lightness, threadPool);
     else
         jassertfalse;
 }
@@ -755,7 +757,7 @@ void applyGradientMap (Image& img, const ColourGradient& gradient, ThreadPool* t
     if (img.getFormat() == Image::ARGB)
         applyGradientMap<PixelARGB> (img, gradient, threadPool);
     else if (img.getFormat() == Image::RGB)
-        applyGradientMap<PixelRGB>  (img, gradient, threadPool);
+        applyGradientMap<PixelRGB> (img, gradient, threadPool);
     else
         jassertfalse;
 }
@@ -765,7 +767,7 @@ void applyColour (Image& img, Colour c, ThreadPool* threadPool)
     if (img.getFormat() == Image::ARGB)
         applyColour<PixelARGB> (img, c, threadPool);
     else if (img.getFormat() == Image::RGB)
-        applyColour<PixelRGB>  (img, c, threadPool);
+        applyColour<PixelRGB> (img, c, threadPool);
     else
         jassertfalse;
 }

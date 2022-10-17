@@ -9,14 +9,19 @@ public:
                                   std::function<String (float value, int maximumStringLength)> stringFromValue = nullptr): AudioParameterBool (parameterID,
                                                                                                                                                parameterName,
                                                                                                                                                defaultValue,
-                                                                                                                                               parameterLabel,
-                                                                                                                                               stringFromValue),
+                                                                                                                                               AudioParameterBoolAttributes().withLabel (parameterLabel).withStringFromValueFunction (stringFromValue).withAutomatable (automate)),
                                                                                                                            automatable (automate)
     {
     }
 
-    bool isAutomatable() const override { return automatable; }
-    void setAutomatable (const bool state) { automatable = state; }
+    bool isAutomatable() const override
+    {
+        return automatable;
+    }
+    void setAutomatable (const bool state)
+    {
+        automatable = state;
+    }
 
 protected:
     void valueChanged (bool newValue) override

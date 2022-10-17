@@ -1,6 +1,5 @@
 namespace svg
 {
-
 //==============================================================================
 Path Parse::parseSVGPath (const String& svgPath, const Environment& environment)
 {
@@ -34,7 +33,6 @@ std::unique_ptr<Drawable> Parse::parse (const void* data, int numBytes, const En
 
     return {};
 }
-
 
 //==============================================================================
 bool isIdentifierChar (juce_wchar c)
@@ -95,11 +93,11 @@ inline String parseURL (const String& str)
 {
     if (str.startsWithIgnoreCase ("url"))
         return str
-                .fromFirstOccurrenceOf ("(", false, false)
-                .upToLastOccurrenceOf (")", false, false)
-                .unquoted()
-                .substring (1) //To remove the '#'
-                .trim();
+            .fromFirstOccurrenceOf ("(", false, false)
+            .upToLastOccurrenceOf (")", false, false)
+            .unquoted()
+            .substring (1)//To remove the '#'
+            .trim();
 
     return {};
 }
@@ -114,12 +112,12 @@ inline int parsePlacementFlags (const String& align) noexcept
         return RectanglePlacement::stretchToFit;
 
     return (align.containsIgnoreCase ("slice") ? RectanglePlacement::fillDestination : 0)
-         | (align.containsIgnoreCase ("xMin") ? RectanglePlacement::xLeft
-                                              : (align.containsIgnoreCase ("xMax") ? RectanglePlacement::xRight
-                                                                                   : RectanglePlacement::xMid))
-         | (align.containsIgnoreCase ("yMin") ? RectanglePlacement::yTop
-                                              : (align.containsIgnoreCase ("yMax") ? RectanglePlacement::yBottom
-                                                                                   : RectanglePlacement::yMid));
+           | (align.containsIgnoreCase ("xMin") ? RectanglePlacement::xLeft
+                                                : (align.containsIgnoreCase ("xMax") ? RectanglePlacement::xRight
+                                                                                     : RectanglePlacement::xMid))
+           | (align.containsIgnoreCase ("yMin") ? RectanglePlacement::yTop
+                                                : (align.containsIgnoreCase ("yMax") ? RectanglePlacement::yBottom
+                                                                                     : RectanglePlacement::yMid));
 }
 
 //==============================================================================
@@ -134,8 +132,8 @@ inline String getAttributeFromStyleList (const String& list, StringRef attribute
         if (i < 0)
             break;
 
-        if ((i == 0 || (i > 0 && ! isIdentifierChar (list [i - 1])))
-            && ! isIdentifierChar (list [i + attributeName.length()]))
+        if ((i == 0 || (i > 0 && ! isIdentifierChar (list[i - 1])))
+            && ! isIdentifierChar (list[i + attributeName.length()]))
         {
             i = list.indexOfChar (i, ':');
 
@@ -233,16 +231,20 @@ inline bool parseNextFlag (String::CharPointerType& text, bool& value)
 //==============================================================================
 inline PathStrokeType::JointStyle getJointStyle (const String& join) noexcept
 {
-    if (join.equalsIgnoreCase ("round"))  return PathStrokeType::curved;
-    if (join.equalsIgnoreCase ("bevel"))  return PathStrokeType::beveled;
+    if (join.equalsIgnoreCase ("round"))
+        return PathStrokeType::curved;
+    if (join.equalsIgnoreCase ("bevel"))
+        return PathStrokeType::beveled;
 
     return PathStrokeType::mitered;
 }
 
 inline PathStrokeType::EndCapStyle getEndCapStyle (const String& cap) noexcept
 {
-    if (cap.equalsIgnoreCase ("round"))   return PathStrokeType::rounded;
-    if (cap.equalsIgnoreCase ("square"))  return PathStrokeType::square;
+    if (cap.equalsIgnoreCase ("round"))
+        return PathStrokeType::rounded;
+    if (cap.equalsIgnoreCase ("square"))
+        return PathStrokeType::square;
 
     return PathStrokeType::butt;
 }
@@ -286,8 +288,9 @@ inline AffineTransform parseTransform (String t)
     {
         StringArray tokens;
         tokens.addTokens (t.fromFirstOccurrenceOf ("(", false, false)
-                           .upToFirstOccurrenceOf (")", false, false),
-                          ", ", "");
+                              .upToFirstOccurrenceOf (")", false, false),
+                          ", ",
+                          "");
 
         tokens.removeEmptyStrings (true);
 
@@ -401,24 +404,24 @@ inline void assertOnUnsupportedTags (const XmlElement& topLevel)
 {
     ignoreUnused (topLevel);
 
-   #if JUCE_DEBUG
+#if JUCE_DEBUG
     // NB: If you hit any assertions here, the SVG XML data contains unsupported tags!
     for (auto* c = topLevel.getFirstChildElement(); c != nullptr; c = c->getNextElement())
     {
         const auto& tag = c->getTagName();
 
-        for (const auto& tagName : { "html", "audio", "video", "iframe", "canvas", "animate" })
+        for (const auto& tagName: { "html", "audio", "video", "iframe", "canvas", "animate" })
             if (tag.containsIgnoreCase (tagName))
                 jassertfalse;
     }
-   #endif
+#endif
 }
 
 inline StringPairArray scanForMetadata (const XmlElement& topLevel)
 {
     StringPairArray metadata;
 
-    for (const auto& tag : { tags::title, tags::desc, tags::metadata })
+    for (const auto& tag: { tags::title, tags::desc, tags::metadata })
         if (auto* t = topLevel.getNextElementWithTagName (tag))
             metadata.set (tag, t->getAllSubText());
 
@@ -426,41 +429,38 @@ inline StringPairArray scanForMetadata (const XmlElement& topLevel)
 }
 
 //==============================================================================
-SVGState::SVGState (const XmlElement* topLevel, const File& svgFile, const Environment& env) :
-    originalFile (svgFile),
-    topLevelXml (topLevel, nullptr),
-    environment (env)
+SVGState::SVGState (const XmlElement* topLevel, const File& svgFile, const Environment& env): originalFile (svgFile),
+                                                                                              topLevelXml (topLevel, nullptr),
+                                                                                              environment (env)
 {
     jassert (topLevel != nullptr);
     assertOnUnsupportedTags (*topLevel);
     metadata = scanForMetadata (*topLevel);
 }
 
-SVGState::SVGState (const SVGState& other) :
-    originalFile (other.originalFile),
-    topLevelXml (other.topLevelXml),
-    environment (other.environment),
-    metadata (other.metadata),
-    width (other.width),
-    height (other.height),
-    viewBoxW (other.viewBoxW),
-    viewBoxH (other.viewBoxH),
-    transform (other.transform),
-    cssStyleText (other.cssStyleText)
+SVGState::SVGState (const SVGState& other): originalFile (other.originalFile),
+                                            topLevelXml (other.topLevelXml),
+                                            environment (other.environment),
+                                            metadata (other.metadata),
+                                            width (other.width),
+                                            height (other.height),
+                                            viewBoxW (other.viewBoxW),
+                                            viewBoxH (other.viewBoxH),
+                                            transform (other.transform),
+                                            cssStyleText (other.cssStyleText)
 {
 }
 
-SVGState::SVGState (SVGState&& other) :
-    originalFile (other.originalFile),
-    topLevelXml (other.topLevelXml),
-    environment (other.environment),
-    metadata (other.metadata),
-    width (other.width),
-    height (other.height),
-    viewBoxW (other.viewBoxW),
-    viewBoxH (other.viewBoxH),
-    transform (other.transform),
-    cssStyleText (other.cssStyleText)
+SVGState::SVGState (SVGState&& other): originalFile (other.originalFile),
+                                       topLevelXml (other.topLevelXml),
+                                       environment (other.environment),
+                                       metadata (other.metadata),
+                                       width (other.width),
+                                       height (other.height),
+                                       viewBoxW (other.viewBoxW),
+                                       viewBoxH (other.viewBoxH),
+                                       transform (other.transform),
+                                       cssStyleText (other.cssStyleText)
 {
 }
 
@@ -513,11 +513,13 @@ std::unique_ptr<Drawable> SVGState::parseSVGElement (const XmlPath& xml)
     if (xml->hasAttribute ("transform"))
         newState.addTransform (xml);
 
-    newState.width  = getCoordLength (xml->getStringAttribute ("width",  String (newState.width)),  viewBoxW);
+    newState.width = getCoordLength (xml->getStringAttribute ("width", String (newState.width)), viewBoxW);
     newState.height = getCoordLength (xml->getStringAttribute ("height", String (newState.height)), viewBoxH);
 
-    if (newState.width <= 0) newState.width = 100;
-    if (newState.height <= 0) newState.height = 100;
+    if (newState.width <= 0)
+        newState.width = 100;
+    if (newState.height <= 0)
+        newState.height = 100;
 
     Point<float> viewboxXY;
 
@@ -539,9 +541,9 @@ std::unique_ptr<Drawable> SVGState::parseSVGElement (const XmlPath& xml)
 
             if (placementFlags != 0)
                 newState.transform = RectanglePlacement (placementFlags)
-                                        .getTransformToFit ({ viewboxXY.x, viewboxXY.y, vwh.x, vwh.y },
-                                                            { newState.width, newState.height })
-                                        .followedBy (newState.transform);
+                                         .getTransformToFit ({ viewboxXY.x, viewboxXY.y, vwh.x, vwh.y },
+                                                             { newState.width, newState.height })
+                                         .followedBy (newState.transform);
         }
     }
     else
@@ -581,209 +583,203 @@ void SVGState::parsePathString (Path& path, const String& pathString) const
 
         switch (currentCommand)
         {
-        case 'M':
-        case 'm':
-        case 'L':
-        case 'l':
-            if (parseCoordsOrSkip (d, p1, false))
-            {
-                if (isRelative)
-                    p1 += last;
-
-                if (currentCommand == 'M' || currentCommand == 'm')
+            case 'M':
+            case 'm':
+            case 'L':
+            case 'l':
+                if (parseCoordsOrSkip (d, p1, false))
                 {
-                    subpathStart = p1;
-                    path.startNewSubPath (p1);
-                    currentCommand = 'l';
+                    if (isRelative)
+                        p1 += last;
+
+                    if (currentCommand == 'M' || currentCommand == 'm')
+                    {
+                        subpathStart = p1;
+                        path.startNewSubPath (p1);
+                        currentCommand = 'l';
+                    }
+                    else
+                    {
+                        path.lineTo (p1);
+                    }
+
+                    last2 = last = p1;
+                }
+                break;
+
+            case 'H':
+            case 'h':
+                if (parseCoord (d, p1.x, false, true))
+                {
+                    if (isRelative)
+                        p1.x += last.x;
+
+                    path.lineTo (p1.x, last.y);
+
+                    last2.x = last.x;
+                    last.x = p1.x;
                 }
                 else
                 {
-                    path.lineTo (p1);
+                    ++d;
                 }
+                break;
 
-                last2 = last = p1;
-            }
-            break;
-
-        case 'H':
-        case 'h':
-            if (parseCoord (d, p1.x, false, true))
-            {
-                if (isRelative)
-                    p1.x += last.x;
-
-                path.lineTo (p1.x, last.y);
-
-                last2.x = last.x;
-                last.x = p1.x;
-            }
-            else
-            {
-                ++d;
-            }
-            break;
-
-        case 'V':
-        case 'v':
-            if (parseCoord (d, p1.y, false, false))
-            {
-                if (isRelative)
-                    p1.y += last.y;
-
-                path.lineTo (last.x, p1.y);
-
-                last2.y = last.y;
-                last.y = p1.y;
-            }
-            else
-            {
-                ++d;
-            }
-            break;
-
-        case 'C':
-        case 'c':
-            if (parseCoordsOrSkip (d, p1, false)
-                && parseCoordsOrSkip (d, p2, false)
-                && parseCoordsOrSkip (d, p3, false))
-            {
-                if (isRelative)
+            case 'V':
+            case 'v':
+                if (parseCoord (d, p1.y, false, false))
                 {
-                    p1 += last;
-                    p2 += last;
-                    p3 += last;
+                    if (isRelative)
+                        p1.y += last.y;
+
+                    path.lineTo (last.x, p1.y);
+
+                    last2.y = last.y;
+                    last.y = p1.y;
                 }
-
-                path.cubicTo (p1, p2, p3);
-
-                last2 = p2;
-                last = p3;
-            }
-            break;
-
-        case 'S':
-        case 's':
-            if (parseCoordsOrSkip (d, p1, false)
-                && parseCoordsOrSkip (d, p3, false))
-            {
-                if (isRelative)
+                else
                 {
-                    p1 += last;
-                    p3 += last;
+                    ++d;
                 }
+                break;
 
-                p2 = last;
-
-                if (CharPointer_ASCII ("CcSs").indexOf (previousCommand) >= 0)
-                    p2 += (last - last2);
-
-                path.cubicTo (p2, p1, p3);
-
-                last2 = p1;
-                last = p3;
-            }
-            break;
-
-        case 'Q':
-        case 'q':
-            if (parseCoordsOrSkip (d, p1, false)
-                && parseCoordsOrSkip (d, p2, false))
-            {
-                if (isRelative)
+            case 'C':
+            case 'c':
+                if (parseCoordsOrSkip (d, p1, false)
+                    && parseCoordsOrSkip (d, p2, false)
+                    && parseCoordsOrSkip (d, p3, false))
                 {
-                    p1 += last;
-                    p2 += last;
-                }
-
-                path.quadraticTo (p1, p2);
-
-                last2 = p1;
-                last = p2;
-            }
-            break;
-
-        case 'T':
-        case 't':
-            if (parseCoordsOrSkip (d, p1, false))
-            {
-                if (isRelative)
-                    p1 += last;
-
-                p2 = last;
-
-                if (CharPointer_ASCII ("QqTt").indexOf (previousCommand) >= 0)
-                    p2 += (last - last2);
-
-                path.quadraticTo (p2, p1);
-
-                last2 = p2;
-                last = p1;
-            }
-            break;
-
-        case 'A':
-        case 'a':
-            if (parseCoordsOrSkip (d, p1, false))
-            {
-                String num;
-                bool flagValue = false;
-
-                if (parseNextNumber (d, num, false))
-                {
-                    const auto angle = degreesToRadians (parseSafeFloat (num));
-
-                    if (parseNextFlag (d, flagValue))
+                    if (isRelative)
                     {
-                        const auto largeArc = flagValue;
+                        p1 += last;
+                        p2 += last;
+                        p3 += last;
+                    }
+
+                    path.cubicTo (p1, p2, p3);
+
+                    last2 = p2;
+                    last = p3;
+                }
+                break;
+
+            case 'S':
+            case 's':
+                if (parseCoordsOrSkip (d, p1, false)
+                    && parseCoordsOrSkip (d, p3, false))
+                {
+                    if (isRelative)
+                    {
+                        p1 += last;
+                        p3 += last;
+                    }
+
+                    p2 = last;
+
+                    if (CharPointer_ASCII ("CcSs").indexOf (previousCommand) >= 0)
+                        p2 += (last - last2);
+
+                    path.cubicTo (p2, p1, p3);
+
+                    last2 = p1;
+                    last = p3;
+                }
+                break;
+
+            case 'Q':
+            case 'q':
+                if (parseCoordsOrSkip (d, p1, false)
+                    && parseCoordsOrSkip (d, p2, false))
+                {
+                    if (isRelative)
+                    {
+                        p1 += last;
+                        p2 += last;
+                    }
+
+                    path.quadraticTo (p1, p2);
+
+                    last2 = p1;
+                    last = p2;
+                }
+                break;
+
+            case 'T':
+            case 't':
+                if (parseCoordsOrSkip (d, p1, false))
+                {
+                    if (isRelative)
+                        p1 += last;
+
+                    p2 = last;
+
+                    if (CharPointer_ASCII ("QqTt").indexOf (previousCommand) >= 0)
+                        p2 += (last - last2);
+
+                    path.quadraticTo (p2, p1);
+
+                    last2 = p2;
+                    last = p1;
+                }
+                break;
+
+            case 'A':
+            case 'a':
+                if (parseCoordsOrSkip (d, p1, false))
+                {
+                    String num;
+                    bool flagValue = false;
+
+                    if (parseNextNumber (d, num, false))
+                    {
+                        const auto angle = degreesToRadians (parseSafeFloat (num));
 
                         if (parseNextFlag (d, flagValue))
                         {
-                            const auto sweep = flagValue;
+                            const auto largeArc = flagValue;
 
-                            if (parseCoordsOrSkip (d, p2, false))
+                            if (parseNextFlag (d, flagValue))
                             {
-                                if (isRelative)
-                                    p2 += last;
+                                const auto sweep = flagValue;
 
-                                if (last != p2)
+                                if (parseCoordsOrSkip (d, p2, false))
                                 {
-                                    double centreX = 0.0, centreY = 0.0, startAngle = 0.0, deltaAngle = 0.0;
-                                    double rx = p1.x, ry = p1.y;
+                                    if (isRelative)
+                                        p2 += last;
 
-                                    endpointToCentreParameters (last.x, last.y, p2.x, p2.y,
-                                                                angle, largeArc, sweep,
-                                                                rx, ry, centreX, centreY,
-                                                                startAngle, deltaAngle);
+                                    if (last != p2)
+                                    {
+                                        double centreX = 0.0, centreY = 0.0, startAngle = 0.0, deltaAngle = 0.0;
+                                        double rx = p1.x, ry = p1.y;
 
-                                    path.addCentredArc ((float) centreX, (float) centreY,
-                                                        (float) rx, (float) ry,
-                                                        angle, (float) startAngle, (float) (startAngle + deltaAngle),
-                                                        false);
+                                        endpointToCentreParameters (last.x, last.y, p2.x, p2.y, angle, largeArc, sweep, rx, ry, centreX, centreY, startAngle, deltaAngle);
 
-                                    path.lineTo (p2);
+                                        path.addCentredArc ((float) centreX, (float) centreY, (float) rx, (float) ry, angle, (float) startAngle, (float) (startAngle + deltaAngle), false);
+
+                                        path.lineTo (p2);
+                                    }
+
+                                    last2 = last;
+                                    last = p2;
                                 }
-
-                                last2 = last;
-                                last = p2;
                             }
                         }
                     }
                 }
-            }
 
-            break;
+                break;
 
-        case 'Z':
-        case 'z':
-            path.closeSubPath();
-            last = last2 = subpathStart;
-            d = d.findEndOfWhitespace();
-            currentCommand = 'M';
-            break;
+            case 'Z':
+            case 'z':
+                path.closeSubPath();
+                last = last2 = subpathStart;
+                d = d.findEndOfWhitespace();
+                currentCommand = 'M';
+                break;
 
-        default:
-            carryOn = false;
-            break;
+            default:
+                carryOn = false;
+                break;
         }
 
         if (! carryOn)
@@ -801,7 +797,7 @@ void SVGState::parsePathString (Path& path, const String& pathString) const
 //==============================================================================
 void SVGState::parseSubElements (const XmlPath& xml, DrawableComposite& parentDrawable, bool shouldParseClip)
 {
-    for (auto* e : xml->getChildIterator())
+    for (auto* e: xml->getChildIterator())
     {
         const auto child = xml.getChild (e);
 
@@ -828,15 +824,42 @@ Drawable* SVGState::parseSubElement (const XmlPath& xml)
 
     const auto tag = xml->getTagNameWithoutNamespace();
 
-    if (tag == "g")             { return parseGroupElement (xml, true); }
-    else if (tag == "svg")      { return parseSVGElement (xml).release(); }
-    else if (tag == "text")     { return parseText (xml, true); }
-    else if (tag == "image")    { return parseImage (xml, true); }
-    else if (tag == "switch")   { return parseSwitch (xml); }
-    else if (tag == "a")        { return parseLinkElement (xml); }
-    else if (tag == "use")      { return parseUseOther (xml); }
-    else if (tag == "style")    { parseCSSStyle (xml); }
-    else if (tag == "defs")     { parseDefs (xml); }
+    if (tag == "g")
+    {
+        return parseGroupElement (xml, true);
+    }
+    else if (tag == "svg")
+    {
+        return parseSVGElement (xml).release();
+    }
+    else if (tag == "text")
+    {
+        return parseText (xml, true);
+    }
+    else if (tag == "image")
+    {
+        return parseImage (xml, true);
+    }
+    else if (tag == "switch")
+    {
+        return parseSwitch (xml);
+    }
+    else if (tag == "a")
+    {
+        return parseLinkElement (xml);
+    }
+    else if (tag == "use")
+    {
+        return parseUseOther (xml);
+    }
+    else if (tag == "style")
+    {
+        parseCSSStyle (xml);
+    }
+    else if (tag == "defs")
+    {
+        parseDefs (xml);
+    }
 
     return nullptr;
 }
@@ -845,14 +868,45 @@ bool SVGState::parsePathElement (const XmlPath& xml, Path& path) const
 {
     const auto tag = xml->getTagNameWithoutNamespace();
 
-    if (tag == "path")              { parsePath (xml, path);           return true; }
-    else if (tag == "rect")         { parseRect (xml, path);           return true; }
-    else if (tag == "circle")       { parseCircle (xml, path);         return true; }
-    else if (tag == "ellipse")      { parseEllipse (xml, path);        return true; }
-    else if (tag == "line")         { parseLine (xml, path);           return true; }
-    else if (tag == "polyline")     { parsePolygon (xml, true, path);  return true; }
-    else if (tag == "polygon")      { parsePolygon (xml, false, path); return true; }
-    else if (tag == "use")          { return parseUsePath (xml, path); }
+    if (tag == "path")
+    {
+        parsePath (xml, path);
+        return true;
+    }
+    else if (tag == "rect")
+    {
+        parseRect (xml, path);
+        return true;
+    }
+    else if (tag == "circle")
+    {
+        parseCircle (xml, path);
+        return true;
+    }
+    else if (tag == "ellipse")
+    {
+        parseEllipse (xml, path);
+        return true;
+    }
+    else if (tag == "line")
+    {
+        parseLine (xml, path);
+        return true;
+    }
+    else if (tag == "polyline")
+    {
+        parsePolygon (xml, true, path);
+        return true;
+    }
+    else if (tag == "polygon")
+    {
+        parsePolygon (xml, false, path);
+        return true;
+    }
+    else if (tag == "use")
+    {
+        return parseUsePath (xml, path);
+    }
 
     return false;
 }
@@ -885,7 +939,7 @@ DrawableComposite* SVGState::parseGroupElement (const XmlPath& xml, bool shouldP
 
 DrawableComposite* SVGState::parseLinkElement (const XmlPath& xml)
 {
-    return parseGroupElement (xml, true); // TODO: support for making this clickable
+    return parseGroupElement (xml, true);// TODO: support for making this clickable
 }
 
 //==============================================================================
@@ -916,7 +970,8 @@ void SVGState::parseRect (const XmlPath& xml, Path& rect) const
                                   getCoordLength (xml, "y", viewBoxH),
                                   getCoordLength (xml, "width", viewBoxW),
                                   getCoordLength (xml, "height", viewBoxH),
-                                  rx, ry);
+                                  rx,
+                                  ry);
     }
     else
     {
@@ -995,16 +1050,16 @@ bool SVGState::parseUsePath (const XmlPath& xml, Path& path) const
 
 Drawable* SVGState::parseUseOther (const XmlPath& xml) const
 {
-    if (auto* drawableText  = parseText (xml, false))    return drawableText;
-    if (auto* drawableImage = parseImage (xml, false))   return drawableImage;
+    if (auto* drawableText = parseText (xml, false))
+        return drawableText;
+    if (auto* drawableImage = parseImage (xml, false))
+        return drawableImage;
 
     return nullptr;
 }
 
 //==============================================================================
-Drawable* SVGState::parseShape (const XmlPath& xml, Path& path,
-                                bool shouldParseTransform,
-                                AffineTransform* additonalTransform) const
+Drawable* SVGState::parseShape (const XmlPath& xml, Path& path, bool shouldParseTransform, AffineTransform* additonalTransform) const
 {
     if (shouldParseTransform && xml->hasAttribute ("transform"))
     {
@@ -1025,21 +1080,13 @@ Drawable* SVGState::parseShape (const XmlPath& xml, Path& path,
 
     dp->setPath (path);
 
-    dp->setFill (getPathFillType (path, xml, "fill",
-                                  getStyleAttribute (xml, "fill-opacity"),
-                                  getStyleAttribute (xml, "opacity"),
-                                  pathContainsClosedSubPath (path)
-                                    ? Colours::black
-                                    : Colours::transparentBlack));
+    dp->setFill (getPathFillType (path, xml, "fill", getStyleAttribute (xml, "fill-opacity"), getStyleAttribute (xml, "opacity"), pathContainsClosedSubPath (path) ? Colours::black : Colours::transparentBlack));
 
     const auto strokeType = getStyleAttribute (xml, "stroke");
 
     if (strokeType.isNotEmpty() && ! isNone (strokeType))
     {
-        dp->setStrokeFill (getPathFillType (path, xml, "stroke",
-                                            getStyleAttribute (xml, "stroke-opacity"),
-                                            getStyleAttribute (xml, "opacity"),
-                                            Colours::black));
+        dp->setStrokeFill (getPathFillType (path, xml, "stroke", getStyleAttribute (xml, "stroke-opacity"), getStyleAttribute (xml, "opacity"), Colours::black));
 
         dp->setStrokeType (getStrokeFor (xml));
     }
@@ -1080,7 +1127,7 @@ void SVGState::parseDashArray (const String& dashList, DrawablePath& dp) const
 
         for (int i = 0; i < numDashs; ++i)
         {
-            if (dashes[i] <= 0) // NB: SVG uses zero-length dashes to mean a dotted line.
+            if (dashes[i] <= 0)// NB: SVG uses zero-length dashes to mean a dotted line.
             {
                 if (numDashs == 1)
                     return;
@@ -1090,7 +1137,7 @@ void SVGState::parseDashArray (const String& dashList, DrawablePath& dp) const
                 const auto pairedIndex = i ^ 1;
 
                 if (isPositiveAndBelow (pairedIndex, numDashs)
-                        && dashes[pairedIndex] > environment.nonZeroLength)
+                    && dashes[pairedIndex] > environment.nonZeroLength)
                     dashes[pairedIndex] -= environment.nonZeroLength;
             }
         }
@@ -1146,7 +1193,7 @@ bool SVGState::addGradientStopsIn (ColourGradient& cg, const XmlPath& fillXml) c
 
     if (fillXml.xml != nullptr)
     {
-        for (auto* e : fillXml->getChildWithTagNameIterator ("stop"))
+        for (auto* e: fillXml->getChildWithTagNameIterator ("stop"))
         {
             auto col = parseColour (fillXml.getChild (e), "stop-color", Colours::black);
 
@@ -1178,7 +1225,10 @@ FillType SVGState::getGradientFillType (const XmlPath& fillXml,
 
         if (linkedID.isNotEmpty())
         {
-            SetGradientStopsOp op = { this, &gradient, };
+            SetGradientStopsOp op = {
+                this,
+                &gradient,
+            };
             topLevelXml.applyOperationToChildWithID (linkedID, op);
         }
     }
@@ -1229,7 +1279,7 @@ FillType SVGState::getGradientFillType (const XmlPath& fillXml,
             gradient.point1.setXY (dx + getCoordLength (fillXml->getStringAttribute ("cx", "50%"), gradientWidth),
                                    dy + getCoordLength (fillXml->getStringAttribute ("cy", "50%"), gradientHeight));
         else
-            gradient.point1.setXY (dx + gradientWidth  * getCoordLength (fillXml->getStringAttribute ("cx", "50%"), 1.0f),
+            gradient.point1.setXY (dx + gradientWidth * getCoordLength (fillXml->getStringAttribute ("cx", "50%"), 1.0f),
                                    dy + gradientHeight * getCoordLength (fillXml->getStringAttribute ("cy", "50%"), 1.0f));
 
         const auto radius = getCoordLength (fillXml->getStringAttribute ("r", "50%"), gradientWidth);
@@ -1249,10 +1299,10 @@ FillType SVGState::getGradientFillType (const XmlPath& fillXml,
         }
         else
         {
-            gradient.point1.setXY (dx + gradientWidth  * getCoordLength (fillXml->getStringAttribute ("x1", "0%"), 1.0f),
+            gradient.point1.setXY (dx + gradientWidth * getCoordLength (fillXml->getStringAttribute ("x1", "0%"), 1.0f),
                                    dy + gradientHeight * getCoordLength (fillXml->getStringAttribute ("y1", "0%"), 1.0f));
 
-            gradient.point2.setXY (dx + gradientWidth  * getCoordLength (fillXml->getStringAttribute ("x2", "100%"), 1.0f),
+            gradient.point2.setXY (dx + gradientWidth * getCoordLength (fillXml->getStringAttribute ("x2", "100%"), 1.0f),
                                    dy + gradientHeight * getCoordLength (fillXml->getStringAttribute ("y2", "0%"), 1.0f));
         }
 
@@ -1273,8 +1323,8 @@ FillType SVGState::getGradientFillType (const XmlPath& fillXml,
         // Transform the perpendicular vector into the new coordinate space for the gradient.
         // This vector is now the slope of the linear gradient as it should appear in the new coord space
         const auto perpendicular = Point<float> (gradient.point2.y - gradient.point1.y,
-                                                    gradient.point1.x - gradient.point2.x)
-                                    .transformedBy (gradientTransform.withAbsoluteTranslation (0, 0));
+                                                 gradient.point1.x - gradient.point2.x)
+                                       .transformedBy (gradientTransform.withAbsoluteTranslation (0, 0));
 
         const auto newGradPoint1 = gradient.point1.transformedBy (gradientTransform);
         const auto newGradPoint2 = gradient.point2.transformedBy (gradientTransform);
@@ -1291,8 +1341,7 @@ FillType SVGState::getGradientFillType (const XmlPath& fillXml,
     return type;
 }
 
-FillType SVGState::getPathFillType (const Path& path, const XmlPath& xml, StringRef fillAttribute,
-                                    const String& fillOpacity, const String& overallOpacity, Colour defaultColour) const
+FillType SVGState::getPathFillType (const Path& path, const XmlPath& xml, StringRef fillAttribute, const String& fillOpacity, const String& overallOpacity, Colour defaultColour) const
 {
     auto opacity = 1.0f;
 
@@ -1327,8 +1376,7 @@ float SVGState::getStrokeWidth (const String& strokeWidth) const noexcept
 
 PathStrokeType SVGState::getStrokeFor (const XmlPath& xml) const
 {
-    return
-    {
+    return {
         getStrokeWidth (getStyleAttribute (xml, "stroke-width", "1")),
         getJointStyle (getStyleAttribute (xml, "stroke-linejoin")),
         getEndCapStyle (getStyleAttribute (xml, "stroke-linecap"))
@@ -1351,8 +1399,7 @@ Drawable* SVGState::useText (const XmlPath& xml) const
     return op.target;
 }
 
-Drawable* SVGState::parseText (const XmlPath& xml, bool shouldParseTransform,
-                               AffineTransform* additonalTransform) const
+Drawable* SVGState::parseText (const XmlPath& xml, bool shouldParseTransform, AffineTransform* additonalTransform) const
 {
     if (shouldParseTransform && xml->hasAttribute ("transform"))
     {
@@ -1370,8 +1417,8 @@ Drawable* SVGState::parseText (const XmlPath& xml, bool shouldParseTransform,
 
     Array<float> xCoords, yCoords, dxCoords, dyCoords;
 
-    getCoordList (xCoords,  getInheritedAttribute (xml, "x"),  true, true);
-    getCoordList (yCoords,  getInheritedAttribute (xml, "y"),  true, false);
+    getCoordList (xCoords, getInheritedAttribute (xml, "x"), true, true);
+    getCoordList (yCoords, getInheritedAttribute (xml, "y"), true, false);
     getCoordList (dxCoords, getInheritedAttribute (xml, "dx"), true, true);
     getCoordList (dyCoords, getInheritedAttribute (xml, "dy"), true, false);
 
@@ -1381,7 +1428,7 @@ Drawable* SVGState::parseText (const XmlPath& xml, bool shouldParseTransform,
     auto* dc = new DrawableComposite();
     setCommonAttributes (*dc, xml);
 
-    for (auto* e : xml->getChildIterator())
+    for (auto* e: xml->getChildIterator())
     {
         if (e->isTextElement())
         {
@@ -1399,10 +1446,9 @@ Drawable* SVGState::parseText (const XmlPath& xml, bool shouldParseTransform,
                 dt->setTransform (transform);
 
             dt->setColour (parseColour (xml, "fill", Colours::black)
-                            .withMultipliedAlpha (parseSafeFloat (getStyleAttribute (xml, "fill-opacity", "1"))));
+                               .withMultipliedAlpha (parseSafeFloat (getStyleAttribute (xml, "fill-opacity", "1"))));
 
-            Rectangle<float> bounds (xCoords[0], yCoords[0] - font.getAscent(),
-                                     font.getStringWidthFloat (text), font.getHeight());
+            Rectangle<float> bounds (xCoords[0], yCoords[0] - font.getAscent(), font.getStringWidthFloat (text), font.getHeight());
 
             if (anchorStr == "middle")
                 bounds.setX (bounds.getX() - bounds.getWidth() / 2.0f);
@@ -1453,8 +1499,7 @@ Drawable* SVGState::useImage (const XmlPath& xml) const
     return op.target;
 }
 
-Drawable* SVGState::parseImage (const XmlPath& xml, bool shouldParseTransform,
-                                AffineTransform* additionalTransform) const
+Drawable* SVGState::parseImage (const XmlPath& xml, bool shouldParseTransform, AffineTransform* additionalTransform) const
 {
     if (shouldParseTransform && xml->hasAttribute ("transform"))
     {
@@ -1546,7 +1591,7 @@ Drawable* SVGState::parseImage (const XmlPath& xml, bool shouldParseTransform,
 
             Rectangle<float> imageBounds (parseSafeFloat (xml->getStringAttribute ("x")),
                                           parseSafeFloat (xml->getStringAttribute ("y")),
-                                          parseSafeFloat (xml->getStringAttribute ("width",  String (pathBounds.getWidth()))),
+                                          parseSafeFloat (xml->getStringAttribute ("width", String (pathBounds.getWidth()))),
                                           parseSafeFloat (xml->getStringAttribute ("height", String (pathBounds.getHeight()))));
 
             dp->setPath (path);
@@ -1571,7 +1616,7 @@ Drawable* SVGState::parseImage (const XmlPath& xml, bool shouldParseTransform,
 
         Rectangle<float> imageBounds (parseSafeFloat (xml->getStringAttribute ("x")),
                                       parseSafeFloat (xml->getStringAttribute ("y")),
-                                      parseSafeFloat (xml->getStringAttribute ("width",  String (image.getWidth()))),
+                                      parseSafeFloat (xml->getStringAttribute ("width", String (image.getWidth()))),
                                       parseSafeFloat (xml->getStringAttribute ("height", String (image.getHeight()))));
 
         di->setImage (image.rescaled ((int) imageBounds.getWidth(), (int) imageBounds.getHeight()));
@@ -1615,7 +1660,7 @@ bool SVGState::parseCoord (String::CharPointerType& s, float& value, bool allowU
 bool SVGState::parseCoords (String::CharPointerType& s, Point<float>& p, bool allowUnits) const
 {
     return parseCoord (s, p.x, allowUnits, true)
-        && parseCoord (s, p.y, allowUnits, false);
+           && parseCoord (s, p.y, allowUnits, false);
 }
 
 bool SVGState::parseCoordsOrSkip (String::CharPointerType& s, Point<float>& p, bool allowUnits) const
@@ -1639,11 +1684,16 @@ float SVGState::getCoordLength (const String& s, float sizeForProportions) const
         const auto n1 = s[len - 2];
         const auto n2 = s[len - 1];
 
-        if (n1 == 'i' && n2 == 'n')         n *= environment.dpi;
-        else if (n1 == 'm' && n2 == 'm')    n *= environment.dpi / 25.4f;
-        else if (n1 == 'c' && n2 == 'm')    n *= environment.dpi / 2.54f;
-        else if (n1 == 'p' && n2 == 'c')    n *= 15.0f;
-        else if (n2 == '%')                 n *= 0.01f * sizeForProportions;
+        if (n1 == 'i' && n2 == 'n')
+            n *= environment.dpi;
+        else if (n1 == 'm' && n2 == 'm')
+            n *= environment.dpi / 25.4f;
+        else if (n1 == 'c' && n2 == 'm')
+            n *= environment.dpi / 2.54f;
+        else if (n1 == 'p' && n2 == 'c')
+            n *= 15.0f;
+        else if (n2 == '%')
+            n *= 0.01f * sizeForProportions;
     }
 
     return n;
@@ -1668,22 +1718,22 @@ void SVGState::getCoordList (Array<float>& coords, const String& list, bool allo
 //==============================================================================
 void SVGState::parseMask (const XmlPath&)
 {
-    jassertfalse; // @todo TODO xxx
+    jassertfalse;// @todo TODO xxx
 }
 
 void SVGState::parseMarker (const XmlPath&)
 {
-    jassertfalse; // @todo TODO xxx
+    jassertfalse;// @todo TODO xxx
 }
 
 void SVGState::parsePattern (const XmlPath&)
 {
-    jassertfalse; // @todo TODO xxx
+    jassertfalse;// @todo TODO xxx
 }
 
 void SVGState::parseFilter (const XmlPath&)
 {
-    jassertfalse; // @todo TODO xxx
+    jassertfalse;// @todo TODO xxx
 }
 
 void SVGState::parseCSSStyle (const XmlPath& xml)
@@ -1738,7 +1788,8 @@ String SVGState::getStyleAttribute (const XmlPath& xml, StringRef attributeName,
                 break;
 
             const auto value = getAttributeFromStyleList (String (openBrace + 1, closeBrace),
-                                                            attributeName, defaultValue);
+                                                          attributeName,
+                                                          defaultValue);
             if (value.isNotEmpty())
                 return value;
 
@@ -1799,8 +1850,7 @@ Colour SVGState::parseColour (const XmlPath& xml, StringRef attributeName, const
 
     if (text.startsWith ("rgb") || text.startsWith ("hsl"))
     {
-        auto tokens = [&text]
-        {
+        auto tokens = [&text] {
             const auto openBracket = text.indexOfChar ('(');
             const auto closeBracket = text.indexOfChar (openBracket, ')');
 
@@ -1816,8 +1866,7 @@ Colour SVGState::parseColour (const XmlPath& xml, StringRef attributeName, const
             return arr;
         }();
 
-        auto alpha = [&tokens, &text]
-        {
+        auto alpha = [&tokens, &text] {
             if ((text.startsWith ("rgba") || text.startsWith ("hsla")) && tokens.size() == 4)
                 return parseSafeFloat (tokens[3]);
 
@@ -1857,4 +1906,4 @@ Colour SVGState::parseColour (const XmlPath& xml, StringRef attributeName, const
 
 //==============================================================================
 
-} //namespace svg
+}//namespace svg

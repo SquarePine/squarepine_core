@@ -6,9 +6,8 @@ public:
     TimeKeeper (double sampleRate = 44100.0);
 
     /** */
-    TimeKeeper (const AudioPlayHead::CurrentPositionInfo&,
+    TimeKeeper (const AudioPlayHead::PositionInfo&,
                 double sampleRate = 44100.0);
-
     //==============================================================================
     /** */
     TimeKeeper& setSamplingRate (double sampleRate);
