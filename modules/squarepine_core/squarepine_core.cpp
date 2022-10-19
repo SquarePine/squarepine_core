@@ -33,23 +33,23 @@ namespace sp
     #include "misc/CodeBeautifiers.cpp"
     #include "misc/CommandHelpers.cpp"
     #include "misc/FPUFlags.cpp"
-    #include "networking/GoogleAnalyticsReporter.cpp"
-    #include "networking/NetworkCache.cpp"
+//    #include "networking/GoogleAnalyticsReporter.cpp"
+//    #include "networking/NetworkCache.cpp"
 
     //==============================================================================
     double getCurrentSystemRSSI();
-    NetworkConnectivityChecker::NetworkType getCurrentSystemNetworkType();
-
-    #include "networking/NetworkConnectivityCheckerPosix.cpp"
-    #include "networking/NetworkConnectivityCheckerWindows.cpp"
-    #include "networking/NetworkConnectivityChecker.cpp"
+//    NetworkConnectivityChecker::NetworkType getCurrentSystemNetworkType();
+//
+//    #include "networking/NetworkConnectivityCheckerPosix.cpp"
+//    #include "networking/NetworkConnectivityCheckerWindows.cpp"
+//    #include "networking/NetworkConnectivityChecker.cpp"
 
     //==============================================================================
-    #include "networking/OAuth2.cpp"
-    #include "networking/Product.cpp"
-    #include "networking/User.cpp"
-    #include "networking/WebServiceUtilities.cpp"
-    #include "networking/WooCommerce.cpp"
+//    #include "networking/OAuth2.cpp"
+//    #include "networking/Product.cpp"
+//    #include "networking/User.cpp"
+//    #include "networking/WebServiceUtilities.cpp"
+//    #include "networking/WooCommerce.cpp"
     #include "rng/ISAAC.cpp"
     #include "rng/Xorshift.cpp"
     #include "text/LanguageCodes.cpp"

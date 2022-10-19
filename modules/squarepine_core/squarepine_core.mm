@@ -9,5 +9,5 @@
 #import <SystemConfiguration/SystemConfiguration.h>
 
 #include "squarepine_core.cpp"
-#include "networking/Reachability.m"
-#include "networking/NetworkConnectivityCheckerApple.mm"
+//#include "networking/Reachability.m"
+//#include "networking/NetworkConnectivityCheckerApple.mm"
