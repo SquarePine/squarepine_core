@@ -30,15 +30,15 @@ public:
     /** @internal */
     ApplicationCommandTarget* getNextCommandTarget() override { return mainCommandTarget; }
     /** @internal */
-    void suspended();
+    void suspended() override;
     /** @internal */
-    void resumed();
+    void resumed() override;
     /** @internal */
     void unhandledException (const std::exception*, const String&, int) override;
     /** @internal */
-    void memoryWarningReceived();
+    void memoryWarningReceived() override;
     /** @internal */
-    bool backButtonPressed();
+    bool backButtonPressed() override;
 
 protected:
     //==============================================================================

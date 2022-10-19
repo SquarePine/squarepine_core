@@ -3,13 +3,13 @@ namespace jsonhelpers
 const Identifier rootId = "root";
 const Identifier propertyId = "property";
 
-void setProperty (ValueTree& source, const Identifier& id, const var& v)
+inline void setProperty (ValueTree& source, const Identifier& id, const var& v)
 {
     jassert (id.isValid() && ! v.isVoid());
     source.setProperty (id, v, nullptr);
 }
 
-void appendValueTree (ValueTree& parent, const Identifier& id, const var& v)
+inline void appendValueTree (ValueTree& parent, const Identifier& id, const var& v)
 {
     if (! parent.isValid() || id.isNull() || v.isVoid())
         return;

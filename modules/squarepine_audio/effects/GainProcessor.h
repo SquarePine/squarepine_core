@@ -21,7 +21,9 @@ public:
 
         @see defaultMaximumGainLinear
     */
-    GainProcessor (int idNum = 1, const String& parameterName = "Gain", NormalisableRange<float> gainRange = { defaultMinimumGaindB, defaultMaximumGaindB, 0.01f, 6.f });
+    GainProcessor (int idNum = 1,
+                   const String& parameterName = "Gain",
+                   NormalisableRange<float> gainRange = { defaultMinimumGaindB, defaultMaximumGaindB, 0.01f, 6.f });
 
     //==============================================================================
     /** Changes the gain.

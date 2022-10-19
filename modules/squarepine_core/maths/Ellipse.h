@@ -10,7 +10,7 @@ public:
     using Type = ValueType;
 
     /** This type will be double if the Ellipse's type is double, otherwise it will be float. */
-    using FloatType = typename TypeHelpers::SmallestFloatType<ValueType>;
+    using FloatType = ValueType;//typename TypeHelpers::SmallestFloatType<ValueType>;
 
     /** */
     static constexpr auto defaultAccuracy = static_cast<FloatType> (0.00001);

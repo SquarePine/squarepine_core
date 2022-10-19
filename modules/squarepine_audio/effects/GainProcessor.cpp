@@ -1,17 +1,10 @@
-namespace
-{
-    String toStringFromGainValue (float value, int)
-    {
-        if (approximatelyEqual (value, 1.0f))
-            return "0 dB";
-
-        return Decibels::toString (Decibels::gainToDecibels (value));
-    }
-}
-
 //==============================================================================
-GainProcessor::GainProcessor (NormalisableRange<float> gainRange) :
-    InternalProcessor (false)
+GainProcessor::GainProcessor (int idNum,
+                              const String& parameterName,
+                              NormalisableRange<float> gainRange) :
+    InternalProcessor (false),
+    name (parameterName),
+    idNumber (idNum)
 {
     auto layout = createDefaultParameterLayout();
 
