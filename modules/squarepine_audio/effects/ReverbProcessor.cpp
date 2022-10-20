@@ -65,6 +65,9 @@ ReverbProcessor::ReverbProcessor (int idNum): idNumber (idNum)
     xPadParam = other.get();
     xPadParam->addListener (this);
 
+    fxOnParam = fxon.get();
+    fxOnParam->addListener(this);
+    
     auto layout = createDefaultParameterLayout (false);
     layout.add (std::move (fxon));
     layout.add (std::move (wetdry));

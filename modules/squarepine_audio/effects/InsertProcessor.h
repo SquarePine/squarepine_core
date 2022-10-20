@@ -58,9 +58,7 @@ public:
             jassert(param != nullptr);
             
             auto it = std::find(linkedParams.begin(),linkedParams.end(),param);
-            jassert(it == linkedParams.end());
-            
-            linkedParams.push_back(param);
+            if(it == linkedParams.end()) linkedParams.push_back(param);
         }
         void setPrimaryParameter(RangedAudioParameter* param)
         {
