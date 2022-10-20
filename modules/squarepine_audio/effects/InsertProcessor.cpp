@@ -109,7 +109,7 @@ void InsertProcessor::addParameterCallback (const int parameterIndex, AudioProce
     auto existingCallback = std::find (parameterCallbacks.begin(), parameterCallbacks.end(), parameterIndex);
     //Oops it looks like you are adding a parameter with an index that is already taken.
     jassert (existingCallback == parameterCallbacks.end());
-    parameterCallbacks.push_back (ParameterCallback (parameterIndex, rawParameter, parameterCallback));
+    if(existingCallback == parameterCallbacks.end()) parameterCallbacks.push_back (ParameterCallback (parameterIndex, rawParameter, parameterCallback));
 }
 //***********
 //***********
