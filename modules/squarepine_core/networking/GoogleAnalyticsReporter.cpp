@@ -88,14 +88,14 @@ private:
 class GoogleAnalyticsReporter::ReportPool final : public DeletedAtShutdown
 {
 public:
-    ReportPool()                        { pool.setThreadPriorities (3); }
+    ReportPool()                        { }
     ~ReportPool() override              { clearSingletonInstance(); }
     void queue (Sender* senderToUse)    { pool.addJob (new ReportJob (senderToUse), true); }
 
     JUCE_DECLARE_SINGLETON (ReportPool, true)
 
 private:
-    ThreadPool pool;
+    ThreadPool pool { SystemStats::getNumCpus(), 0, Thread::Priority::background };
 
     class ReportJob final : public ThreadPoolJob
     {

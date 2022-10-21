@@ -285,10 +285,13 @@ void EffectProcessorChain::updateLatency()
 {
     updateChannelCount();
 
-    // N.B.: This probably isn't accurate at all (@todo ?)
+    int newLatency = 0;
+
     for (auto effect : plugins)
         if (auto plugin = effect->plugin)
-            setLatencySamples (getLatencySamples() + plugin->getLatencySamples());
+            newLatency += plugin->getLatencySamples();
+
+    setLatencySamples (newLatency);
 }
 
 void EffectProcessorChain::updateChannelCount()

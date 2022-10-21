@@ -357,7 +357,7 @@ public:
         auto* gen = generators[row];
 
         if (cdc == nullptr)
-            cdc.reset (new CurveDisplayComponent ());
+            cdc.reset (new CurveDisplayComponent());
 
         cdc->setName (gen->name);
         cdc->setGenerator (gen->generator);

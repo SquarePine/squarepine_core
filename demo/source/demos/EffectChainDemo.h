@@ -17,7 +17,6 @@ public:
         addPlugin<GainProcessor> (kpl);
         addPlugin<HissingProcessor> (kpl);
         addPlugin<JUCEReverbProcessor> (kpl);
-        addPlugin<LFOProcessor> (kpl);
         addPlugin<MuteProcessor> (kpl);
         addPlugin<PanProcessor> (kpl);
         addPlugin<PolarityInversionProcessor> (kpl);
@@ -34,7 +33,7 @@ public:
     bool doesPluginStillExist (const PluginDescription&) override                               { return true; }
     StringArray searchPathsForPlugins (const FileSearchPath&, bool, bool) override              { return {}; }
     FileSearchPath getDefaultLocationsToSearch() override                                       { return {}; }
-    bool requiresUnblockedMessageThreadDuringCreation (const PluginDescription&) const override { return true; }
+    bool requiresUnblockedMessageThreadDuringCreation (const PluginDescription&) const override { return false; }
 
     void findAllTypesForFile (OwnedArray<PluginDescription>& results,
                               const String& fileOrIdentifier) override
@@ -90,11 +89,13 @@ private:
         EffectDetails() = default;
 
         template<typename PluginClass>
-        void init()
+        void init (StringRef formatName)
         {
             static_assert (std::is_base_of_v<InternalProcessor, PluginClass>);
 
             description = PluginClass().getPluginDescription();
+            description.pluginFormatName = formatName;
+
             createInstance = []()
             {
                 return std::make_unique<PluginClass> ();
@@ -112,7 +113,7 @@ private:
     void addPlugin (KnownPluginList& kpl)
     {
         auto* ed = effectDetails.add (new EffectDetails());
-        ed->init<PluginClass> ();
+        ed->init<PluginClass> (getName());
         kpl.addType (ed->description);
     }
 
@@ -144,6 +145,79 @@ private:
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DemoEffectFactory)
+};
+
+//==============================================================================
+/** */
+class EffectChainComponent final : public Component,
+                                   public ListBoxModel,
+                                   public AudioProcessorListener
+{
+public:
+    EffectChainComponent (EffectProcessorChain& epc) :
+        effectChain (epc)
+    {
+        contentUpdateTimer.callback = [this]()
+        {
+            listbox.updateContent();
+            contentUpdateTimer.stopTimer();
+        };
+
+        listbox.setModel (this);
+        addAndMakeVisible (listbox);
+
+        effectChain.addListener (this);
+    }
+
+    ~EffectChainComponent() override
+    {
+        effectChain.removeListener (this);
+    }
+
+    int getNumRows()                                                { return effectChain.getNumEffects(); }
+    void paintListBoxItem (int, Graphics&, int, int, bool) override { }
+    void resized() override                                         { listbox.setBounds (getLocalBounds()); }
+
+    void audioProcessorParameterChanged (AudioProcessor*, int, float) override
+    {
+        contentUpdateTimer.startTimer (1000);
+    }
+
+    void audioProcessorChanged (AudioProcessor*, const ChangeDetails&) override
+    {
+        contentUpdateTimer.startTimer (1000);
+    }
+
+    Component* refreshComponentForRow (int row, bool, Component* comp) override
+    {
+       #if JUCE_DEBUG && ! JUCE_DISABLE_ASSERTIONS
+        if (comp != nullptr)
+            jassert (dynamic_cast<EffectRowComponent*> (comp) != nullptr);
+       #endif
+
+        std::unique_ptr<EffectRowComponent> erc (static_cast<EffectRowComponent*> (comp));
+        comp = nullptr;
+
+        if (! isPositiveAndBelow (row, getNumRows()))
+            return nullptr;
+
+        auto effectProc = effectChain.getEffectProcessor (row);
+
+        if (erc == nullptr)
+            erc.reset (new EffectRowComponent());
+
+        erc->setText (TRANS (effectProc->plugin->getPluginDescription().name), sendNotification);
+        return erc.release();
+    }
+
+private:
+    using EffectRowComponent = Label;
+
+    EffectProcessorChain& effectChain;
+    ListBox listbox;
+    OffloadedTimer contentUpdateTimer;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EffectChainComponent)
 };
 
 //==============================================================================
@@ -208,6 +282,9 @@ public:
 
         reconnect();
 
+        for (const auto& pd : knownPluginList.getTypes())
+            effectChain->appendNewEffect (pd.fileOrIdentifier);
+
         addAndMakeVisible (play);
         addAndMakeVisible (goToStart);
         addAndMakeVisible (load);
@@ -219,8 +296,6 @@ public:
     {
         sharedObjects.audioDeviceManager.removeAudioCallback (&audioProcessorPlayer);
         audioProcessorPlayer.setProcessor (nullptr);
-
-        graph.clear();
     }
 
     //==============================================================================
@@ -307,11 +382,14 @@ private:
     using Node = AudioProcessorGraph::Node::Ptr;
 
     // Audio bits:
-    KnownPluginList internalPluginsList;
-    std::shared_ptr<EffectProcessorFactory> factory { std::make_shared<DemoEffectFactory> (internalPluginsList) };
+    KnownPluginList knownPluginList;
+    std::shared_ptr<EffectProcessorFactory> factory { std::make_shared<DemoEffectFactory> (knownPluginList) };
 
     std::unique_ptr<AudioFormatReaderSource> readerSource;
     TimeSliceThread readAheadThread { "FancyReadAheadThread" };
+
+    AudioProcessorGraph graph;
+    AudioProcessorPlayer audioProcessorPlayer;
 
     Node audioOut, midiIn;
 
@@ -320,9 +398,6 @@ private:
 
     EffectProcessorChain* effectChain { new EffectProcessorChain (factory) };
     Node effectChainNode;
-
-    AudioProcessorGraph graph;
-    AudioProcessorPlayer audioProcessorPlayer;
 
     // UI bits:
     bool wasPlaying = false,
@@ -337,6 +412,8 @@ private:
     TextButton play { TRANS ("Play") },
                goToStart { TRANS ("Go to Start") },
                load { TRANS ("Load"), TRANS ("Clicking this will load an audio file to process.") };
+
+    EffectChainComponent effectChainComponent { *effectChain };
 
     OffloadedTimer thumbnailRepainter,
                    playbackRepainter;
@@ -353,11 +430,11 @@ private:
 
         auto connect = [&] (Node& source, Node& dest, bool isMidi = false)
         {
-            // This trash heap of a graph node/connection API
-            // is tedious at best, so let's try to somewhat
-            // reduce the cognitive load...
             auto addConnection = [&] (int channelIndex)
             {
+                // This trash heap of a graph node/connection API
+                // is tedious at best, so let's try to somewhat
+                // reduce the cognitive load...
                 using NAC = AudioProcessorGraph::NodeAndChannel;
 
                 NAC sourceNAC;
@@ -368,19 +445,15 @@ private:
                 destNAC.nodeID = dest->nodeID;
                 destNAC.channelIndex = channelIndex;
 
-                if (isMidi)
-                {
-                    // Just skip the whole connection thing...
-                    if (channelIndex > 0)
-                        return true;
-
-                    sourceNAC.channelIndex = destNAC.channelIndex = AudioProcessorGraph::midiChannelIndex;
-                }
-
                 return graph.addConnection ({ sourceNAC, destNAC });
             };
 
-            const bool succeeded = addConnection (0) && addConnection (1);
+            bool succeeded = false;
+            if (isMidi)
+                succeeded = addConnection (AudioProcessorGraph::midiChannelIndex);
+            else
+                succeeded = addConnection (0) && addConnection (1);
+
             jassert (succeeded);
             return succeeded;
         };

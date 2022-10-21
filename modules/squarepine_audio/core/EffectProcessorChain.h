@@ -1,5 +1,10 @@
 /** Contains an array of effect plugins that connect to each other in series.
 
+    This will call updateHostDisplayin the event that any effect is added,
+    removed/cleared, or has changed position in the list. This is because
+    the latency may change, among other things.
+    Use a AudioProcessorListener to be notified of any such changes.
+
     @see EffectProcessor, EffectProcessorFactory
 */
 class EffectProcessorChain final : public InternalProcessor
@@ -17,7 +22,7 @@ public:
 
         @param factory An existing factory used to create instances of effects internally.
     */
-    EffectProcessorChain (std::shared_ptr<EffectProcessorFactory> factory);
+    EffectProcessorChain (std::shared_ptr<EffectProcessorFactory>);
 
     //==============================================================================
     /** @returns the current number of effect processors in this chain. */
@@ -33,7 +38,7 @@ public:
 
         @returns a new effect processor or nullptr if the index wasn't found.
     */
-    [[nodiscard]] EffectProcessor::Ptr appendNewEffect (int pluginIndex);
+    EffectProcessor::Ptr appendNewEffect (int pluginIndex);
 
     /** Add a new effect at the end of the existing array of plugins.
 
@@ -41,7 +46,7 @@ public:
 
         @returns a new effect processor or nullptr if the identifier wasn't found.
     */
-    [[nodiscard]] EffectProcessor::Ptr appendNewEffect (const String& fileOrIdentifier);
+    EffectProcessor::Ptr appendNewEffect (const String& fileOrIdentifier);
 
     //==============================================================================
     /** Sets or inserts a new effect with the given plugin index.
@@ -54,7 +59,7 @@ public:
 
         @returns a new effect processor or nullptr if the index wasn't found.
     */
-    [[nodiscard]] EffectProcessor::Ptr insertNewEffect (int pluginIndex, int destinationIndex);
+    EffectProcessor::Ptr insertNewEffect (int pluginIndex, int destinationIndex);
 
     /** Sets or inserts a new effect with the given plugin file or identifier.
 
@@ -66,7 +71,7 @@ public:
 
         @returns a new effect processor or nullptr if the identifier wasn't found.
     */
-    [[nodiscard]] EffectProcessor::Ptr insertNewEffect (const String& fileOrIdentifier, int destinationIndex);
+    EffectProcessor::Ptr insertNewEffect (const String& fileOrIdentifier, int destinationIndex);
 
     //==============================================================================
     /** Attempts replacing an effect with the given plugin index.
@@ -79,7 +84,7 @@ public:
 
         @returns a new effect processor or nullptr if the index wasn't found.
     */
-    [[nodiscard]] EffectProcessor::Ptr replaceEffect (int pluginIndex, int destinationIndex);
+    EffectProcessor::Ptr replaceEffect (int pluginIndex, int destinationIndex);
 
     /** Attempts replacing an effect with the given plugin file or identifier.
 
@@ -91,7 +96,7 @@ public:
 
         @returns a new effect processor or nullptr if the identifier wasn't found.
     */
-    [[nodiscard]] EffectProcessor::Ptr replaceEffect (const String& fileOrIdentifier, int destinationIndex);
+    EffectProcessor::Ptr replaceEffect (const String& fileOrIdentifier, int destinationIndex);
 
     //==============================================================================
     /** Enumeration that automates and simplifies reordering a plugin in a chain of plugins. */
@@ -130,10 +135,7 @@ public:
     */
     bool removeEffect (int index);
 
-    /** Removes all of the effects in the chain.
-
-        @returns true if anything changed.
-    */
+    /** Removes all of the effects in the chain. */
     bool clear();
 
     //==============================================================================

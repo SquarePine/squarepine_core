@@ -95,7 +95,7 @@ void DummyAudioIODevice::start (AudioIODeviceCallback* cb)
     if (callback != nullptr)
     {
         callback->audioDeviceAboutToStart (this);
-        startThread (10);
+        startThread (Priority::highest); // TODO: Use Thread::RealtimeOptions
         playing = true;
     }
 }

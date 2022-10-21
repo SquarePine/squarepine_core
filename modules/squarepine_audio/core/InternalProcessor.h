@@ -94,7 +94,7 @@ public:
     */
     [[nodiscard]] const var* getPropertyPointer (const Identifier&) const;
 
-    /** Changes a named property of the project item.
+    /** Changes a named property of the APVTS.
 
         The name identifier must not be an empty string.
 
@@ -109,7 +109,7 @@ public:
     /** @returns true if the project item contains a named property. */
     [[nodiscard]] bool hasProperty (const Identifier&) const;
 
-    /** Removes a property from the project item.
+    /** Removes a property from the APVTS.
 
         If the undoManager parameter is not null, its UndoManager::perform() method will be used
         so that this change can be undone. Be very careful not to mix undoable and non-undoable changes!
