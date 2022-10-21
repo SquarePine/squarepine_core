@@ -2,17 +2,17 @@ JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Wall", "-Wconversion", "-Wimplicit-const-
 
 //==============================================================================
 template<typename Type>
-uint8_t toByte (Type v)
+inline uint8_t toByte (Type v)
 {
     return (uint8_t) std::clamp (v, static_cast<Type> (0), static_cast<Type> (255));
 }
 
-uint8_t getIntensity (uint8_t r, uint8_t g, uint8_t b)
+inline uint8_t getIntensity (uint8_t r, uint8_t g, uint8_t b)
 {
     return (uint8_t) ((7471 * b + 38470 * g + 19595 * r) >> 16);
 }
 
-uint8_t computeAlpha (uint8_t la, uint8_t ra)
+inline uint8_t computeAlpha (uint8_t la, uint8_t ra)
 {
     return (uint8_t) (((la * (256 - (ra + (ra >> 7)))) >> 8) + ra);
 }

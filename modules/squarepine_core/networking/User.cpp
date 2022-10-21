@@ -1,7 +1,7 @@
 //==============================================================================
 namespace user
 {
-    ValueTree parse (const var& s)
+    inline ValueTree parse (const var& s)
     {
         auto v = ValueTree (user::userId);
 
@@ -12,7 +12,7 @@ namespace user
         return v;
     }
 
-    ValueTree parse (const OAuth2AccessPoint& accessPoint, const OAuth2Token& token)
+    inline ValueTree parse (const OAuth2AccessPoint& accessPoint, const OAuth2Token& token)
     {
         if (token.isValid())
         {

@@ -174,7 +174,7 @@ public:
         effectChain.removeListener (this);
     }
 
-    int getNumRows()                                                { return effectChain.getNumEffects(); }
+    int getNumRows() override                                       { return effectChain.getNumEffects(); }
     void paintListBoxItem (int, Graphics&, int, int, bool) override { }
     void resized() override                                         { listbox.setBounds (getLocalBounds()); }
 

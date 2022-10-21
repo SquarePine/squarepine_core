@@ -162,8 +162,9 @@ Array<Chord> Scale::generateTriads (int offset) const
 
     Array<Chord> res;
 
-    for (int i = 0; i < (int) base.size(); ++i)
-        res.add (base[(i + offset) % (int) base.size()]);
+    constexpr auto numItems = base.size();
+    for (size_t i = 0; i < numItems; ++i)
+        res.add (base[(i + (size_t) offset) % numItems]);
 
     return res;
 }
@@ -179,8 +180,9 @@ Array<Chord> Scale::generateSixths (int offset) const
 
     Array<Chord> res;
 
-    for (int i = 0; i < (int) base.size(); ++i)
-        res.add (base[(i + offset) % (int) base.size()]);
+    constexpr auto numItems = base.size();
+    for (size_t i = 0; i < numItems; ++i)
+        res.add (base[(i + (size_t) offset) % numItems]);
 
     return res;
 }
@@ -196,8 +198,9 @@ Array<Chord> Scale::generateSevenths (int offset) const
 
     Array<Chord> res;
 
-    for (int i = 0; i < (int) base.size(); ++i)
-        res.add (base[(i + offset) % (int) base.size()]);
+    constexpr auto numItems = base.size();
+    for (size_t i = 0; i < numItems; ++i)
+        res.add (base[(i + (size_t) offset) % numItems]);
 
     return res;
 }

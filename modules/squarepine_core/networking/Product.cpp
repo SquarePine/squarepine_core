@@ -429,9 +429,9 @@ namespace ProductFinder
         spa.minimiseStorageOverheads();
     }
 
-    int findProducts (WooCommerceAccessPoint& wc,
-                      ReferenceCountedArray<Product>& dest,
-                      const SearchParameters& sp)
+    inline int findProducts (WooCommerceAccessPoint& wc,
+                             ReferenceCountedArray<Product>& dest,
+                             const SearchParameters& sp)
     {
         if (! NetworkConnectivityChecker().isConnectedToInternet())
         {

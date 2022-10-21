@@ -3,7 +3,7 @@ namespace networking
 {
     constexpr auto networkCacheCheckIntervalMs = 5000;
 
-    StringArray splitAtCommas (const String& source)
+    inline StringArray splitAtCommas (const String& source)
     {
         auto values = StringArray::fromTokens (source, ",", "\"");
         values.trim();
@@ -13,14 +13,14 @@ namespace networking
         return values;
     }
 
-    void parsePragmaValue (NetworkCacheConfiguration& c, const String& value)
+    inline void parsePragmaValue (NetworkCacheConfiguration& c, const String& value)
     {
         for (const auto& it : splitAtCommas (value))
             if (it.containsIgnoreCase ("no-cache"))
                 c.maxAge = 0;
     }
 
-    int64 parseEpochFromSingleOrISO8601 (const String& value)
+    inline int64 parseEpochFromSingleOrISO8601 (const String& value)
     {
         int64 result = 0;
         std::istringstream iss (value.toStdString());
@@ -31,14 +31,14 @@ namespace networking
         return Time::fromISO8601 (value).toMilliseconds();
     }
 
-    void parseExpiry (NetworkCacheConfiguration& c, const String& value)        { c.expiry = parseEpochFromSingleOrISO8601 (value); }
-    void parseAge (NetworkCacheConfiguration& c, const String& value)           { c.age = parseEpochFromSingleOrISO8601 (value); }
-    void parseMaxAge (NetworkCacheConfiguration& c, const String& value)        { c.maxAge = parseEpochFromSingleOrISO8601 (value); }
-    void parseResponseDate (NetworkCacheConfiguration& c, const String& value)  { c.responseDate = parseEpochFromSingleOrISO8601 (value); }
-    void parseLastModified (NetworkCacheConfiguration& c, const String& value)  { c.lastModifiedDate = parseEpochFromSingleOrISO8601 (value); }
-    void parseContentType (NetworkCacheConfiguration& c, const String& value)   { c.isContentText = ! value.containsIgnoreCase ("image"); }
+    inline void parseExpiry (NetworkCacheConfiguration& c, const String& value)        { c.expiry = parseEpochFromSingleOrISO8601 (value); }
+    inline void parseAge (NetworkCacheConfiguration& c, const String& value)           { c.age = parseEpochFromSingleOrISO8601 (value); }
+    inline void parseMaxAge (NetworkCacheConfiguration& c, const String& value)        { c.maxAge = parseEpochFromSingleOrISO8601 (value); }
+    inline void parseResponseDate (NetworkCacheConfiguration& c, const String& value)  { c.responseDate = parseEpochFromSingleOrISO8601 (value); }
+    inline void parseLastModified (NetworkCacheConfiguration& c, const String& value)  { c.lastModifiedDate = parseEpochFromSingleOrISO8601 (value); }
+    inline void parseContentType (NetworkCacheConfiguration& c, const String& value)   { c.isContentText = ! value.containsIgnoreCase ("image"); }
 
-    void parseCacheControlValue (NetworkCacheConfiguration& c, const String& value)
+    inline void parseCacheControlValue (NetworkCacheConfiguration& c, const String& value)
     {
         for (const auto& it : splitAtCommas (value))
         {
@@ -50,7 +50,7 @@ namespace networking
         }
     }
 
-    void parseHeader (NetworkCacheConfiguration& c, const String& key, const String& value)
+    inline void parseHeader (NetworkCacheConfiguration& c, const String& key, const String& value)
     {
         if (key.equalsIgnoreCase ("Cache-Control"))         parseCacheControlValue (c, value);
         else if (key.equalsIgnoreCase ("Pragma"))           parsePragmaValue (c, value);
@@ -64,7 +64,7 @@ namespace networking
         else if (key.equalsIgnoreCase ("Content-Encoding")) c.contentEncoding = value.trim();
     }
 
-    void parseHeaders (NetworkCacheConfiguration& c, const StringPairArray& headers)
+    inline void parseHeaders (NetworkCacheConfiguration& c, const StringPairArray& headers)
     {
         const auto& k = headers.getAllKeys();
         const auto& v = headers.getAllValues();
@@ -74,7 +74,7 @@ namespace networking
     }
 
     //==============================================================================
-    File createCacheDirectory()
+    inline File createCacheDirectory()
     {
         return File::getSpecialLocation (File::SpecialLocationType::commonApplicationDataDirectory)
                 .getChildFile (File::createLegalFileName (JUCEApplication::getInstance()->getApplicationName()))
@@ -82,7 +82,7 @@ namespace networking
     }
 
     /** @warning @todo This easily blows the Windows MAX_PATH limit of 260 chars. */
-    File createCacheFile (const URL& url)
+    inline File createCacheFile (const URL& url)
     {
         return createCacheDirectory()
                 .getChildFile (juce::SHA256 (url.toString (true).toUTF8()).toHexString());
