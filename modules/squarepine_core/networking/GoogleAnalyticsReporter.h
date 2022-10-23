@@ -248,13 +248,23 @@ public:
     /** */
     GoogleAnalyticsMetadata& withCustomDimensions (int startIndex, const StringArray& values);
 
-    /** @see https://developers.google.com/analytics/devguides/collection/analyticsjs/custom-dims-mets */
+    /** Custom dimensions and metrics are a powerful way to send custom data to Google Analytics.
+        Developers can use custom dimensions and metrics to segment and measure
+        differences between logged in and logged out users, authors of pages, levels in games,
+        or any other business data you have on a page.
+
+        @see https://developers.google.com/analytics/devguides/collection/analyticsjs/custom-dims-mets
+
+        @param index It's important to note that there is a maximum of
+                     20 custom metrics (200 for Analytics 360 accounts).
+                     The index suffix must be a positive integer greater than 0 (e.g. metric5).
+        @param value A value of any kind, which will be converted to a String.
+                     Be sure this is compatible with that conversion!
+    */
     template<typename IntOrFloatType>
     GoogleAnalyticsMetadata& withCustomMetric (int index, IntOrFloatType value)
     {
-        jassert (index > 0 && index <= 200); //There is a maximum of 20 custom metrics (200 for Analytics 360 accounts).
-                                             //The index suffix must be a positive integer greater than 0 (e.g. metric5).
-
+        jassert (index > 0 && index <= 200);
         return with ("cm", index, String (value));
     }
 

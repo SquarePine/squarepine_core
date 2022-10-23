@@ -10,18 +10,18 @@ namespace networking
         if (agentCPUVendor.isEmpty())
             agentCPUVendor = "Unknown CPU";
 
-        String agentOSName = osName.replaceCharacter ('.', '_')
-                                    .replace ("iOS", "iPhone OS");
+        auto agentOSName = osName.replaceCharacter ('.', '_')
+                                 .replace ("iOS", "iPhone OS");
        #if JUCE_IOS
         agentOSName << " like macOS";
        #endif
 
         String userAgent;
         userAgent << "Mozilla/5.0 ("
-                    << SystemStats::getDeviceDescription().trim() << ";"
-                    << agentCPUVendor << " "
-                    << agentOSName << ";"
-                    << SystemStats::getDisplayLanguage() << ")";
+                  << SystemStats::getDeviceDescription().trim() << ";"
+                  << agentCPUVendor << " "
+                  << agentOSName << ";"
+                  << SystemStats::getDisplayLanguage() << ")";
 
         return userAgent;
     }
@@ -457,7 +457,7 @@ bool GoogleAnalyticsReporter::sendReport (const String& userAgent, const StringP
     if (auto sender = std::make_unique<Sender> (address, userAgent, timeoutMs, postData))
     {
        #if SQUAREPINE_LOG_GOOGLE_ANALYTICS
-        Logger::writeToLog ("Google Analytics: Sending new event.\n" + sender->toString());
+        Logger::writeToLog ("Google Analytics: Sending new event." + newLine + sender->toString());
        #endif
 
        #if ! SQUAREPINE_ONLY_LOG_GOOGLE_ANALYTICS
