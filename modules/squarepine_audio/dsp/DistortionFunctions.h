@@ -412,37 +412,25 @@ private:
     template<typename FloatType, FloatType (*function) (FloatType)>
     static void perform (juce::AudioBuffer<FloatType>& buffer) noexcept
     {
-        const auto numChannels = buffer.getNumChannels();
-        const auto numSamples = buffer.getNumSamples();
-        auto chans = buffer.getArrayOfWritePointers();
-
-        for (auto i = numChannels; --i >= 0;)
-            for (auto f = numSamples; --f >= 0;)
-                chans[i][f] = (*function) (chans[i][f]);
+        for (auto channel : AudioBufferView (buffer))
+            for (auto& sample : channel)
+                sample = (*function) (sample);
     }
 
     template<typename FloatType, FloatType (*function) (FloatType, FloatType)>
     static void performSingleParameter (juce::AudioBuffer<FloatType>& buffer, FloatType value) noexcept
     {
-        const auto numChannels = buffer.getNumChannels();
-        const auto numSamples = buffer.getNumSamples();
-        auto chans = buffer.getArrayOfWritePointers();
-
-        for (int i = numChannels; --i >= 0;)
-            for (int f = numSamples; --f >= 0;)
-                chans[i][f] = (*function) (chans[i][f], value);
+        for (auto channel : AudioBufferView (buffer))
+            for (auto& sample : channel)
+                sample = (*function) (sample, value);
     }
 
     template<typename FloatType, FloatType (*function) (FloatType, FloatType, FloatType)>
     static void performDualParameter (juce::AudioBuffer<FloatType>& buffer, FloatType valueA, FloatType valueB) noexcept
     {
-        const auto numChannels = buffer.getNumChannels();
-        const auto numSamples = buffer.getNumSamples();
-        auto chans = buffer.getArrayOfWritePointers();
-
-        for (auto i = numChannels; --i >= 0;)
-            for (auto f = numSamples; --f >= 0;)
-                chans[i][f] = (*function) (chans[i][f], valueA, valueB);
+        for (auto channel : AudioBufferView (buffer))
+            for (auto& sample : channel)
+                sample = (*function) (sample, valueA, valueB);
     }
 
     //==============================================================================
