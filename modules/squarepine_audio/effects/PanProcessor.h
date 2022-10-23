@@ -5,9 +5,6 @@ public:
     /** Constructor. */
     PanProcessor();
 
-    /** Destructor. */
-    ~PanProcessor() override;
-
     //==============================================================================
     /** Changes the pan.
 

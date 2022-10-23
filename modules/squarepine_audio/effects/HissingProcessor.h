@@ -11,9 +11,13 @@ public:
     /** @internal */
     Identifier getIdentifier() const override { return "periodicHisser"; }
     /** @internal */
+    bool supportsDoublePrecisionProcessing() const override { return true; }
+    /** @internal */
     void prepareToPlay (double, int) override;
     /** @internal */
     void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
+    /** @internal */
+    void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
 
 private:
     //==============================================================================
@@ -21,6 +25,9 @@ private:
         maxBlocksBetweenHisses = 0, blocksPerHiss = 0;
     double level = 0.0;
     juce::Random random;
+
+    template<typename FloatType>
+    void process (juce::AudioBuffer<FloatType>&);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HissingProcessor)

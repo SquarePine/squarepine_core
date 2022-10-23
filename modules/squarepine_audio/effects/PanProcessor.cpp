@@ -62,13 +62,13 @@ private:
     static StringArray getChoices()
     {
         StringArray choices;
-        choices.add (TRANS ("Linear"));
-        choices.add (TRANS ("Balanced"));
-        choices.add (TRANS ("-3.0 dBFS"));
-        choices.add (TRANS ("-4.5 dBFS"));
-        choices.add (TRANS ("-6.0 dBFS"));
-        choices.add (TRANS ("-3.0 dBFS Square"));
-        choices.add (TRANS ("-4.5 dBFS Square"));
+        choices.add (NEEDS_TRANS ("Linear"));
+        choices.add (NEEDS_TRANS ("Balanced"));
+        choices.add (NEEDS_TRANS ("-3.0 dBFS"));
+        choices.add (NEEDS_TRANS ("-4.5 dBFS"));
+        choices.add (NEEDS_TRANS ("-6.0 dBFS"));
+        choices.add (NEEDS_TRANS ("-3.0 dBFS Square"));
+        choices.add (NEEDS_TRANS ("-4.5 dBFS Square"));
 
         return choices;
     }
@@ -91,10 +91,6 @@ PanProcessor::PanProcessor() :
     layout.add (std::move (prp));
 
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
-}
-
-PanProcessor::~PanProcessor()
-{
 }
 
 //==============================================================================

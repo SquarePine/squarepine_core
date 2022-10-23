@@ -88,7 +88,11 @@ int BitCrusherProcessor::getBitDepth() const noexcept
 }
 
 //==============================================================================
-void BitCrusherProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
+void BitCrusherProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)  { process (buffer); }
+void BitCrusherProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer&) { process (buffer); }
+
+template<typename FloatType>
+void BitCrusherProcessor::process (juce::AudioBuffer<FloatType>& buffer)
 {
     int localBitDepth = 32;
 
@@ -100,7 +104,7 @@ void BitCrusherProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBu
     if (buffer.hasBeenCleared() || localBitDepth >= 32)
         return; // Nothing to do here.
 
-    for (auto channel : AudioBufferView<float> (buffer))
+    for (auto channel : AudioBufferView (buffer))
         for (auto& sample : channel)
-            sample = (float) crushBit ((double) sample, localBitDepth);
+            sample = (FloatType) crushBit ((double) sample, localBitDepth);
 }

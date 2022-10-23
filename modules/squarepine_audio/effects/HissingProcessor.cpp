@@ -13,7 +13,11 @@ void HissingProcessor::prepareToPlay (const double newSampleRate, const int esti
     level = 0.001;
 }
 
-void HissingProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
+void HissingProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)     { process (buffer); }
+void HissingProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer&)    { process (buffer); }
+
+template<typename FloatType>
+void HissingProcessor::process (juce::AudioBuffer<FloatType>& buffer)
 {
     if (isBypassed())
         return;
@@ -28,24 +32,22 @@ void HissingProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffe
         blocksBetweenHisses = jmax (10, maxBlocksBetweenHisses - random.nextInt (maxBlocksBetweenHisses / 4));
     }
 
-    if (blockCounter < blocksPerHiss)
+    if (blockCounter >= blocksPerHiss)
+        return;
+
+    for (auto channel : AudioBufferView (buffer))
     {
-        for (int j = 0; j < buffer.getNumChannels(); ++j)
+        for (auto& sample : channel)
         {
-            auto* d = buffer.getWritePointer (j, 0);
+            auto noise = 0.0;
 
-            for (int i = 0; i < buffer.getNumSamples(); ++i)
-            {
-                auto noise = 0.0;
+            for (int k = 4; --k >= 0;)
+                noise += random.nextDouble();
 
-                for (int k = 4; --k >= 0;)
-                    noise += random.nextDouble();
+            sample += (FloatType) (level * noise * 0.2);
 
-                *d++ += (float) (level * noise * 0.2);
-
-                if (level < hissLevel)
-                    level *= 1.000025;
-            }
+            if (level < hissLevel)
+                level *= 1.000025;
         }
     }
 }
