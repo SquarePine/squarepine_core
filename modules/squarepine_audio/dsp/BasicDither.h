@@ -42,8 +42,6 @@ public:
         while (--numSamples >= 0)
         {
             random2 = random1;
-
-            // N.B.: This was using 'rand()', but that C function isn't multithreaded FFS!
             random1 = generator.nextInt (RAND_MAX);
 
             auto in = *channel;

@@ -218,7 +218,7 @@ struct REXDLLHandle
 {
     REXDLLHandle (const File& moduleToLoad)
     {
-        const String path = moduleToLoad.getFullPathName().trim();
+        const auto path = moduleToLoad.getFullPathName().trim();
         if (path.isNotEmpty())
             ok = open (path);
     }
@@ -236,7 +236,7 @@ struct REXDLLHandle
         if (bundleRef == nullptr)
             return nullptr;
 
-        CFStringRef name = String (functionName).toCFString();
+        auto name = String (functionName).toCFString();
         void* fn = CFBundleGetFunctionPointerForName (bundleRef, name);
         CFRelease (name);
         return fn;
@@ -256,7 +256,7 @@ struct REXDLLHandle
        #endif
     }
 
-    bool ok;
+    bool ok = false;
 
 private:
    #if JUCE_WINDOWS
@@ -831,17 +831,14 @@ String REXAudioFormat::getErrorMessage() const
             : String();
 }
 
-bool REXAudioFormat::isREXSystemLoaded() const      { return rexSystem != nullptr && rexSystem->isOk(); }
-Array<int> REXAudioFormat::getPossibleSampleRates() { return {}; }
-Array<int> REXAudioFormat::getPossibleBitDepths()   { return {}; }
-bool REXAudioFormat::canDoStereo()                  { return true; }
-bool REXAudioFormat::canDoMono()                    { return true; }
-bool REXAudioFormat::isCompressed()                 { return true; }
-AudioFormatWriter* REXAudioFormat::createWriterFor (OutputStream*, double, unsigned int, int, const StringPairArray&, int) { return nullptr; }
+bool REXAudioFormat::isREXSystemLoaded() const
+{
+    return rexSystem != nullptr && rexSystem->isOk();
+}
 
 void REXAudioFormat::reloadREXSystemIfNeeded()
 {
-    JUCE_ASSERT_MESSAGE_MANAGER_IS_LOCKED;
+    JUCE_ASSERT_MESSAGE_MANAGER_IS_LOCKED
 
     if (! isREXSystemLoaded())
     {

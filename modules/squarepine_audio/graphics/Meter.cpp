@@ -49,10 +49,6 @@ Meter::Meter (bool willNeedMaxLevel) :
     setGradientColours (Colours::darkblue, Colours::darkorange, Colours::indianred);
 }
 
-Meter::~Meter()
-{
-}
-
 bool Meter::refreshLevels()
 {
     levels.clearQuick();

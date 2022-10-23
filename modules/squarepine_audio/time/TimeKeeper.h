@@ -1,4 +1,4 @@
-/** Object capable of denoting time in various formats */
+/** Object capable of denoting time in various formats. */
 class TimeKeeper final
 {
 public:
@@ -10,35 +10,35 @@ public:
                 double sampleRate = 44100.0);
 
     //==============================================================================
-    /** */
+    /** @returns */
     TimeKeeper& setSamplingRate (double sampleRate);
-    /** */
+    /** @returns */
     TimeKeeper& setSamplingRate (AudioDeviceManager&);
 
     //==============================================================================
-    /** */
+    /** @returns */
     TimeKeeper& setTime (double timeSeconds);
-    /** */
+    /** @returns */
     TimeKeeper& setTime (int64 timeInSamples);
-    /** */
+    /** @returns */
     TimeKeeper& setTime (int minutes, int seconds, int milliseconds);
-    /** */
+    /** @returns */
     TimeKeeper& setTime (int hours, int minutes, int seconds, int milliseconds);
-    /** */
+    /** @returns */
     TimeKeeper& setTime (int hours, int minutes, int seconds, int frames,
                          MidiMessage::SmpteTimecodeType);
-    /** */
+    /** @returns */
     TimeKeeper& setTime (int hours, int minutes, int seconds, int frames,
                          AudioPlayHead::FrameRateType);
 
-    /** */
+    /** @returns */
     TimeKeeper& setFrameRate (MidiMessage::SmpteTimecodeType);
-    /** */
+    /** @returns */
     TimeKeeper& setFrameRate (AudioPlayHead::FrameRateType);
 
-    /** */
+    /** @returns */
     TimeKeeper& setTempo (const Tempo&);
-    /** */
+    /** @returns */
     TimeKeeper& setTimeSignature (const TimeSignature&);
 
     //==============================================================================
@@ -52,12 +52,13 @@ public:
         measuresBeatsTicks
     };
 
-    /** */
+    /** @returns */
     TimeKeeper& setTimeFormat (TimeFormat);
-    /** */
+    /** @returns */
     TimeFormat getCurrentTimeFormat() const noexcept { return timeFormat; }
 
     //==============================================================================
+    /** @returns */
     String toString() const;
 
 private:

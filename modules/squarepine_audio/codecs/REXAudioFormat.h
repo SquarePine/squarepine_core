@@ -62,19 +62,19 @@ public:
 
     //==============================================================================
     /** @internal */
-    Array<int> getPossibleSampleRates() override;
+    Array<int> getPossibleSampleRates() override { return {}; }
     /** @internal */
-    Array<int> getPossibleBitDepths() override;
+    Array<int> getPossibleBitDepths() override { return {}; }
     /** @internal */
-    bool canDoStereo() override;
+    bool canDoStereo() override{ return true; }
     /** @internal */
-    bool canDoMono() override;
+    bool canDoMono() override{ return true; }
     /** @internal */
-    bool isCompressed() override;
+    bool isCompressed() override{ return true; }
     /** @internal */
     AudioFormatReader* createReaderFor (InputStream*, bool) override;
     /** @internal */
-    AudioFormatWriter* createWriterFor (OutputStream*, double, unsigned int, int, const StringPairArray&, int) override;
+    AudioFormatWriter* createWriterFor (OutputStream*, double, unsignedint, int, const StringPairArray&, int) override { return nullptr; }
 
 private:
     //==============================================================================
