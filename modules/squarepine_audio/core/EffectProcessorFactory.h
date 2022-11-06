@@ -16,6 +16,10 @@ public:
 
     //==============================================================================
     /** */
+    [[nodiscard]] const KnownPluginList& getKnownPluginList() const noexcept { return knownPluginList; }
+
+    //==============================================================================
+    /** */
     [[nodiscard]] PluginDescription createPluginDescription (int index) const;
 
     /** */

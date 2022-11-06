@@ -76,6 +76,7 @@ public:
 
 private:
     //==============================================================================
+    std::atomic<bool> looping { false }; // NB: separate state is needed because AudioTransportSource may not support this (stupidly).
     AudioSourceProcessor audioSourceProcessor;
     AudioTransportSource* transport = nullptr;
     PositionableAudioSource* source = nullptr;

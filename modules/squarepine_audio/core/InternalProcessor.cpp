@@ -3,7 +3,7 @@ class InternalProcessor::BypassParameter final : public AudioParameterBool
 {
 public:
     BypassParameter() :
-        AudioParameterBool (InternalProcessor::bypassId.toString(), TRANS ("Bypass"), false)
+        AudioParameterBool (InternalProcessor::bypassId.toString(), NEEDS_TRANS ("Bypass"), false)
     {
     }
 
@@ -160,7 +160,6 @@ void InternalProcessor::getStateInformation (MemoryBlock& destData)
     }
     else
     {
-        const ScopedLock sl (getCallbackLock());
         for (auto* param : getParameters())
             if (auto* const p = dynamic_cast<AudioProcessorParameterWithID*> (param))
                 valueTree.setProperty (Identifier (p->paramID), p->getValue(), nullptr);
@@ -183,15 +182,11 @@ void InternalProcessor::setStateInformation (const void* data, const int sizeInB
         else
         {
             if (valueTree.getType() == getIdentifier())
-            {
-                const ScopedLock sl (getCallbackLock());
-
                 for (int i = 0; i < valueTree.getNumProperties(); ++i)
                     for (auto* param : getParameters())
                         if (auto* const p = dynamic_cast<AudioProcessorParameterWithID*> (param))
                             if (Identifier (p->paramID) == valueTree.getPropertyName (i))
                                 p->setValue (valueTree.getProperty (valueTree.getPropertyName (i)));
-            }
         }
     }
 

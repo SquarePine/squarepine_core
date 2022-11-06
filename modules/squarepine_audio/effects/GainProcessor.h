@@ -51,7 +51,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return TRANS ("Gain"); }
+    const String getName() const override { return NEEDS_TRANS ("Gain"); }
     /** @internal */
     Identifier getIdentifier() const override { return "gain"; }
     /** @internal */

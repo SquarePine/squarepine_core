@@ -3,19 +3,30 @@ class SimpleEQProcessor::InternalFilter final : public AudioProcessorParameter::
 {
 public:
     InternalFilter (FilterType filterType,
+                    AudioParameterBool* b,
                     AudioParameterFloat* g,
                     AudioParameterFloat* c,
                     AudioParameterFloat* r) :
         type (filterType),
+        bypass (b),
         gain (g),
         cutoff (c),
         resonance (r)
     {
         updateParams();
 
+        bypass->addListener (this);
         gain->addListener (this);
         cutoff->addListener (this);
         resonance->addListener (this);
+    }
+
+    ~InternalFilter() override
+    {
+        bypass->removeListener (this);
+        gain->removeListener (this);
+        cutoff->removeListener (this);
+        resonance->removeListener (this);
     }
 
     //==============================================================================
@@ -30,44 +41,58 @@ public:
             (uint32) jmax (0, numChannels)
         };
 
-        floatProcessor.prepare (spec);
-        doubleProcessor.prepare (spec);
+        floatPackage.processor.prepare (spec);
+        doublePackage.processor.prepare (spec);
 
         updateParams();
     }
 
     void reset()
     {
-        floatProcessor.reset();
-        doubleProcessor.reset();
-    }
-
-    void process (juce::AudioBuffer<float>& buffer, bool wholeProcIsBypassed)
-    {
-        process (floatProcessor, buffer, wholeProcIsBypassed);
-    }
-
-    void process (juce::AudioBuffer<double>& buffer, bool wholeProcIsBypassed)
-    {
-        process (doubleProcessor, buffer, wholeProcIsBypassed);
+        floatPackage.processor.reset();
+        doublePackage.processor.reset();
     }
 
     void updateParams()
     {
-        updateParamsFor (floatProcessor);
-        updateParamsFor (doubleProcessor);
+        updateParamsFor (floatPackage);
+        updateParamsFor (doublePackage);
+    }
+
+    float getMagnitudeDbFromFrequency (float frequency) const
+    {
+        jassert (sampleRate > 0.0);
+
+        if (bypass->get())
+            return 0.0f;
+
+        return (float) doublePackage.displayState.getMagnitudeForFrequency ((double) frequency, sampleRate);
     }
 
     void parameterValueChanged (int, float) override    { updateParams(); }
     void parameterGestureChanged (int, bool) override   { }
 
+    void process (juce::AudioBuffer<float>& buffer)     { process (floatPackage, buffer); }
+    void process (juce::AudioBuffer<double>& buffer)    { process (doublePackage, buffer); }
+
     //==============================================================================
+    static inline const float nonZeroMinimum = 0.00001f;
+
     const FilterType type = FilterType::bandpass;
     double sampleRate = 44100.0;
-    ProcessorDuplicator<float> floatProcessor;
-    ProcessorDuplicator<double> doubleProcessor;
+
+    template<typename SampleType>
+    struct Package final
+    {
+        ProcessorDuplicator<SampleType> processor;
+        Coefficients<SampleType> displayState;
+    };
+
+    Package<float> floatPackage;
+    Package<double> doublePackage;
 
     // NB: These are owned by the parent EQ processor.
+    AudioParameterBool* bypass = nullptr;
     AudioParameterFloat* gain = nullptr;
     AudioParameterFloat* cutoff = nullptr;
     AudioParameterFloat* resonance = nullptr;
@@ -75,19 +100,24 @@ public:
 private:
     //==============================================================================
     template<typename SampleType>
-    void updateParamsFor (ProcessorDuplicator<SampleType>& processor)
+    void updateParamsFor (Package<SampleType>& package)
     {
-        const auto g = (SampleType) gain->get();
-        const auto c = (SampleType) cutoff->get();
-        const auto r = (SampleType) resonance->get();
+        auto snapToNonZero = [] (SampleType v) noexcept
+        {
+            return jmax (static_cast<SampleType> (nonZeroMinimum), v);
+        };
+
+        const auto c = snapToNonZero (static_cast<SampleType> (cutoff->get()));
+        const auto r = snapToNonZero (static_cast<SampleType> (resonance->get()));
+        const auto g = snapToNonZero (static_cast<SampleType> (gain->get()));
 
         using Coeffs = Coefficients<SampleType>;
         typename Coeffs::Ptr coeffs;
 
         switch (type)
         {
-            case FilterType::lowpass:   coeffs = Coeffs::makeLowShelf (sampleRate, c, r, g); break;
-            case FilterType::highpass:  coeffs = Coeffs::makeHighShelf (sampleRate, c, r, g); break;
+            case FilterType::lowpass:   coeffs = Coeffs::makeHighShelf (sampleRate, c, r, g); break;
+            case FilterType::highpass:  coeffs = Coeffs::makeLowShelf (sampleRate, c, r, g); break;
             case FilterType::bandpass:  coeffs = Coeffs::makePeakFilter (sampleRate, c, r, g); break;
 
             default:
@@ -95,19 +125,19 @@ private:
             break;
         };
 
-        processor.state = *coeffs;
+        package.displayState.coefficients = coeffs->coefficients;
+        package.processor.state->coefficients = coeffs->coefficients;
     }
 
     template<typename SampleType>
-    void process (ProcessorDuplicator<SampleType>& processor,
-                  juce::AudioBuffer<SampleType>& buffer,
-                  bool wholeProcIsBypassed)
+    void process (Package<SampleType>& package,
+                  juce::AudioBuffer<SampleType>& buffer)
     {
         dsp::AudioBlock<SampleType> block (buffer);
         Context<SampleType> context (block);
-        context.isBypassed = wholeProcIsBypassed;
+        context.isBypassed = bypass->get();
 
-        processor.process (context);
+        package.processor.process (context);
     }
 
     //==============================================================================
@@ -115,14 +145,192 @@ private:
 };
 
 //==============================================================================
+class SimpleEQProcessor::FilterBypassParameter final : public AudioParameterBool
+{
+public:
+    FilterBypassParameter (StringRef id, StringRef name, bool value) :
+        AudioParameterBool (id, name, value)
+    {
+    }
+
+    //==============================================================================
+    String getText (float v, int maximumStringLength) const override
+    {
+        return (approximatelyEqual (v, 0.0f) ? TRANS ("Active") : TRANS ("Bypassed"))
+                .substring (0, maximumStringLength);
+    }
+
+private:
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterBypassParameter)
+};
+
+//==============================================================================
+class SimpleEQProcessor::Program final
+{
+public: 
+    Program() noexcept = default;
+    Program (const Program&) noexcept = default;
+    Program (Program&&) noexcept = default;
+    Program& operator= (const Program&) noexcept = default;
+    Program& operator= (Program&&) noexcept = default;
+    ~Program() noexcept = default;
+
+    struct Band final
+    {
+        explicit Band (FilterType type_, 
+                       float gain_,
+                       float cutoff_,
+                       float q_,
+                       bool bypass_) noexcept :
+            type (type_),
+            gain (gain_),
+            cutoff (cutoff_),
+            q (q_),
+            bypass (bypass_)
+        {
+        }
+
+        explicit Band (FilterType type_, 
+                       float gain_,
+                       float cutoff_,
+                       float q_ = 1.0f) noexcept :
+            Band (type_, gain_, cutoff_, q_, false)
+        {
+        }
+
+        explicit Band (FilterType type_, 
+                       float gain_,
+                       int midiNoteCutoff,
+                       float q_ = 1.0f) noexcept :
+            Band (type_, gain_, (float) MidiMessage::getMidiNoteInHertz (midiNoteCutoff), q_)
+        {
+        }
+
+        Band() noexcept = default;
+        Band (const Band&) noexcept = default;
+        Band (Band&&) noexcept = default;
+        Band& operator= (const Band&) noexcept = default;
+        Band& operator= (Band&&) noexcept = default;
+        ~Band() noexcept = default;
+
+        void applyTo (InternalFilter& filter) const
+        {
+            jassert (type == filter.type);
+
+            filter.bypass->operator= (bypass);
+            filter.cutoff->operator= (cutoff);
+            filter.resonance->operator= (q);
+            filter.gain->operator= (gain);
+        }
+
+        FilterType type = FilterType::bandpass;
+        bool bypass = false;
+        float gain = 1.0f,
+              cutoff = 5000.0f,
+              q = 1.0f;
+    };
+
+    void applyTo (SimpleEQProcessor& parent) const
+    {
+        const Band* bands[] =
+        {
+            &highpass,
+            &bandpass1,
+            &bandpass2,
+            &bandpass3,
+            &lowpass
+        };
+
+        auto& filts = parent.filters;
+
+        jassert (numElementsInArray (bands) == filts.size());
+
+        for (int i = 0; i < filts.size(); ++i)
+        {
+            const auto& band = bands[i];
+            auto filter = filts.getUnchecked (i);
+            jassert (band->type == filter->type);
+            band->applyTo (*filter);
+        }
+    }
+
+    String name;
+    Band highpass { FilterType::highpass, 1.0f, 36, 1.0f },
+         bandpass1 { FilterType::bandpass, 1.0f, 48, 1.0f },
+         bandpass2 { FilterType::bandpass, 1.0f, 72, 1.0f },
+         bandpass3 { FilterType::bandpass, 1.0f, 96, 1.0f },
+         lowpass { FilterType::lowpass, 1.0f, 120, 1.0f };
+};
+
+//==============================================================================
 SimpleEQProcessor::SimpleEQProcessor() :
     InternalProcessor (false)
 {
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", createParameterLayout()));
+
+    programs.add (new Program()); // TODO
+
+    programs.getFirst()->applyTo (*this);
 }
 
 SimpleEQProcessor::~SimpleEQProcessor()
 {
+    masterReference.clear();
+}
+
+//==============================================================================
+AudioProcessorValueTreeState::ParameterLayout SimpleEQProcessor::createParameterLayout()
+{
+    struct Config final
+    {
+        String name;
+        FilterType type = FilterType::bandpass;
+        float frequency = 0.0f;
+    };
+
+    const Config configs[] =
+    {
+        { NEEDS_TRANS ("LowShelf"), FilterType::highpass, (float) MidiMessage::getMidiNoteInHertz (24) },
+        { NEEDS_TRANS ("BandPass1"), FilterType::bandpass, (float) MidiMessage::getMidiNoteInHertz (48) },
+        { NEEDS_TRANS ("BandPass2"), FilterType::bandpass, (float) MidiMessage::getMidiNoteInHertz (72) },
+        { NEEDS_TRANS ("BandPass3"), FilterType::bandpass, (float) MidiMessage::getMidiNoteInHertz (120) },
+        { NEEDS_TRANS ("HighShelf"), FilterType::lowpass, 19000.0f }
+    };
+
+    filters.ensureStorageAllocated (numElementsInArray (configs));
+
+    auto layout = createDefaultParameterLayout();
+
+    for (const auto& c : configs)
+    {
+        auto bypass = std::make_unique<FilterBypassParameter> (String ("bypassXYZ").replace ("XYZ", c.name),
+                                                            String (NEEDS_TRANS ("Bypass (XYZ)")).replace ("XYZ", c.name),
+                                                            false);
+
+        auto gain = std::make_unique<AudioParameterFloat> (String ("gainXYZ").replace ("XYZ", c.name),
+                                                           String (NEEDS_TRANS ("Gain (XYZ)")).replace ("XYZ", c.name),
+                                                           InternalFilter::nonZeroMinimum, maxGain, 1.0f);
+
+        auto cutoff = std::make_unique<AudioParameterFloat> (String ("cutoffXYZ").replace ("XYZ", c.name),
+                                                             String (NEEDS_TRANS ("Cutoff (XYZ)")).replace ("XYZ", c.name),
+                                                             20.0f, 20000.0f, c.frequency);
+
+        auto resonance = std::make_unique<AudioParameterFloat> (String ("qXYZ").replace ("XYZ", c.name),
+                                                                String (NEEDS_TRANS ("Q (XYZ)")).replace ("XYZ", c.name),
+                                                                InternalFilter::nonZeroMinimum, 10.0f, 1.0f / MathConstants<float>::sqrt2);
+
+        filters.add (new InternalFilter (c.type, bypass.get(), gain.get(), cutoff.get(), resonance.get()));
+
+        layout.add (std::move (bypass));
+        layout.add (std::move (gain));
+        layout.add (std::move (cutoff));
+        layout.add (std::move (resonance));
+    }
+
+    filters.minimiseStorageOverheads();
+
+    return layout;
 }
 
 //==============================================================================
@@ -131,8 +339,6 @@ void SimpleEQProcessor::prepareToPlay (const double newSampleRate, const int buf
     setRateAndBufferSizeDetails (newSampleRate, bufferSize);
 
     const auto numChans = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels());
-
-    const ScopedLock sl (getCallbackLock());
 
     for (auto* f : filters)
         f->prepare (newSampleRate, bufferSize, numChans);
@@ -152,57 +358,56 @@ void SimpleEQProcessor::process (juce::AudioBuffer<SampleType>& buffer)
                                   || numChannels <= 0
                                   || numSamples <= 0;
 
-    const ScopedLock sl (getCallbackLock());
+    if (isWholeProcBypassed)
+        return;
 
     for (auto* f : filters)
-        f->process (buffer, isWholeProcBypassed);
+        f->process (buffer);
 }
 
-//==============================================================================
-AudioProcessorValueTreeState::ParameterLayout SimpleEQProcessor::createParameterLayout()
+AudioProcessor::CurveData SimpleEQProcessor::getResponseCurve (CurveData::Type type) const
 {
-    struct Config final
+    if (type != CurveData::Type::EQ)
     {
-        String name;
-        FilterType type = FilterType::bandpass;
-        int note = 0;
-    };
-
-    const Config configs[] =
-    {
-        { NEEDS_TRANS ("LowShelf"), FilterType::highpass, 24 },
-        { NEEDS_TRANS ("BandPass1"), FilterType::bandpass, 48 },
-        { NEEDS_TRANS ("BandPass2"), FilterType::bandpass, 60 },
-        { NEEDS_TRANS ("BandPass3"), FilterType::bandpass, 72 },
-        { NEEDS_TRANS ("HighShelf"), FilterType::lowpass, 108 }
-    };
-
-    filters.ensureStorageAllocated (numElementsInArray (configs));
-
-    auto layout = createDefaultParameterLayout();
-
-    for (const auto& c : configs)
-    {
-        auto gain = std::make_unique<AudioParameterFloat> (String ("gainXYZ").replace ("XYZ", c.name),
-                                                           TRANS ("Gain (XYZ)").replace ("XYZ", TRANS (c.name)),
-                                                           0.0f, MathConstants<float>::pi, 1.0f);
-
-        auto cutoff = std::make_unique<AudioParameterFloat> (String ("cutoffXYZ").replace ("XYZ", c.name),
-                                                             TRANS ("Cutoff (XYZ)").replace ("XYZ", TRANS (c.name)),
-                                                             20.0f, 20000.0f, (float) MidiMessage::getMidiNoteInHertz (c.note));
-
-        auto resonance = std::make_unique<AudioParameterFloat> (String ("qXYZ").replace ("XYZ", c.name),
-                                                                TRANS ("Q (XYZ)").replace ("XYZ", TRANS (c.name)),
-                                                                0.00001f, 10.0f, 1.0f / MathConstants<float>::sqrt2);
-
-        filters.add (new InternalFilter (c.type, gain.get(), cutoff.get(), resonance.get()));
-
-        layout.add (std::move (gain));
-        layout.add (std::move (cutoff));
-        layout.add (std::move (resonance));
+        jassertfalse; // Unsupported!
+        return {};
     }
 
-    filters.minimiseStorageOverheads();
+    CurveData curveData;
 
-    return layout;
+    curveData.xRange = { 1.0f, 21000.0f };
+    curveData.yRange = { Decibels::gainToDecibels (0.0f), maxDecibels };
+
+    WeakReference<SimpleEQProcessor> ptr ((SimpleEQProcessor*) this);
+    curveData.curve = [ptr] (float frequency)
+    {
+        if (ptr == nullptr)
+            return Decibels::gainToDecibels (0.0f);
+
+        // TODO
+        return ptr->filters.getFirst()->getMagnitudeDbFromFrequency (frequency);
+    };
+
+    return curveData;
+}
+
+int SimpleEQProcessor::getNumPrograms()     { return programs.size(); }
+int SimpleEQProcessor::getCurrentProgram()  { return currentProgramIndex; }
+
+void SimpleEQProcessor::setCurrentProgram (int newProgramIndex)
+{
+    if (currentProgramIndex != newProgramIndex
+        && isPositiveAndBelow (newProgramIndex, getNumPrograms()))
+    {
+        currentProgramIndex = newProgramIndex;
+        programs[currentProgramIndex]->applyTo (*this);
+    }
+}
+
+const String SimpleEQProcessor::getProgramName (int index)
+{
+    if (auto* program = programs[index])
+        return program->name;
+
+    return {};
 }

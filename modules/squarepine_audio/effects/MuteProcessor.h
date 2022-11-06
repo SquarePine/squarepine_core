@@ -26,7 +26,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return TRANS ("Mute"); }
+    const String getName() const override { return NEEDS_TRANS ("Mute"); }
     /** @internal */
     Identifier getIdentifier() const override { return "mute"; }
     /** @internal */

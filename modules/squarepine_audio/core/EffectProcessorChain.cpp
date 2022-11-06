@@ -3,12 +3,12 @@ EffectProcessorChain::EffectProcessorChain (std::shared_ptr<EffectProcessorFacto
     factory (epf)
 {
     jassert (factory != nullptr);
-    plugins.reserve (10);
+    plugins.ensureStorageAllocated (8);
 }
 
 //==============================================================================
 template<typename Type>
-EffectProcessor::Ptr EffectProcessorChain::insertInternal (const Type& valueOrRef, int destinationIndex, InsertionStyle insertionStyle)
+EffectProcessor::Ptr EffectProcessorChain::insertInternal (int destinationIndex, const Type& valueOrRef, InsertionStyle insertionStyle)
 {
     if (factory == nullptr)
     {
@@ -21,28 +21,23 @@ EffectProcessor::Ptr EffectProcessorChain::insertInternal (const Type& valueOrRe
         pluginInstance->setPlayHead (getPlayHead());
         pluginInstance->prepareToPlay (getSampleRate(), getBlockSize());
 
-        auto effect = std::make_shared<EffectProcessor> (std::move (pluginInstance), factory->createPluginDescription (valueOrRef));
+        auto effect = new EffectProcessor (std::move (pluginInstance), factory->createPluginDescription (valueOrRef));
 
+        if (insertionStyle == InsertionStyle::append
+            || ! isPositiveAndBelow (destinationIndex, getNumEffects()))
         {
-            const ScopedLock sl (getCallbackLock());
-
-            if (insertionStyle == InsertionStyle::append
-                || ! isPositiveAndBelow (destinationIndex, getNumEffects()))
-            {
-                plugins.emplace_back (effect);
-            }
-            else if (insertionStyle == InsertionStyle::insert)
-            {
-                plugins.insert (plugins.begin() + (ContainerType::difference_type) destinationIndex, effect);
-            }
-            else
-            {
-                plugins[(size_t) destinationIndex] = effect;
-            }
-
-            updateLatency();
+            plugins.add (effect);
+        }
+        else if (insertionStyle == InsertionStyle::insert)
+        {
+            plugins.insert (destinationIndex, effect);
+        }
+        else
+        {
+            plugins.set (destinationIndex, effect);
         }
 
+        updateLatency();
         updateHostDisplay();
         return effect;
     }
@@ -51,93 +46,37 @@ EffectProcessor::Ptr EffectProcessorChain::insertInternal (const Type& valueOrRe
     return {};
 }
 
-EffectProcessor::Ptr EffectProcessorChain::appendNewEffect (int source)                     { return insertInternal (source, -1, InsertionStyle::append); }
-EffectProcessor::Ptr EffectProcessorChain::appendNewEffect (const String& source)           { return insertInternal (source, -1, InsertionStyle::append); }
-EffectProcessor::Ptr EffectProcessorChain::insertNewEffect (int source, int dest)           { return insertInternal (source, dest); }
-EffectProcessor::Ptr EffectProcessorChain::insertNewEffect (const String& source, int dest) { return insertInternal (source, dest); }
-EffectProcessor::Ptr EffectProcessorChain::replaceEffect (int source, int dest)             { return insertInternal (source, dest, InsertionStyle::replace); }
-EffectProcessor::Ptr EffectProcessorChain::replaceEffect (const String& source, int dest)   { return insertInternal (source, dest, InsertionStyle::replace); }
+EffectProcessor::Ptr EffectProcessorChain::add (int source)                         { return insertInternal (-1, source, InsertionStyle::append); }
+EffectProcessor::Ptr EffectProcessorChain::add (const String& source)               { return insertInternal (-1, source, InsertionStyle::append); }
+EffectProcessor::Ptr EffectProcessorChain::insert (int dest, int source)            { return insertInternal (dest, source); }
+EffectProcessor::Ptr EffectProcessorChain::insert (int dest, const String& source)  { return insertInternal (dest, source); }
+EffectProcessor::Ptr EffectProcessorChain::replace (int dest, int source)           { return insertInternal (dest, source, InsertionStyle::replace); }
+EffectProcessor::Ptr EffectProcessorChain::replace (int dest, const String& source) { return insertInternal (dest, source, InsertionStyle::replace); }
 
-//==============================================================================
-bool EffectProcessorChain::moveEffect (int pluginIndex, int destinationIndex)
+void EffectProcessorChain::move (int pluginIndex, int destinationIndex)
 {
-    bool changed = false;
-
-    {
-        const ScopedLock sl (getCallbackLock());
-        changed = moveItem (plugins, pluginIndex, std::clamp (destinationIndex, 0, getNumEffects()));
-    }
-
-    if (changed)
-        updateHostDisplay();
-
-    return changed;
+    plugins.swap (pluginIndex, destinationIndex);
 }
 
-bool EffectProcessorChain::moveEffect (int pluginIndex, PluginPositionPreset destinationPosition)
-{
-    switch (destinationPosition)
-    {
-        case PluginPositionPreset::shiftToPrevious: return moveEffect (pluginIndex, pluginIndex - 1);
-        case PluginPositionPreset::shiftToNext:     return moveEffect (pluginIndex, pluginIndex + 1);
-        default: break;
-    };
-
-    bool changed = false;
-
-    {
-        const ScopedLock sl (getCallbackLock());
-
-        switch (destinationPosition)
-        {
-            case PluginPositionPreset::shiftToFirst:    changed = moveItemToFront (plugins, pluginIndex); break;
-            case PluginPositionPreset::shiftToLast:     changed = moveItemToBack (plugins, pluginIndex); break;
-            default:                                    jassertfalse; break;
-        };
-    }
-
-    if (changed)
-        updateHostDisplay();
-
-    return changed;
-}
-
-//==============================================================================
 int EffectProcessorChain::getNumEffects() const
 {
-    const ScopedLock sl (getCallbackLock());
     return static_cast<int> (plugins.size());
 }
 
-bool EffectProcessorChain::removeEffect (int index)
+bool EffectProcessorChain::remove (int index)
 {
-    bool changed = false;
-
-    {
-        const ScopedLock sl (getCallbackLock());
-        changed = removeItem (plugins, index);
-        updateLatency();
-    }
-
-    if (changed)
-        updateHostDisplay();
-
-    return changed;
+    const auto startSize = getNumEffects();
+    plugins.remove (index);
+    return startSize != getNumEffects();
 }
 
 bool EffectProcessorChain::clear()
 {
-    bool changed = false;
-
+    const bool changed = ! plugins.isEmpty();
+    if (changed)
     {
-        const ScopedLock sl (getCallbackLock());
-        changed = ! plugins.empty();
-
-        if (changed)
-        {
-            plugins.clear();
-            updateLatency(); // Doing this here to avoid doubly locking.
-        }
+        plugins.clear();
+        updateLatency(); // Doing this here to avoid doubly locking.
     }
 
     if (changed)
@@ -149,10 +88,8 @@ bool EffectProcessorChain::clear()
 //==============================================================================
 EffectProcessor::Ptr EffectProcessorChain::getEffectProcessor (int index) const
 {
-    const ScopedLock sl (getCallbackLock());
-
     if (isPositiveAndBelow (index, getNumEffects()))
-        return plugins[(size_t) index];
+        return plugins[index];
 
     return {};
 }
@@ -170,7 +107,7 @@ std::optional<String> EffectProcessorChain::getPluginInstanceName (int index) co
 
 std::optional<String> EffectProcessorChain::getEffectName (int index) const
 {
-    return getEffectProperty<String> (index, [] (EffectProcessor::Ptr e) { return e->name; });
+    return getEffectProperty<String> (index, [] (EffectProcessor::Ptr e) { return e->getName(); });
 }
 
 std::optional<std::shared_ptr<AudioPluginInstance>> EffectProcessorChain::getPluginInstance (int index) const
@@ -185,12 +122,12 @@ std::optional<PluginDescription> EffectProcessorChain::getPluginDescription (int
 
 std::optional<bool> EffectProcessorChain::isBypassed (int index) const
 {
-    return getEffectProperty<bool> (index, [&] (EffectProcessor::Ptr e) { return e->isBypassed.load (std::memory_order_relaxed); });
+    return getEffectProperty<bool> (index, [&] (EffectProcessor::Ptr e) { return e->isBypassed(); });
 }
 
 std::optional<float> EffectProcessorChain::getMixLevel (int index) const
 {
-    return getEffectProperty<float> (index, [&] (EffectProcessor::Ptr e) { return e->mixLevel.getTargetValue(); });
+    return getEffectProperty<float> (index, [&] (EffectProcessor::Ptr e) { return e->getMixLevel(); });
 }
 
 std::optional<juce::Point<int>> EffectProcessorChain::getLastUIPosition (int index) const
@@ -205,8 +142,6 @@ std::optional<bool> EffectProcessorChain::isPluginMissing (int index) const
 
 bool EffectProcessorChain::loadIfMissing (int index)
 {
-    const ScopedLock sl (getCallbackLock());
-
     if (isPositiveAndBelow (index, getNumEffects())
         && isPluginMissing (index))
     {
@@ -215,8 +150,7 @@ bool EffectProcessorChain::loadIfMissing (int index)
             const InternalProcessor::ScopedBypass sb (*this);
 
             effect->plugin = factory->createPlugin (effect->description);
-            effect->reloadFromStateIfValid();
-            return true;
+            return effect->reloadFromStateIfValid();
         }
     }
 
@@ -227,8 +161,6 @@ bool EffectProcessorChain::loadIfMissing (int index)
 bool EffectProcessorChain::setEffectProperty (int index, std::function<void (EffectProcessor::Ptr)> func)
 {
     jassert (func != nullptr);
-
-    const ScopedLock sl (getCallbackLock());
 
     if (auto effect = getEffectProcessor (index))
     {
@@ -241,17 +173,17 @@ bool EffectProcessorChain::setEffectProperty (int index, std::function<void (Eff
 
 bool EffectProcessorChain::setEffectName (int index, const String& name)
 {
-    return setEffectProperty (index, [&] (EffectProcessor::Ptr e) { e->name = name; });
+    return setEffectProperty (index, [name] (EffectProcessor::Ptr e) { e->setName (name); });
 }
 
 bool EffectProcessorChain::setBypass (int index, bool bypass)
 {
-    return setEffectProperty (index, [&] (EffectProcessor::Ptr e) { e->isBypassed = bypass; });
+    return setEffectProperty (index, [bypass] (EffectProcessor::Ptr e) { e->setBypassed (bypass); });
 }
 
 bool EffectProcessorChain::setMixLevel (int index, float mixLevel)
 {
-    return setEffectProperty (index, [&] (EffectProcessor::Ptr e) { e->mixLevel = mixLevel; });
+    return setEffectProperty (index, [mixLevel] (EffectProcessor::Ptr e) { e->setMixLevel (mixLevel); });
 }
 
 //==============================================================================
@@ -260,8 +192,6 @@ void EffectProcessorChain::prepareToPlay (const double sampleRate, const int est
     setRateAndBufferSizeDetails (sampleRate, estimatedSamplesPerBlock);
 
     const auto numChans = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels(), 1);
-
-    const ScopedLock sl (getCallbackLock());
 
     floatBuffers.prepare (numChans, estimatedSamplesPerBlock);
     doubleBuffers.prepare (numChans, estimatedSamplesPerBlock);
@@ -316,7 +246,6 @@ void EffectProcessorChain::processInternal (juce::AudioBuffer<FloatType>& source
     // potentially read from/write to - avoids bad accesses.
     // We only care about the main outputs, so still use the numChannels variable throughout
     bufferPackage.prepare (requiredChannels, numSamples);
-    bufferPackage.clear();
 
     const auto channels = jmin (numChannels, requiredChannels.load());
 
@@ -365,17 +294,19 @@ bool EffectProcessorChain::isWholeChainBypassed() const
 }
 
 template<typename FloatType>
-void EffectProcessorChain::process (juce::AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, BufferPackage<FloatType>& package)
+void EffectProcessorChain::process (juce::AudioBuffer<FloatType>& buffer,
+                                    MidiBuffer& midiMessages,
+                                    BufferPackage<FloatType>& package)
 {
-    if (InternalProcessor::isBypassed())
-        return;
+    const ScopedNoDenormals snd;
 
-    const GenericScopedTryLock<CriticalSection> sl (getCallbackLock());
+    if (InternalProcessor::isBypassed())
+        return; // Pass through
+
     const auto numChannels = jmin ((int) 2, buffer.getNumChannels());
     const auto numSamples = buffer.getNumSamples();
 
-    if (sl.isLocked()
-        && ! plugins.empty()
+    if (! plugins.isEmpty()
         && numChannels > 0
         && numSamples > 0
         && ! isWholeChainBypassed())
@@ -390,7 +321,6 @@ void EffectProcessorChain::processBlock (juce::AudioBuffer<double>& buffer, Midi
 //==============================================================================
 double EffectProcessorChain::getTailLengthSeconds() const
 {
-    const ScopedLock sl (getCallbackLock());
     auto largestTailLength = 0.0;
 
     for (auto effect : plugins)
@@ -401,12 +331,20 @@ double EffectProcessorChain::getTailLengthSeconds() const
     return largestTailLength;
 }
 
+void EffectProcessorChain::setNonRealtime (bool isNonRealtime) noexcept
+{
+    for (auto effect : plugins)
+        if (effect != nullptr)
+            if (auto plugin = effect->plugin)
+                plugin->setNonRealtime (isNonRealtime);
+}
+
 void EffectProcessorChain::releaseResources()           { loopThroughEffectsAndCall<&AudioProcessor::releaseResources>(); }
 void EffectProcessorChain::reset()                      { loopThroughEffectsAndCall<&AudioProcessor::reset>(); }
 void EffectProcessorChain::numChannelsChanged()         { loopThroughEffectsAndCall<&AudioProcessor::numChannelsChanged>(); }
 void EffectProcessorChain::numBusesChanged()            { loopThroughEffectsAndCall<&AudioProcessor::numBusesChanged>(); }
 void EffectProcessorChain::processorLayoutsChanged()    { loopThroughEffectsAndCall<&AudioProcessor::processorLayoutsChanged>(); }
-const String EffectProcessorChain::getName() const      { return TRANS ("Effect Processor Chain"); }
+const String EffectProcessorChain::getName() const      { return NEEDS_TRANS ("Effect Processor Chain"); }
 
 //==============================================================================
 namespace ChainIds
@@ -447,9 +385,9 @@ XmlElement* EffectProcessorChain::createElementForEffect (EffectProcessor::Ptr e
     }
 
     auto* effectElement = new XmlElement (ChainIds::effectRoot);
-    effectElement->setAttribute (ChainIds::effectName, effect->name);
-    effectElement->setAttribute (ChainIds::effectBypassed, effect->isBypassed ? 1 : 0);
-    effectElement->setAttribute (ChainIds::effectMixLevel, std::clamp (effect->mixLevel.getTargetValue(), 0.0f, 1.0f));
+    effectElement->setAttribute (ChainIds::effectName, effect->getName());
+    effectElement->setAttribute (ChainIds::effectBypassed, effect->isBypassed() ? 1 : 0);
+    effectElement->setAttribute (ChainIds::effectMixLevel, effect->getMixLevel());
     effectElement->setAttribute (ChainIds::effectUIX, effect->lastUIPosition.x);
     effectElement->setAttribute (ChainIds::effectUIY, effect->lastUIPosition.y);
     effectElement->addChildElement (effect->description.createXml().release());
@@ -488,7 +426,7 @@ void EffectProcessorChain::setStateInformation (const void* const data, const in
         InternalProcessor::setBypass (chainElement->getBoolAttribute (ChainIds::rootBypassed));
 
         for (auto* e : chainElement->getChildWithTagNameIterator (ChainIds::effectRoot))
-            plugins.emplace_back (createEffectProcessorFromXML (e));
+            plugins.add (createEffectProcessorFromXML (e));
 
         updateLatency();
     }
@@ -520,19 +458,21 @@ EffectProcessor::Ptr EffectProcessorChain::createEffectProcessorFromXML (XmlElem
         return {};
     }
 
-    if (auto newEffect = insertInternal (description, -1, InsertionStyle::append))
+    if (auto newEffect = insertInternal (-1, description, InsertionStyle::append))
     {
-        newEffect->plugin->getStateInformation (newEffect->defaultState);
+        MemoryBlock data;
+        newEffect->plugin->getStateInformation (data);
+        newEffect->setDefaultState (data);
 
         if (const auto* const state = effectXML->getChildByName (ChainIds::effectState))
         {
-            newEffect->lastKnownBase64State = state->getAllSubText();
+            // newEffect->lastKnownBase64State = state->getAllSubText();
             newEffect->reloadFromStateIfValid();
         }
 
-        newEffect->name = effectXML->getStringAttribute (ChainIds::effectName, String()).trim();
-        newEffect->mixLevel = (float) std::clamp (effectXML->getDoubleAttribute (ChainIds::effectMixLevel, 1.0), 0.0, 1.0);
-        newEffect->isBypassed = effectXML->getBoolAttribute (ChainIds::effectBypassed);
+        newEffect->setName (effectXML->getStringAttribute (ChainIds::effectName, String()).trim());
+        newEffect->setMixLevel ((float) effectXML->getDoubleAttribute (ChainIds::effectMixLevel, 1.0));
+        newEffect->setBypassed (effectXML->getBoolAttribute (ChainIds::effectBypassed));
         newEffect->lastUIPosition.x = effectXML->getIntAttribute (ChainIds::effectUIX);
         newEffect->lastUIPosition.y = effectXML->getIntAttribute (ChainIds::effectUIY);
         return newEffect;

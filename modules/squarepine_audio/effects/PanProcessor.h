@@ -38,7 +38,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return TRANS ("Stereophonic Panner"); }
+    const String getName() const override { return NEEDS_TRANS ("Stereophonic Panner"); }
     /** @internal */
     Identifier getIdentifier() const override { return "stereoPanner"; }
     /** @internal */

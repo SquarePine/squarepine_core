@@ -7,7 +7,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return TRANS ("Basic Dither"); }
+    const String getName() const override { return NEEDS_TRANS ("Basic Dither"); }
     /** @internal */
     Identifier getIdentifier() const override { return "basicDither"; }
     /** @internal */

@@ -146,6 +146,11 @@ void SharedObjects::restoreWindowDimensions (DocumentWindow& dw)
     dw.setFullScreen (static_cast<bool> (v.getProperty (maximisedId, false)));
 }
 
+Image SharedObjects::getWindowIcon()
+{
+    return ImageCache::getFromMemory (BinaryData::SquarePine_Logo_png, BinaryData::SquarePine_Logo_pngSize);
+}
+
 //==============================================================================
 void SharedObjects::saveRecentFiles (const RecentlyOpenedFilesList& rofl)
 {
@@ -184,6 +189,7 @@ Result SharedObjects::reloadAudioDeviceManagerFromSettings()
 {
     SQUAREPINE_CRASH_TRACER
 
+#if 0
     if (auto* us = applicationProperties.getUserSettings())
     {
         if (us->containsKey (audioDeviceSettingsId))
@@ -209,7 +215,7 @@ Result SharedObjects::reloadAudioDeviceManagerFromSettings()
             }
         }
     }
-
+#endif
     const auto result = audioDeviceManager.initialiseWithDefaultDevices (128, 128);
     if (result.isEmpty())
         return Result::ok();

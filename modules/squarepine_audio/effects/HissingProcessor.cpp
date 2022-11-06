@@ -19,16 +19,23 @@ void HissingProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuff
 template<typename FloatType>
 void HissingProcessor::process (juce::AudioBuffer<FloatType>& buffer)
 {
+    auto resetParams = [this]()
+    {
+        blockCounter = 0;
+        level = 0.001;
+    };
+
     if (isBypassed())
+    {
+        resetParams();
         return;
+    }
 
     constexpr auto hissLevel = 0.65;
 
     if (++blockCounter >= blocksBetweenHisses)
     {
-        blockCounter = 0;
-        level = 0.001;
-
+        resetParams();
         blocksBetweenHisses = jmax (10, maxBlocksBetweenHisses - random.nextInt (maxBlocksBetweenHisses / 4));
     }
 

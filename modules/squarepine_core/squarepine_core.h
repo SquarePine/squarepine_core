@@ -28,6 +28,7 @@
 #include <optional>
 #include <random>
 #include <regex>
+#include <stack>
 
 //==============================================================================
 #include <juce_opengl/juce_opengl.h>

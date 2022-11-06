@@ -16,7 +16,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return TRANS ("Equaliser"); }
+    const String getName() const override { return NEEDS_TRANS ("Simple Equaliser"); }
     /** @internal */
     Identifier getIdentifier() const override { return "equaliser"; }
     /** @internal */
@@ -27,6 +27,16 @@ public:
     void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
     /** @internal */
     void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
+    /** @internal */
+    int getNumPrograms() override;
+    /** @internal */
+    int getCurrentProgram() override;
+    /** @internal */
+    void setCurrentProgram (int) override;
+    /** @internal */
+    const String getProgramName (int) override;
+    /** @internal */
+    CurveData getResponseCurve (CurveData::Type) const override;
 
 private:
     //==============================================================================
@@ -44,8 +54,18 @@ private:
     template<typename SampleType>
     using ProcessorDuplicator = dsp::ProcessorDuplicator<Filter<SampleType>, Coefficients<SampleType>>;
 
+    class FilterBypassParameter;
+
     class InternalFilter;
     OwnedArray<InternalFilter> filters;
+
+    class Program;
+    friend class Program;
+    OwnedArray<Program> programs;
+    int currentProgramIndex = 0;
+
+    static inline const auto maxDecibels = 18.0f;
+    static inline const auto maxGain = Decibels::decibelsToGain (maxDecibels);
 
     //==============================================================================
     AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -54,5 +74,6 @@ private:
     void process (juce::AudioBuffer<SampleType>& buffer);
 
     //==============================================================================
+    JUCE_DECLARE_WEAK_REFERENCEABLE (SimpleEQProcessor)
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleEQProcessor)
 };

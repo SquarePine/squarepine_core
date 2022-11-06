@@ -16,18 +16,18 @@ class PolarityInversionProcessor final : public InternalProcessor
 {
 public:
     /** Constructor. */
-    PolarityInversionProcessor (bool startActive = false);
+    PolarityInversionProcessor (bool startActive = true);
 
     //==============================================================================
     /** Enables or disables the polarity inversion. */
     void setActive (bool shouldBeActive);
 
     /** @returns true if the polarity is reversed. */
-    bool isActive() const noexcept;
+    bool isActive() const;
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return TRANS ("Polarity Inverter"); }
+    const String getName() const override { return NEEDS_TRANS ("Polarity Inverter"); }
     /** @internal */
     Identifier getIdentifier() const override { return "polarityInverter"; }
     /** @internal */

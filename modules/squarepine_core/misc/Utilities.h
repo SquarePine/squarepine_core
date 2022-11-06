@@ -154,38 +154,75 @@ private:
 };
 
 //==============================================================================
-JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Wall", "-Wconversion", "-Wimplicit-const-int-float-conversion", "-Wsign-conversion")
+JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Wall",
+                                     "-Wconversion",
+                                     "-Wimplicit-const-int-float-conversion",
+                                     "-Wsign-conversion")
+
+namespace details
+{
+    namespace IsSTLContainerImpl
+    {
+        template <typename T>       struct is_stl_container                                     : std::false_type {};
+        template <typename T, std::size_t N> struct is_stl_container<std::array<T, N>>          : std::true_type {};
+        template <typename... Args> struct is_stl_container<std::vector<Args...>>               : std::true_type {};
+        template <typename... Args> struct is_stl_container<std::deque<Args...>>                : std::true_type {};
+        template <typename... Args> struct is_stl_container<std::list<Args...>>                 : std::true_type {};
+        template <typename... Args> struct is_stl_container<std::forward_list<Args...>>         : std::true_type {};
+        template <typename... Args> struct is_stl_container<std::set<Args...>>                  : std::true_type {};
+        template <typename... Args> struct is_stl_container<std::multiset<Args...>>             : std::true_type {};
+        template <typename... Args> struct is_stl_container<std::map<Args...>>                  : std::true_type {};
+        template <typename... Args> struct is_stl_container<std::multimap<Args...>>             : std::true_type {};
+        template <typename... Args> struct is_stl_container<std::unordered_set<Args...>>        : std::true_type {};
+        template <typename... Args> struct is_stl_container<std::unordered_multiset<Args...>>   : std::true_type {};
+        template <typename... Args> struct is_stl_container<std::unordered_map<Args...>>        : std::true_type {};
+        template <typename... Args> struct is_stl_container<std::unordered_multimap<Args...>>   : std::true_type {};
+        template <typename... Args> struct is_stl_container<std::stack<Args...>>                : std::true_type {};
+        template <typename... Args> struct is_stl_container<std::queue<Args...>>                : std::true_type {};
+        template <typename... Args> struct is_stl_container<std::priority_queue<Args...>>       : std::true_type {};
+    }
+
+    template <typename T>
+    struct IsSTLContainer
+    {
+        static constexpr bool const value = IsSTLContainerImpl::is_stl_container<std::decay_t<T>>::value;
+    };
+}
 
 /** */
-template<template<typename, typename> class Container, 
-         typename Value,
-         typename Allocator = std::allocator<Value>,
-         typename IndexType>
-inline bool moveItem (Container<Value, Allocator>& v, IndexType oldIndex, IndexType newIndex)
+template<class Container,
+         typename IndexType,
+         details::IsSTLContainer<Container>::value = true>
+inline bool moveItem (Container& v, IndexType oldIndex, IndexType newIndex)
 {
-    const auto oldI = static_cast<size_t> (oldIndex);
-    const auto newI = static_cast<size_t> (newIndex);
-
-    if (oldI > v.size() || newI > v.size())
+    if (oldIndex > v.size() || newIndex > v.size())
     {
         jassertfalse;
         return false;
     }
 
-    if (oldI > newI)
-        std::rotate (v.rend() - oldI - 1, v.rend() - oldI, v.rend() - newI);
+    if (oldIndex > newIndex)
+    {
+        const auto containerREnd = std::crend (v);
+        std::rotate (containerREnd - oldIndex - 1,
+                     containerREnd - oldIndex,
+                     containerREnd - newIndex);
+    }
     else        
-        std::rotate (v.begin() + oldI, v.begin() + oldI + 1, v.begin() + newI + 1);
+    {
+        const auto containerBegin = std::cbegin (v);
+        std::rotate (containerBegin + oldIndex,
+                     containerBegin + oldIndex + 1,
+                     containerBegin + newIndex + 1);
+    }
 
     return true;
 }
 
 /** */
-template<template<typename, typename> class Container, 
-         typename Value,
-         typename Allocator = std::allocator<Value>,
+template<class Container, 
          typename IndexType>
-inline bool moveItemToBack (Container<Value, Allocator>& v, IndexType itemIndex)
+inline bool moveItemToBack (Container& v, IndexType itemIndex)
 {
     const auto i = static_cast<size_t> (itemIndex);
     if (i > v.size())
@@ -200,11 +237,9 @@ inline bool moveItemToBack (Container<Value, Allocator>& v, IndexType itemIndex)
 }
 
 /** */
-template<template<typename, typename> class Container, 
-         typename Value,
-         typename Allocator = std::allocator<Value>,
+template<class Container, 
          typename IndexType>
-inline bool moveItemToFront (Container<Value, Allocator>& v, IndexType itemIndex)
+inline bool moveItemToFront (Container& v, IndexType itemIndex)
 {
     const auto i = static_cast<size_t> (itemIndex);
     if (i > v.size())
@@ -220,11 +255,10 @@ inline bool moveItemToFront (Container<Value, Allocator>& v, IndexType itemIndex
 }
 
 /** */
-template<template<typename, typename> class Container, 
-         typename Value,
-         typename Allocator = std::allocator<Value>,
-         typename IndexType>
-inline bool removeItem (Container<Value, Allocator>& v, IndexType itemIndex)
+template<class Container, 
+         typename IndexType,
+         details::IsSTLContainer<Container>::value = true>
+inline bool removeItem (Container& v, IndexType itemIndex)
 {
     const auto index = static_cast<size_t> (itemIndex);
     if (index > v.size())
@@ -238,12 +272,11 @@ inline bool removeItem (Container<Value, Allocator>& v, IndexType itemIndex)
 }
 
 /** */
-template<template<typename, typename> class Container, 
-         typename Value,
-         typename Allocator = std::allocator<Value>,
+template<class Container, 
          typename IndexType,
-         typename ItemType>
-inline bool replaceItem (Container<Value, Allocator>& v, IndexType itemIndex, ItemType& newItem)
+         typename ItemType,
+         details::IsSTLContainer<Container>::value = true>
+inline bool replaceItem (Container& v, IndexType itemIndex, ItemType& newItem)
 {
     const auto i = static_cast<size_t> (itemIndex);
     if (i > v.size())
@@ -257,20 +290,20 @@ inline bool replaceItem (Container<Value, Allocator>& v, IndexType itemIndex, It
 }
 
 /** */
-template<template<typename, typename> class Container, 
+template<class Container, 
          typename Value,
-         typename Allocator = std::allocator<Value>>
-inline void append (Container<Value, Allocator>& destination, const Container<Value, Allocator>& source)
+         details::IsSTLContainer<Container>::value = true>
+inline void append (Container& destination, const Container& source)
 {
     destination.insert (std::end (destination), std::begin (source), std::end (source));
 }
 
 /** */
-template<template<typename, typename> class Container, 
+template<class Container, 
          typename Value,
-         typename Allocator = std::allocator<Value>,
-         typename Predicate>
-inline Value removeAndReturn (Container<Value, Allocator>& container, Predicate predicate)
+         typename Predicate,
+         details::IsSTLContainer<Container>::value = true>
+inline Value removeAndReturn (Container& container, Predicate predicate)
 {
     auto result = Value();
 
@@ -286,19 +319,19 @@ inline Value removeAndReturn (Container<Value, Allocator>& container, Predicate 
 }
 
 /** */
-template<template<typename, typename> class Container, 
+template<class Container, 
          typename Value,
-         typename Allocator = std::allocator<Value>>
-inline void removeAllInstancesOf (Container<Value, Allocator>& container, const Value& value)
+         details::IsSTLContainer<Container>::value = true>
+inline void removeAllInstancesOf (Container& container, const Value& value)
 {
     container.erase (std::remove (container.begin(), container.end(), value), container.cend());
 }
 
 /** */
-template<template<typename, typename> class Container, 
+template<class Container, 
          typename Value,
-         typename Allocator = std::allocator<Value>>
-inline bool contains (const Container<Value, Allocator>& container, const Value& value)
+         details::IsSTLContainer<Container>::value = true>
+inline bool contains (const Container& container, const Value& value)
 {
     return std::find (container.cbegin(), container.cend(), value) != container.cend();
 }
@@ -367,7 +400,7 @@ inline int getMaxPathLength()
 
 //==============================================================================
 /** @returns a unique hash representing the user's system. */
-inline String createSystemHash()
+inline [[deprecated ("Please use juce::SystemStats::getUniqueDeviceID() instead.")]] String createSystemHash()
 {
     MemoryBlock data;
 

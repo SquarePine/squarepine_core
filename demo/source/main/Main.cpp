@@ -13,7 +13,7 @@ public:
     {
         setAccessible (false);
 
-        const auto image = ImageCache::getFromMemory (BinaryData::SquarePine_Logo_png, BinaryData::SquarePine_Logo_pngSize);
+        const auto image = SharedObjects::getWindowIcon();
         setIconImage (image, image);
     }
 

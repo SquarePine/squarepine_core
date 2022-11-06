@@ -125,10 +125,10 @@ void InternalAudioPluginFormat::addInternalPluginDescriptions()
     // Effects:
     CreationHelpers::addPlugin<ADSRProcessor> (pluginCreationMap, descriptions);
     CreationHelpers::addPlugin<BitCrusherProcessor> (pluginCreationMap, descriptions);
-    CreationHelpers::addPlugin<ChorusProcessor> (pluginCreationMap, descriptions);
+    CreationHelpers::addPlugin<SimpleChorusProcessor> (pluginCreationMap, descriptions);
     CreationHelpers::addPlugin<DitherProcessor> (pluginCreationMap, descriptions);
     //CreationHelpers::addPlugin<EffectProcessorChain> (pluginCreationMap, descriptions);
-    //CreationHelpers::addPlugin<JUCEReverbProcessor> (pluginCreationMap, descriptions);
+    CreationHelpers::addPlugin<SimpleReverbProcessor> (pluginCreationMap, descriptions);
     //CreationHelpers::addPlugin<LFOProcessor> (pluginCreationMap, descriptions);
     CreationHelpers::addPlugin<MuteProcessor> (pluginCreationMap, descriptions);
     CreationHelpers::addPlugin<PanProcessor> (pluginCreationMap, descriptions);

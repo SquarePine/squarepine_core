@@ -47,7 +47,7 @@ public:
     /** @internal */
     void parameterValueChanged (int, float) override;
     /** @internal */
-    void parameterGestureChanged (int, bool) override;
+    void parameterGestureChanged (int, bool) override { }
 
 private:
     //==============================================================================

@@ -71,25 +71,34 @@ public:
     {
         lookAndFeel.setColourScheme (create());
 
-        lookAndFeel.setColour (CaretComponent::caretColourId,       lightTheme::onPrimary);
-        lookAndFeel.setColour (Slider::textBoxOutlineColourId,      lightTheme::onPrimary);
-        lookAndFeel.setColour (ScrollBar::thumbColourId,            lightTheme::onPrimary);
-        lookAndFeel.setColour (TextButton::buttonColourId,          lightTheme::secondary);
-        lookAndFeel.setColour (TextButton::buttonOnColourId,        lightTheme::secondary.darker (0.8f));
-        lookAndFeel.setColour (TextButton::textColourOffId,         lightTheme::onSecondary);
-        lookAndFeel.setColour (TextButton::textColourOnId,          lightTheme::onSecondary);
-        lookAndFeel.setColour (TextEditor::backgroundColourId,      lightTheme::primary);
-        lookAndFeel.setColour (TextEditor::focusedOutlineColourId,  lightTheme::onPrimary);
-        lookAndFeel.setColour (TextEditor::highlightColourId,       lightTheme::onSecondary);
-        lookAndFeel.setColour (TextEditor::highlightedTextColourId, lightTheme::onPrimary);
-        lookAndFeel.setColour (TextEditor::outlineColourId,         lightTheme::onPrimary);
-        lookAndFeel.setColour (TextEditor::shadowColourId,          Colours::transparentBlack);
-        lookAndFeel.setColour (TooltipWindow::backgroundColourId,   lightTheme::primary);
-        lookAndFeel.setColour (TooltipWindow::outlineColourId,      lightTheme::onPrimary);
-        lookAndFeel.setColour (TooltipWindow::textColourId,         lightTheme::onPrimary);
-        lookAndFeel.setColour (ListBox::backgroundColourId,         lightTheme::primary);
-        lookAndFeel.setColour (ListBox::outlineColourId,            lightTheme::onPrimary);
-        lookAndFeel.setColour (ListBox::textColourId,               lightTheme::onPrimary);
+        lookAndFeel.setColour (CaretComponent::caretColourId,           lightTheme::onPrimary);
+        lookAndFeel.setColour (Slider::textBoxOutlineColourId,          lightTheme::onPrimary);
+        lookAndFeel.setColour (ScrollBar::thumbColourId,                lightTheme::onPrimary);
+        lookAndFeel.setColour (TextButton::buttonColourId,              lightTheme::secondary);
+        lookAndFeel.setColour (TextButton::buttonOnColourId,            lightTheme::secondary.darker (0.8f));
+        lookAndFeel.setColour (TextButton::textColourOffId,             lightTheme::onSecondary);
+        lookAndFeel.setColour (TextButton::textColourOnId,              lightTheme::onSecondary);
+        lookAndFeel.setColour (TextEditor::backgroundColourId,          lightTheme::primary);
+        lookAndFeel.setColour (TextEditor::focusedOutlineColourId,      lightTheme::onPrimary);
+        lookAndFeel.setColour (TextEditor::highlightColourId,           lightTheme::onSecondary);
+        lookAndFeel.setColour (TextEditor::highlightedTextColourId,     lightTheme::onPrimary);
+        lookAndFeel.setColour (TextEditor::outlineColourId,             lightTheme::onPrimary);
+        lookAndFeel.setColour (TextEditor::shadowColourId,              Colours::transparentBlack);
+        lookAndFeel.setColour (TooltipWindow::backgroundColourId,       lightTheme::primary);
+        lookAndFeel.setColour (TooltipWindow::outlineColourId,          lightTheme::onPrimary);
+        lookAndFeel.setColour (TooltipWindow::textColourId,             lightTheme::onPrimary);
+        lookAndFeel.setColour (ListBox::backgroundColourId,             lightTheme::primary);
+        lookAndFeel.setColour (ListBox::outlineColourId,                lightTheme::onPrimary);
+        lookAndFeel.setColour (ListBox::textColourId,                   lightTheme::onPrimary);
+        lookAndFeel.setColour (Slider::backgroundColourId,              lightTheme::onPrimary);
+        lookAndFeel.setColour (Slider::thumbColourId,                   lightTheme::onSecondary);
+        lookAndFeel.setColour (Slider::trackColourId,                   lightTheme::secondary);
+        lookAndFeel.setColour (Slider::rotarySliderFillColourId,        lightTheme::secondary);
+        lookAndFeel.setColour (Slider::rotarySliderOutlineColourId,     Colours::transparentBlack);
+        lookAndFeel.setColour (Slider::textBoxTextColourId,             lightTheme::onSecondary);
+        lookAndFeel.setColour (Slider::textBoxBackgroundColourId,       lightTheme::secondary);
+        lookAndFeel.setColour (Slider::textBoxHighlightColourId,        lightTheme::secondaryVariant);
+        lookAndFeel.setColour (Slider::textBoxOutlineColourId,          Colours::transparentBlack);
     }
 
     /** */

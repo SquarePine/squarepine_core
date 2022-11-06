@@ -33,13 +33,8 @@ void StereoWidthProcessor::parameterValueChanged (int, float newValue)
 {
     newValue = getWidth(); // Easier to do this than to use the normalised value...
 
-    const ScopedLock sl (getCallbackLock());
     floatWidth.setTargetValue (newValue);
     doubleWidth.setTargetValue ((double) newValue);
-}
-
-void StereoWidthProcessor::parameterGestureChanged (int, bool)
-{
 }
 
 //==============================================================================
@@ -47,7 +42,6 @@ void StereoWidthProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
 {
     setRateAndBufferSizeDetails (sampleRate, samplesPerBlock);
 
-    const ScopedLock sl (getCallbackLock());
     floatWidth.reset (sampleRate, 0.001);
     doubleWidth.reset (sampleRate, 0.001);
 }
@@ -66,11 +60,12 @@ template<typename FloatType>
 void StereoWidthProcessor::process (juce::AudioBuffer<FloatType>& buffer, 
                                     LinearSmoothedValue<FloatType>& value)
 {
+    if (isBypassed())
+        return;
+
     const auto numSamples = buffer.getNumSamples();
     if (numSamples <= 0
-        || getSampleRate() <= 0.0
-        || isBypassed()
-        || buffer.getNumChannels() < 2)
+        || getSampleRate() <= 0.0)
     {
         buffer.clear();
         return;
@@ -80,14 +75,11 @@ void StereoWidthProcessor::process (juce::AudioBuffer<FloatType>& buffer,
     constexpr auto two = static_cast<FloatType> (2);
 
     const auto localWidth = value.getNextValue() * two;
-
-    const ScopedLock sl (getCallbackLock());
+    const auto coeffM = one / jmax (one + localWidth, two);
+    const auto coeffS = localWidth * coeffM;
 
     auto* leftChannel = buffer.getWritePointer (0);
     auto* rightChannel = buffer.getWritePointer (1);
-
-    const auto coeffM = one / jmax (one + localWidth, two);
-    const auto coeffS = localWidth * coeffM;
 
     for (int i = 0; i < numSamples; ++i)
     {

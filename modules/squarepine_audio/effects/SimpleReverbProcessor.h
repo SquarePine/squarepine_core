@@ -1,17 +1,17 @@
 /** */
-class JUCEReverbProcessor final : public InternalProcessor
+class SimpleReverbProcessor final : public InternalProcessor
 {
 public:
     /** Constructor. */
-    JUCEReverbProcessor();
+    SimpleReverbProcessor();
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return TRANS ("Simple Reverb"); }
+    const String getName() const override { return NEEDS_TRANS ("Simple Reverb"); }
     /** @internal */
     Identifier getIdentifier() const override { return "simpleReverb"; }
     /** @internal */
-    void prepareToPlay (double sampleRate, int bufferSize) override;
+    void prepareToPlay (double, int) override;
     /** @internal */
     void releaseResources() override;
     /** @internal */
@@ -32,5 +32,5 @@ private:
     void updateReverbParameters();
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JUCEReverbProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleReverbProcessor)
 };

@@ -45,6 +45,9 @@ void MuteProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer&
 template<typename FloatType>
 void MuteProcessor::process (juce::AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages)
 {
+    if (isBypassed())
+        return;
+
     auto appendAllNotesOff = [&]()
     {
         for (int i = 1; i <= 16; ++i)

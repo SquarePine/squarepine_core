@@ -29,6 +29,13 @@
     for (int i = numChannels; --i >= 0;)
         for (int f = numSamples; --f >= 0;)
             dest[i][f] = (float) ((float) src[i][f] * m * M);
+
+template<typename FloatType>
+inline FloatType decimate (FloatType input, int keepBits)
+{
+    const auto quantum = std::pow (static_cast<FloatType> (2), (FloatType) keepBits);
+    return std::floor (input * quantum) / quantum;
+}
 #endif
 
 //==============================================================================
@@ -40,9 +47,9 @@ inline double crushToNBit (double sample, int bitDepth)
     const auto bd = bitDepth;
     auto s = 0.0;
 
-	if (sample >= 1.0f)
+	if (sample >= 1.0)
        s = std::pow (two, bd - 1) - one;
-	else if (sample <= -1.0f)
+	else if (sample <= -1.0)
        s = std::pow (-two, bd - 1);
     else
        s = std::floor (sample * -std::pow (-two, bd - one));
@@ -64,9 +71,7 @@ inline double crushBit (double sample, int bitDepth)
            + (DistortionFunctions::hyperbolicTangentSoftClipping (sample) * mixAmount);
 */
     sample = crushToNBit (sample, bitDepth);
-
-	sample = sample / -std::pow (-2.0, (double) bitDepth - 1.0);
-
+	sample /= -std::pow (-2.0, (double) bitDepth - 1.0);
     return sample;
 }
 
@@ -94,14 +99,12 @@ void BitCrusherProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiB
 template<typename FloatType>
 void BitCrusherProcessor::process (juce::AudioBuffer<FloatType>& buffer)
 {
-    int localBitDepth = 32;
+    if (isBypassed())
+        return;
 
-    {
-        const ScopedLock sl (getCallbackLock());
-        localBitDepth = bitDepth->get();
-    }
+    const auto localBitDepth = bitDepth->get();
 
-    if (buffer.hasBeenCleared() || localBitDepth >= 32)
+    if (buffer.hasBeenCleared() || localBitDepth >= 16)
         return; // Nothing to do here.
 
     for (auto channel : AudioBufferView (buffer))

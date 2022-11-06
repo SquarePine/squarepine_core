@@ -1,4 +1,7 @@
-/** Use this processor to add periodic hissing over the provided audio. */
+/** Use this processor to add periodic hissing over the provided audio.
+
+    This is useful for creating processors that are in demo/trial mode, or the liking.
+*/
 class HissingProcessor final : public InternalProcessor
 {
 public:
@@ -7,7 +10,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return TRANS ("Periodic Hisser"); }
+    const String getName() const override { return NEEDS_TRANS ("Periodic Hisser"); }
     /** @internal */
     Identifier getIdentifier() const override { return "periodicHisser"; }
     /** @internal */

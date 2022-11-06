@@ -24,6 +24,9 @@ private:
     template<typename FloatType>
     void process (juce::AudioBuffer<FloatType>& buffer)
     {
+        if (isBypassed())
+            return;
+
         const auto& params = getParameters();
 
         ADSR::Parameters adsrParams =
@@ -34,7 +37,6 @@ private:
             params.getUnchecked (3)->getValue()
         };
 
-        const ScopedLock sl (getCallbackLock());
         adsr.setParameters (adsrParams);
         adsr.applyEnvelopeToBuffer (buffer, 0, buffer.getNumSamples());
     }

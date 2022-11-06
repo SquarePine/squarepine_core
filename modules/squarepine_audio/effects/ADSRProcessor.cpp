@@ -11,7 +11,6 @@ void ADSRProcessor::prepareToPlay (double sampleRate, int bufferSize)
 {
     setPlayConfigDetails (2, 2, sampleRate, bufferSize);
 
-    const ScopedLock sl (getCallbackLock());
     adsr.setSampleRate (sampleRate);
     adsr.reset();
 }

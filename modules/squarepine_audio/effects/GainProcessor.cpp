@@ -61,7 +61,6 @@ void GainProcessor::parameterValueChanged (int, float newValue)
 {
     newValue = getGain();
 
-    const ScopedLock sl (getCallbackLock());
     floatGain.setTargetValue (newValue);
     doubleGain.setTargetValue ((double) newValue);
 }
@@ -75,7 +74,6 @@ void GainProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     setRateAndBufferSizeDetails (sampleRate, samplesPerBlock);
 
-    const ScopedLock sl (getCallbackLock());
     floatGain.reset (sampleRate, 0.001);
     doubleGain.reset (sampleRate, 0.001);
 }
@@ -95,9 +93,6 @@ template<typename FloatType>
 void GainProcessor::process (juce::AudioBuffer<FloatType>& buffer,
                              LinearSmoothedValue<FloatType>& value)
 {
-    if (isBypassed())
-        return;
-
-    const ScopedLock sl (getCallbackLock());
-    value.applyGain (buffer, buffer.getNumSamples());
+    if (! isBypassed())
+        value.applyGain (buffer, buffer.getNumSamples());
 }

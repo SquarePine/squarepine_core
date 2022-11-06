@@ -42,6 +42,9 @@ public:
     /** */
     void restoreWindowDimensions (DocumentWindow&);
 
+    /** */
+    static Image getWindowIcon();
+
     //==============================================================================
     /** */
     void saveRecentFiles (const RecentlyOpenedFilesList&);

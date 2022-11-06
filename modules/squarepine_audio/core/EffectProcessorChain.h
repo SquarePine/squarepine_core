@@ -5,6 +5,10 @@
     the latency may change, among other things.
     Use a AudioProcessorListener to be notified of any such changes.
 
+    @note EffectProcessorFactory is the main class that helps control creation of effect
+          based AudioProcessor objects. This is absolutely necessary so as to be able to
+          save and recall an EffectProcessorChain's state!
+
     @see EffectProcessor, EffectProcessorFactory
 */
 class EffectProcessorChain final : public InternalProcessor
@@ -18,13 +22,21 @@ public:
     CREATE_INLINE_CLASS_IDENTIFIER (effectProcessorChain)
 
     //==============================================================================
-    /** Constructor
+    /** Constructs an empty effect processor chain.
+
+        An EffectProcessorFactory must be provided so as to be able to
+        create and add/insert new effects.
 
         @param factory An existing factory used to create instances of effects internally.
+
+        @see EffectProcessorFactory
     */
     EffectProcessorChain (std::shared_ptr<EffectProcessorFactory>);
 
     //==============================================================================
+    /** @returns the factory that this chain uses to create plugin instances. */
+    [[nodiscard]] std::shared_ptr<EffectProcessorFactory> getFactory() const { return factory; }
+
     /** @returns the current number of effect processors in this chain. */
     [[nodiscard]] int getNumEffects() const;
 
@@ -34,106 +46,86 @@ public:
     //==============================================================================
     /** Add a new effect at the end of the existing array of plugins.
 
-        @param pluginIndex Plugin index within the KnownPluginList
+        @param pluginIndex Plugin index within the KnownPluginList.
 
         @returns a new effect processor or nullptr if the index wasn't found.
     */
-    EffectProcessor::Ptr appendNewEffect (int pluginIndex);
+    EffectProcessor::Ptr add (int pluginIndex);
 
     /** Add a new effect at the end of the existing array of plugins.
 
-        @param fileOrIdentifier Plugin identifier within the KnownPluginList
+        @param fileOrIdentifier Plugin identifier within the KnownPluginList.
 
         @returns a new effect processor or nullptr if the identifier wasn't found.
     */
-    EffectProcessor::Ptr appendNewEffect (const String& fileOrIdentifier);
+    EffectProcessor::Ptr add (const String& fileOrIdentifier);
 
-    //==============================================================================
     /** Sets or inserts a new effect with the given plugin index.
 
-        @param pluginIndex      Plugin index within the KnownPluginList
-        @param destinationIndex Destination in the index of the array of plugins
+        @param destinationIndex Destination in the index of the array of plugins.
+        @param pluginIndex      Plugin index within the KnownPluginList.
 
-        @warning Callers need to remove plugin editors associated with the current slot
+        @warning Callers need to remove plugin editors associated with the current index
                  or there will be dangling pointers to the removed plugin!
 
         @returns a new effect processor or nullptr if the index wasn't found.
     */
-    EffectProcessor::Ptr insertNewEffect (int pluginIndex, int destinationIndex);
+    EffectProcessor::Ptr insert (int destinationIndex, int pluginIndex);
 
     /** Sets or inserts a new effect with the given plugin file or identifier.
 
-        @param fileOrIdentifier File or identifier that can be referenced within the KnownPluginList
-        @param destinationIndex Destination in the index of the array of plugins
+        @param destinationIndex Destination in the index of the array of plugins.
+        @param fileOrIdentifier File or identifier that can be referenced within the KnownPluginList.
 
-        @warning Callers need to remove plugin editors associated with the current slot
+        @warning Callers need to remove plugin editors associated with the current index
                  or there will be dangling pointers to the removed plugin!
 
         @returns a new effect processor or nullptr if the identifier wasn't found.
     */
-    EffectProcessor::Ptr insertNewEffect (const String& fileOrIdentifier, int destinationIndex);
+    EffectProcessor::Ptr insert (int destinationIndex, const String& fileOrIdentifier);
 
-    //==============================================================================
-    /** Attempts replacing an effect with the given plugin index.
+    /** Attempts to replace an effect with the given plugin index.
 
-        @param pluginIndex      Plugin index within the KnownPluginList
-        @param destinationIndex Destination in the index of the array of plugins
+        @param destinationIndex Destination in the index of the array of plugins.
+        @param pluginIndex      Plugin index within the KnownPluginList.
 
-        @warning Callers need to remove plugin editors associated with the current slot
+        @warning Callers need to remove plugin editors associated with the current index
                  or there will be dangling pointers to the removed plugin!
 
         @returns a new effect processor or nullptr if the index wasn't found.
     */
-    EffectProcessor::Ptr replaceEffect (int pluginIndex, int destinationIndex);
+    EffectProcessor::Ptr replace (int destinationIndex, int pluginIndex);
 
-    /** Attempts replacing an effect with the given plugin file or identifier.
+    /** Attempts to replace an effect with the given plugin file or identifier.
 
-        @param fileOrIdentifier File or identifier that can be referenced within the KnownPluginList
-        @param destinationIndex Destination in the index of the array of plugins
+        @param destinationIndex Destination in the index of the array of plugins.
+        @param fileOrIdentifier File or identifier that can be referenced within the KnownPluginList.
 
-        @warning Callers need to remove plugin editors associated with the current slot
+        @warning Callers need to remove plugin editors associated with the current index
                  or there will be dangling pointers to the removed plugin!
 
-        @returns a new effect processor or nullptr if the identifier wasn't found.
+        @returns a new effect processor, or nullptr if the identifier wasn't found
+                 or the index was out of range.
     */
-    EffectProcessor::Ptr replaceEffect (const String& fileOrIdentifier, int destinationIndex);
+    EffectProcessor::Ptr replace (int destinationIndex, const String& fileOrIdentifier);
 
     //==============================================================================
-    /** Enumeration that automates and simplifies reordering a plugin in a chain of plugins. */
-    enum class PluginPositionPreset
-    {
-        shiftToFirst,
-        shiftToPrevious,
-        shiftToNext,
-        shiftToLast
-    };
-
-    /** Move a plugin to an index based on a preset.
-
-        @param pluginIndex          Plugin index within the array of plugins
-        @param destinationPosition  Destination position based on the available presets
-
-        @returns true if the move was successful.
-    */
-    bool moveEffect (int pluginIndex, PluginPositionPreset destinationPosition);
-
     /** Move a plugin to a specified index.
 
-        @param pluginIndex      Plugin index within the array of plugins
-        @param destinationIndex Destination in the index of the array of plugins
+        @param sourceIndex      Plugin index within the array of plugins.
+        @param destinationIndex Destination in the index of the array of plugins.
 
-        @returns true if the move was successful.
+        @returns true if the action was successful.
     */
-    bool moveEffect (int pluginIndex, int destinationIndex);
+    void move (int sourceIndex, int destinationIndex);
 
-    //==============================================================================
     /** Remove an effect at the specific index, or a no-op if it's out of range.
 
         @param index Index within the array of plugins.
 
-        @returns true if the removing was successful.
+        @returns true if the action was successful.
     */
-    bool removeEffect (int index);
+    bool remove (int index);
 
     /** Removes all of the effects in the chain. */
     bool clear();
@@ -144,16 +136,16 @@ public:
         @param index    Index within the array of plugins
         @param name     New name.
 
-        @returns true if anything changed.
+        @returns true if the action changed anything.
     */
     bool setEffectName (int index, const String& name);
 
-    /** Bypass or process a contained effect
+    /** Set whether to bypass or process a contained effect.
 
         @param index        Index within the array of plugins.
         @param shouldBypass Set to true if you would like the plugin to be bypassed.
 
-        @returns true if anything changed.
+        @returns true if the action changed anything.
     */
     bool setBypass (int index, bool shouldBypass);
 
@@ -162,7 +154,7 @@ public:
         @param index    Index within the array of plugins.
         @param mixLevel Normalised range; from 0.0f to 1.0f.
 
-        @returns true if anything changed.
+        @returns true if the action changed anything.
     */
     bool setMixLevel (int index, float mixLevel);
 
@@ -253,11 +245,13 @@ public:
     /** @internal */
     void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
     /** @internal */
+    void setNonRealtime (bool) noexcept override;
+    /** @internal */
     [[nodiscard]] bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
     [[nodiscard]] double getTailLengthSeconds() const override;
     /** @internal */
-    [[nodiscard]] Identifier getIdentifier() const override{ return "EffectProcessorChain"; }
+    [[nodiscard]] Identifier getIdentifier() const override { return "EffectProcessorChain"; }
     /** @internal */
     [[nodiscard]] const String getName() const override;
     /** @internal */
@@ -285,9 +279,10 @@ private:
         void prepare (int numChannels, int numSamples)
         {
             for (auto& buff : buffers)
+            {
                 buff->setSize (numChannels, numSamples, false, true, true);
-
-            clear();
+                buff->clear();
+            }
         }
 
         Buffer mixingBuffer, effectBuffer, lastBuffer;
@@ -297,7 +292,7 @@ private:
     //==============================================================================
     std::shared_ptr<EffectProcessorFactory> factory;
 
-    using ContainerType = std::vector<EffectProcessor::Ptr>;
+    using ContainerType = ReferenceCountedArray<EffectProcessor>;
     ContainerType plugins;
 
     std::atomic<int> requiredChannels { 0 };
@@ -328,13 +323,11 @@ private:
                           BufferPackage<FloatType>& bufferPackage, int numChannels, int numSamples);
 
     template<typename Type>
-    [[nodiscard]] EffectProcessor::Ptr insertInternal (const Type& valueOrRef, int destinationIndex, InsertionStyle insertionStyle = InsertionStyle::insert);
+    [[nodiscard]] EffectProcessor::Ptr insertInternal (int destinationIndex, const Type& valueOrRef, InsertionStyle insertionStyle = InsertionStyle::insert);
 
     template<typename Type>
     std::optional<Type> getEffectProperty (int index, std::function<Type (EffectProcessor::Ptr)> func) const
     {
-        const ScopedLock sl (getCallbackLock());
-
         if (isPositiveAndBelow (index, getNumEffects()))
             if (auto effect = plugins[(size_t) index])
                 return { func (effect) };

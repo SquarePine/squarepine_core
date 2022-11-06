@@ -12,29 +12,43 @@ public:
     void fill (KnownPluginList& kpl)
     {
         addPlugin<BitCrusherProcessor> (kpl);
-        addPlugin<ChorusProcessor> (kpl);
         addPlugin<DitherProcessor> (kpl);
         addPlugin<GainProcessor> (kpl);
         addPlugin<HissingProcessor> (kpl);
-        addPlugin<JUCEReverbProcessor> (kpl);
+        addPlugin<LFOProcessor> (kpl);
         addPlugin<MuteProcessor> (kpl);
         addPlugin<PanProcessor> (kpl);
         addPlugin<PolarityInversionProcessor> (kpl);
+        addPlugin<SimpleChorusProcessor> (kpl);
+        addPlugin<SimpleCompressorProcessor> (kpl);
         addPlugin<SimpleDistortionProcessor> (kpl);
         addPlugin<SimpleEQProcessor> (kpl);
+        addPlugin<SimpleLimiterProcessor> (kpl);
+        addPlugin<SimpleNoiseGateProcessor> (kpl);
+        addPlugin<SimplePhaserProcessor> (kpl);
+        addPlugin<SimpleReverbProcessor> (kpl);
         addPlugin<StereoWidthProcessor> (kpl);
     }
 
     //==============================================================================
+    /** @internal */
     String getName() const override                                                             { return "SquarePine"; }
+    /** @internal */
     bool isTrivialToScan() const override                                                       { return true; }
+    /** @internal */
     bool canScanForPlugins() const override                                                     { return false; }
+    /** @internal */
     bool pluginNeedsRescanning (const PluginDescription&) override                              { return false; }
+    /** @internal */
     bool doesPluginStillExist (const PluginDescription&) override                               { return true; }
+    /** @internal */
     StringArray searchPathsForPlugins (const FileSearchPath&, bool, bool) override              { return {}; }
+    /** @internal */
     FileSearchPath getDefaultLocationsToSearch() override                                       { return {}; }
+    /** @internal */
     bool requiresUnblockedMessageThreadDuringCreation (const PluginDescription&) const override { return false; }
 
+    /** @internal */
     void findAllTypesForFile (OwnedArray<PluginDescription>& results,
                               const String& fileOrIdentifier) override
     {
@@ -43,6 +57,7 @@ public:
                 results.add (new PluginDescription (ed->description));
     }
 
+    /** @internal */
     bool fileMightContainThisPluginType (const String& fileOrIdentifier) override
     {
         for (const auto& ed : effectDetails)
@@ -52,6 +67,7 @@ public:
         return false;
     }
 
+    /** @internal */
     String getNameOfPluginFromIdentifier (const String& fileOrIdentifier) override
     {
         for (const auto& ed : effectDetails)
@@ -61,6 +77,7 @@ public:
         return {};
     }
 
+    /** @internal */
     void createPluginInstance (const PluginDescription& description, double initialSampleRate,
                                int initialBufferSize, PluginCreationCallback callback) override
     {
@@ -136,7 +153,7 @@ public:
     }
 
     //==============================================================================
-    /** */
+    /** @internal */
     const AudioPluginFormatManager& getAudioPluginFormatManager() const override { return apfm; }
 
 private:
@@ -148,237 +165,159 @@ private:
 };
 
 //==============================================================================
+class EffectChainComponent;
+class EffectChainDemo;
+
+//==============================================================================
+class EditorWindow final : public DocumentWindow
+{
+public:
+    /** */
+    EditorWindow (EffectChainComponent&, StringRef effectName, EffectProcessor::Ptr);
+
+    //==============================================================================
+    /** */
+    EffectProcessor::Ptr getEffect() const { return effect; }
+
+    //==============================================================================
+    /** @internal */
+    void closeButtonPressed() override;
+
+private:
+    //==============================================================================
+    EffectChainComponent& owner;
+    EffectProcessor::Ptr effect;
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EditorWindow)
+};
+
+//==============================================================================
+/** */
+class EffectRowComponent final : public Component
+{
+public:
+    /** */
+    EffectRowComponent (EffectChainComponent&);
+
+    //==============================================================================
+    /** */
+    EffectRowComponent& setIndex (int);
+    /** */
+    EffectRowComponent& setEffect (EffectProcessor::Ptr);
+    /** */
+    void deleteEffect();
+    /** */
+    void closeWindow();
+
+    //==============================================================================
+    /** @internal */
+    void resized() override;
+    /** @internal */
+    void paint (Graphics&) override;
+    /** @internal */
+    void mouseDown (const MouseEvent&) override;
+    /** @internal */
+    void mouseDoubleClick (const MouseEvent&) override;
+
+private:
+    //==============================================================================
+    EffectChainComponent& owner;
+    EffectProcessor::Ptr effect;
+    int index = 0;
+    Slider mixLevel;
+    ToggleButton active;
+    Label name;
+    SafePointer<EditorWindow> editorWindow;
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EffectRowComponent)
+};
+
+//==============================================================================
 /** */
 class EffectChainComponent final : public Component,
                                    public ListBoxModel,
                                    public AudioProcessorListener
 {
 public:
-    EffectChainComponent (EffectProcessorChain& epc) :
-        effectChain (epc)
-    {
-        contentUpdateTimer.callback = [this]()
-        {
-            listbox.updateContent();
-            contentUpdateTimer.stopTimer();
-        };
+    /** */
+    EffectChainComponent (SharedObjects&, EffectProcessorChain&);
+    /** */
+    ~EffectChainComponent() override;
 
-        listbox.setModel (this);
-        addAndMakeVisible (listbox);
+    //==============================================================================
+    /** */
+    void deleteEffect (int index, bool shouldUpdateContent);
 
-        effectChain.addListener (this);
-    }
-
-    ~EffectChainComponent() override
-    {
-        effectChain.removeListener (this);
-    }
-
+    //==============================================================================
+    /** @internal */
     int getNumRows() override                                       { return effectChain.getNumEffects(); }
+    /** @internal */
     void paintListBoxItem (int, Graphics&, int, int, bool) override { }
+    /** @internal */
+    void backgroundClicked (const MouseEvent&) override             { listbox.deselectAllRows(); }
+    /** @internal */
+    void selectedRowsChanged (int) override                         { }
+    /** @internal */
+    void returnKeyPressed (int) override                            { listbox.deselectAllRows(); }
+    /** @internal */
     void resized() override                                         { listbox.setBounds (getLocalBounds()); }
-
-    void audioProcessorParameterChanged (AudioProcessor*, int, float) override
-    {
-        contentUpdateTimer.startTimer (1000);
-    }
-
-    void audioProcessorChanged (AudioProcessor*, const ChangeDetails&) override
-    {
-        contentUpdateTimer.startTimer (1000);
-    }
-
-    Component* refreshComponentForRow (int row, bool, Component* comp) override
-    {
-       #if JUCE_DEBUG && ! JUCE_DISABLE_ASSERTIONS
-        if (comp != nullptr)
-            jassert (dynamic_cast<EffectRowComponent*> (comp) != nullptr);
-       #endif
-
-        std::unique_ptr<EffectRowComponent> erc (static_cast<EffectRowComponent*> (comp));
-        comp = nullptr;
-
-        if (! isPositiveAndBelow (row, getNumRows()))
-            return nullptr;
-
-        auto effectProc = effectChain.getEffectProcessor (row);
-
-        if (erc == nullptr)
-            erc.reset (new EffectRowComponent());
-
-        erc->setText (TRANS (effectProc->plugin->getPluginDescription().name), sendNotification);
-        return erc.release();
-    }
+    /** @internal */
+    Component* refreshComponentForRow (int, bool, Component*) override;
+    /** @internal */
+    void deleteKeyPressed (int) override;
+    /** @internal */
+    void audioProcessorParameterChanged (AudioProcessor*, int, float) override;
+    /** @internal */
+    void audioProcessorChanged (AudioProcessor*, const ChangeDetails&) override;
 
 private:
-    using EffectRowComponent = Label;
+    //==============================================================================
+    friend EditorWindow;
+    friend EffectRowComponent;
 
+    SharedObjects& sharedObjects;
     EffectProcessorChain& effectChain;
+    OwnedArray<EditorWindow> editorWindows;
     ListBox listbox;
     OffloadedTimer contentUpdateTimer;
 
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EffectChainComponent)
 };
 
 //==============================================================================
 /** */
-class EffectChainDemo final : public DemoBase
+class EffectChainDemo final : public DemoBase,
+                              public ChangeListener
 {
 public:
     /** */
-    EffectChainDemo (SharedObjects& sharedObjs) :
-        DemoBase (sharedObjs, NEEDS_TRANS ("Effect Chain"))
-    {
-        clear();
-
-        sharedObjects.audioDeviceManager.addAudioCallback (&audioProcessorPlayer);
-        audioProcessorPlayer.setProcessor (&graph);
-
-        play.onClick = [&]()
-        {
-            if (! play.isEnabled())
-                rewindAndStop();
-            else if (transport->isPlaying())
-                transport->stop();
-            else
-                transport->play();
-        };
-
-        play.addShortcut (KeyPress (KeyPress::spaceKey));
-        load.addShortcut (KeyPress::createFromDescription ("CMD + O"));
-        goToStart.addShortcut (KeyPress (KeyPress::homeKey));
-
-        load.onClick = [&]() { loadAudioFile(); };
-        goToStart.onClick = [&]() { rewindAndStop(); };
-
-        filePath.setJustificationType (Justification::centred);
-        filePath.setColour (Label::backgroundColourId, Colours::transparentBlack);
-        filePath.setColour (Label::textColourId, Colours::black);
-
-        thumbnailRepainter.callback = [this]()
-        {
-            repaint();
-
-            if (audioThumbnail == nullptr || audioThumbnail->isFullyLoaded())
-                thumbnailRepainter.stopTimer();
-        };
-
-        playbackRepainter.callback = [this]()
-        {
-            if (transport->isPlaying())
-                repaint();
-        };
-
-        using GraphProcessor = AudioProcessorGraph::AudioGraphIOProcessor;
-        auto addGraphPlugin = [&] (GraphProcessor::IODeviceType type)
-        {
-            return graph.addNode (std::make_unique<GraphProcessor> (type));
-        };
-
-        audioOut        = addGraphPlugin (GraphProcessor::audioOutputNode);
-        midiIn          = addGraphPlugin (GraphProcessor::midiInputNode);
-        transportNode   = graph.addNode (std::unique_ptr<AudioProcessor> (transport));
-        effectChainNode = graph.addNode (std::unique_ptr<AudioProcessor> (effectChain));
-
-        reconnect();
-
-        for (const auto& pd : knownPluginList.getTypes())
-            effectChain->appendNewEffect (pd.fileOrIdentifier);
-
-        addAndMakeVisible (play);
-        addAndMakeVisible (goToStart);
-        addAndMakeVisible (load);
-        addAndMakeVisible (filePath);
-    }
+    EffectChainDemo (SharedObjects&);
 
     /** */
-    ~EffectChainDemo() override
-    {
-        sharedObjects.audioDeviceManager.removeAudioCallback (&audioProcessorPlayer);
-        audioProcessorPlayer.setProcessor (nullptr);
-    }
+    ~EffectChainDemo() override;
 
     //==============================================================================
-    /** */
-    void mouseDown (const MouseEvent& e) override
-    {
-        wasPlaying = transport->isPlaying();
-        transport->stop();
-        movePlayhead (e);
-    }
-
-    /** */
-    void mouseDrag (const MouseEvent& e) override
-    {
-        if (audioThumbnailArea.isEmpty() || audioThumbnail == nullptr)
-            return;
-
-        isDraggingPlayhead = true;
-        movePlayhead (e);
-        repaint();
-    }
-
-    /** */
-    void mouseUp (const MouseEvent&) override
-    {
-        if (wasPlaying)
-            transport->play();
-
-        wasPlaying = false;
-        isDraggingPlayhead = false;
-    }
-
-    /** */
-    void resized() override
-    {
-        constexpr auto margin = 4;
-
-        auto b = getLocalBounds().reduced (margin);
-
-        {
-            auto topArea = b.removeFromTop (32);
-            const auto w = (topArea.getWidth() / 3) - (margin * 2);
-
-            load.setBounds (topArea.removeFromLeft (w));
-            play.setBounds (topArea.removeFromRight (w));
-
-            topArea.removeFromLeft (margin);
-            topArea.removeFromRight (margin);
-
-            goToStart.setBounds (topArea);
-        }
-
-        b.removeFromTop (margin);
-        filePath.setBounds (b.removeFromTop (32));
-
-        b.removeFromTop (margin);
-        audioThumbnailArea = b;
-    }
-
-    /** */
-    void paint (Graphics& g) override
-    {
-        if (audioThumbnailArea.isEmpty() || audioThumbnail == nullptr)
-            return;
-
-        const auto lengthSeconds = audioThumbnail->getTotalLength();
-        const auto timeSeconds = transport->getCurrentTimeSeconds();
-
-        g.setColour (Colours::darkgrey);
-        audioThumbnail->drawChannels (g, audioThumbnailArea, 0.0, lengthSeconds, 0.9f);
-
-        g.setColour (Colours::dodgerblue);
-        g.fillRect (audioThumbnailArea
-                        .toDouble()
-                        .withX ((int) jmap (timeSeconds, 0.0, lengthSeconds,
-                                            (double) audioThumbnailArea.getX(),
-                                            (double) audioThumbnailArea.getWidth()))
-                        .withWidth (2.5)
-                        .toFloat());
-    }
+    /** @internal */
+    void changeListenerCallback (ChangeBroadcaster*) override;
+    /** @internal */
+    void mouseDown (const MouseEvent&) override;
+    /** @internal */
+    void mouseDrag (const MouseEvent&) override;
+    /** @internal */
+    void mouseUp (const MouseEvent&) override;
+    /** @internal */
+    void resized() override;
+    /** @internal */
+    void paint (Graphics&) override;
 
 private:
     //==============================================================================
+    friend EffectRowComponent;
+    friend EffectChainComponent;
+
     using Node = AudioProcessorGraph::Node::Ptr;
 
     // Audio bits:
@@ -406,14 +345,18 @@ private:
     File lastLoadedFile;
     std::unique_ptr<AudioThumbnail> audioThumbnail;
 
-    Label filePath;
+    Label filePath, timeDisplay;
     Rectangle<int> audioThumbnailArea;
 
     TextButton play { TRANS ("Play") },
+               loop { TRANS ("Loop") },
                goToStart { TRANS ("Go to Start") },
-               load { TRANS ("Load"), TRANS ("Clicking this will load an audio file to process.") };
+               load { TRANS ("Load"), TRANS ("Clicking this will load an audio file to process.") },
+               addEffect { TRANS ("Add Effect") };
 
-    EffectChainComponent effectChainComponent { *effectChain };
+    TimeKeeper timeKeeper;
+
+    EffectChainComponent effectChainComponent;
 
     OffloadedTimer thumbnailRepainter,
                    playbackRepainter;
@@ -421,169 +364,15 @@ private:
     std::unique_ptr<FileChooser> chooser;
 
     //==============================================================================
-    void reconnect()
-    {
-        auto nodes = graph.getNodes();
-
-        for (const auto& node : graph.getNodes())
-            graph.disconnectNode (node->nodeID);
-
-        auto connect = [&] (Node& source, Node& dest, bool isMidi = false)
-        {
-            auto addConnection = [&] (int channelIndex)
-            {
-                // This trash heap of a graph node/connection API
-                // is tedious at best, so let's try to somewhat
-                // reduce the cognitive load...
-                using NAC = AudioProcessorGraph::NodeAndChannel;
-
-                NAC sourceNAC;
-                sourceNAC.nodeID = source->nodeID;
-                sourceNAC.channelIndex = channelIndex;
-
-                NAC destNAC;
-                destNAC.nodeID = dest->nodeID;
-                destNAC.channelIndex = channelIndex;
-
-                return graph.addConnection ({ sourceNAC, destNAC });
-            };
-
-            bool succeeded = false;
-            if (isMidi)
-                succeeded = addConnection (AudioProcessorGraph::midiChannelIndex);
-            else
-                succeeded = addConnection (0) && addConnection (1);
-
-            jassert (succeeded);
-            return succeeded;
-        };
-
-        connect (midiIn, effectChainNode, true);
-        connect (transportNode, effectChainNode);
-        connect (effectChainNode, audioOut);
-    }
-
-    void stop()
-    {
-        transport->stop();
-    }
-
-    void rewindAndStop()
-    {
-        stop();
-        transport->setCurrentTime (0.0);
-        repaint();
-    }
-
-    void clear()
-    {
-        rewindAndStop();
-        transport->clear();
-        readerSource.reset();
-        play.setEnabled (false);
-        goToStart.setEnabled (false);
-    }
-
-    void movePlayhead (const MouseEvent& e)
-    {
-        if (audioThumbnailArea.isEmpty() || audioThumbnail == nullptr)
-            return;
-
-        const auto mousePos = audioThumbnailArea.getConstrainedPoint (e.getMouseDownPosition());
-        const auto timeSeconds = jmap (mousePos.toDouble().x,
-                                       (double) audioThumbnailArea.getX(),
-                                       (double) audioThumbnailArea.getWidth(),
-                                       0.0, audioThumbnail->getTotalLength());
-
-        transport->setCurrentTime (timeSeconds);
-    }
-
-    void setFile (const File& file, AudioFormatManager* audioFormatManager = nullptr)
-    {
-        clear();
-
-        if (! file.existsAsFile() || audioFormatManager == nullptr)
-            return;
-
-        if (auto* reader = audioFormatManager->createReaderFor (file))
-        {
-            readerSource.reset (new AudioFormatReaderSource (reader, true));
-
-            transport->setSource (readerSource.get(), 0, nullptr,
-                                  sharedObjects.audioDeviceManager.getAudioDeviceSetup().sampleRate);
-            play.setEnabled (true);
-            goToStart.setEnabled (true);
-        }
-    }
-
-    void loadAudioFile()
-    {
-        if (chooser != nullptr)
-            return;
-
-        stop();
-
-        chooser.reset (new FileChooser (TRANS ("Load an audio file to process."),
-                                        File::getSpecialLocation (File::userMusicDirectory),
-                                        sharedObjects.audioFormatManager.getWildcardForAllFormats()));
-
-        const auto folderChooserFlags = FileBrowserComponent::openMode | FileBrowserComponent::canSelectFiles;
-
-        chooser->launchAsync (folderChooserFlags, [this] (const FileChooser& fc)
-        {
-            auto c = std::move (chooser);
-            ignoreUnused (c);
-
-            const auto newFileURL = fc.getURLResult();
-            if (newFileURL.isEmpty())
-                return; // User cancelled.
-
-            jassert (newFileURL.isLocalFile());
-
-            const auto newFile = newFileURL.getLocalFile();
-            if (lastLoadedFile == newFile)
-                return;
-
-            auto* reader = sharedObjects.audioFormatManager.createReaderFor (newFile);
-            if (reader == nullptr)
-            {
-                NativeMessageBox::showAsync (MessageBoxOptions()
-                                                .withIconType (AlertWindow::WarningIcon)
-                                                .withTitle (TRANS ("Failed to read audio file!"))
-                                                .withMessage (TRANS ("It seems the audio file has an unknown or incompatible codec...")),
-                                             nullptr);
-                return;
-            }
-
-            playbackRepainter.stopTimer();
-            clear();
-
-            lastLoadedFile = newFile;
-
-            setFile (lastLoadedFile, &sharedObjects.audioFormatManager);
-
-            String s;
-            s
-                << lastLoadedFile.getFullPathName()
-                << newLine
-                << reader->getFormatName()
-                << ", Sample Rate: " << (int) reader->sampleRate
-                << ", Num Channels: " << (int) reader->numChannels
-                << ", Bit Depth: " << (int) reader->bitsPerSample;
-
-            filePath.setText (s, sendNotificationAsync);
-
-            if (audioThumbnail == nullptr)
-                audioThumbnail.reset (new AudioThumbnail (2048,
-                                                          sharedObjects.audioFormatManager,
-                                                          sharedObjects.audioThumbnailCache));
-
-            audioThumbnail->setReader (reader, (int64) reader);
-
-            thumbnailRepainter.startTimerHz (60);
-            playbackRepainter.startTimerHz (60);
-        });
-    }
+    void updateFromAudioDeviceManager();
+    void updateLoopState();
+    void reconnect();
+    void stop();
+    void rewindAndStop();
+    void clear();
+    void movePlayhead (const MouseEvent& e);
+    void setFile (const File&, AudioFormatManager* afm = nullptr);
+    void loadAudioFile();
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EffectChainDemo)

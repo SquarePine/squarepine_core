@@ -10,7 +10,6 @@ ResamplingProcessor::ResamplingProcessor() :
 
 void ResamplingProcessor::setResamplers (Resampler* realtimeResampler, Resampler* offlineResampler)
 {
-    const ScopedLock sl (getCallbackLock());
     if (realtime.get() != realtimeResampler || offline.get() != offlineResampler)
     {
         realtime.reset (realtimeResampler);
@@ -35,8 +34,6 @@ void ResamplingProcessor::prepareToPlay (double newSampleRate, int estimatedSamp
 {
     setRateAndBufferSizeDetails (newSampleRate, estimatedSamplesPerBlock);
 
-    const ScopedLock sl (getCallbackLock());
-
     const int numChans = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels());
 
     jassert (realtime != nullptr);
@@ -55,8 +52,6 @@ void ResamplingProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBu
 
     if (isBypassed() || numSamples <= 0 || r == 1.0000000000)
         return;
-
-    const ScopedLock sl (getCallbackLock());
 
     auto* resamplerToUse = realtime.get();
 

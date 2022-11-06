@@ -6,18 +6,36 @@
 
     @see EffectProcessorChain
 */
-class EffectProcessor final
+class EffectProcessor final : public ReferenceCountedObject,
+                              public ValueTree::Listener
 {
 public:
     //==============================================================================
-    SQUAREPINE_MAKE_SHAREABLE (EffectProcessor)
+    using Ptr = ReferenceCountedObjectPtr<EffectProcessor>;
 
     //==============================================================================
-    /** Constructs an EffectProcessor based on the provided plugin and its description. */
-    EffectProcessor (std::shared_ptr<AudioPluginInstance> plugin,
-                     const PluginDescription& description);
+    /** Constructs an EffectProcessor based on the provided plugin and its description.
+
+        Note that the PluginDescription here is separated so as to allow you
+        to create an EffectProcessor that is intended to house a valid plugin
+        eventually, deferring its creation to the parent EffectProcessorChain
+        by performing a reloading of its state.
+
+        In other words, you can have an active but temporarily empty EffectProcessor
+        with details to create and reload a plugin instance.
+
+        @see EffectProcessorChain::loadIfMissing
+    */
+    EffectProcessor (std::shared_ptr<AudioPluginInstance>,
+                     const PluginDescription&);
+
+    /** */
+    ~EffectProcessor() override;
 
     //==============================================================================
+    /** @returns */
+    [[nodiscard]] std::shared_ptr<AudioPluginInstance> getPlugin() const { return plugin; }
+
     /** @returns true if the contained plugin is null, which is interpreted as likely missing. */
     [[nodiscard]] bool isMissing() const noexcept { return plugin == nullptr; }
 
@@ -26,20 +44,63 @@ public:
     */
     [[nodiscard]] bool canBeProcessed() const noexcept;
 
+    //==============================================================================
+    /** @returns */
+    [[nodiscard]] String getName() const;
+    /** */
+    void setName (const String&, UndoManager* undoManager = nullptr);
+    /** @returns */
+    [[nodiscard]] Value getNameValueObject (UndoManager*, bool shouldUpdateSynchronously = false);
+
+    /** @returns */
+    [[nodiscard]] float getMixLevel() const;
+    /** */
+    void setMixLevel (float, UndoManager* undoManager = nullptr);
+    /** @returns */
+    [[nodiscard]] Value getMixValueObject (UndoManager*, bool shouldUpdateSynchronously = false);
+
+    /** @returns */
+    [[nodiscard]] bool isBypassed() const;
+    /** */
+    void setBypassed (bool, UndoManager* undoManager = nullptr);
+    /** @returns */
+    [[nodiscard]] Value getBypassValueObject (UndoManager*, bool shouldUpdateSynchronously = false);
+
+    //==============================================================================
     /** @returns true if the plugin was able to be restored from its last known state. */
     bool reloadFromStateIfValid();
 
     //==============================================================================
-    String name;                                    //<
-    std::atomic<bool> isBypassed;                   //<
-    LinearSmoothedValue<float> mixLevel;            //< The normalised mix level.
+    /** @internal */
+    void valueTreePropertyChanged (ValueTree&, const Identifier&) override;
+
+private:
+    //==============================================================================
+    friend class EffectProcessorChain;
+
+    ValueTree state { "state" };
+
+    std::atomic<bool> bypassed { false };           //<
+    LinearSmoothedValue<float> mixLevel { 1.0f };   //< The normalised mix level.
     juce::Point<int> lastUIPosition;                //<
     std::shared_ptr<AudioPluginInstance> plugin;    //<
     const PluginDescription description;            //<
-    MemoryBlock defaultState;                       //<
-    String lastKnownBase64State;                    //<
 
-private:
+    //==============================================================================
+    /** */
+    CREATE_INLINE_CLASS_IDENTIFIER (name)
+    /** */
+    CREATE_INLINE_CLASS_IDENTIFIER (mix)
+    /** */
+    CREATE_INLINE_CLASS_IDENTIFIER (bypassed)
+    /** */
+    CREATE_INLINE_CLASS_IDENTIFIER (defaultState)
+    /** */
+    CREATE_INLINE_CLASS_IDENTIFIER (lastState)
+
+    void setDefaultState (const MemoryBlock&);
+    void setLastState (const MemoryBlock&);
+
     //==============================================================================
     EffectProcessor() = delete;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EffectProcessor)

@@ -36,13 +36,11 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return TRANS ("Levels Meter"); }
+    const String getName() const override { return NEEDS_TRANS ("Levels Meter"); }
     /** @internal */
     Identifier getIdentifier() const override { return "levelsMeter"; }
     /** @internal */
     bool acceptsMidi() const override { return true; }
-    /** @internal */
-    bool producesMidi() const override { return true; }
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
@@ -78,14 +76,15 @@ private:
     void getChannelLevels (Array<FloatType>& destData, ChannelDetails<FloatType>& details)
     {
         destData.clearQuick();
-
-        const ScopedLock lock (getCallbackLock());
         destData.addArray (details.channels);
     }
 
     template<typename FloatType>
     void process (juce::AudioBuffer<FloatType>& buffer, ChannelDetails<FloatType>& details)
     {
+        if (isBypassed())
+            return;
+
         const auto numChannels = jmin (buffer.getNumChannels(), getTotalNumInputChannels(), getTotalNumOutputChannels());
 
         details.tempBuffer.clearQuick();
@@ -115,7 +114,6 @@ private:
             break;
         };
 
-        const ScopedLock lock (getCallbackLock());
         details.channels.swapWith (details.tempBuffer);
     }
 

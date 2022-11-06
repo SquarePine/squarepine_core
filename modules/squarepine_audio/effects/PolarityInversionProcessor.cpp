@@ -3,13 +3,13 @@ PolarityInversionProcessor::PolarityInversionProcessor (bool startActive) :
 {
     auto layout = createDefaultParameterLayout();
 
-    auto vp = std::make_unique<AudioParameterBool> (getIdentifier().toString(), getName(), false);
+    auto vp = std::make_unique<AudioParameterBool> (getIdentifier().toString(), NEEDS_TRANS ("Invert"), true);
     invertParameter = vp.get();
-    setActive (startActive);
-
     layout.add (std::move (vp));
 
     apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
+
+    setActive (startActive);
 }
 
 //==============================================================================
@@ -18,7 +18,7 @@ void PolarityInversionProcessor::setActive (bool shouldBeActive)
     invertParameter->operator= (shouldBeActive);
 }
 
-bool PolarityInversionProcessor::isActive() const noexcept
+bool PolarityInversionProcessor::isActive() const
 {
     return invertParameter->get();
 }

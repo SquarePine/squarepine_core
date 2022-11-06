@@ -14,7 +14,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getName() const override { return NEEDS_TRANS ("BitCrusher"); }
+    const String getName() const override { return NEEDS_TRANS ("Bit Crusher"); }
     /** @internal */
     Identifier getIdentifier() const override { return "bitCrusher"; }
     /** @internal */
@@ -26,7 +26,7 @@ public:
 
 private:
     //==============================================================================
-    AudioParameterInt* bitDepth = new AudioParameterInt ("bitDepth", "Bit-Depth", 1, 32, 32);
+    AudioParameterInt* bitDepth = new AudioParameterInt ("bitDepth", "Bit-Depth", 1, 16, 8);
 
     //==============================================================================
     template<typename FloatType>

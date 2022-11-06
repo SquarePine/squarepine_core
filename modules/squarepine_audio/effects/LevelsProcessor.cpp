@@ -28,8 +28,6 @@ void LevelsProcessor::getChannelLevels (Array<double>& destData)
 //==============================================================================
 void LevelsProcessor::prepareToPlay (double newSampleRate, int bufferSize)
 {
-    const ScopedLock lock (getCallbackLock());
-
     setRateAndBufferSizeDetails (newSampleRate, bufferSize);
 
     const auto numChannels = jmax (2, getTotalNumInputChannels(), getTotalNumOutputChannels());

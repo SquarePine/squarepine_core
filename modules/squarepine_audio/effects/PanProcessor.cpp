@@ -115,17 +115,15 @@ dsp::PannerRule PanProcessor::getPannerRule() const noexcept
 }
 
 //==============================================================================
-void PanProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void PanProcessor::prepareToPlay (double newSampleRate, int samplesPerBlock)
 {
-    setRateAndBufferSizeDetails (sampleRate, samplesPerBlock);
-
-    const auto maxChans = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels());
+    setRateAndBufferSizeDetails (newSampleRate, samplesPerBlock);
 
     const dsp::ProcessSpec spec =
     {
-        sampleRate,
+        newSampleRate,
         (uint32) samplesPerBlock,
-        (uint32) maxChans
+        (uint32) jmax (getTotalNumInputChannels(), getTotalNumOutputChannels())
     };
 
     floatPanner.prepare (spec);
@@ -147,6 +145,9 @@ void PanProcessor::process (dsp::Panner<FloatType>& panner,
                             juce::AudioBuffer<FloatType>& buffer,
                             MidiBuffer&)
 {
+    if (isBypassed())
+        return;
+
     panner.setPan (getPan());
     panner.setRule (getPannerRule());
 

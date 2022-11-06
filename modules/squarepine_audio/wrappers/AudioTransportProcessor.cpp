@@ -25,26 +25,23 @@ Identifier AudioTransportProcessor::getIdentifier() const
 //==============================================================================
 void AudioTransportProcessor::play()
 {
-    const ScopedLock lock (getCallbackLock());
     transport->start();
 }
 
 void AudioTransportProcessor::playFromStart()
 {
-    const ScopedLock lock (getCallbackLock());
     transport->setPosition (0);
     transport->start();
 }
 
 void AudioTransportProcessor::stop()
 {
-    const ScopedLock lock (getCallbackLock());
     transport->stop();
 }
 
 void AudioTransportProcessor::setLooping (const bool shouldLoop)
 {
-    const ScopedLock lock (getCallbackLock());
+    looping = shouldLoop;
 
     transport->setLooping (shouldLoop);
 
@@ -54,7 +51,7 @@ void AudioTransportProcessor::setLooping (const bool shouldLoop)
 
 bool AudioTransportProcessor::isLooping() const
 {
-    return transport->isLooping();
+    return looping.load();
 }
 
 bool AudioTransportProcessor::isPlaying() const
@@ -98,7 +95,6 @@ void AudioTransportProcessor::setResamplingRatio (const double)
 
 void AudioTransportProcessor::clear()
 {
-    const ScopedLock lock (getCallbackLock());
     stop();
     transport->setSource (nullptr);
     source = nullptr;
@@ -111,13 +107,12 @@ void AudioTransportProcessor::setSource (PositionableAudioSource* const s,
                                          const double sourceSampleRateToCorrectFor,
                                          const int maxNumChannels)
 {
-    const ScopedLock lock (getCallbackLock());
-
     source = s;
     transport->setSource (source, readAheadBufferSize, readAheadThread,
                           sourceSampleRateToCorrectFor, maxNumChannels);
 
     prepareToPlay (getSampleRate(), getBlockSize());
+    setLooping (isLooping());
 }
 
 void AudioTransportProcessor::setSource (AudioFormatReaderSource* const readerSource,
