@@ -9,7 +9,7 @@
     name:               SquarePine Animation
     description:        A grouping of reusable classes for controlling and managing animations.
     website:            https://www.squarepine.io
-    license:            ISC
+    license:            Beerware
     minimumCppStandard: 17
     dependencies:       squarepine_graphics
 

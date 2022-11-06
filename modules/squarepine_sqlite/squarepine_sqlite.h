@@ -9,7 +9,7 @@
     name:               SquarePine SQLite
     description:        A JUCE module for SQLite.
     website:            https://www.squarepine.io
-    license:            Proprietary
+    license:            Beerware
     minimumCppStandard: 11
     dependencies:       juce_core
 

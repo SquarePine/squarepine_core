@@ -179,7 +179,7 @@ template<typename Type>
 
 //==============================================================================
 /** Signum function */
-constexpr double sgn (double x) noexcept
+[[nodiscard]] constexpr double sgn (double x) noexcept
 {
     return x > 0.0
             ? 1.0
@@ -187,7 +187,7 @@ constexpr double sgn (double x) noexcept
 }
 
 /** Signum function */
-constexpr float sgn (float x) noexcept
+[[nodiscard]] constexpr float sgn (float x) noexcept
 {
     return x > 0.0f
             ? 1.0f
@@ -196,7 +196,7 @@ constexpr float sgn (float x) noexcept
 
 /** Signum function */
 template<typename Type>
-constexpr Type sgn (Type x) noexcept
+[[nodiscard]] constexpr Type sgn (Type x) noexcept
 {
     return x > Type (0)
             ? Type (1)
@@ -205,7 +205,7 @@ constexpr Type sgn (Type x) noexcept
 
 //==============================================================================
 template<typename Type, typename IndexType = int>
-constexpr Type calculateNextAverage (Type newValue, Type currentValue, IndexType numValues) noexcept
+[[nodiscard]] constexpr Type calculateNextAverage (Type newValue, Type currentValue, IndexType numValues) noexcept
 {
     return static_cast<IndexType> ((newValue + (numValues * currentValue))
                                  / (numValues + static_cast<IndexType> (1)));
@@ -332,7 +332,7 @@ inline FloatingPointType findMedian (const FloatingPointType* samples, IndexType
 //==============================================================================
 /** @returns the Mean for a set of values. */
 template<typename Iterator>
-inline typename std::iterator_traits<Iterator>::value_type findMean (Iterator beginIter, Iterator endIter)
+[[nodiscard]] inline typename std::iterator_traits<Iterator>::value_type findMean (Iterator beginIter, Iterator endIter)
 {
     using Type = typename std::iterator_traits<Iterator>::value_type;
 
@@ -346,28 +346,28 @@ inline typename std::iterator_traits<Iterator>::value_type findMean (Iterator be
 
 /** @returns the Mean for a set of values. */
 template<typename Type>
-inline Type findMean (const juce::Array<Type>& values)
+[[nodiscard]] inline Type findMean (const juce::Array<Type>& values)
 {
     return findMean (std::cbegin (values), std::cend (values));
 }
 
 /** @returns the Mean for a set of values. */
 template<typename Type>
-inline Type findMean (const std::vector<Type>& values)
+[[nodiscard]] inline Type findMean (const std::vector<Type>& values)
 {
     return findMean (values.cbegin(), values.cend());
 }
 
 /** @returns the Mean for a set of values. */
 template<typename Type, size_t arraySize>
-inline Type findMean (const std::array<Type, arraySize>& values)
+[[nodiscard]] inline Type findMean (const std::array<Type, arraySize>& values)
 {
     return findMean (values.cbegin(), values.cend());
 }
 
 /** @returns the Mean for a set of values. */
 template<typename Type, size_t arraySize>
-inline Type findMean (const Type (&values)[arraySize])
+[[nodiscard]] inline Type findMean (const Type (&values)[arraySize])
 {
     return findMean (std::cbegin (values), std::cend (values));
 }
@@ -375,7 +375,7 @@ inline Type findMean (const Type (&values)[arraySize])
 //==============================================================================
 /** @returns the variance of a set of values. */
 template<typename Iterator>
-inline typename std::iterator_traits<Iterator>::value_type findVariance (Iterator beginIter, Iterator endIter)
+[[nodiscard]] inline typename std::iterator_traits<Iterator>::value_type findVariance (Iterator beginIter, Iterator endIter)
 {
     const auto mean = findMean (beginIter, endIter);
 
@@ -389,28 +389,28 @@ inline typename std::iterator_traits<Iterator>::value_type findVariance (Iterato
 
 /** @returns the sample standard deviation for a set of values. */
 template<typename Type>
-inline Type findVariance (const juce::Array<Type>& values)
+[[nodiscard]] inline Type findVariance (const juce::Array<Type>& values)
 {
     return findVariance (std::cbegin (values), std::cend (values));
 }
 
 /** @returns the sample standard deviation for a set of values. */
 template<typename Type>
-inline Type findVariance (const std::vector<Type>& values)
+[[nodiscard]] inline Type findVariance (const std::vector<Type>& values)
 {
     return findVariance (values.cbegin(), values.cend());
 }
 
 /** @returns the sample standard deviation for a set of values. */
 template<typename Type, size_t arraySize>
-inline Type findVariance (const std::array<Type, arraySize>& values)
+[[nodiscard]] inline Type findVariance (const std::array<Type, arraySize>& values)
 {
     return findVariance (values.cbegin(), values.cend());
 }
 
 /** @returns the sample standard deviation for a set of values. */
 template<typename Type, size_t arraySize>
-inline Type findVariance (const Type (&values)[arraySize])
+[[nodiscard]] inline Type findVariance (const Type (&values)[arraySize])
 {
     return findVariance (std::cbegin (values), std::cend (values));
 }
@@ -421,7 +421,7 @@ inline Type findVariance (const Type (&values)[arraySize])
     @note the N - 1 in the formula to correct for small data sets.
 */
 template<typename Iterator>
-inline typename std::iterator_traits<Iterator>::value_type findCorrectedVariance (Iterator beginIter, Iterator endIter)
+[[nodiscard]] inline typename std::iterator_traits<Iterator>::value_type findCorrectedVariance (Iterator beginIter, Iterator endIter)
 {
     const auto mean = findMean (beginIter, endIter);
     auto sum = static_cast<typename std::iterator_traits<Iterator>::value_type> (0);
@@ -437,7 +437,7 @@ inline typename std::iterator_traits<Iterator>::value_type findCorrectedVariance
     @note the N - 1 in the formula to correct for small data sets.
 */
 template<typename Type>
-inline Type findCorrectedVariance (const juce::Array<Type>& values)
+[[nodiscard]] inline Type findCorrectedVariance (const juce::Array<Type>& values)
 {
     return findCorrectedVariance (std::cbegin (values), std::cend (values));
 }
@@ -447,7 +447,7 @@ inline Type findCorrectedVariance (const juce::Array<Type>& values)
     @note the N - 1 in the formula to correct for small data sets.
 */
 template<typename Type>
-inline Type findCorrectedVariance (const std::vector<Type>& values)
+[[nodiscard]] inline Type findCorrectedVariance (const std::vector<Type>& values)
 {
     return findCorrectedVariance (values.cbegin(), values.cend());
 }
@@ -457,7 +457,7 @@ inline Type findCorrectedVariance (const std::vector<Type>& values)
     @note the N - 1 in the formula to correct for small data sets.
 */
 template<typename Type, size_t arraySize>
-inline Type findCorrectedVariance (const std::array<Type, arraySize>& values)
+[[nodiscard]] inline Type findCorrectedVariance (const std::array<Type, arraySize>& values)
 {
     return findCorrectedVariance (values.cbegin(), values.cend());
 }
@@ -467,7 +467,7 @@ inline Type findCorrectedVariance (const std::array<Type, arraySize>& values)
     @note the N - 1 in the formula to correct for small data sets.
 */
 template<typename Type, size_t arraySize>
-inline Type findCorrectedVariance (const Type (&values)[arraySize])
+[[nodiscard]] inline Type findCorrectedVariance (const Type (&values)[arraySize])
 {
     return findCorrectedVariance (std::cbegin (values), std::cend (values));
 }
@@ -475,35 +475,35 @@ inline Type findCorrectedVariance (const Type (&values)[arraySize])
 //==============================================================================
 /** @returns the sample standard deviation for a set of values. */
 template<typename Iterator>
-inline typename std::iterator_traits<Iterator>::value_type findStandardDeviation (Iterator beginIter, Iterator endIter)
+[[nodiscard]] inline typename std::iterator_traits<Iterator>::value_type findStandardDeviation (Iterator beginIter, Iterator endIter)
 {
     return std::sqrt (findCorrectedVariance (beginIter, endIter));
 }
 
 /** @returns the sample standard deviation for a set of values. */
 template<typename Type>
-inline Type findStandardDeviation (const juce::Array<Type>& values)
+[[nodiscard]] inline Type findStandardDeviation (const juce::Array<Type>& values)
 {
     return findStandardDeviation (std::cbegin (values), std::cend (values));
 }
 
 /** @returns the sample standard deviation for a set of values. */
 template<typename Type>
-inline Type findStandardDeviation (const std::vector<Type>& values)
+[[nodiscard]] inline Type findStandardDeviation (const std::vector<Type>& values)
 {
     return findStandardDeviation (values.cbegin(), values.cend());
 }
 
 /** @returns the sample standard deviation for a set of values. */
 template<typename Type, size_t arraySize>
-inline Type findStandardDeviation (const std::array<Type, arraySize>& values)
+[[nodiscard]] inline Type findStandardDeviation (const std::array<Type, arraySize>& values)
 {
     return findStandardDeviation (values.cbegin(), values.cend());
 }
 
 /** @returns the sample standard deviation for a set of values. */
 template<typename Type, size_t arraySize>
-inline Type findStandardDeviation (const Type (&values)[arraySize])
+[[nodiscard]] inline Type findStandardDeviation (const Type (&values)[arraySize])
 {
     return findStandardDeviation (std::cbegin (values), std::cend (values));
 }
@@ -513,7 +513,7 @@ inline Type findStandardDeviation (const Type (&values)[arraySize])
     @warning This does very little validation so be careful!
 */
 template<typename Type, typename SizeType = int>
-inline Type findRMS (Type* rawValues, SizeType numValues)
+[[nodiscard]] inline Type findRMS (Type* rawValues, SizeType numValues)
 {
     constexpr auto zero = static_cast<Type> (0);
     if (rawValues == nullptr || numValues <= 0)
@@ -528,7 +528,7 @@ inline Type findRMS (Type* rawValues, SizeType numValues)
 
 /** @returns the RMS for a set of values. */
 template<typename Iterator>
-inline typename std::iterator_traits<Iterator>::value_type findRMS (Iterator beginIter, Iterator endIter)
+[[nodiscard]] inline typename std::iterator_traits<Iterator>::value_type findRMS (Iterator beginIter, Iterator endIter)
 {
     auto sum = static_cast<typename std::iterator_traits<Iterator>::value_type> (0);
 
@@ -540,28 +540,28 @@ inline typename std::iterator_traits<Iterator>::value_type findRMS (Iterator beg
 
 /** @returns the RMS for a set of values. */
 template<typename Type, typename TypeOfCriticalSectionToUse>
-inline Type findRMS (const juce::Array<Type, TypeOfCriticalSectionToUse>& values)
+[[nodiscard]] inline Type findRMS (const juce::Array<Type, TypeOfCriticalSectionToUse>& values)
 {
     return findRMS (std::cbegin (values), std::cend (values));
 }
 
 /** @returns the RMS for a set of values. */
 template<typename Type, typename TypeOfCriticalSectionToUse>
-inline Type findRMS (const juce::OwnedArray<Type, TypeOfCriticalSectionToUse>& values)
+[[nodiscard]] inline Type findRMS (const juce::OwnedArray<Type, TypeOfCriticalSectionToUse>& values)
 {
     return findRMS (std::cbegin (values), std::cend (values));
 }
 
 /** @returns the RMS for a set of values. */
 template<typename Type, typename AllocatorType>
-inline Type findRMS (const std::vector<Type, AllocatorType>& values)
+[[nodiscard]] inline Type findRMS (const std::vector<Type, AllocatorType>& values)
 {
     return findRMS (values.cbegin(), values.cend());
 }
 
 /** @returns the RMS for a set of values. */
 template<typename Type, typename AllocatorType>
-inline Type findRMS (const std::list<Type, AllocatorType>& values)
+[[nodiscard]] inline Type findRMS (const std::list<Type, AllocatorType>& values)
 {
     return findRMS (values.cbegin(), values.cend());
 }
@@ -575,45 +575,45 @@ inline Type findRMS (const std::forward_list<Type, AllocatorType>& values)
 
 /** @returns the RMS for a set of values. */
 template<typename Type, size_t arraySize>
-inline Type findRMS (const std::array<Type, arraySize>& values)
+[[nodiscard]] inline Type findRMS (const std::array<Type, arraySize>& values)
 {
     return findRMS (values.cbegin(), values.cend());
 }
 
 /** @returns the RMS for a set of values. */
 template<typename Type, size_t arraySize>
-inline Type findRMS (const Type (&values)[arraySize])
+[[nodiscard]] inline Type findRMS (const Type (&values)[arraySize])
 {
     return findRMS (std::cbegin (values), std::cend (values));
 }
 
 //============================================================================
 /** @returns a pitch ratio converted from a number of semitones. */
-inline float semitonesToPitchRatio (float numSemitones) noexcept    { return std::pow (2.0f, numSemitones / 12.0f); }
+[[nodiscard]] inline float semitonesToPitchRatio (float numSemitones) noexcept    { return std::pow (2.0f, numSemitones / 12.0f); }
 /** @returns a pitch ratio converted from a number of semitones. */
-inline double semitonesToPitchRatio (double numSemitones) noexcept  { return std::pow (2.0, numSemitones / 12.0); }
+[[nodiscard]] inline double semitonesToPitchRatio (double numSemitones) noexcept  { return std::pow (2.0, numSemitones / 12.0); }
 /** @returns a pitch ratio converted from a number of semitones. */
 template<typename Type>
-inline double semitonesToPitchRatio (Type numSemitones) noexcept    { return semitonesToPitchRatio (static_cast<double> (numSemitones)); }
+[[nodiscard]] inline double semitonesToPitchRatio (Type numSemitones) noexcept    { return semitonesToPitchRatio (static_cast<double> (numSemitones)); }
 
 /** @returns a number semitones converted from a pitch ratio. */
-inline float pitchRatioToSemitones (float pitchRatio) noexcept      { return 12.0f * std::log2 (pitchRatio); }
+[[nodiscard]] inline float pitchRatioToSemitones (float pitchRatio) noexcept      { return 12.0f * std::log2 (pitchRatio); }
 /** @returns a number semitones converted from a pitch ratio. */
-inline double pitchRatioToSemitones (double pitchRatio) noexcept    { return 12.0 * std::log2 (pitchRatio); }
+[[nodiscard]] inline double pitchRatioToSemitones (double pitchRatio) noexcept    { return 12.0 * std::log2 (pitchRatio); }
 /** @returns a number semitones converted from a pitch ratio. */
 template<typename Type>
-inline double pitchRatioToSemitones (Type pitchRatio) noexcept      { return pitchRatioToSemitones (static_cast<double> (pitchRatio)); }
+[[nodiscard]] inline double pitchRatioToSemitones (Type pitchRatio) noexcept      { return pitchRatioToSemitones (static_cast<double> (pitchRatio)); }
 
 //============================================================================
 /** @returns a MIDI note converted from a frequency. */
-inline int frequencyToMIDINote (double frequency) noexcept
+[[nodiscard]] inline int frequencyToMIDINote (double frequency) noexcept
 {
     const auto pitchRatio = jmax (0.0, frequency / 440.0);
     return roundToInt (69.0 + pitchRatioToSemitones (pitchRatio));
 }
 
 /** @returns a frequency converted from a MIDI note. */
-inline double midiNoteToFrequency (int midiNoteNumber) noexcept
+[[nodiscard]] inline double midiNoteToFrequency (int midiNoteNumber) noexcept
 {
     const auto semitones = jmax (0, midiNoteNumber);
     return 440.0 * semitonesToPitchRatio (static_cast<double> (semitones) - 69.0);
@@ -628,7 +628,7 @@ inline double midiNoteToFrequency (int midiNoteNumber) noexcept
     @returns a non-empty string if the file could be hashed.
 */
 template<typename HasherType = juce::SHA256>
-inline String createUniqueFileHash (const File& source)
+[[nodiscard]] inline String createUniqueFileHash (const File& source)
 {
     if (! source.existsAsFile())
     {

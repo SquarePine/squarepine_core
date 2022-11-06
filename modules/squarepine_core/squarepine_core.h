@@ -5,11 +5,11 @@
 
     ID:                 squarepine_core
     vendor:             SquarePine
-    version:            0.0.1
+    version:            0.1.0
     name:               SquarePine Core
     description:        A decent backbone for any project.
     website:            https://www.squarepine.io
-    license:            ISC
+    license:            Beerware
     minimumCppStandard: 17
     OSXFrameworks:      SystemConfiguration
     iOSFrameworks:      SystemConfiguration
@@ -47,7 +47,7 @@
 #endif
 
 #if JUCE_MINGW
-    #error "First of all, you're on Windows, not Linux." \
+    #error "Message from SquarePine: First of all, you're on Windows, not Linux." \
            "Secondly, MinGW is too outdated and crappy." \
            "Seriously, just use Visual Studio Community - it's literally free."
 #endif

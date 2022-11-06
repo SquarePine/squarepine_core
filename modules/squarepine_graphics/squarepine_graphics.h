@@ -9,7 +9,7 @@
     name:               SquarePine Graphics
     description:        A grouping of reusable graphics classes, image formats, and other utilities.
     website:            https://www.squarepine.io
-    license:            ISC
+    license:            Beerware
     minimumCppStandard: 17
     dependencies:       squarepine_core juce_gui_extra
 

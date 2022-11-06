@@ -81,7 +81,7 @@ A vast range of simple renditions of audio effects can be found, including an ec
 
 # License
 
-[The current license is ISC](https://github.com/SquarePine/squarepine_core/blob/main/LICENSE.md).
+[The current license is Beerware](https://github.com/SquarePine/squarepine_core/blob/main/LICENSE.md).
 
 # Contributing
 
