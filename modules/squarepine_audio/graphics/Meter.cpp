@@ -41,58 +41,22 @@ double DecibelHelpers::curvedToLinear (double curvedValue) noexcept
 }
 
 //==============================================================================
-Meter::Meter (bool willNeedMaxLevel) :
-    needMaxLevel (willNeedMaxLevel)
+Meter::Meter (Model* model_) :
+    model (model_)
 {
     channels.resize (2);
-
-    setGradientColours (Colours::darkblue, Colours::darkorange, Colours::indianred);
 }
 
-bool Meter::refreshLevels()
+void Meter::setModel (Model* model_)
 {
-    levels.clearQuick();
-    getChannelLevels (levels);
-
-    bool areLevelsDifferent = false;
-    bool isMaxLevelDelayExpired = false;
-    const auto numChans = jmin (levels.size(), channels.size());
-
-    for (int i = 0; i < numChans; ++i)
+    if (model != model_)
     {
-        auto& context = channels.getReference (i);
-        auto level = lerp (context.getLevel(), levels[i], 0.9f);
-        dsp::util::snapToZero (level);
-        context.setLevel (level);
-
-        if (needMaxLevel)
-        {
-            if (context.getLevel() > context.getMaxLevel())
-            {
-                context.setLastMaxAudioLevelTime (Time::currentTimeMillis());
-                context.setMaxLevel (context.getLevel());
-            }
-            else if (Time::currentTimeMillis() - context.getLastMaxAudioLevelTime() > maxLevelExpiryMs)
-            {
-                context.setMaxLevel (context.getMaxLevel() * 0.8f); //Decay rate
-                isMaxLevelDelayExpired = true;
-            }
-
-            areLevelsDifferent |= context.getMaxLevel() != context.getLastMaxLevel();
-        }
-
-        areLevelsDifferent |= context.getLevel() != context.getLastLevel();
-
-        context.setLastLevel (context.getLevel());
-        context.setLastMaxLevel (context.getMaxLevel());
+        model = model_;
+        refresh();
     }
-
-    if (areLevelsDifferent)
-        updateClippingLevel (isMaxLevelDelayExpired);
-
-    return areLevelsDifferent;
 }
 
+#if 0
 void Meter::initVolumeGradient (int width, int height, bool isVertical)
 {
     if (width <= 0 || height <= 0)
@@ -123,19 +87,67 @@ void Meter::initVolumeGradient (int width, int height, bool isVertical)
     g.setGradientFill (gradient);
     g.fillAll();
 }
+#endif
 
-void Meter::setGradientColours (Colour firstColour, Colour secondColour)
+void Meter::resized()
 {
-    colourLowIntensity = firstColour;
-    colourMediumIntensity = firstColour.interpolatedWith (secondColour, 0.5f);
-    colourHighIntensity = secondColour;
 }
 
-void Meter::setGradientColours (Colour firstColour, Colour secondColour, Colour thirdColour)
+void Meter::paint (Graphics&)
 {
-    colourLowIntensity = firstColour;
-    colourMediumIntensity = secondColour;
-    colourHighIntensity = thirdColour;
+}
+
+bool Meter::refresh()
+{
+    levels.clearQuick();
+    int64 maxLevelExpiryMs = 3000;
+    bool needsMaxLevel = false;
+    float decayRate = 0.8f;
+
+    if (model != nullptr)
+    {
+        levels = model->getChannelLevels();
+        maxLevelExpiryMs = model->getExpiryTimeMs();
+        needsMaxLevel = model->needsMaxLevel();
+    }
+
+    bool areLevelsDifferent = false;
+    bool isMaxLevelDelayExpired = false;
+    const auto numChans = jmin (levels.size(), channels.size());
+
+    for (int i = 0; i < numChans; ++i)
+    {
+        auto& channel = channels.getReference (i);
+        auto level = lerp (channel.getLevel(), levels[i], 0.9f);
+        dsp::util::snapToZero (level);
+        channel.setLevel (level);
+
+        if (needsMaxLevel)
+        {
+            if (channel.getLevel() > channel.getMaxLevel())
+            {
+                channel.setLastMaxAudioLevelTime (Time::currentTimeMillis());
+                channel.setMaxLevel (channel.getLevel());
+            }
+            else if (Time::currentTimeMillis() - channel.getLastMaxAudioLevelTime() > maxLevelExpiryMs)
+            {
+                channel.setMaxLevel (channel.getMaxLevel() * decayRate);
+                isMaxLevelDelayExpired = true;
+            }
+
+            areLevelsDifferent |= channel.getMaxLevel() != channel.getLastMaxLevel();
+        }
+
+        areLevelsDifferent |= channel.getLevel() != channel.getLastLevel();
+
+        channel.setLastLevel (channel.getLevel());
+        channel.setLastMaxLevel (channel.getMaxLevel());
+    }
+
+    if (areLevelsDifferent)
+        updateClippingLevel (isMaxLevelDelayExpired);
+
+    return areLevelsDifferent;
 }
 
 void Meter::updateClippingLevel (bool timeToUpdate)

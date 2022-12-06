@@ -28,7 +28,7 @@ PluginDescription EffectProcessorFactory::createPluginDescription (const PluginD
 }
 
 //==============================================================================
-std::shared_ptr<AudioPluginInstance> EffectProcessorFactory::createPlugin (const PluginDescription& description) const
+AudioPluginPtr EffectProcessorFactory::createPlugin (const PluginDescription& description) const
 {
     if (description.isInstrument)
         return nullptr;
@@ -37,12 +37,12 @@ std::shared_ptr<AudioPluginInstance> EffectProcessorFactory::createPlugin (const
     return getAudioPluginFormatManager().createPluginInstance (description, 44100.0, 256, errorMessage);
 }
 
-std::shared_ptr<AudioPluginInstance> EffectProcessorFactory::createPlugin (const int listIndex) const
+AudioPluginPtr EffectProcessorFactory::createPlugin (const int listIndex) const
 {
     return createPlugin (createPluginDescription (listIndex));
 }
 
-std::shared_ptr<AudioPluginInstance> EffectProcessorFactory::createPlugin (const String& fileOrIdentifier) const
+AudioPluginPtr EffectProcessorFactory::createPlugin (const String& fileOrIdentifier) const
 {
     return createPlugin (createPluginDescription (fileOrIdentifier));
 }

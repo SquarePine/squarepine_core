@@ -26,15 +26,14 @@ public:
 
         @see EffectProcessorChain::loadIfMissing
     */
-    EffectProcessor (std::shared_ptr<AudioPluginInstance>,
-                     const PluginDescription&);
+    EffectProcessor (AudioPluginPtr, const PluginDescription&);
 
     /** */
     ~EffectProcessor() override;
 
     //==============================================================================
     /** @returns */
-    [[nodiscard]] std::shared_ptr<AudioPluginInstance> getPlugin() const { return plugin; }
+    [[nodiscard]] AudioPluginPtr getPlugin() const { return plugin; }
 
     /** @returns true if the contained plugin is null, which is interpreted as likely missing. */
     [[nodiscard]] bool isMissing() const noexcept { return plugin == nullptr; }
@@ -83,7 +82,7 @@ private:
     std::atomic<bool> bypassed { false };           //<
     LinearSmoothedValue<float> mixLevel { 1.0f };   //< The normalised mix level.
     juce::Point<int> lastUIPosition;                //<
-    std::shared_ptr<AudioPluginInstance> plugin;    //<
+    AudioPluginPtr plugin;                          //<
     const PluginDescription description;            //<
 
     //==============================================================================

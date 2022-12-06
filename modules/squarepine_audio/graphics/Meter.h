@@ -98,41 +98,70 @@ private:
 
 //==============================================================================
 /** */
-class Meter
+class Meter final : public Component
 {
 public:
+    //==============================================================================
     /** */
-    Meter (bool needMaxLevel = false);
+    class Model
+    {
+    public:
+        /** */
+        virtual ~Model() noexcept = default;
 
-    /** */
-    virtual ~Meter() = default;
+        /** @returns the expiration time of the maximum meter level, after which it decays. */
+        virtual int64 getExpiryTimeMs() const noexcept { return 3000; }
+
+        /** @returns */
+        virtual bool needsMaxLevel() const noexcept { return false; }
+
+        /** @returns */
+        virtual bool isHorizontal() const noexcept { return false; }
+
+        /** @returns */
+        virtual Array<float> getChannelLevels() const = 0;
+
+        /** */
+        struct ColourPosition final
+        {
+            ColourPosition() noexcept = default;
+
+            ColourPosition (Colour c, double d) noexcept :
+                colour (c),
+                decibels (d)
+            {
+            }
+
+            Colour colour;
+            double decibels = 0.0;
+        };
+
+        /** @returns */
+        virtual std::array<ColourPosition, 3> getColourPositions() const
+        {
+            return
+            {
+                ColourPosition (Colours::red, 0.0),
+                ColourPosition (Colours::yellow, -9.0),
+                ColourPosition (Colours::green, -18.0)
+            };
+        }
+    };
 
     //==============================================================================
     /** */
-    virtual void getChannelLevels (Array<float>& destData) = 0;
+    Meter (Model* model_ = nullptr);
 
     //==============================================================================
-    /** Initialises the cached gradient image. */
-    void initVolumeGradient (int width, int height, bool isVertical);
+    /** */
+    void setModel (Model*);
 
     /** */
-    void setGradientColours (Colour lowIntensity, Colour highIntensity);
-
-    /** */
-    void setGradientColours (Colour lowIntensity, Colour mediumIntensity, Colour highIntensity);
-
-    /** */
-    const Image& getGradientImage() const noexcept { return gradientImage; }
+    Model* getModel() const noexcept { return model; }
 
     //==============================================================================
     /** @returns true if the levels have changed. */
-    bool refreshLevels();
-
-    /** The maximum decibel level of the meter. */
-    enum { maximumMeterDecibels = 0 };
-
-    /** */
-    bool maxLevelNeeded() const noexcept { return needMaxLevel; }
+    bool refresh();
 
     //==============================================================================
     /** */
@@ -164,12 +193,12 @@ public:
         const Rectangle<int>& getMeterArea() const noexcept { return meterArea; }
 
     private:
-        float level = 0.0f;         // The last measured audio absolute volume level.
-        float lastLevel = 0.0f;     // The volume level of the last update, used to check if levels have changed for repainting.
-        float maxLevel = 0.0f;      // The maximum audio levels of the trailing 3 seconds.
-        float lastMaxLevel = 0.0f;  // The max volume level of the last update.
-        int64 timeOfMaximumMs = 0;  // The time of the last maximum audio level.
-        Rectangle<int> meterArea;   // The left/right drawable regions for the meter.
+        float level = 0.0f;         //< The last measured audio absolute volume level.
+        float lastLevel = 0.0f;     //< The volume level of the last update, used to check if levels have changed for repainting.
+        float maxLevel = 0.0f;      //< The maximum audio levels of the trailing 3 seconds.
+        float lastMaxLevel = 0.0f;  //< The max volume level of the last update.
+        int64 timeOfMaximumMs = 0;  //< The time of the last maximum audio level.
+        Rectangle<int> meterArea;   //< The left/right drawable regions for the meter.
 
         void set (float& value, float newValue)
         {
@@ -182,7 +211,7 @@ public:
     const ChannelContext& getChannel (int channel) const noexcept { return channels.getReference (channel); }
 
     /** */
-    float getChannelLevel (int channel) const noexcept { return channels[channel].getLevel(); }
+    float getChannelLevel (int channel) const noexcept { return getChannel (channel).getLevel(); }
 
     //==============================================================================
     /** */
@@ -199,21 +228,22 @@ public:
     /** */
     void resetClippingLevel() { clippingLevel = ClippingLevel::none; }
 
-protected:
     //==============================================================================
-    bool needMaxLevel = false;
-    Image gradientImage;
+    /** @internal */
+    void resized() override;
+    /** @internal */
+    void paint (Graphics&) override;
+
+private:
+    //==============================================================================
+    Model* model = nullptr;
     Array<ChannelContext> channels;
     Array<float> levels;
     ClippingLevel clippingLevel = ClippingLevel::none;
-    Colour colourLowIntensity, colourMediumIntensity, colourHighIntensity;
 
-    /** The expiration time of the maximum meter level, after which it decays. */
-    enum { maxLevelExpiryMs = 3000 };
-
+    //==============================================================================
     void updateClippingLevel (bool timeToUpdate);
 
-private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Meter)
 };

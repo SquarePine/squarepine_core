@@ -16,7 +16,6 @@ EffectRowComponent::EffectRowComponent (EffectChainComponent& ecc) :
     owner (ecc)
 {
     active.setClickingTogglesState (true);
-
     active.onStateChange = [this]()
     {
         const auto toggled = active.getToggleState();
@@ -24,10 +23,16 @@ EffectRowComponent::EffectRowComponent (EffectChainComponent& ecc) :
         if (effect != nullptr)
             effect->setBypassed (! toggled, nullptr);
 
-        if (toggled)
-            active.setButtonText (TRANS ("Active"));
+        String pluginInvalid;
+        if (effect != nullptr && effect->getPlugin() == nullptr)
+            pluginInvalid = TRANS (" (Please reload plugin)");
+
+        if (effect == nullptr)
+            active.setButtonText (TRANS ("(Please reload or replace effect)"));
+        else if (toggled)
+            active.setButtonText (TRANS ("Active") + pluginInvalid);
         else
-            active.setButtonText (TRANS ("Bypassed"));
+            active.setButtonText (TRANS ("Bypassed") + pluginInvalid);
     };
 
     name.setJustificationType (Justification::centredLeft);
@@ -77,14 +82,21 @@ EffectRowComponent& EffectRowComponent::setEffect (EffectProcessor::Ptr epp)
 void EffectRowComponent::closeWindow()
 {
     if (effect != nullptr)
-        for (int f = owner.editorWindows.size(); --f >= 0;)
-            if (auto* ew = owner.editorWindows.getUnchecked (f))
+        for (int i = owner.editorWindows.size(); --i >= 0;)
+            if (auto* ew = owner.editorWindows.getUnchecked (i))
                 if (ew->getEffect() == effect)
-                    ew->closeButtonPressed();}
+                    ew->closeButtonPressed();
+}
 
 void EffectRowComponent::deleteEffect()
 {
     owner.deleteEffect (index, true);
+}
+
+void EffectRowComponent::moveEffect (int newIndex)
+{
+    owner.effectChain.move (index, newIndex);
+    owner.listbox.updateContent();
 }
 
 void EffectRowComponent::resized()
@@ -107,34 +119,59 @@ void EffectRowComponent::paint (Graphics& g)
 
 void EffectRowComponent::mouseDown (const MouseEvent& e)
 {
-    if (e.mods.isLeftButtonDown())
-    {
-        owner.listbox.selectRowsBasedOnModifierKeys (index, e.mods, false);
-    }
-    else if (e.mods.isPopupMenu())
+    owner.listbox.selectRowsBasedOnModifierKeys (index, e.mods, false);
+
+    const auto numEffects = owner.effectChain.getNumEffects();
+
+    if (e.mods.isPopupMenu()
+        && isPositiveAndBelow (index, numEffects))
     {
         PopupMenu menu;
 
         enum
         {
-            deleteId = -100
+            deleteId = -100,
+            selectAllId,
+            moveDownId,
+            moveUpId,
+            moveToTopId,
+            moveToBottomId
         };
 
-        menu.addItem (deleteId, TRANS ("Delete"), true, false, Image());
+        if (numEffects > 0)
+            menu.addItem (selectAllId, TRANS ("Select All"), true, false, Image());
 
+        if (index > 0)
+        {
+            menu.addItem (moveUpId, TRANS ("Move Up"), true, false, Image());
+            menu.addItem (moveToTopId, TRANS ("Move to Top"), true, false, Image());
+        }
+
+        if (index < (numEffects - 1))
+        {
+            menu.addItem (moveDownId, TRANS ("Move Down"), true, false, Image());
+            menu.addItem (moveToBottomId, TRANS ("Move to Bottom"), true, false, Image());
+        }
+
+        menu.addSeparator();
         PopupMenu replaceMenu;
         const auto types = owner.effectChain.getFactory()->getKnownPluginList().getTypes();
         KnownPluginList::addToMenu (replaceMenu, types, KnownPluginList::SortMethod::sortAlphabetically);
         menu.addSubMenu (TRANS ("Replace With..."), replaceMenu);
 
-        menu.showMenuAsync (PopupMenu::Options().withTargetComponent (this),
-                            [this, types] (int result)
+        menu.addSeparator();
+        menu.addItem (deleteId, TRANS ("Delete"), true, false, Image());
+
+        menu.showMenuAsync ({}, [this, numEffects, types] (int result)
         {
             switch (result)
             {
-                case deleteId:
-                    deleteEffect();
-                break;
+                case selectAllId:       break;
+                case deleteId:          deleteEffect(); break;
+                case moveUpId:          moveEffect (index - 1); break;
+                case moveDownId:        moveEffect (index + 1); break;
+                case moveToTopId:       moveEffect (0); break;
+                case moveToBottomId:    moveEffect (numEffects - 1); break;
 
                 default:
                 {
@@ -317,6 +354,22 @@ EffectChainDemo::EffectChainDemo (SharedObjects& sharedObjs) :
         });
     };
 
+    applyEffects.onStateChange = [this]()
+    {
+        const auto toggled = applyEffects.getToggleState();
+
+        if (effectChain != nullptr)
+            effectChain->setBypassed (! toggled);
+
+        if (toggled)
+            applyEffects.setButtonText (TRANS ("FX Active"));
+        else
+            applyEffects.setButtonText (TRANS ("FX Bypassed"));
+    };
+
+    applyEffects.setClickingTogglesState (true);
+    applyEffects.setToggleState (! effectChain->isBypassed(), sendNotificationSync);
+
     loop.onClick        = [this]() { updateLoopState(); };
     load.onClick        = [this]() { loadAudioFile(); };
     goToStart.onClick   = [this]() { rewindAndStop(); };
@@ -384,6 +437,7 @@ EffectChainDemo::EffectChainDemo (SharedObjects& sharedObjs) :
     addAndMakeVisible (goToStart);
     addAndMakeVisible (load);
     addAndMakeVisible (addEffect);
+    addAndMakeVisible (applyEffects);
     addAndMakeVisible (filePath);
     addAndMakeVisible (effectChainComponent);
 }
@@ -446,7 +500,8 @@ void EffectChainDemo::resized()
             &loop,
             &play,
             &goToStart,
-            &addEffect
+            &addEffect,
+            &applyEffects
         };
 
         auto topArea = b.removeFromTop (32);
@@ -457,7 +512,6 @@ void EffectChainDemo::resized()
 
         for (auto* button : buttons)
             button->setBounds (topArea.removeFromLeft (w));
-
     }
 
     b.removeFromTop (margin);

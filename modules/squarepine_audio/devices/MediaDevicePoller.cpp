@@ -21,7 +21,7 @@ MediaDevicePoller::~MediaDevicePoller()
 }
 
 //==============================================================================
-StringArray MediaDevicePoller::getListOfAudioDevices (bool giveMeInputDevices) const
+StringArray MediaDevicePoller::getAudioDevices (bool giveMeInputDevices) const
 {
     if (auto* currentDevice = deviceManager.getCurrentDeviceTypeObject())
     {
@@ -60,7 +60,7 @@ MediaDevicePoller::DeviceInfo MediaDevicePoller::getCurrentDeviceInfo (bool give
     return {};
 }
 
-StringArray MediaDevicePoller::getListOfChannelNames (bool giveMeInputDevices) const
+StringArray MediaDevicePoller::getChannelNames (bool giveMeInputDevices) const
 {
     if (auto* device = deviceManager.getCurrentAudioDevice())
         return giveMeInputDevices ? device->getInputChannelNames() : device->getOutputChannelNames();
@@ -69,21 +69,21 @@ StringArray MediaDevicePoller::getListOfChannelNames (bool giveMeInputDevices) c
 }
 
 //==============================================================================
-StringArray MediaDevicePoller::getListOfAudioInputDevices() const                   { return getListOfAudioDevices (true); }
-StringArray MediaDevicePoller::getListOfAudioOutputDevices() const                  { return getListOfAudioDevices (false); }
-Array<MidiDeviceInfo> MediaDevicePoller::getListOfMIDIInputDevices() const          { return MidiInput::getAvailableDevices(); }
-Array<MidiDeviceInfo> MediaDevicePoller::getListOfMIDIOutputDevices() const         { return MidiOutput::getAvailableDevices(); }
-StringArray MediaDevicePoller::getListOfInputChannelNames() const                   { return getListOfChannelNames (true); }
-StringArray MediaDevicePoller::getListOfOutputChannelNames() const                  { return getListOfChannelNames (false); }
+StringArray MediaDevicePoller::getAudioInputDevices() const                         { return getAudioDevices (true); }
+StringArray MediaDevicePoller::getAudioOutputDevices() const                        { return getAudioDevices (false); }
+Array<MidiDeviceInfo> MediaDevicePoller::getMIDIInputDevices() const                { return MidiInput::getAvailableDevices(); }
+Array<MidiDeviceInfo> MediaDevicePoller::getMIDIOutputDevices() const               { return MidiOutput::getAvailableDevices(); }
+StringArray MediaDevicePoller::getInputChannelNames() const                         { return getChannelNames (true); }
+StringArray MediaDevicePoller::getOutputChannelNames() const                        { return getChannelNames (false); }
 MediaDevicePoller::DeviceInfo MediaDevicePoller::getCurrentInputDeviceInfo() const  { return getCurrentDeviceInfo (true); }
 MediaDevicePoller::DeviceInfo MediaDevicePoller::getCurrentOutputDeviceInfo() const { return getCurrentDeviceInfo (false); }
 
 void MediaDevicePoller::setupDeviceLists()
 {
-    currentAudioInputDevices    = getListOfAudioInputDevices();
-    currentAudioOutputDevices   = getListOfAudioOutputDevices();
-    currentMidiInputDevices     = getListOfMIDIInputDevices();
-    currentMidiOutputDevices    = getListOfMIDIOutputDevices();
+    currentAudioInputDevices    = getAudioInputDevices();
+    currentAudioOutputDevices   = getAudioOutputDevices();
+    currentMidiInputDevices     = getMIDIInputDevices();
+    currentMidiOutputDevices    = getMIDIOutputDevices();
 }
 
 //==============================================================================
@@ -185,10 +185,10 @@ void MediaDevicePoller::timerCallback()
         numOutputs = device->getOutputChannelNames().size();
     }
 
-    const auto audioInputDevices = getListOfAudioDevices (true);
-    const auto audioOutputDevices = getListOfAudioDevices (false);
-    const auto midiInputDevices = getListOfMIDIInputDevices();
-    const auto midiOutputDevices = getListOfMIDIOutputDevices();
+    const auto audioInputDevices = getAudioDevices (true);
+    const auto audioOutputDevices = getAudioDevices (false);
+    const auto midiInputDevices = getMIDIInputDevices();
+    const auto midiOutputDevices = getMIDIOutputDevices();
 
     changeType = ChangeType::noChange;
 

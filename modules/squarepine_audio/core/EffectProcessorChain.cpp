@@ -1,5 +1,5 @@
 //==============================================================================
-EffectProcessorChain::EffectProcessorChain (std::shared_ptr<EffectProcessorFactory> epf) :
+EffectProcessorChain::EffectProcessorChain (EffectProcessorFactory::Ptr epf) :
     factory (epf)
 {
     jassert (factory != nullptr);
@@ -18,6 +18,8 @@ EffectProcessor::Ptr EffectProcessorChain::insertInternal (int destinationIndex,
 
     if (auto pluginInstance = factory->createPlugin (valueOrRef))
     {
+        effectLevels.add (new LevelsProcessor())->prepareToPlay (getSampleRate(), getBlockSize());
+
         pluginInstance->setPlayHead (getPlayHead());
         pluginInstance->prepareToPlay (getSampleRate(), getBlockSize());
 
@@ -46,11 +48,11 @@ EffectProcessor::Ptr EffectProcessorChain::insertInternal (int destinationIndex,
     return {};
 }
 
-EffectProcessor::Ptr EffectProcessorChain::add (int source)                         { return insertInternal (-1, source, InsertionStyle::append); }
+EffectProcessor::Ptr EffectProcessorChain::add (int source)                     { return insertInternal (-1, source, InsertionStyle::append); }
 EffectProcessor::Ptr EffectProcessorChain::add (const String& source)               { return insertInternal (-1, source, InsertionStyle::append); }
-EffectProcessor::Ptr EffectProcessorChain::insert (int dest, int source)            { return insertInternal (dest, source); }
+EffectProcessor::Ptr EffectProcessorChain::insert (int dest, int source)        { return insertInternal (dest, source); }
 EffectProcessor::Ptr EffectProcessorChain::insert (int dest, const String& source)  { return insertInternal (dest, source); }
-EffectProcessor::Ptr EffectProcessorChain::replace (int dest, int source)           { return insertInternal (dest, source, InsertionStyle::replace); }
+EffectProcessor::Ptr EffectProcessorChain::replace (int dest, int source)       { return insertInternal (dest, source, InsertionStyle::replace); }
 EffectProcessor::Ptr EffectProcessorChain::replace (int dest, const String& source) { return insertInternal (dest, source, InsertionStyle::replace); }
 
 void EffectProcessorChain::move (int pluginIndex, int destinationIndex)
@@ -110,9 +112,9 @@ std::optional<String> EffectProcessorChain::getEffectName (int index) const
     return getEffectProperty<String> (index, [] (EffectProcessor::Ptr e) { return e->getName(); });
 }
 
-std::optional<std::shared_ptr<AudioPluginInstance>> EffectProcessorChain::getPluginInstance (int index) const
+std::optional<AudioPluginPtr> EffectProcessorChain::getPluginInstance (int index) const
 {
-    return getEffectProperty<std::shared_ptr<AudioPluginInstance>> (index, [&] (EffectProcessor::Ptr e) { return e->plugin; });
+    return getEffectProperty<AudioPluginPtr> (index, [&] (EffectProcessor::Ptr e) { return e->plugin; });
 }
 
 std::optional<PluginDescription> EffectProcessorChain::getPluginDescription (int index) const
@@ -157,6 +159,32 @@ bool EffectProcessorChain::loadIfMissing (int index)
     return false;
 }
 
+void EffectProcessorChain::getChannelLevels (int index, Array<float>& destData)
+{
+    if (auto* lp = effectLevels[index])
+        lp->getChannelLevels (destData);
+}
+
+void EffectProcessorChain::getChannelLevels (int index, Array<double>& destData)
+{
+    if (auto* lp = effectLevels[index])
+        lp->getChannelLevels (destData);
+}
+
+void EffectProcessorChain::setMeteringMode (int index, MeteringMode mm)
+{
+    if (auto* lp = effectLevels[index])
+        lp->setMeteringMode (mm);
+}
+
+std::optional<MeteringMode> EffectProcessorChain::getMeteringMode (int index) const
+{
+    if (auto* lp = effectLevels[index])
+        return lp->getMeteringMode();
+
+    return {};
+}
+
 //==============================================================================
 bool EffectProcessorChain::setEffectProperty (int index, std::function<void (EffectProcessor::Ptr)> func)
 {
@@ -187,17 +215,47 @@ bool EffectProcessorChain::setMixLevel (int index, float mixLevel)
 }
 
 //==============================================================================
-void EffectProcessorChain::prepareToPlay (const double sampleRate, const int estimatedSamplesPerBlock)
+int EffectProcessorChain::getNumRequiredChannels() const
+{
+    int newRequiredChannels = 0;
+
+    for (auto effect : plugins)
+        newRequiredChannels = jmax (newRequiredChannels,
+                                    effect->description.numInputChannels,
+                                    effect->description.numOutputChannels);
+
+    return newRequiredChannels;
+}
+
+void EffectProcessorChain::updateLatency()
+{
+    requiredChannels = getNumRequiredChannels();
+
+    int newLatency = 0;
+
+    // NB: This is additive because we're processing in serial!
+    for (auto effect : plugins)
+        if (auto plugin = effect->plugin)
+            newLatency += plugin->getLatencySamples();
+
+    setLatencySamples (newLatency);
+}
+
+void EffectProcessorChain::prepareToPlay (double sampleRate, int estimatedSamplesPerBlock)
 {
     setRateAndBufferSizeDetails (sampleRate, estimatedSamplesPerBlock);
 
-    const auto numChans = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels(), 1);
+    const auto numChans = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels());
+
+    effectLevels.clearQuick (true);
 
     floatBuffers.prepare (numChans, estimatedSamplesPerBlock);
     doubleBuffers.prepare (numChans, estimatedSamplesPerBlock);
 
     for (auto effect : plugins)
     {
+        effectLevels.add (new LevelsProcessor())->prepareToPlay (sampleRate, estimatedSamplesPerBlock);
+
         if (effect != nullptr)
         {
             if (auto plugin = effect->plugin)
@@ -211,29 +269,6 @@ void EffectProcessorChain::prepareToPlay (const double sampleRate, const int est
     updateLatency();
 }
 
-void EffectProcessorChain::updateLatency()
-{
-    updateChannelCount();
-
-    int newLatency = 0;
-
-    for (auto effect : plugins)
-        if (auto plugin = effect->plugin)
-            newLatency += plugin->getLatencySamples();
-
-    setLatencySamples (newLatency);
-}
-
-void EffectProcessorChain::updateChannelCount()
-{
-    int newRequiredChannels = 0;
-
-    for (auto effect : plugins)
-        newRequiredChannels = jmax (newRequiredChannels, effect->description.numInputChannels, effect->description.numOutputChannels);
-
-    requiredChannels = newRequiredChannels;
-}
-
 //==============================================================================
 template<typename FloatType>
 void EffectProcessorChain::processInternal (juce::AudioBuffer<FloatType>& source,
@@ -242,14 +277,9 @@ void EffectProcessorChain::processInternal (juce::AudioBuffer<FloatType>& source
                                             const int numChannels,
                                             const int numSamples)
 {
-    // Uses requiredChannels to ensure enough memory is allocated for the plugin to
-    // potentially read from/write to - avoids bad accesses.
-    // We only care about the main outputs, so still use the numChannels variable throughout
-    bufferPackage.prepare (requiredChannels, numSamples);
+    bufferPackage.prepare (numChannels, numSamples);
 
-    const auto channels = jmin (numChannels, requiredChannels.load());
-
-    addFrom (bufferPackage.mixingBuffer, source, channels, numSamples);
+    addFrom (bufferPackage.mixingBuffer, source, numChannels, numSamples);
 
     for (auto effect : plugins)
     {
@@ -258,33 +288,36 @@ void EffectProcessorChain::processInternal (juce::AudioBuffer<FloatType>& source
 
         // Process the effect:
         bufferPackage.effectBuffer.clear();
-        addFrom (bufferPackage.effectBuffer, bufferPackage.mixingBuffer, channels, numSamples);
+        addFrom (bufferPackage.effectBuffer, bufferPackage.mixingBuffer, numChannels, numSamples);
 
-        processSafely (*effect->plugin, bufferPackage.effectBuffer, midiMessages);
+        effect->plugin->processBlock (bufferPackage.effectBuffer, midiMessages);
 
         // Add the effect-saturated samples at the specified mix level:
         const auto mixLevel = effect->mixLevel.getNextValue();
         jassert (isPositiveAndBelow (mixLevel, 1.00001f));
 
         bufferPackage.lastBuffer.clear();
-        addFrom (bufferPackage.lastBuffer, bufferPackage.effectBuffer, channels, numSamples, mixLevel);
+        addFrom (bufferPackage.lastBuffer, bufferPackage.effectBuffer, numChannels, numSamples, mixLevel);
 
         // Add the original samples, at a percentage of the original gain, if the effect level isn't 100%:
         if (mixLevel < 1.0f)
-            addFrom (bufferPackage.lastBuffer, bufferPackage.mixingBuffer, channels, numSamples, mixLevel);
+            addFrom (bufferPackage.lastBuffer, bufferPackage.mixingBuffer, numChannels, numSamples, mixLevel);
 
         // Copy the result:
         bufferPackage.mixingBuffer.clear();
-        addFrom (bufferPackage.mixingBuffer, bufferPackage.lastBuffer, channels, numSamples);
+        addFrom (bufferPackage.mixingBuffer, bufferPackage.lastBuffer, numChannels, numSamples);
+
+        effectLevels.getUnchecked (plugins.indexOf (effect))
+            ->processBlock (bufferPackage.mixingBuffer, midiMessages);
     }
 
     source.clear();
-    addFrom (source, bufferPackage.mixingBuffer, channels, numSamples);
+    addFrom (source, bufferPackage.mixingBuffer, numChannels, numSamples);
 }
 
 bool EffectProcessorChain::isWholeChainBypassed() const
 {
-    size_t numBypassedPlugins = 0;
+    int numBypassedPlugins = 0;
 
     for (auto effect : plugins)
         if (effect == nullptr || ! effect->canBeProcessed())
@@ -300,10 +333,10 @@ void EffectProcessorChain::process (juce::AudioBuffer<FloatType>& buffer,
 {
     const ScopedNoDenormals snd;
 
-    if (InternalProcessor::isBypassed())
+    if (isBypassed())
         return; // Pass through
 
-    const auto numChannels = jmin ((int) 2, buffer.getNumChannels());
+    const auto numChannels = jmin (buffer.getNumChannels(), requiredChannels.load());
     const auto numSamples = buffer.getNumSamples();
 
     if (! plugins.isEmpty()
@@ -344,7 +377,6 @@ void EffectProcessorChain::reset()                      { loopThroughEffectsAndC
 void EffectProcessorChain::numChannelsChanged()         { loopThroughEffectsAndCall<&AudioProcessor::numChannelsChanged>(); }
 void EffectProcessorChain::numBusesChanged()            { loopThroughEffectsAndCall<&AudioProcessor::numBusesChanged>(); }
 void EffectProcessorChain::processorLayoutsChanged()    { loopThroughEffectsAndCall<&AudioProcessor::processorLayoutsChanged>(); }
-const String EffectProcessorChain::getName() const      { return NEEDS_TRANS ("Effect Processor Chain"); }
 
 //==============================================================================
 namespace ChainIds
@@ -404,10 +436,10 @@ XmlElement* EffectProcessorChain::createElementForEffect (EffectProcessor::Ptr e
 //==============================================================================
 void EffectProcessorChain::setStateInformation (const void* const data, const int sizeInBytes)
 {
-    clear();
-    InternalProcessor::setBypass (false); // To reset back to a normal state
-
     const ScopedBypass sb (*this);
+
+    clear();
+    InternalProcessor::setBypassed (false); // To reset back to a normal state
 
     if (! MessageManager::getInstance()->isThisTheMessageThread())
     {
@@ -423,7 +455,7 @@ void EffectProcessorChain::setStateInformation (const void* const data, const in
 
     if (chainElement != nullptr && chainElement->getTagName() == getIdentifier().toString())
     {
-        InternalProcessor::setBypass (chainElement->getBoolAttribute (ChainIds::rootBypassed));
+        InternalProcessor::setBypassed (chainElement->getBoolAttribute (ChainIds::rootBypassed));
 
         for (auto* e : chainElement->getChildWithTagNameIterator (ChainIds::effectRoot))
             plugins.add (createEffectProcessorFromXML (e));

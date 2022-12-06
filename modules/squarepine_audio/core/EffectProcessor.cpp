@@ -1,20 +1,4 @@
-namespace 
-{
-    template<class T, class Compare>
-    constexpr const T& inclusiveClamp (const T& v, const T& low, const T& high, Compare comp)
-    {
-        return comp (v, low) ? low : comp (high, v) ? high : v;
-    }
-
-    template<class T>
-    constexpr const T& inclusiveClamp (const T& v, const T& low, const T& high)
-    {
-        return inclusiveClamp (v, low, high, std::less_equal{});
-    }
-}
-
-EffectProcessor::EffectProcessor (std::shared_ptr<AudioPluginInstance> api,
-                                  const PluginDescription& pd) :
+EffectProcessor::EffectProcessor (AudioPluginPtr api, const PluginDescription& pd) :
     plugin (std::move (api)),
     description (pd)
 {

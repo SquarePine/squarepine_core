@@ -208,6 +208,8 @@ public:
     /** */
     void deleteEffect();
     /** */
+    void moveEffect (int newIndex);
+    /** */
     void closeWindow();
 
     //==============================================================================
@@ -224,7 +226,7 @@ private:
     //==============================================================================
     EffectChainComponent& owner;
     EffectProcessor::Ptr effect;
-    int index = 0;
+    int index = -1;
     Slider mixLevel;
     ToggleButton active;
     Label name;
@@ -322,7 +324,7 @@ private:
 
     // Audio bits:
     KnownPluginList knownPluginList;
-    std::shared_ptr<EffectProcessorFactory> factory { std::make_shared<DemoEffectFactory> (knownPluginList) };
+    EffectProcessorFactory::Ptr factory { std::make_shared<DemoEffectFactory> (knownPluginList) };
 
     std::unique_ptr<AudioFormatReaderSource> readerSource;
     TimeSliceThread readAheadThread { "FancyReadAheadThread" };
@@ -357,6 +359,7 @@ private:
     TimeKeeper timeKeeper;
 
     EffectChainComponent effectChainComponent;
+    ToggleButton applyEffects;
 
     OffloadedTimer thumbnailRepainter,
                    playbackRepainter;

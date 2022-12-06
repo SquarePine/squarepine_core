@@ -41,34 +41,15 @@ public:
     }
 
     /** */
-    void driverChanged (const String&) override
-    {
-        update();
-    }
-
+    void driverChanged (const String&) override { update(); }
     /** */
-    void numInputsChanged (int, bool) override
-    {
-        update();
-    }
-
+    void numInputsChanged (int, bool) override  { update(); }
     /** */
-    void numOutputsChanged (int, bool) override
-    {
-        update();
-    }
-
+    void numOutputsChanged (int, bool) override { update(); }
     /** */
-    void deviceAdded (const String&) override
-    {
-        update();
-    }
-
+    void deviceAdded (const String&) override   { update(); }
     /** */
-    void deviceRemoved (const String&) override
-    {
-        update();
-    }
+    void deviceRemoved (const String&) override { update(); }
 
 private:
     //==============================================================================
@@ -82,24 +63,24 @@ private:
         {
             StringArray details;
             details.add (TRANS ("Input Devices").toUpperCase() + newLine);
-            details.addArray (devicePoller.getListOfAudioInputDevices());
+            details.addArray (devicePoller.getAudioInputDevices());
             details.add (separator);
             details.add (TRANS ("Output Devices").toUpperCase() + newLine);
-            details.addArray (devicePoller.getListOfAudioOutputDevices());
+            details.addArray (devicePoller.getAudioOutputDevices());
             details.add (separator);
             details.add (TRANS ("Input Channel Names").toUpperCase() + newLine);
-            details.addArray (devicePoller.getListOfInputChannelNames());
+            details.addArray (devicePoller.getInputChannelNames());
             details.add (separator);
             details.add (TRANS ("Output Channel Names").toUpperCase() + newLine);
-            details.addArray (devicePoller.getListOfOutputChannelNames());
+            details.addArray (devicePoller.getOutputChannelNames());
 
             audioDeviceInfo.setText (details.joinIntoString (newLine));
         }
 
         {
             Array<MidiDeviceInfo> combinedInfo;
-            combinedInfo.addArray (devicePoller.getListOfMIDIInputDevices());
-            combinedInfo.addArray (devicePoller.getListOfMIDIOutputDevices());
+            combinedInfo.addArray (devicePoller.getMIDIInputDevices());
+            combinedInfo.addArray (devicePoller.getMIDIOutputDevices());
 
             StringArray details;
             for (const auto& info : combinedInfo)

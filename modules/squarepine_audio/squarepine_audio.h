@@ -90,6 +90,11 @@ namespace sp
     /** Shorthand for creating weak pointers to AudioProcessor instances. */
     using AudioProcessorWeakPtr = std::weak_ptr<AudioProcessor>;
 
+    /** Shorthand for creating shared AudioPluginInstance instances. */
+    using AudioPluginPtr = std::shared_ptr<AudioPluginInstance>;
+    /** Shorthand for creating weak pointers to AudioPluginInstance instances. */
+    using AudioPluginWeakPtr = std::weak_ptr<AudioPluginInstance>;
+
     /** Shorthand for creating shared AudioDeviceManager instances. */
     using AudioDeviceManagerPtr = std::shared_ptr<AudioDeviceManager>;
     /** Shorthand for creating weak pointers to AudioDeviceManager instances. */
@@ -106,6 +111,7 @@ namespace sp
     #include "core/ChildProcessPluginScanner.h"
     #include "core/InternalAudioPluginFormat.h"
     #include "core/InternalProcessor.h"
+    #include "effects/LevelsProcessor.h"
     class EffectProcessorChain;
     #include "core/EffectProcessor.h"
     #include "core/EffectProcessorFactory.h"
@@ -126,7 +132,6 @@ namespace sp
     #include "effects/BitCrusherProcessor.h"
     #include "effects/DitherProcessor.h"
     #include "effects/HissingProcessor.h"
-    #include "effects/LevelsProcessor.h"
     #include "effects/LFOProcessor.h"
     #include "effects/MuteProcessor.h"
     #include "effects/PanProcessor.h"
@@ -192,8 +197,11 @@ namespace juce
             {
                 if (data->size() == 2)
                 {
-                    return { static_cast<int> (data->getFirst()),
-                             static_cast<int> (data->getLast()) };
+                    return
+                    {
+                        static_cast<int> (data->getFirst()),
+                        static_cast<int> (data->getLast())
+                    };
                 }
             }
 

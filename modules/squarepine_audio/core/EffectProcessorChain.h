@@ -31,11 +31,11 @@ public:
 
         @see EffectProcessorFactory
     */
-    EffectProcessorChain (std::shared_ptr<EffectProcessorFactory>);
+    EffectProcessorChain (EffectProcessorFactory::Ptr);
 
     //==============================================================================
     /** @returns the factory that this chain uses to create plugin instances. */
-    [[nodiscard]] std::shared_ptr<EffectProcessorFactory> getFactory() const { return factory; }
+    [[nodiscard]] EffectProcessorFactory::Ptr getFactory() const { return factory; }
 
     /** @returns the current number of effect processors in this chain. */
     [[nodiscard]] int getNumEffects() const;
@@ -54,7 +54,7 @@ public:
 
     /** Add a new effect at the end of the existing array of plugins.
 
-        @param fileOrIdentifier Plugin identifier within the KnownPluginList.
+        @param fileOrIdentifier Plugin file or identifier within the KnownPluginList.
 
         @returns a new effect processor or nullptr if the identifier wasn't found.
     */
@@ -163,7 +163,7 @@ public:
 
         @param index Index within the array of effect plugins.
 
-        @returns Name of effect, or String::empty if the index is out of range.
+        @returns the name of the effect or {} if the index is out of range.
     */
     [[nodiscard]] std::optional<String> getEffectName (int index) const;
 
@@ -171,7 +171,7 @@ public:
 
         @param index Index within the array of effect plugins.
 
-        @returns Name of plugin instance, or String::empty if the index is out of range.
+        @returns the name of the plugin instance or {} if the index is out of range.
     */
     [[nodiscard]] std::optional<String> getPluginInstanceName (int index) const;
 
@@ -183,32 +183,46 @@ public:
 
         @param index Index of the desired plugin.
 
-        @returns Plugin instance if the index was valid, nullptr otherwise.
+        @returns the plugin instance if the index was valid, {} otherwise.
     */
-    [[nodiscard]] std::optional<std::shared_ptr<AudioPluginInstance>> getPluginInstance (int index) const;
+    [[nodiscard]] std::optional<AudioPluginPtr> getPluginInstance (int index) const;
 
     /** Obtain the plugin description of a contained effect.
 
         @param index Index of the desired plugin.
 
-        @returns Proper PluginDescription if the index was valid, PluginDescription() otherwise.
+        @returns the PluginDescription if the index was valid, {} otherwise.
     */
     [[nodiscard]] std::optional<PluginDescription> getPluginDescription (int index) const;
 
     /** @returns true if the effect at the specified index is bypassed.
-        This will return false if the index is out of range.
+        This will return {} if the index is out of range.
     */
     [[nodiscard]] std::optional<bool> isBypassed (int index) const;
 
     /** @returns the mix level of the effect at the specified index (normalised, 0.0f to 1.0f).
-                 This will return 0.0f if the index is out of range.
+                 This will return {} if the index is out of range.
     */
     [[nodiscard]] std::optional<float> getMixLevel (int index) const;
 
     /** @returns the last known top-left position of an effect's editor.
-                 This will return (0, 0) if the index is out of range.
+                 This will return {} if the index is out of range.
     */
     [[nodiscard]] std::optional<juce::Point<int>> getLastUIPosition (int index) const;
+
+    //==============================================================================
+    /** */
+    void getChannelLevels (int index, Array<float>& destData);
+    /** */
+    void getChannelLevels (int index, Array<double>& destData);
+
+    /** Changes the mode of analysis for the audio levels for the
+        particular effect at the provided index.
+    */
+    void setMeteringMode(int index, MeteringMode);
+
+    /** @returns the current mode for audio levels analysis. */
+    [[nodiscard]] std::optional<MeteringMode> getMeteringMode (int index) const;
 
     //==============================================================================
     /** @returns true if the effect's plugin is missing.
@@ -228,6 +242,8 @@ public:
     bool loadIfMissing (int index);
 
     //==============================================================================
+    using InternalProcessor::isBypassed;
+
     /** @internal */
     void reset() override;
     /** @internal */
@@ -253,7 +269,7 @@ public:
     /** @internal */
     [[nodiscard]] Identifier getIdentifier() const override { return "EffectProcessorChain"; }
     /** @internal */
-    [[nodiscard]] const String getName() const override;
+    [[nodiscard]] const String getName() const override { return NEEDS_TRANS ("Effect Processor Chain"); }
     /** @internal */
     [[nodiscard]] bool acceptsMidi() const override { return true; }
     /** @internal */
@@ -290,7 +306,7 @@ private:
     };
 
     //==============================================================================
-    std::shared_ptr<EffectProcessorFactory> factory;
+    EffectProcessorFactory::Ptr factory;
 
     using ContainerType = ReferenceCountedArray<EffectProcessor>;
     ContainerType plugins;
@@ -299,6 +315,8 @@ private:
 
     BufferPackage<float> floatBuffers;
     BufferPackage<double> doubleBuffers;
+
+    OwnedArray<LevelsProcessor> effectLevels;
 
     //==============================================================================
     enum class InsertionStyle
@@ -310,7 +328,7 @@ private:
 
     [[nodiscard]] bool isWholeChainBypassed() const;
     void updateLatency();
-    void updateChannelCount();
+    [[nodiscard]] int getNumRequiredChannels() const;
     [[nodiscard]] XmlElement* createElementForEffect (EffectProcessor::Ptr effect);
     [[nodiscard]] EffectProcessor::Ptr createEffectProcessorFromXML (XmlElement* state);
     [[nodiscard]] bool setEffectProperty (int index, std::function<void (EffectProcessor::Ptr)> func);

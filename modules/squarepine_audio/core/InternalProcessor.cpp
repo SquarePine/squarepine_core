@@ -23,13 +23,13 @@ InternalProcessor::ScopedBypass::ScopedBypass (InternalProcessor& ip) :
     wasBypassed (ip.isBypassed())
 {
     if (! wasBypassed)
-        internalProcessor.setBypass (true);
+        internalProcessor.setBypassed (true);
 }
 
 InternalProcessor::ScopedBypass::~ScopedBypass()
 {
     if (! wasBypassed)
-        internalProcessor.setBypass (false);
+        internalProcessor.setBypassed (false);
 }
 
 //==============================================================================
@@ -113,7 +113,7 @@ void InternalProcessor::removeProperty (const Identifier& id, UndoManager* um)
 }
 
 //==============================================================================
-void InternalProcessor::setBypass (const bool shouldBeBypassed)
+void InternalProcessor::setBypassed (const bool shouldBeBypassed)
 {
     if (bypassParameter != nullptr)
         bypassParameter->operator= (shouldBeBypassed);

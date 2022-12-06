@@ -5,6 +5,10 @@
 class EffectProcessorFactory
 {
 public:
+    /** Shorthand for creating shared EffectProcessorFactory instances. */
+    using Ptr = std::shared_ptr<EffectProcessorFactory>;
+
+    //==============================================================================
     /** Constructor
 
         @param knownPluginList The list of plugins to refer to.
@@ -30,17 +34,17 @@ public:
 
     //==============================================================================
     /** */
-    [[nodiscard]] std::shared_ptr<AudioPluginInstance> createPlugin (int index) const;
+    [[nodiscard]] AudioPluginPtr createPlugin (int index) const;
 
     /** */
-    [[nodiscard]] std::shared_ptr<AudioPluginInstance> createPlugin (const String& fileOrIdentifier) const;
+    [[nodiscard]] AudioPluginPtr createPlugin (const String& fileOrIdentifier) const;
 
     /** */
-    [[nodiscard]] std::shared_ptr<AudioPluginInstance> createPlugin (const PluginDescription&) const;
+    [[nodiscard]] AudioPluginPtr createPlugin (const PluginDescription&) const;
 
     //==============================================================================
     /** */
-    using PluginCreationCallback = std::function<void (std::shared_ptr<AudioPluginInstance>, const String&)>;
+    using PluginCreationCallback = std::function<void (AudioPluginPtr, const String&)>;
 
     /** */
     void createPluginAsync (int index, PluginCreationCallback);

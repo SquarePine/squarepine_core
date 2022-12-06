@@ -35,6 +35,8 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
     addTab (new OpenGLDetailsDemo (sharedObjs, rendererConfigurator));
    #endif // SP_DEMO_USE_OPENGL
 
+    tabbedComponent.addTab (TRANS ("Settings"), Colours::grey, new SettingsComponent (sharedObjs), true);
+
     addAndMakeVisible (tabbedComponent);
 
    #if SQUAREPINE_IS_DESKTOP

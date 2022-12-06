@@ -146,10 +146,7 @@ void DummyAudioIODevice::setNumChannels (const int numChans)
 BigInteger DummyAudioIODevice::getActiveInputChannels() const
 {
     BigInteger chan;
-
-    for (int i = 0; i < numChannels; ++i)
-        chan.setBit (i);
-
+    chan.setRange (0, numChannels, true);
     return chan; // All channels are available.
 }
 

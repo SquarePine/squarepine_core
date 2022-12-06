@@ -131,7 +131,7 @@ public:
 
     //==============================================================================
     /** Effectively enables or disables this processor. */
-    void setBypass (bool shouldBeBypassed);
+    void setBypassed (bool shouldBeBypassed);
 
     /** @returns true if this processor is bypassed.
 

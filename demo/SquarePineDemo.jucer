@@ -35,6 +35,10 @@
             file="assets/SquarePine Logo.png"/>
     </GROUP>
     <GROUP id="{BFD2FED6-75BB-68EF-1B5D-4B4C12B634B0}" name="source">
+      <GROUP id="{0B6A7C2E-BC29-FD32-2469-457B7C6ACC16}" name="components">
+        <FILE id="vH8A86" name="SettingsComponent.h" compile="0" resource="0"
+              file="source/components/SettingsComponent.h"/>
+      </GROUP>
       <GROUP id="{C323CE9A-5CBA-AC76-F470-68E2316979B2}" name="core">
         <FILE id="Gju4Mx" name="GlobalIDs.h" compile="0" resource="0" file="source/core/GlobalIDs.h"/>
         <FILE id="cggFea" name="GlobalPathSettings.h" compile="0" resource="0"
@@ -85,7 +89,8 @@
                    androidCustomAppBuildGradleContent="    buildTypes&#10;    {&#10;        release&#10;        {&#10;            minifyEnabled true&#10;            shrinkResources true&#10;            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'&#10;        }&#10;    }">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"
+                       linkTimeOptimisation="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_analytics" path="../../JUCE/modules"/>
@@ -116,9 +121,17 @@
     <LINUX_MAKE targetFolder="builds/linux" smallIcon="jqPxuh" bigIcon="jqPxuh">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"
-                       linuxArchitecture="-march=native"/>
+                       linuxArchitecture="-m32"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"
-                       linuxArchitecture="-march=native"/>
+                       linuxArchitecture="-m32" linkTimeOptimisation="1"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"
+                       linuxArchitecture="-m64"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"
+                       linuxArchitecture="-m64" linkTimeOptimisation="1"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"
+                       linuxArchitecture="-march=armv8-a"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"
+                       linuxArchitecture="-march=armv8-a" linkTimeOptimisation="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_analytics" path="../../JUCE/modules"/>
@@ -150,16 +163,16 @@
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" characterSet="Unicode"
-                       useRuntimeLibDLL="0"/>
+                       useRuntimeLibDLL="0" linkTimeOptimisation="1"/>
         <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" winArchitecture="ARM64"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" characterSet="Unicode"
-                       useRuntimeLibDLL="0" winArchitecture="ARM64"/>
+                       useRuntimeLibDLL="0" winArchitecture="ARM64" linkTimeOptimisation="1"/>
         <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" winArchitecture="ARM"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" characterSet="Unicode"
-                       useRuntimeLibDLL="0" winArchitecture="ARM"/>
+                       useRuntimeLibDLL="0" winArchitecture="ARM" linkTimeOptimisation="1"/>
         <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" winArchitecture="Win32"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" characterSet="Unicode"
-                       useRuntimeLibDLL="0" winArchitecture="Win32"/>
+                       useRuntimeLibDLL="0" winArchitecture="Win32" linkTimeOptimisation="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_analytics" path="../../JUCE/modules"/>
@@ -190,13 +203,13 @@
     <VS2022 targetFolder="builds/vs2022_clangcl" toolset="ClangCL">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" winArchitecture="Win32"/>
-        <CONFIGURATION isDebug="0" name="Release" winArchitecture="Win32"/>
+        <CONFIGURATION isDebug="0" name="Release" winArchitecture="Win32" linkTimeOptimisation="1"/>
         <CONFIGURATION isDebug="1" name="Debug"/>
-        <CONFIGURATION isDebug="0" name="Release"/>
+        <CONFIGURATION isDebug="0" name="Release" linkTimeOptimisation="1"/>
         <CONFIGURATION isDebug="1" name="Debug" winArchitecture="ARM"/>
-        <CONFIGURATION isDebug="0" name="Release" winArchitecture="ARM"/>
+        <CONFIGURATION isDebug="0" name="Release" winArchitecture="ARM" linkTimeOptimisation="1"/>
         <CONFIGURATION isDebug="1" name="Debug" winArchitecture="ARM64"/>
-        <CONFIGURATION isDebug="0" name="Release" winArchitecture="ARM64"/>
+        <CONFIGURATION isDebug="0" name="Release" winArchitecture="ARM64" linkTimeOptimisation="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_analytics" path="../../JUCE/modules"/>
@@ -233,7 +246,7 @@
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"
-                       stripLocalSymbols="1"/>
+                       stripLocalSymbols="1" linkTimeOptimisation="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_analytics" path="../../JUCE/modules"/>
@@ -265,7 +278,8 @@
                microphonePermissionNeeded="1" cameraPermissionNeeded="1" iosBluetoothPermissionNeeded="1"
                smallIcon="jqPxuh" bigIcon="jqPxuh">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"
+                       linkTimeOptimisation="1"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"
                        stripLocalSymbols="1"/>
       </CONFIGURATIONS>

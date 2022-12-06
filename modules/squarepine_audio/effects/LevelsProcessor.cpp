@@ -1,48 +1,80 @@
+//==============================================================================
+class LevelsProcessor::MeteringModeParameter final : public AudioParameterChoice
+{
+public:
+    MeteringModeParameter() :
+        AudioParameterChoice ("meteringModeId", NEEDS_TRANS ("Metering Mode"),
+                              getChoices(), static_cast<int> (MeteringMode::peak))
+    {
+    }
+
+private:
+    static StringArray getChoices()
+    {
+        StringArray choices;
+        choices.add (NEEDS_TRANS ("Peak"));
+        choices.add (NEEDS_TRANS ("RMS"));
+        choices.add (NEEDS_TRANS ("Mid/Side"));
+        return choices;
+    }
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MeteringModeParameter)
+};
+
+//==============================================================================
 LevelsProcessor::LevelsProcessor() :
     InternalProcessor (false)
 {
+    auto layout = createDefaultParameterLayout();
+
+    auto mmp = std::make_unique<MeteringModeParameter>();
+    meteringModeParam = mmp.get();
+    layout.add (std::move (mmp));
+
+    apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
 }
 
 //==============================================================================
-void LevelsProcessor::setMode (MeteringMode newMode)
+void LevelsProcessor::setMeteringMode (MeteringMode newMode)
 {
-    mode.store (newMode, std::memory_order_relaxed);
+    meteringModeParam->AudioParameterChoice::operator= (static_cast<int> (newMode));
 }
 
-MeteringMode LevelsProcessor::getMode() const noexcept
+MeteringMode LevelsProcessor::getMeteringMode() const
 {
-    return mode.load (std::memory_order_relaxed);
+    return static_cast<MeteringMode> (meteringModeParam->getIndex());
 }
 
-//==============================================================================
 void LevelsProcessor::getChannelLevels (Array<float>& destData)
 {
-    getChannelLevels (destData, floatChannelDetails);
+    destData = floatChannelDetails.channels;
 }
 
 void LevelsProcessor::getChannelLevels (Array<double>& destData)
 {
-    getChannelLevels (destData, doubleChannelDetails);
+    destData = doubleChannelDetails.channels;
 }
 
 //==============================================================================
-void LevelsProcessor::prepareToPlay (double newSampleRate, int bufferSize)
+void LevelsProcessor::prepareToPlay (double newSampleRate, int newBufferSize)
 {
-    setRateAndBufferSizeDetails (newSampleRate, bufferSize);
+    setRateAndBufferSizeDetails (newSampleRate, newBufferSize);
 
-    const auto numChannels = jmax (2, getTotalNumInputChannels(), getTotalNumOutputChannels());
+    const auto numChannels = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels());
 
     floatChannelDetails.prepare (numChannels);
     doubleChannelDetails.prepare (numChannels);
 }
 
-//==============================================================================
-void LevelsProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
-{
-    process (buffer, floatChannelDetails);
-}
+void LevelsProcessor::processBlock (juce::AudioBuffer<float>& b, MidiBuffer&)   { process (b); }
+void LevelsProcessor::processBlock (juce::AudioBuffer<double>& b, MidiBuffer&)  { process (b); }
 
-void LevelsProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer&)
+template<typename FloatType>
+void LevelsProcessor::process (juce::AudioBuffer<FloatType>& buffer)
 {
-    process (buffer, doubleChannelDetails);
+    const auto mode = getMeteringMode();
+    const auto b = isBypassed();
+
+    floatChannelDetails.process (buffer, mode, b);
+    doubleChannelDetails.process (buffer, mode, b);
 }

@@ -17,22 +17,22 @@ public:
 
     //==============================================================================
     /** Obtain the most current list of audio input devices. */
-    StringArray getListOfAudioInputDevices() const;
+    StringArray getAudioInputDevices() const;
 
     /** Obtain the most current list of audio output devices. */
-    StringArray getListOfAudioOutputDevices() const;
+    StringArray getAudioOutputDevices() const;
 
     /** */
-    StringArray getListOfInputChannelNames() const;
+    StringArray getInputChannelNames() const;
 
     /** */
-    StringArray getListOfOutputChannelNames() const;
+    StringArray getOutputChannelNames() const;
 
     /** Obtain the most current list of MIDI input devices. */
-    Array<MidiDeviceInfo> getListOfMIDIInputDevices() const;
+    Array<MidiDeviceInfo> getMIDIInputDevices() const;
 
     /** Obtain the most current list of MIDI output devices. */
-    Array<MidiDeviceInfo> getListOfMIDIOutputDevices() const;
+    Array<MidiDeviceInfo> getMIDIOutputDevices() const;
 
     /** */
     struct DeviceInfo
@@ -100,8 +100,8 @@ private:
     ChangeType changeType = ChangeType::noChange;
 
     //==============================================================================
-    StringArray getListOfAudioDevices (bool giveMeInputDevices) const;
-    StringArray getListOfChannelNames (bool giveMeInputDevices) const;
+    StringArray getAudioDevices (bool giveMeInputDevices) const;
+    StringArray getChannelNames (bool giveMeInputDevices) const;
     DeviceInfo getCurrentDeviceInfo (bool giveMeInputDevices) const;
     
     template<typename ArrayType>

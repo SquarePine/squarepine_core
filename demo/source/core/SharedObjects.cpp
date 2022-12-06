@@ -10,6 +10,7 @@ SharedObjects::SharedObjects() :
     Logger::setCurrentLogger (logger.get());
 
     populate (audioFormatManager);
+
     reloadAudioDeviceManagerFromSettings();
     languageHandler = std::make_unique<LanguageHandler> (GlobalPaths::getLanguagesFolder());
     fullscreen.setValue (false);
@@ -216,7 +217,10 @@ Result SharedObjects::reloadAudioDeviceManagerFromSettings()
         }
     }
 #endif
+
     const auto result = audioDeviceManager.initialiseWithDefaultDevices (128, 128);
+    audioDeviceManager.addAudioDeviceType (std::make_unique<DummyAudioIODeviceType>());
+
     if (result.isEmpty())
         return Result::ok();
 
