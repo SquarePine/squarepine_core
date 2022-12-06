@@ -21,6 +21,20 @@ inline bool isValueBetween (Type value, Type start, Type end) noexcept
     return isValueBetween (value, Range<Type> (start, end));
 }
 
+/** Like std::clamp but using <= instead of <. */
+template<class T, class Compare>
+inline constexpr const T& inclusiveClamp (const T& v, const T& low, const T& high, Compare comp)
+{
+    return comp (v, low) ? low : comp (high, v) ? high : v;
+}
+
+/** Like std::clamp but using <= instead of <. */
+template<class T>
+inline constexpr const T& inclusiveClamp (const T& v, const T& low, const T& high)
+{
+    return inclusiveClamp (v, low, high, std::less_equal{});
+}
+
 //==============================================================================
 /** @returns a new AffineTransform, translated and rotated. */
 inline AffineTransform createTranslationAndRotation (float x, float y, float angleRads) noexcept
