@@ -70,7 +70,7 @@ inline void clearBuffers (juce::AudioBuffer<FloatType>& buffer, MidiBuffer& midi
 }
 
 template<typename FloatType>
-static void addFrom (juce::AudioBuffer<FloatType>& destination, juce::AudioBuffer<FloatType>& source,
+inline void addFrom (juce::AudioBuffer<FloatType>& destination, juce::AudioBuffer<FloatType>& source,
                      int numChannels, int numSamples, float gainFactor = 1.0f)
 {
     // NB: This first bit is for copying mono to stereo.
@@ -87,7 +87,7 @@ static void addFrom (juce::AudioBuffer<FloatType>& destination, juce::AudioBuffe
 }
 
 template<typename FloatType>
-static void addFrom (juce::AudioBuffer<FloatType>& destination, juce::AudioBuffer<FloatType>& source, float gainFactor = 1.0f)
+inline void addFrom (juce::AudioBuffer<FloatType>& destination, juce::AudioBuffer<FloatType>& source, float gainFactor = 1.0f)
 {
     addFrom (destination, source,
              jmin (source.getNumChannels(), destination.getNumChannels()),

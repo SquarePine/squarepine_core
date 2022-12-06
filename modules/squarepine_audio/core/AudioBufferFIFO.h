@@ -111,7 +111,7 @@ public:
     }
 
     /** Read samples from the FIFO into AudioSourceChannelInfo buffers to be used in AudioSources getNextAudioBlock */
-    void readTo (const juce::AudioSourceChannelInfo &info, int numSamples = -1)
+    void readTo (const juce::AudioSourceChannelInfo& info, int numSamples = -1)
     {
         if (auto* buff = info.buffer)
             readTo (*buff, numSamples);
@@ -146,7 +146,9 @@ public:
     }
 
     /** Read samples from the FIFO adding it to the AudioBuffers */
-    void readToAdding (juce::AudioBuffer<FloatType>& samples, int numSamples = -1, FloatType gain = FloatType (1))
+    void readToAdding (juce::AudioBuffer<FloatType>& samples,
+                       int numSamples = -1,
+                       FloatType gain = FloatType (1))
     {
         readFromFifoAdding (samples.getArrayOfWritePointers(),
                             numSamples < 0 ? samples.getNumSamples() : numSamples,
@@ -155,8 +157,8 @@ public:
 
     /** Read samples from the FIFO into AudioSourceChannelInfo buffers to be used in AudioSources getNextAudioBlock */
     void readToAdding (const AudioSourceChannelInfo& info,
-                             int numSamples = -1,
-                             FloatType gain = FloatType (1))
+                       int numSamples = -1,
+                       FloatType gain = FloatType (1))
     {
         if (auto* buff = info.buffer)
             readFromFifoAdding (*buff, numSamples, gain);
@@ -183,9 +185,11 @@ public:
     }
 
 private:
+    //==============================================================================
     /** The actual audio buffer */
     juce::AudioBuffer<FloatType> buffer;
 
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioBufferFIFO)
 };
 
