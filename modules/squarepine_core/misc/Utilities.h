@@ -192,7 +192,7 @@ namespace details
 /** */
 template<class Container,
          typename IndexType,
-         details::IsSTLContainer<Container>::value = true>
+         typename details::IsSTLContainer<Container>::value = true>
 inline bool moveItem (Container& v, IndexType oldIndex, IndexType newIndex)
 {
     if (oldIndex > v.size() || newIndex > v.size())
@@ -257,7 +257,7 @@ inline bool moveItemToFront (Container& v, IndexType itemIndex)
 /** */
 template<class Container, 
          typename IndexType,
-         details::IsSTLContainer<Container>::value = true>
+         typename details::IsSTLContainer<Container>::value = true>
 inline bool removeItem (Container& v, IndexType itemIndex)
 {
     const auto index = static_cast<size_t> (itemIndex);
@@ -275,7 +275,7 @@ inline bool removeItem (Container& v, IndexType itemIndex)
 template<class Container, 
          typename IndexType,
          typename ItemType,
-         details::IsSTLContainer<Container>::value = true>
+         typename details::IsSTLContainer<Container>::value = true>
 inline bool replaceItem (Container& v, IndexType itemIndex, ItemType& newItem)
 {
     const auto i = static_cast<size_t> (itemIndex);
@@ -292,7 +292,7 @@ inline bool replaceItem (Container& v, IndexType itemIndex, ItemType& newItem)
 /** */
 template<class Container, 
          typename Value,
-         details::IsSTLContainer<Container>::value = true>
+         typename details::IsSTLContainer<Container>::value = true>
 inline void append (Container& destination, const Container& source)
 {
     destination.insert (std::end (destination), std::begin (source), std::end (source));
@@ -302,7 +302,7 @@ inline void append (Container& destination, const Container& source)
 template<class Container, 
          typename Value,
          typename Predicate,
-         details::IsSTLContainer<Container>::value = true>
+         typename details::IsSTLContainer<Container>::value = true>
 inline Value removeAndReturn (Container& container, Predicate predicate)
 {
     auto result = Value();
@@ -321,7 +321,7 @@ inline Value removeAndReturn (Container& container, Predicate predicate)
 /** */
 template<class Container, 
          typename Value,
-         details::IsSTLContainer<Container>::value = true>
+         typename details::IsSTLContainer<Container>::value = true>
 inline void removeAllInstancesOf (Container& container, const Value& value)
 {
     container.erase (std::remove (container.begin(), container.end(), value), container.cend());
@@ -330,7 +330,7 @@ inline void removeAllInstancesOf (Container& container, const Value& value)
 /** */
 template<class Container, 
          typename Value,
-         details::IsSTLContainer<Container>::value = true>
+         typename details::IsSTLContainer<Container>::value = true>
 inline bool contains (const Container& container, const Value& value)
 {
     return std::find (container.cbegin(), container.cend(), value) != container.cend();
@@ -400,7 +400,8 @@ inline int getMaxPathLength()
 
 //==============================================================================
 /** @returns a unique hash representing the user's system. */
-inline [[deprecated ("Please use juce::SystemStats::getUniqueDeviceID() instead.")]] String createSystemHash()
+[[deprecated ("Please use juce::SystemStats::getUniqueDeviceID() instead.")]]
+inline String createSystemHash()
 {
     MemoryBlock data;
 

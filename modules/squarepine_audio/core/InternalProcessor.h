@@ -169,7 +169,7 @@ public:
     /** @internal */
     [[nodiscard]] bool producesMidi() const override { return false; }
     /** @internal */
-    [[nodiscard]] void prepareToPlay (double, int) override;
+    void prepareToPlay (double, int) override;
     /** @internal */
     void releaseResources() override { }
     /** @internal */

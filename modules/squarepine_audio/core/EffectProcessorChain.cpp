@@ -147,7 +147,7 @@ bool EffectProcessorChain::loadIfMissing (int index)
     if (isPositiveAndBelow (index, getNumEffects())
         && isPluginMissing (index))
     {
-        if (auto effect = plugins[(size_t) index])
+        if (auto effect = plugins[index])
         {
             const InternalProcessor::ScopedBypass sb (*this);
 

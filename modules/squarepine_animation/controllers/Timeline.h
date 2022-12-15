@@ -20,7 +20,7 @@ public:
 
     //==============================================================================
     /** */
-    void setValue (double newValue) noexcept
+    void setValue (double) noexcept
     {
     }
 
@@ -30,7 +30,7 @@ public:
     [[nodiscard]] Value& getValueValue() noexcept           { return value; }
 
     /** */
-    void setDefaultValue (double newDefaultValue) noexcept
+    void setDefaultValue (double) noexcept
     {
     }
 
@@ -94,7 +94,7 @@ public:
 
     //==============================================================================
     /** */
-    void setTime (double newTime) noexcept
+    void setTime (double) noexcept
     {
     }
 
@@ -104,7 +104,7 @@ public:
     [[nodiscard]] Value& getTimeValue() noexcept            { return time; }
 
     /** */
-    void setLengthSeconds (double newLength) noexcept
+    void setLengthSeconds (double) noexcept
     {
     }
 
@@ -114,7 +114,7 @@ public:
     [[nodiscard]] Value& getLengthValue() noexcept          { return length; }
 
     /** */
-    void setFramerate (int newFramerate) noexcept
+    void setFramerate (int) noexcept
     {
     }
 
@@ -124,7 +124,7 @@ public:
     [[nodiscard]] Value& getFramerateValue() noexcept       { return framerate; }
 
     /** */
-    void setPlaybackSpeed (double newSpeed) noexcept
+    void setPlaybackSpeed (double) noexcept
     {
     }
 

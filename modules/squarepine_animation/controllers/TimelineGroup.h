@@ -7,19 +7,19 @@ public:
     TimelineGroup() = default;
 
     //==============================================================================
-    void add (WeakReference<Timeline> timeline)
+    void add (WeakReference<Timeline>)
     {
     }
 
-    void remove (WeakReference<Timeline> timeline)
+    void remove (WeakReference<Timeline>)
     {
     }
 
-    void remove (int index)
+    void remove (int)
     {
     }
 
-    WeakReference<Timeline> get (int index) const
+    WeakReference<Timeline> get (int) const
     {
         return {};
     }

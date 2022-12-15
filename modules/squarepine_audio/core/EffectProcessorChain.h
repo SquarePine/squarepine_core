@@ -347,7 +347,7 @@ private:
     std::optional<Type> getEffectProperty (int index, std::function<Type (EffectProcessor::Ptr)> func) const
     {
         if (isPositiveAndBelow (index, getNumEffects()))
-            if (auto effect = plugins[(size_t) index])
+            if (auto effect = plugins[index])
                 return { func (effect) };
 
         return {};

@@ -148,8 +148,8 @@ private:
 class SimpleEQProcessor::FilterBypassParameter final : public AudioParameterBool
 {
 public:
-    FilterBypassParameter (StringRef id, StringRef name, bool value) :
-        AudioParameterBool (id, name, value)
+    FilterBypassParameter (StringRef id, StringRef fbpName, bool value) :
+        AudioParameterBool (id, fbpName, value)
     {
     }
 
@@ -181,21 +181,13 @@ public:
         explicit Band (FilterType type_, 
                        float gain_,
                        float cutoff_,
-                       float q_,
-                       bool bypass_) noexcept :
+                       float q_ = 1.0f,
+                       bool bypass_ = false) noexcept :
             type (type_),
+            bypass (bypass_),
             gain (gain_),
             cutoff (cutoff_),
-            q (q_),
-            bypass (bypass_)
-        {
-        }
-
-        explicit Band (FilterType type_, 
-                       float gain_,
-                       float cutoff_,
-                       float q_ = 1.0f) noexcept :
-            Band (type_, gain_, cutoff_, q_, false)
+            q (q_)
         {
         }
 
