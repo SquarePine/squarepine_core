@@ -457,7 +457,7 @@ bool GoogleAnalyticsReporter::sendReport (const String& userAgent, const StringP
     if (auto sender = std::make_unique<Sender> (address, userAgent, timeoutMs, postData))
     {
        #if SQUAREPINE_LOG_GOOGLE_ANALYTICS
-        Logger::writeToLog ("Google Analytics: Sending new event." + newLine + sender->toString());
+        Logger::writeToLog (String ("Google Analytics: Sending new event.") + newLine + sender->toString());
        #endif
 
        #if ! SQUAREPINE_ONLY_LOG_GOOGLE_ANALYTICS
