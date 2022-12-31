@@ -10,11 +10,18 @@
     This algorithm is intended to be cryptographically secure.
 
     All told, ISAAC requires an amortised 18.75 instructions to produce each 32-bit value.
-    (With the same optimizations, IA requires an amortised 12.56 instructions to produce each 32-bit value.
+    (With the same optimizations, IA requires an amortised
+    12.56 instructions to produce each 32-bit value.
     There are no cycles in ISAAC shorter than 240 values.
     There are no bad initial states.
-    The internal state has 8288 bits, so the expected cycle length is 28287 calls (or 28295 32-bit values).
-    Deducing the internal state appears to be intractable, and the results of ISAAC are unbiased and uniformly distributed.
+    The internal state has 8288 bits, so the expected cycle length
+    is 28287 calls (or 28295 32-bit values).
+    Deducing the internal state appears to be intractable, and the results
+    of ISAAC are unbiased and uniformly distributed.
+
+    This is a stateful PSRG, therefore keeping one seeded instance around
+    to continuously generate a random number is suggested. That being said,
+    this is in no way thread-safe.
 
     @see https://en.wikipedia.org/wiki/ISAAC_(cipher)
     @see http://burtleburtle.net/bob/rand/isaac.html
@@ -46,14 +53,15 @@ private:
     Vector3D<uint32> randomValues;
     uint32 randMemory[maxNumItems];
     uint32 results[maxNumItems];
-    uint32 count;
+    uint32 count = 0;
 
     //==============================================================================
-    static inline uint32 leftShift (uint32 source, uint32 amount) noexcept { return source << amount; }
-    static inline uint32 rightShift (uint32 source, uint32 amount) noexcept { return source >> amount; }
+    static constexpr uint32 leftShift (uint32 source, uint32 amount) noexcept   { return source << amount; }
+    static constexpr uint32 rightShift (uint32 source, uint32 amount) noexcept  { return source >> amount; }
 
-    template<uint32 (*shiftFunction) (uint32, uint32), uint32 shiftAmount>
-    static inline void shuffle (uint32& a, uint32& b, uint32& c, uint32& d) noexcept
+    template<uint32 shiftAmount>
+    static void shuffle (std::function<uint32 (uint32, uint32)> shiftFunction,
+                         uint32& a, uint32& b, uint32& c, uint32& d) noexcept
     {
         a ^= shiftFunction (b, shiftAmount);
         d += a;

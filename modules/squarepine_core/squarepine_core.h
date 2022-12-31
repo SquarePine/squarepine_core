@@ -11,8 +11,6 @@
     website:            https://www.squarepine.io
     license:            Beerware
     minimumCppStandard: 17
-    OSXFrameworks:      SystemConfiguration
-    iOSFrameworks:      SystemConfiguration
     dependencies:       juce_audio_utils juce_cryptography juce_opengl
 
     END_JUCE_MODULE_DECLARATION
@@ -279,5 +277,4 @@ namespace sp
     #include "valuetree/PropertyContainer.h"
 }
 
-#endif //SQUAREPINE_CORE_H
-
+#endif // SQUAREPINE_CORE_H

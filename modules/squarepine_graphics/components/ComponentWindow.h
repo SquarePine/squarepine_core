@@ -1,4 +1,9 @@
-/** */
+/** A quick and dirty window that you can create to popup a Component
+    (which will be owned by the window).
+
+    If you need anything more complicated, just create your own
+    window derivative and go from there.
+*/
 class ComponentWindow final : public DocumentWindow
 {
 public:
@@ -19,17 +24,20 @@ public:
     std::function<void ()> onClose;
 
     //==============================================================================
+    /** @internal */
     void closeButtonPressed() override
     {
         if (onClose != nullptr)
             onClose();
     }
 
+    /** @internal */
     void moved() override
     {
         DocumentWindow::resized();
     }
 
+    /** @internal */
     void lookAndFeelChanged() override
     {
         setBackgroundColour (getBackgroundColour());

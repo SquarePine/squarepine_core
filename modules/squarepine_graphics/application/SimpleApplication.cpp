@@ -1,10 +1,7 @@
 SimpleApplication::SimpleApplication()
 {
-    SQUAREPINE_CRASH_TRACER
-
     SystemStats::setApplicationCrashHandler (&sp::CrashStackTracer::dump);
-    initSystemRandom();
-    initOperatingSystemDependantSystems();
+    std::srand ((uint32) std::time (nullptr));
 }
 
 SimpleApplication::~SimpleApplication()
@@ -12,7 +9,8 @@ SimpleApplication::~SimpleApplication()
     SQUAREPINE_CRASH_TRACER
 
     Logger::writeToLog ("*** Shutting Down Application ***");
-    disableLogging();
+    Logger::setCurrentLogger (nullptr);
+    logger = nullptr;
 }
 
 //==============================================================================
@@ -32,59 +30,68 @@ void SimpleApplication::initialise (const String& commandLine)
         return;
     }
 
+   #if JUCE_LINUX
+    Thread::setCurrentThreadName (getApplicationName());
+   #endif
+
     enableLogging();
     Logger::writeToLog ("*** Starting Application ***");
 
     String stats;
     stats
-    << "---------------------------" << newLine
-    << "=== Operating System ===" << newLine
-    << "Name: " << SystemStats::getOperatingSystemName() << newLine
-    << "Is OS 64-bit? " << booleanToString (SystemStats::isOperatingSystem64Bit(), true) << newLine
-    << "RAM (MB): " << String (SystemStats::getMemorySizeInMegabytes()) << newLine
+        << "---------------------------" << newLine
+        << "=== Operating System ===" << newLine
+        << "Name: " << SystemStats::getOperatingSystemName() << newLine
+        << "Is OS 64-bit? " << booleanToString (SystemStats::isOperatingSystem64Bit(), true) << newLine
+        << "RAM (MB): " << String (SystemStats::getMemorySizeInMegabytes()) << newLine
+        << "---------------------------" << newLine
+        << "=== User Information ===" << newLine
+        << "Display Language: " << SystemStats::getDisplayLanguage() << newLine
+        << "User Region: " << SystemStats::getUserRegion() << newLine
+        << "Device Description: " << SystemStats::getDeviceDescription() << newLine
+        << "---------------------------" << newLine
+        << "=== CPU Info ===" << newLine
+        << "CPU Model: " << SystemStats::getCpuModel() << newLine
+        << "CPU Vendor: " << SystemStats::getCpuVendor() << newLine
+        << "CPU Speed (MHz): " << String (SystemStats::getCpuSpeedInMegahertz()) << newLine
+        << "Num CPUs: " << String (SystemStats::getNumCpus()) << newLine
+        << "Num Physical CPUs: " << String (SystemStats::getNumPhysicalCpus()) << newLine
+        << "CPU Features: " << newLine;
 
-    << "---------------------------" << newLine
-    << "=== User Information ===" << newLine
-    << "Display Language: " << SystemStats::getDisplayLanguage() << newLine
-    << "User Region: " << SystemStats::getUserRegion() << newLine
-    << "Device Description: " << SystemStats::getDeviceDescription() << newLine
+    auto appendIfTrue = [&] (const String& name, bool b)
+    {
+        if (b)
+            stats << "\t- " << name << newLine;
+    };
 
-    << "---------------------------" << newLine
-    << "=== CPU Info ===" << newLine
-    << "CPU Model: " << SystemStats::getCpuModel() << newLine
-    << "CPU Vendor: " << SystemStats::getCpuVendor() << newLine
-    << "CPU Speed (MHz): " << String (SystemStats::getCpuSpeedInMegahertz()) << newLine
-    << "Num CPUs: " << String (SystemStats::getNumCpus()) << newLine
-    << "Num Physical CPUs: " << String (SystemStats::getNumPhysicalCpus()) << newLine
-    << "MMX: " << booleanToString (SystemStats::hasMMX(), true) << newLine
-    << "3DNow: " << booleanToString (SystemStats::has3DNow(), true) << newLine
-    << "FMA3: " << booleanToString (SystemStats::hasFMA3(), true) << newLine
-    << "FMA4: " << booleanToString (SystemStats::hasFMA4(), true) << newLine
-    << "SSE: " << booleanToString (SystemStats::hasSSE(), true) << newLine
-    << "SSE 2: " << booleanToString (SystemStats::hasSSE2(), true) << newLine
-    << "SSE 3: " << booleanToString (SystemStats::hasSSE3(), true) << newLine
-    << "SSSE 3: " << booleanToString (SystemStats::hasSSSE3(), true) << newLine
-    << "SSE 4.1: " << booleanToString (SystemStats::hasSSE41(), true) << newLine
-    << "SSE 4.2: " << booleanToString (SystemStats::hasSSE42(), true) << newLine
-    << "AVX: " << booleanToString (SystemStats::hasAVX(), true) << newLine
-    << "AVX2: " << booleanToString (SystemStats::hasAVX2(), true) << newLine
-    << "AVX512F: " << booleanToString (SystemStats::hasAVX512F(), true) << newLine
-    << "AVX512BW: " << booleanToString (SystemStats::hasAVX512BW(), true) << newLine
-    << "AVX512CD: " << booleanToString (SystemStats::hasAVX512CD(), true) << newLine
-    << "AVX512DQ: " << booleanToString (SystemStats::hasAVX512DQ(), true) << newLine
-    << "AVX512ER: " << booleanToString (SystemStats::hasAVX512ER(), true) << newLine
-    << "AVX512IFMA: " << booleanToString (SystemStats::hasAVX512IFMA(), true) << newLine
-    << "AVX512PF: " << booleanToString (SystemStats::hasAVX512PF(), true) << newLine
-    << "AVX512VBMI: " << booleanToString (SystemStats::hasAVX512VBMI(), true) << newLine
-    << "AVX512VL: " << booleanToString (SystemStats::hasAVX512VL(), true) << newLine
-    << "AVX512VPOPCNTDQ: " << booleanToString (SystemStats::hasAVX512VPOPCNTDQ(), true) << newLine
-    << "Neon: " << booleanToString (SystemStats::hasNeon(), true) << newLine
+    appendIfTrue ("MMX",                SystemStats::hasMMX());
+    appendIfTrue ("3DNow",              SystemStats::has3DNow());
+    appendIfTrue ("FMA3",               SystemStats::hasFMA3());
+    appendIfTrue ("FMA4",               SystemStats::hasFMA4());
+    appendIfTrue ("SSE",                SystemStats::hasSSE());
+    appendIfTrue ("SSE 2",              SystemStats::hasSSE2());
+    appendIfTrue ("SSE 3",              SystemStats::hasSSE3());
+    appendIfTrue ("SSSE 3",             SystemStats::hasSSSE3());
+    appendIfTrue ("SSE 4.1",            SystemStats::hasSSE41());
+    appendIfTrue ("SSE 4.2",            SystemStats::hasSSE42());
+    appendIfTrue ("AVX",                SystemStats::hasAVX());
+    appendIfTrue ("AVX2",               SystemStats::hasAVX2());
+    appendIfTrue ("AVX512F",            SystemStats::hasAVX512F());
+    appendIfTrue ("AVX512BW",           SystemStats::hasAVX512BW());
+    appendIfTrue ("AVX512CD",           SystemStats::hasAVX512CD());
+    appendIfTrue ("AVX512DQ",           SystemStats::hasAVX512DQ());
+    appendIfTrue ("AVX512ER",           SystemStats::hasAVX512ER());
+    appendIfTrue ("AVX512IFMA",         SystemStats::hasAVX512IFMA());
+    appendIfTrue ("AVX512PF",           SystemStats::hasAVX512PF());
+    appendIfTrue ("AVX512VBMI",         SystemStats::hasAVX512VBMI());
+    appendIfTrue ("AVX512VL",           SystemStats::hasAVX512VL());
+    appendIfTrue ("AVX512VPOPCNTDQ",    SystemStats::hasAVX512VPOPCNTDQ());
+    appendIfTrue ("Neon",               SystemStats::hasNeon());
 
-    << "---------------------------" << newLine;
-
+    stats << "---------------------------" << newLine << newLine;
     Logger::writeToLog (stats);
 
-    mainWindow.reset (createWindow());
+    mainWindow = createWindow();
 }
 
 void SimpleApplication::shutdown()
@@ -153,18 +160,19 @@ bool SimpleApplication::backButtonPressed()
 //==============================================================================
 bool SimpleApplication::handleInternalCommandLineOperations (const String& args)
 {
+    SQUAREPINE_CRASH_TRACER
     return handleUnitTests (args);
-}
-
-static void appendSeparatorIfNotThere (String& s)
-{
-    const auto separator = File::getSeparatorChar();
-    if (! s.endsWithChar (separator))
-        s << separator;
 }
 
 String SimpleApplication::getLoggerFilePath() const
 {
+    auto appendSeparatorIfNotThere = [] (String& s)
+    {
+        const auto separator = File::getSeparatorChar();
+        if (! s.endsWithChar (separator))
+            s << separator;
+    };
+
     auto logFilePath = File::getSpecialLocation (File::userApplicationDataDirectory).getFullPathName();
 
    #if JUCE_MAC
@@ -184,19 +192,6 @@ String SimpleApplication::getLoggerFilePath() const
 }
 
 //==============================================================================
-void SimpleApplication::initSystemRandom()
-{
-    std::srand ((uint32) std::time (nullptr));
-}
-
-void SimpleApplication::initOperatingSystemDependantSystems()
-{
-   #if JUCE_LINUX
-    Thread::setCurrentThreadName (getApplicationName());
-   #endif
-}
-
-//==============================================================================
 void SimpleApplication::enableLogging()
 {
     const auto projectName = getApplicationName();
@@ -208,12 +203,6 @@ void SimpleApplication::enableLogging()
 
     logger.reset (FileLogger::createDateStampedLogger (getLoggerFilePath(), filename, ".txt", projectName + NewLine() + getApplicationVersion()));
     Logger::setCurrentLogger (logger.get());
-}
-
-void SimpleApplication::disableLogging()
-{
-    Logger::setCurrentLogger (nullptr);
-    logger = nullptr;
 }
 
 //==============================================================================

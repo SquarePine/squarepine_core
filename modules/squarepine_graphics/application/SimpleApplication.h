@@ -4,23 +4,48 @@
 class SimpleApplication : public JUCEApplication
 {
 public:
-    /** Constructor */
+    /** Constructor. */
     SimpleApplication();
 
-    /** Destructor */
+    /** Destructor. */
     ~SimpleApplication() override;
 
     //==============================================================================
-    /** */
+    /** @returns the application's name.
+        Unlike JUCEApplication's idiotic getApplicationName which isn't method-const,
+        this method allows you to be correct.
+    */
+    virtual String getAppName() const = 0;
+
+    /** @returns the application's version number.
+        Unlike JUCEApplication's idiotic getApplicationVersion which isn't method-const,
+        this method allows you to be correct.
+    */
+    virtual String getAppVersion() const = 0;
+
+    //==============================================================================
+    /** @returns the last known command line arguments that were passed to this application.
+        If another instance was started (assuming that was allowed),
+        these arguments will be overridden by that.
+
+        @see juce::ApplicaationBase::getCommandLineParameterArray,
+             juce::ApplicaationBase::getCommandLineParameters,
+    */
     const String& getCommandLineArguments() const noexcept { return commandLineArguments; }
 
     /** When returning from some modal components this will become the command target:
         this doesn't handle any commands so ensure the command chain is correctly passed on
         to the applications main ApplicationCommandTarget.
     */
-    void setMainCommandTarget (ApplicationCommandTarget* target);
+    void setMainCommandTarget (ApplicationCommandTarget*);
 
     //==============================================================================
+    /** @internal */
+    const String getApplicationName() final { return getAppName(); }
+    /** @internal */
+    const String getApplicationVersion() final { return getAppVersion(); }
+    /** @internal */
+    bool moreThanOneInstanceAllowed() override { return false; }
     /** @internal */
     void initialise (const String&) override;
     /** @internal */
@@ -43,7 +68,7 @@ public:
 protected:
     //==============================================================================
     /** */
-    virtual DocumentWindow* createWindow() const = 0;
+    virtual std::unique_ptr<DocumentWindow> createWindow() const = 0;
 
     /** */
     virtual bool handleInternalCommandLineOperations (const String& commandLine);
@@ -58,10 +83,10 @@ protected:
 private:
     //==============================================================================
     /** */
-    class InternalUnitTestRunner : public UnitTestRunner
+    class InternalUnitTestRunner final : public UnitTestRunner
     {
     public:
-        InternalUnitTestRunner()                       { }
+        InternalUnitTestRunner() = default;
         void setAbortingTests (bool shouldAbortTests)   { abortTests = shouldAbortTests; }
         bool shouldAbortTests() override                { return abortTests; }
 
@@ -91,22 +116,7 @@ private:
     String commandLineArguments;
 
     //==============================================================================
-    /** JUCE's random system isn't great for every occasion,
-        so in here we seed the C/C++ random system.
-    */
-    void initSystemRandom();
-
-    /** Linux is simply bugged for process naming, and JUCE is doing it right.
-        This is a fix only necessary in this broken OS series, as far as we know...
-    */
-    void initOperatingSystemDependantSystems();
-
-    //==============================================================================
-    /** */
     void enableLogging();
-
-    /** */
-    void disableLogging();
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleApplication)

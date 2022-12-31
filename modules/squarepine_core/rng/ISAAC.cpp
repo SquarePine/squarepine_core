@@ -17,11 +17,11 @@ ISAAC::ISAAC (bool preseedResults) :
     uint32 a, b, c, d, e, f, g, h;
     a = b = c = d = e = f = g = h = static_cast<uint32> (goldenRatio);
 
-    //Perform the initial scramble:
+    // Perform the initial scramble:
     for (size_t i = 0; i < 4; ++i)
         shuffle (a, b, c, d, e, f, g, h);
 
-    //Fill in randMemory[] with messy stuff:
+    // Fill in randMemory[] with messy stuff:
     const size_t numShuffles = preseedResults ? 2 : 1;
 
     for (size_t m = 0; m < numShuffles; ++m)
@@ -53,7 +53,7 @@ ISAAC::ISAAC (bool preseedResults) :
         }
     }
 
-    next(); //Fill in the first set of results
+    next(); // Fill in the first set of results
 }
 
 uint32 ISAAC::generate()
@@ -70,14 +70,14 @@ uint32 ISAAC::generate()
 void ISAAC::shuffle (uint32& a, uint32& b, uint32& c, uint32& d,
                      uint32& e, uint32& f, uint32& g, uint32& h) noexcept
 {
-    shuffle<leftShift, 11u> (a, b, c, d);
-    shuffle<rightShift, 2u> (b, c, d, e);
-    shuffle<leftShift, 8u> (c, d, e, f);
-    shuffle<rightShift, 16u> (d, e, f, g);
-    shuffle<leftShift, 10u >(e, f, g, h);
-    shuffle<rightShift, 4u> (f, g, h, a);
-    shuffle<leftShift, 8u> (g, h, a, b);
-    shuffle<rightShift, 9u> (h, a, b, c);
+    shuffle<11u> (leftShift, a, b, c, d);
+    shuffle<2u> (rightShift, b, c, d, e);
+    shuffle<8u> (leftShift, c, d, e, f);
+    shuffle<16u> (rightShift, d, e, f, g);
+    shuffle<10u> (leftShift, e, f, g, h);
+    shuffle<4u> (rightShift, f, g, h, a);
+    shuffle<8u> (leftShift, g, h, a, b);
+    shuffle<9u> (rightShift, h, a, b, c);
 }
 
 void ISAAC::next()
@@ -87,7 +87,7 @@ void ISAAC::next()
 
     for (size_t i = 0; i < maxNumItems; ++i)
     {
-        uint32 aa = randomValues.x;
+        auto aa = randomValues.x;
 
         switch (i % 4)
         {

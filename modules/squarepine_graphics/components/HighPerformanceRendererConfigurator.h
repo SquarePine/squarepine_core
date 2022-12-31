@@ -12,7 +12,7 @@ String getGLString (GLenum value, GLuint index);
 
     By default, this attempts to enable multisampling.
 */
-void configureContextWithModernGL (OpenGLContext& context, bool shouldEnableMultisampling = true);
+void configureContextWithModernGL (OpenGLContext&, bool shouldEnableMultisampling = true);
 
 /** Logs any GPU/driver related information it can find.
 
@@ -50,7 +50,7 @@ public:
 
         @warning You must call this BEFORE calling DocumentWindow::setContentOwned().
     */
-    virtual void configureWithOpenGLIfAvailable (Component& component);
+    virtual void configureWithOpenGLIfAvailable (Component&);
 
     /** Call this in your rendering or painting routine. */
     void paintCallback();
