@@ -5,6 +5,11 @@
 
     @note This is available on all platforms.
     @note All functionality must be called on the main thread.
+
+    @warning On Android, you will probably need to add these permissions to your manifest,
+    and check for them every time you want to check for connectivity:
+    - android.permission.ACCESS_NETWORK_STATE
+    - android.permission.INTERNET
 */
 class NetworkConnectivityChecker final : private Timer
 {
