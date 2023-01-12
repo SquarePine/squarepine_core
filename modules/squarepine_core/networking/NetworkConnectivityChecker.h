@@ -75,10 +75,17 @@ public:
     class NetworkListener
     {
     public:
-        /** */
-        virtual ~NetworkListener() { }
+        /** Destructor. */
+        virtual ~NetworkListener() noexcept = default;
 
-        /** */
+        /** Override this to find out when the network has changed.
+
+            You can call NetworkConnectivityChecker::isConnectedToInternet()
+            to find out the situation in a broad sense (useful for hiding/showing
+            popups or UI elements), or call getCurrentNetworkType() to be specific
+            about the situation (which is useful for changing text in a very
+            specific UI, for logs, etc...).
+        */
         virtual void networkStatusChanged() = 0;
     };
 
