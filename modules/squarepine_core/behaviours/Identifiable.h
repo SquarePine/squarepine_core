@@ -8,7 +8,7 @@ class Identifiable
 {
 public:
     /** */
-    Identifiable() noexcept : identifier (String (Random::getSystemRandom().nextInt64())) { }
+    Identifiable() : identifier (String (Random::getSystemRandom().nextInt64())) { }
 
     /** */
     Identifiable (const Identifier& id) noexcept : identifier (id) { }
@@ -22,10 +22,6 @@ public:
 
     /** */
     [[nodiscard]] const Uuid& getUuid() const noexcept { return uuid; }
-
-    //==============================================================================
-    /** */
-    CREATE_INLINE_CLASS_IDENTIFIER (uniqueIdentifier)
 
 protected:
     //==============================================================================
