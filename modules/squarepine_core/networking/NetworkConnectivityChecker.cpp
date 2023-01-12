@@ -33,13 +33,14 @@ void NetworkConnectivityChecker::timerCallback()
     }
 }
 
-double NetworkConnectivityChecker::getRSSI()
+double NetworkConnectivityChecker::getRSSI() const
 {
     const auto currentNetworkType = getCurrentNetworkType();
     if (currentNetworkType == NetworkType::none)
         return 0.0;
 
-    if (currentNetworkType != NetworkType::wifi && currentNetworkType != NetworkType::mobile)
+    if (currentNetworkType != NetworkType::wifi
+        && currentNetworkType != NetworkType::mobile)
         return 1.0;
 
     return getCurrentSystemRSSI();

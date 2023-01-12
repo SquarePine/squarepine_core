@@ -65,7 +65,7 @@ public:
 
         @note This is only applicable to wifi and mobile data connectivity.
     */
-    double getRSSI();
+    double getRSSI() const;
 
     //==============================================================================
     /** Inherit from this to find out if any status changes occur with the internet connectivity.
