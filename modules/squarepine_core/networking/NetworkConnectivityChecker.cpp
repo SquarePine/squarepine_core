@@ -12,11 +12,6 @@ NetworkConnectivityChecker::NetworkType NetworkConnectivityChecker::getCurrentNe
     return getCurrentSystemNetworkType();
 }
 
-void NetworkConnectivityChecker::notifyListeners()
-{
-    listeners.call ([&] (NetworkConnectivityChecker::NetworkListener& l) { l.networkStatusChanged(); });
-}
-
 void NetworkConnectivityChecker::timerCallback()
 {
     const auto currentNetworkType = getCurrentNetworkType();
@@ -29,7 +24,8 @@ void NetworkConnectivityChecker::timerCallback()
     if ((networkType != NetworkType::none) != (currentNetworkType != NetworkType::none))
     {
         networkType = currentNetworkType;
-        notifyListeners();
+
+        listeners.call ([&] (NetworkConnectivityChecker::NetworkListener& l) { l.networkStatusChanged(); });
     }
 }
 
