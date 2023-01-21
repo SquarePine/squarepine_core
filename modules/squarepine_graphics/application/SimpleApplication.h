@@ -109,11 +109,13 @@ private:
     };
 
     std::unique_ptr<FileLogger> logger;
-    TooltipWindow tooltipWindow;
-    std::unique_ptr<DocumentWindow> mainWindow;
     InternalUnitTestRunner unitTestRunner;
     ApplicationCommandTarget* mainCommandTarget = nullptr;
     String commandLineArguments;
+   #if SQUAREPINE_IS_DESKTOP
+    TooltipWindow tooltipWindow;
+   #endif
+    std::unique_ptr<DocumentWindow> mainWindow;
 
     //==============================================================================
     void enableLogging();
