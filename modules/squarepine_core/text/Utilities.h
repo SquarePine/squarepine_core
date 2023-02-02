@@ -78,3 +78,29 @@ inline String reverse (const String& source)
 
     return result;
 }
+
+//==============================================================================
+/** @returns true if the given string to look for is contained,
+    as a substring, within the provided array of strings.
+
+    @param source               The source list of strings to scan through.
+    @param substringToLookFor   The substring to look for.
+    @param caseSensitive        Whether this lookup cares about the string case or not. (By default this doesn't care.)
+*/
+inline bool containsSubstring (const StringArray& source, const String& substringToLookFor, bool caseSensitive = false)
+{
+    if (caseSensitive)
+    {
+        for (const auto& s : source)
+            if (s.contains (substringToLookFor))
+                return true;
+    }
+    else
+    {
+        for (const auto& s : source)
+            if (s.containsIgnoreCase (substringToLookFor))
+                return true;
+    }
+
+    return false;
+}
