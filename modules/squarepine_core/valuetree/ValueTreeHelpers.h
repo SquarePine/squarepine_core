@@ -57,6 +57,27 @@ inline Time getVarAsISO8601 (const ValueTree& vt, const Identifier& id)         
 inline Identifier getVarAsIdentifier (const ValueTree& vt, const Identifier& id)    { return static_cast<Identifier> (vt.getProperty (id)); }
 
 //==============================================================================
+/** Helps easily convert an array of primitive types to that of a juce::Array of juce::var.
+
+    This is to allow storing the array of whatever type you had originally
+    into a var itself, which is useful for converting into a property in a juce::ValueTree.
+
+    It's implied that the PrimitiveType must be compatible with juce::var itself.
+*/
+template<typename PrimitiveType>
+inline Array<var> toVarArray (const Array<PrimitiveType>& source)
+{
+    Array<var> dest;
+    dest.ensureStorageAllocated (source.size());
+
+    for (const auto& v : source)
+        dest.add (v);
+
+    dest.minimiseStorageOverheads();
+    return dest;
+}
+
+//==============================================================================
 /** Recursively finds an ancestor of a given type, if none is found a null ValueTree is returned. */
 inline ValueTree getValueTreeParentOfType (const ValueTree& vt, const Identifier& type)
 {
