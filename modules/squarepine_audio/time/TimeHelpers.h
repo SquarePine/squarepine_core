@@ -29,9 +29,17 @@ constexpr double convertSecondsToMeasures (double seconds, double tempo, double 
 }
 
 /** */
+constexpr double convertQuarterNotesToSeconds (double quarterNotes, double tempo) noexcept
+{
+    return (quarterNotes >= 0.0 && tempo >= 0.0)
+            ? quarterNotes * determineSecondsPerQuarterNote (tempo)
+            : 0.0;
+}
+/** */
 constexpr double convertSecondsToQuarterNotes (double seconds, double tempo) noexcept
 {
-    return (seconds >= 0.0 && tempo >= 0.0)
+    // TODO: this needs to handle tempo automation
+    return (tempo >= 0.0)
             ? (seconds / determineSecondsPerQuarterNote (tempo))
             : 0.0;
 }
