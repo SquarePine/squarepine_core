@@ -10,7 +10,7 @@ The philosophy here is multi-part:
 * Make the code as consistent in design, architecture, and style, as much as possible.
   * Have a look at our coding standards!
 
-This library is an assortment of loosely related or unrelated JUCE-based tools, audio or GUI or otherwise, that you can pull up at any given time and with limited hassle. Everything should _"Just Work™"_ with your JUCE project (assuming you're using the latest `develop` branch of JUCE).
+This library is an assortment of loosely related or unrelated JUCE-based tools, audio or GUI or otherwise, all of which you can pull up at any given time and with limited hassle. Everything should _"Just Work™"_ with your JUCE project (assuming you're using the latest `develop` branch of JUCE).
 
 # Functionality Highlights
 
