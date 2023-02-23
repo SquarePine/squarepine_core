@@ -150,31 +150,34 @@ void ChildProcessPluginScanner::performScanInChildProcess (const String& fileOrI
     resultsFile.deleteFile();
     resultsFile.create();
     FileOutputStream outStream (resultsFile);
-    if (outStream.openedOk())
+    if (outStream.failedToOpen())
     {
-        AudioPluginFormatManager pluginFormatManager;
-        pluginFormatManager.addDefaultFormats();
+        JUCEApplication::getInstance()->setApplicationReturnValue (EXIT_FAILURE);
+        return;
+    }
 
-        for (auto i = customFormats.size(); --i >= 0;)
-            pluginFormatManager.addFormat (customFormats.removeAndReturn (i));
+    AudioPluginFormatManager pluginFormatManager;
+    pluginFormatManager.addDefaultFormats();
 
-        for (auto i = 0; i < pluginFormatManager.getNumFormats(); ++i)
+    for (auto i = customFormats.size(); --i >= 0;)
+        pluginFormatManager.addFormat (customFormats.removeAndReturn (i));
+
+    for (auto i = 0; i < pluginFormatManager.getNumFormats(); ++i)
+    {
+        auto format = pluginFormatManager.getFormat (i);
+
+        if (format->getName() == formatName)
         {
-            auto format = pluginFormatManager.getFormat (i);
+            OwnedArray<PluginDescription> found;
+            format->findAllTypesForFile (found, fileOrIdentifier);
 
-            if (format->getName() == formatName)
-            {
-                OwnedArray<PluginDescription> found;
-                format->findAllTypesForFile (found, fileOrIdentifier);
+            XmlElement result ("PluginsFound");
 
-                XmlElement result ("PluginsFound");
+            for (auto pd : found)
+                result.addChildElement (pd->createXml().release());
 
-                for (auto pd : found)
-                    result.addChildElement (pd->createXml().release());
-
-                outStream << result.toString();
-                outStream.flush();
-            }
+            outStream << result.toString();
+            outStream.flush();
         }
     }
 }
