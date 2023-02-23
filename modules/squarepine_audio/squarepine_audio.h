@@ -257,8 +257,7 @@ namespace juce
                 {
                     if (auto xml = parseXML (mos.toString()))
                     {
-                        PluginDescription pd;
-                        if (pd.loadFromXml (*xml))
+                        if (PluginDescription pd; pd.loadFromXml (*xml))
                             return pd;
 
                         jassertfalse;
@@ -284,9 +283,11 @@ namespace juce
         /** @returns a PluginDescription as Base64 XML data. */
         static var toVar (const PluginDescription& pd)
         {
-            auto xml = pd.createXml();
-            jassert (xml != nullptr);
-            return Base64::toBase64 (xml->toString());
+            if (auto xml = pd.createXml())
+                return Base64::toBase64 (xml->toString());
+
+            jassertfalse;
+            return {};
         }
     };
 }
