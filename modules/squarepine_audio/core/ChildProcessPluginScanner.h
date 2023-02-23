@@ -3,7 +3,7 @@ class ChildProcessPluginScanner final : public KnownPluginList::CustomScanner
 {
 public:
     /** */
-    ChildProcessPluginScanner();
+    ChildProcessPluginScanner() = default;
 
     //==============================================================================
     /** */

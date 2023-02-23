@@ -5,8 +5,6 @@ namespace XMLAttributeKeys
     static const String fileKey = "fileValue";
 }
 
-ChildProcessPluginScanner::ChildProcessPluginScanner() { }
-
 bool ChildProcessPluginScanner::findPluginTypesFor (AudioPluginFormat& format,
                                                     OwnedArray<PluginDescription>& result,
                                                     const String& fileOrIdentifier)
@@ -67,7 +65,7 @@ void ChildProcessPluginScanner::waitForChildProcessOutput (ChildProcess& child)
     {
         if (! MessageManager::getInstance()->isThisTheMessageThread())
         {
-            Thread* t = Thread::getCurrentThread();
+            auto* t = Thread::getCurrentThread();
             if (t == nullptr || t->threadShouldExit())
                 break;
         }
@@ -79,7 +77,7 @@ void ChildProcessPluginScanner::waitForChildProcessOutput (ChildProcess& child)
     }
 }
 
-bool ChildProcessPluginScanner::handleResultsFile (const File& resultsFile, OwnedArray <PluginDescription>& result)
+bool ChildProcessPluginScanner::handleResultsFile (const File& resultsFile, OwnedArray<PluginDescription>& result)
 {
     const auto xml = XmlDocument::parse (resultsFile);
     resultsFile.deleteFile(); //No longer needed, so clean it up
@@ -96,14 +94,9 @@ bool ChildProcessPluginScanner::handleResultsFile (const File& resultsFile, Owne
 void ChildProcessPluginScanner::handleResultXml (const XmlElement& xml, OwnedArray<PluginDescription>& found)
 {
     if (xml.hasTagName ("PluginsFound"))
-    {
         for (auto* e : xml.getChildIterator())
-        {
-            PluginDescription desc;
-            if (desc.loadFromXml (*e))
+            if (PluginDescription desc; desc.loadFromXml (*e))
                 found.add (new PluginDescription (desc));
-        }
-    }
 }
 
 String ChildProcessPluginScanner::createCommandArgument (AudioPluginFormat& format,
@@ -127,13 +120,10 @@ void ChildProcessPluginScanner::performScanInChildProcess (const String& fileOrI
     setupSignalHandling();
    #endif
 
-    if (resultsFile.existsAsFile())
-        resultsFile.deleteFile();
-
+    resultsFile.deleteFile();
     resultsFile.create();
-    auto outStream = resultsFile.createOutputStream();
-
-    if (outStream != nullptr && outStream->openedOk())
+    FileOutputStream outStream (resultsFile);
+    if (outStream.openedOk())
     {
         AudioPluginFormatManager pluginFormatManager;
         pluginFormatManager.addDefaultFormats();
@@ -155,8 +145,8 @@ void ChildProcessPluginScanner::performScanInChildProcess (const String& fileOrI
                 for (auto pd : found)
                     result.addChildElement (pd->createXml().release());
 
-                *outStream << result.toString();
-                outStream->flush();
+                outStream << result.toString();
+                outStream.flush();
             }
         }
     }
