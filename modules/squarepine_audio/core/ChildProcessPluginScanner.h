@@ -7,10 +7,10 @@ public:
 
     //==============================================================================
     /** */
-    static void performScan (const String& commandLine, OwnedArray<AudioPluginFormat> customFormats = {});
+    static bool performScan (const String& commandLine, OwnedArray<AudioPluginFormat> customFormats = {});
 
     /** */
-    [[nodiscard]] static bool shouldScan (const String& commandLine);
+    [[nodiscard]] static bool canScan (const String& commandLine);
 
     //==============================================================================
     /** @internal */
@@ -18,7 +18,8 @@ public:
 
 private:
     //==============================================================================
-    void waitForChildProcessOutput (ChildProcess& child);
+    static String getCommandLineArg (const String& commandLine);
+    void waitForChildProcessOutput (ChildProcess&);
     bool handleResultsFile (const File& resultsFile, OwnedArray<PluginDescription>& result);
     void handleResultXml (const XmlElement& xml, OwnedArray<PluginDescription>& found);
 

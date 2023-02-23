@@ -1,20 +1,39 @@
-namespace XMLAttributeKeys
+namespace scanner
 {
-    static const String IDKey = "IDValue";
-    static const String formatKey = "formatValue";
-    static const String fileKey = "fileValue";
+    #undef DECLARE_ID
+    #define DECLARE_ID(x) \
+        static const auto x##Id = #x;
+
+    DECLARE_ID (fileOrIdentifier)
+    DECLARE_ID (formatName)
+    DECLARE_ID (tempFile)
+
+    #undef DECLARE_ID
 }
 
 bool ChildProcessPluginScanner::findPluginTypesFor (AudioPluginFormat& format,
                                                     OwnedArray<PluginDescription>& result,
                                                     const String& fileOrIdentifier)
 {
+    StringArray args;
+    args.add (File::getSpecialLocation (File::currentExecutableFile).getFullPathName());
+
+    auto* object = new DynamicObject();
+    auto addArg = [&] (const Identifier& id, const String& s)
+    {
+        object->setProperty (id, URL::addEscapeChars (s, true));
+    };
+
     TemporaryFile tempFile;
     auto tempResultsFile = tempFile.getFile();
 
-    StringArray args;
-    args.add (File::getSpecialLocation (File::currentExecutableFile).getFullPathName());
-    args.add (createCommandArgument (format, fileOrIdentifier, tempResultsFile));
+    addArg (scanner::fileOrIdentifierId, fileOrIdentifier);
+    addArg (scanner::formatNameId, format.getName());
+    addArg (scanner::tempFileId, tempResultsFile.getFullPathName());
+
+    args.add (Base64::toBase64 (JSON::toString (object)));
+
+    DBG (args.joinIntoString (" "));
 
     {
         ChildProcess child;
@@ -22,8 +41,8 @@ bool ChildProcessPluginScanner::findPluginTypesFor (AudioPluginFormat& format,
         {
             waitForChildProcessOutput (child);
 
-            //For some reason this stops some plugins from hanging, 
-            //letting them write their results file.
+            // For some reason this stops some plugins from hanging, 
+            // letting them write their results file.
             if (tempResultsFile.getSize() == 0)
                 child.readAllProcessOutput();
         }
@@ -32,29 +51,49 @@ bool ChildProcessPluginScanner::findPluginTypesFor (AudioPluginFormat& format,
     return handleResultsFile (tempResultsFile, result);
 }
 
-void ChildProcessPluginScanner::performScan (const String& commandLine, OwnedArray<AudioPluginFormat> customFormats)
+String ChildProcessPluginScanner::getCommandLineArg (const String& commandLine)
 {
-    const auto request = XmlDocument::parse (commandLine.trim().unquoted());
+    const auto toks = StringArray::fromTokens (commandLine, " ", "\"");
 
-    if (request != nullptr
-        && request->hasTagName ("PluginScan")
-        && request->hasAttribute (XMLAttributeKeys::IDKey)
-        && request->hasAttribute (XMLAttributeKeys::formatKey)
-        && request->hasAttribute (XMLAttributeKeys::fileKey))
-    {
-        performScanInChildProcess (request->getStringAttribute (XMLAttributeKeys::IDKey),
-                                   request->getStringAttribute (XMLAttributeKeys::formatKey),
-                                   request->getStringAttribute (XMLAttributeKeys::fileKey),
-                                   customFormats);
-        return;
-    }
+    MemoryOutputStream textStream;
+    int index = 0;
 
-    jassertfalse;
+    if (toks.size() > 1)
+        ++index;
+
+    if (! Base64::convertFromBase64 (textStream, toks[index]))
+        return {};
+
+    return textStream.toString();
 }
 
-bool ChildProcessPluginScanner::shouldScan (const String& commandLine)
+bool ChildProcessPluginScanner::performScan (const String& commandLine, OwnedArray<AudioPluginFormat> customFormats)
 {
-    return commandLine.contains ("PluginScan");
+    const auto jsonData = getCommandLineArg (commandLine);
+    if (jsonData.isEmpty())
+        return false;
+
+    const auto v = JSON::fromString (jsonData);
+    if (auto* object = v.getDynamicObject())
+    {
+        auto parse = [&] (const Identifier& id)
+        {
+            return URL::removeEscapeChars (object->getProperty (id).toString());
+        };
+
+        performScanInChildProcess (parse (scanner::fileOrIdentifierId),
+                                   parse (scanner::formatNameId),
+                                   File (parse (scanner::tempFileId)),
+                                   customFormats);
+        return true;
+    }
+
+    return false;
+}
+
+bool ChildProcessPluginScanner::canScan (const String& commandLine)
+{
+    return getCommandLineArg (commandLine).isNotEmpty();
 }
 
 void ChildProcessPluginScanner::waitForChildProcessOutput (ChildProcess& child)
@@ -80,7 +119,7 @@ void ChildProcessPluginScanner::waitForChildProcessOutput (ChildProcess& child)
 bool ChildProcessPluginScanner::handleResultsFile (const File& resultsFile, OwnedArray<PluginDescription>& result)
 {
     const auto xml = XmlDocument::parse (resultsFile);
-    resultsFile.deleteFile(); //No longer needed, so clean it up
+    resultsFile.deleteFile(); // No longer needed, so clean it up
 
     if (xml != nullptr)
     {
@@ -97,18 +136,6 @@ void ChildProcessPluginScanner::handleResultXml (const XmlElement& xml, OwnedArr
         for (auto* e : xml.getChildIterator())
             if (PluginDescription desc; desc.loadFromXml (*e))
                 found.add (new PluginDescription (desc));
-}
-
-String ChildProcessPluginScanner::createCommandArgument (AudioPluginFormat& format,
-                                                         const String& fileOrIdentifier,
-                                                         const File& tempResultsFile)
-{
-    XmlElement request ("PluginScan");
-    request.setAttribute (XMLAttributeKeys::IDKey, fileOrIdentifier);
-    request.setAttribute (XMLAttributeKeys::formatKey, format.getName());
-    request.setAttribute (XMLAttributeKeys::fileKey, tempResultsFile.getFullPathName());
-
-    return URL::addEscapeChars (request.toString(), true);
 }
 
 void ChildProcessPluginScanner::performScanInChildProcess (const String& fileOrIdentifier, 
