@@ -378,10 +378,10 @@ String GoogleAnalyticsMetadata::getDefaultClientId()
 }
 
 //==============================================================================
-GoogleAnalyticsReporter::GoogleAnalyticsReporter (const URL& endPointAddress) :
-    address (endPointAddress)
+GoogleAnalyticsReporter::GoogleAnalyticsReporter (const URL& endpointAddress) :
+    address (endpointAddress)
 {
-    jassert (address.isWellFormed() && URL::isProbablyAWebsiteURL (endPointAddress.toString (true)));
+    jassert (address.isWellFormed() && URL::isProbablyAWebsiteURL (endpointAddress.toString (true)));
 }
 
 GoogleAnalyticsReporter::~GoogleAnalyticsReporter()

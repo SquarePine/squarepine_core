@@ -298,20 +298,31 @@ private:
         juce::SharedResourcePointer<sp::GoogleAnalyticsReporter> googleAnalyticsReporter;
     @endcode
 
-    @see https://developers.google.com/analytics/devguides/collection/protocol/v1/reference#endpoint
+    @see https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference?client_type=firebase#url_endpoint
+    @see https://developers.google.com/analytics/devguides/collection/protocol/ga4/validating-events?client_type=gtag
 
     @see GoogleAnalyticsMetadata, NetworkConnectivityChecker
 */
 class GoogleAnalyticsReporter final
 {
 public:
+    /** The production endpoint. If you want to simply test the events you send out,
+        you should try using the debugEndpoint.
+    */
+    static inline const auto endpoint = "https://www.google-analytics.com/mp/collect";
+
+    /** The debug endpoint to help validate and confirm if the messages are correct.
+        @see https://developers.google.com/analytics/devguides/collection/protocol/ga4/validating-events?client_type=gtag
+    */
+    static inline const auto debugEndpoint = "https://www.google-analytics.com/debug/mp/collect";
+
     /** Constructor.
 
-        @param address By default, this is set to the default Google Analytics end-point
-                       which will be POSTed to. Google doesn't change this, so it's not recommended
-                       to play with this unless you know what you're doing!
+        @param endpointAddress By default, this is set to the default Google Analytics end-point
+                               which will be POSTed to. Google doesn't change this, so it's not recommended
+                               to play with this unless you know what you're doing!
     */
-    GoogleAnalyticsReporter (const URL& endPointAddress = URL ("https://www.google-analytics.com/collect"));
+    GoogleAnalyticsReporter (const URL& endpointAddress = URL (endpoint));
 
     /** Destructor.
 
