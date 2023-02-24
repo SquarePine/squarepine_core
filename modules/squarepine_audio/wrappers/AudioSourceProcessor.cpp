@@ -12,6 +12,11 @@ void AudioSourceProcessor::setAudioSource (AudioSource* newSource, const bool ta
 }
 
 //==============================================================================
+const String AudioSourceProcessor::getName() const
+{
+    return TRANS ("Audio Source");
+}
+
 Identifier AudioSourceProcessor::getIdentifier() const
 {
     return "AudioSourceProcessor";

@@ -17,15 +17,17 @@ public:
 
     //==============================================================================
     /** @internal */
+    const String getName() const override;
+    /** @internal */
     Identifier getIdentifier() const override;
+    /** @internal */
+    bool isInstrument() const override { return true; }
     /** @internal */
     void prepareToPlay (double, int) override;
     /** @internal */
     void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
     /** @internal */
     void releaseResources() override;
-    /** @internal */
-    bool isInstrument() const override { return true; }
 
 private:
     //==============================================================================

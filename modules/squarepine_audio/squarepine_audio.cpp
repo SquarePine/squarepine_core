@@ -36,7 +36,7 @@ namespace sp
     #include "core/EffectProcessor.cpp"
     #include "core/EffectProcessorChain.cpp"
     #include "core/EffectProcessorFactory.cpp"
-    #include "core/InternalAudioPluginFormat.cpp"
+    #include "core/SquarePineAudioPluginFormat.cpp"
     #include "core/InternalProcessor.cpp"
     #include "devices/DummyAudioIODevice.cpp"
     #include "devices/DummyAudioIODeviceCallback.cpp"

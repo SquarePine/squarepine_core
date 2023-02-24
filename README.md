@@ -65,7 +65,7 @@ A vast range of simple renditions of audio effects can be found, including an ec
 1. [`sp::EffectProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/core/EffectProcessor.h)
 2. [`sp::EffectProcessorFactory`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/core/EffectProcessorFactory.h)
 3. [`sp::EffectProcessorChain`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/core/EffectProcessorChain.h)
-4. [`sp::InternalAudioPluginFormat`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/core/InternalAudioPluginFormat.h)
+4. [`sp::SquarePineAudioPluginFormat`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/core/SquarePineAudioPluginFormat.h)
 
 ## `squarepine_graphics`
 

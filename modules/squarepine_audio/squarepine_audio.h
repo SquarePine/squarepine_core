@@ -79,6 +79,25 @@
 //==============================================================================
 #include "linkers/ZplaneHelpers.h"
 
+namespace juce
+{
+    /** @returns true if the lhs is a duplicate of the rhs.
+        JUCE is a bit funny about missing this function. I guess nobody complained enough...
+    */
+    inline bool operator== (const PluginDescription& lhs, const PluginDescription& rhs)
+    {
+        return lhs.isDuplicateOf (rhs); 
+    }
+
+    /** @returns true if the lhs is not a duplicate of the rhs.
+        JUCE is a bit funny about missing this function. I guess nobody complained enough...
+    */
+    inline bool operator!= (const PluginDescription& lhs, const PluginDescription& rhs)
+    {
+        return ! operator== (lhs, rhs);
+    }
+}
+
 //==============================================================================
 namespace sp
 {
@@ -109,7 +128,7 @@ namespace sp
     #include "core/AudioBufferFIFO.h"
     #include "core/AudioUtilities.h"
     #include "core/ChildProcessPluginScanner.h"
-    #include "core/InternalAudioPluginFormat.h"
+    #include "core/SquarePineAudioPluginFormat.h"
     #include "core/InternalProcessor.h"
     #include "effects/LevelsProcessor.h"
     class EffectProcessorChain;
