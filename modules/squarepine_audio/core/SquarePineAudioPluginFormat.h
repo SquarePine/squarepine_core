@@ -5,12 +5,19 @@
 class SquarePineAudioPluginFormat final : public AudioPluginFormat
 {
 public:
-    /** */
+    /** Default constructor.
+
+        This won't add any processors AudioProcessorGraph related.
+        For that, use the other constructor. 
+    */
     SquarePineAudioPluginFormat();
 
     /** An optional constructor that takes in a juce::AudioProcessorGraph so as to allow
         creating its own I/O processors more easily by facilitating adding them to
         a juce::KnownPluginList.
+
+        The graph instance is required because of the IO processor's
+        dependency on the graph itself.
     */
     explicit SquarePineAudioPluginFormat (AudioProcessorGraph&);
 
@@ -46,7 +53,7 @@ public:
     /** @internal */
     bool doesPluginStillExist (const PluginDescription&) override { return true; }
     /** @internal */
-    bool canScanForPlugins() const override { return false; }
+    bool canScanForPlugins() const override { return true; }
     /** @internal */
     FileSearchPath getDefaultLocationsToSearch() override { return {}; }
     /** @internal */

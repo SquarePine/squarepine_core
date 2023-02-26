@@ -8,7 +8,8 @@ public:
     static void addCopy (OwnedArray<PluginDescription>& destination,
                          const PluginDescription& description)
     {
-        destination.add (new PluginDescription (description))->manufacturerName = "SquarePine";
+        auto desc = destination.add (new PluginDescription (description));
+        desc->pluginFormatName = desc->manufacturerName = "SquarePine";
     }
 
     //==============================================================================
@@ -260,21 +261,26 @@ void SquarePineAudioPluginFormat::createPluginInstance (const PluginDescription&
 
 bool SquarePineAudioPluginFormat::fileMightContainThisPluginType (const String& fileOrIdentifier)
 {
-    for (auto& it : pluginCreationMap)
+    for (const auto& it : pluginCreationMap)
         if (it.first == fileOrIdentifier)
             return true;
 
     return false;
 }
 
-StringArray SquarePineAudioPluginFormat::searchPathsForPlugins (const FileSearchPath&, const bool, const bool)
+StringArray SquarePineAudioPluginFormat::searchPathsForPlugins (const FileSearchPath& fsp, const bool, const bool)
 {
+    if (fsp.getNumPaths() > 0)
+        return {};
+
     StringArray identifiers;
 
-    for (auto& it : pluginCreationMap)
-        identifiers.addIfNotAlreadyThere (it.first);
+    for (const auto& it : pluginCreationMap)
+        identifiers.add (it.first);
 
     identifiers.sort (true);
+    identifiers.removeEmptyStrings();
+    identifiers.removeDuplicates (true);
     identifiers.minimiseStorageOverheads();
 
     return identifiers;
