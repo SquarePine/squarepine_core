@@ -231,8 +231,21 @@ public:
     {
         this->filterType = filterTypeParam;
     }
-
-    double processSample (double x, int channel)
+    
+    void processBuffer (juce::AudioBuffer<float>& buffer, MidiBuffer&)
+    {
+        for (int c = 0 ; c < buffer.getNumChannels() ; ++c)
+        {
+            for (int n = 0 ; n < buffer.getNumSamples() ; ++n)
+            {
+                float x = buffer.getWritePointer (c)[n];
+                float y = processSample (x,c);
+                buffer.getWritePointer (c)[n] = y;
+            }
+        }
+    }
+    
+    double processSample(double x, int channel)
     {
         performSmoothing();
 

@@ -7,10 +7,10 @@ public:
 
     //==============================================================================
     /** */
-    void setBitDepth (int newBitDepth);
+    void setBitDepth (float newBitDepth);
 
     /** */
-    int getBitDepth() const noexcept;
+    float getBitDepth() const noexcept;
 
     //==============================================================================
     /** @internal */
@@ -22,7 +22,7 @@ public:
 
 private:
     //==============================================================================
-    AudioParameterInt* bitDepth = new AudioParameterInt ("bitDepth", "Bit-Depth", 1, 32, 32);
+    AudioParameterFloat* bitDepth = new AudioParameterFloat ("bitDepth", "Bit-Depth", 1.f, 32.f, 32.f);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BitCrusherProcessor)

@@ -32,7 +32,7 @@
 #endif
 
 //==============================================================================
-inline double crushToNBit (double sample, int bitDepth)
+inline double crushToNBit (double sample, float bitDepth)
 {
     constexpr auto one = 1.0;
     constexpr auto two = 2.0;
@@ -51,7 +51,7 @@ inline double crushToNBit (double sample, int bitDepth)
 	return (double) (int) s;
 }
 
-inline double crushBit (double sample, int bitDepth)
+inline double crushBit (double sample, float bitDepth)
 {
 /*
     auto mixAmount = lerp (1.0, 32.0, static_cast<double> (bitDepth) / 32.0) / 32.0;
@@ -63,11 +63,14 @@ inline double crushBit (double sample, int bitDepth)
     sample = (sample * (1.0 - mixAmount))
            + (DistortionFunctions::hyperbolicTangentSoftClipping (sample) * mixAmount);
 */
-    sample = crushToNBit (sample, bitDepth);
+    double numBits = static_cast<double> (bitDepth);
+    double ampValues = std::pow (2.0, numBits);
+    double prepInput = 0.5 * sample + 0.5;
+    double scaleInput = ampValues * prepInput;
+    double roundInput = std::round(scaleInput);
+    double prepOutput = roundInput / ampValues;
 
-	sample = sample / -std::pow (-2.0, (double) bitDepth - 1.0);
-
-    return sample;
+    return 2.0 * prepOutput - 1.0;
 }
 
 //==============================================================================
@@ -77,12 +80,12 @@ BitCrusherProcessor::BitCrusherProcessor()
 }
 
 //==============================================================================
-void BitCrusherProcessor::setBitDepth (int newBitDepth)
+void BitCrusherProcessor::setBitDepth (float newBitDepth)
 {
     bitDepth->operator= (newBitDepth);
 }
 
-int BitCrusherProcessor::getBitDepth() const noexcept
+float BitCrusherProcessor::getBitDepth() const noexcept
 {
     return bitDepth->get();
 }
@@ -90,14 +93,14 @@ int BitCrusherProcessor::getBitDepth() const noexcept
 //==============================================================================
 void BitCrusherProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
-    int localBitDepth = 32;
+    float localBitDepth = 32.f;
 
     {
         const ScopedLock sl (getCallbackLock());
         localBitDepth = bitDepth->get();
     }
 
-    if (buffer.hasBeenCleared() || localBitDepth >= 32)
+    if (buffer.hasBeenCleared() || localBitDepth >= 32.f)
         return; // Nothing to do here.
 
     for (auto channel : AudioBufferView<float> (buffer))
