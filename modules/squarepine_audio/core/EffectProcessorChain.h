@@ -219,7 +219,7 @@ public:
     /** Changes the mode of analysis for the audio levels for the
         particular effect at the provided index.
     */
-    void setMeteringMode(int index, MeteringMode);
+    void setMeteringMode (int index, MeteringMode);
 
     /** @returns the current mode for audio levels analysis. */
     [[nodiscard]] std::optional<MeteringMode> getMeteringMode (int index) const;

@@ -142,6 +142,9 @@ class ValueTreeAllEventListener : public ValueTree::Listener
 {
 public:
     /** */
+    ~ValueTreeAllEventListener() = default;
+
+    /** */
     virtual void valueTreeChanged() = 0;
 
     /** @internal */
@@ -165,8 +168,8 @@ struct ValueTreeComparator
 {
 public:
     /** */
-    ValueTreeComparator (const Identifier& attributeToSort_, bool forwards)
-        : attributeToSort (attributeToSort_), direction (forwards ? 1 : -1)
+    ValueTreeComparator (const Identifier& attributeToSort_, bool forwards) :
+        attributeToSort (attributeToSort_), direction (forwards ? 1 : -1)
     {}
 
     /** */
