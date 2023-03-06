@@ -63,7 +63,15 @@ namespace juce
     struct VariantConverter<Uuid> final
     {
         /** */
-        static Uuid fromVar (const var& v)  { return v.toString(); }
+        static Uuid fromVar (const var& v)
+        {
+            if (v.isString())
+                return v.toString();
+
+            jassertfalse;
+            return Uuid::null();
+        }
+
         /** */
         static var toVar (const Uuid& uuid) { return uuid.toString(); }
     };
@@ -74,7 +82,14 @@ namespace juce
     struct VariantConverter<IPAddress> final
     {
         /** */
-        static IPAddress fromVar (const var& v) { return IPAddress (v.toString()); }
+        static IPAddress fromVar (const var& v)
+        {
+            if (v.isString())
+                return IPAddress (v.toString());
+
+            jassertfalse;
+            return IPAddress();
+        }
 
         /** */
         static var toVar (const IPAddress& ip)  { return ip.toString(); }
@@ -86,7 +101,15 @@ namespace juce
     struct VariantConverter<MACAddress> final
     {
         /** */
-        static MACAddress fromVar (const var& v)    { return MACAddress (v.toString()); }
+        static MACAddress fromVar (const var& v)
+        {
+            if (v.isString())
+                return MACAddress (v.toString());
+
+            jassertfalse;
+            return MACAddress();
+        }
+
         /** */
         static var toVar (const MACAddress& mac)    { return mac.toString(); }
     };
@@ -97,7 +120,15 @@ namespace juce
     struct VariantConverter<URL> final
     {
         /** */
-        static URL fromVar (const var& v) noexcept  { return v.toString(); }
+        static URL fromVar (const var& v)
+        {
+            if (v.isString())
+                return URL (v.toString());
+
+            jassertfalse;
+            return URL();
+        }
+
         /** */
         static var toVar (const URL& url)           { return url.toString (true); }
     };
@@ -108,7 +139,15 @@ namespace juce
     struct VariantConverter<File> final
     {
         /** */
-        static File fromVar (const var& v) noexcept { return v.toString(); }
+        static File fromVar (const var& v)
+        {
+            if (v.isString())
+                return v.toString();
+
+            jassertfalse;
+            return {};
+        }
+
         /** */
         static var toVar (const File& f) noexcept   { return f.getFullPathName(); }
     };
@@ -119,7 +158,15 @@ namespace juce
     struct VariantConverter<Time> final
     {
         /** */
-        static Time fromVar (const var& v) noexcept { return Time (static_cast<int64> (v)); }
+        static Time fromVar (const var& v)
+        {
+            if (v.isInt64())
+                return Time (static_cast<int64> (v));
+
+            jassertfalse;
+            return {};
+        }
+
         /** */
         static var toVar (const Time& t)            { return t.toMilliseconds(); }
     };
@@ -130,7 +177,15 @@ namespace juce
     struct VariantConverter<RelativeTime> final
     {
         /** */
-        static RelativeTime fromVar (const var& v) noexcept { return RelativeTime (static_cast<double> (v)); }
+        static RelativeTime fromVar (const var& v)
+        {
+            if (v.isDouble())
+                return RelativeTime (static_cast<double> (v));
+
+            jassertfalse;
+            return RelativeTime();
+        }
+
         /** */
         static var toVar (const RelativeTime& rt)           { return rt.inSeconds(); }
     };
@@ -368,9 +423,17 @@ namespace juce
     struct VariantConverter<Colour> final
     {
         /** */
-        static Colour fromVar (const var& v) noexcept   { return Colour::fromString (v.toString()); }
+        static Colour fromVar (const var& v)
+        {
+            if (v.isString())
+                return Colour::fromString (v.toString());
+
+            jassertfalse;
+            return Colour();
+        }
+
         /** */
-        static var toVar (Colour c)                     { return c.toString(); }
+        static var toVar (Colour c)                             { return c.toString(); }
     };
 
     //==============================================================================
@@ -379,9 +442,17 @@ namespace juce
     struct VariantConverter<RectanglePlacement> final
     {
         /** */
-        static RectanglePlacement fromVar (const var& v) noexcept   { return static_cast<int> (v); }
+        static RectanglePlacement fromVar (const var& v) noexcept
+        {
+            if (v.isInt())
+                return static_cast<int> (v);
+
+            jassertfalse;
+            return RectanglePlacement();
+        }
+
         /** */
-        static var toVar (RectanglePlacement p)                     { return p.getFlags(); }
+        static var toVar (RectanglePlacement p) noexcept        { return p.getFlags(); }
     };
 
     //==============================================================================
@@ -390,9 +461,17 @@ namespace juce
     struct VariantConverter<Justification> final
     {
         /** */
-        static Justification fromVar (const var& v) noexcept    { return static_cast<int> (v); }
+        static Justification fromVar (const var& v) noexcept
+        {
+            if (v.isInt())
+                return static_cast<int> (v);
+
+            jassertfalse;
+            return Justification::topLeft;
+        }
+
         /** */
-        static var toVar (Justification p)                      { return p.getFlags(); }
+        static var toVar (Justification p) noexcept             { return p.getFlags(); }
     };
 
     //==============================================================================
