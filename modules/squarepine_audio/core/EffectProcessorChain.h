@@ -48,7 +48,8 @@ public:
 
         @param pluginIndex Plugin index within the KnownPluginList.
 
-        @returns a new effect processor or nullptr if the index wasn't found.
+        @returns a new effect processor. This will be nullptr if the index wasn't found
+        or if the plugin failed to load for some reason (eg: debugger is was detected).
     */
     EffectProcessor::Ptr add (int pluginIndex);
 
@@ -56,7 +57,8 @@ public:
 
         @param fileOrIdentifier Plugin file or identifier within the KnownPluginList.
 
-        @returns a new effect processor or nullptr if the identifier wasn't found.
+        @returns a new effect processor. This will be nullptr if the index wasn't found
+        or if the plugin failed to load for some reason (eg: debugger is was detected).
     */
     EffectProcessor::Ptr add (const String& fileOrIdentifier);
 
@@ -68,7 +70,8 @@ public:
         @warning Callers need to remove plugin editors associated with the current index
                  or there will be dangling pointers to the removed plugin!
 
-        @returns a new effect processor or nullptr if the index wasn't found.
+        @returns a new effect processor. This will be nullptr if the index wasn't found
+        or if the plugin failed to load for some reason (eg: debugger is was detected).
     */
     EffectProcessor::Ptr insert (int destinationIndex, int pluginIndex);
 
@@ -80,7 +83,8 @@ public:
         @warning Callers need to remove plugin editors associated with the current index
                  or there will be dangling pointers to the removed plugin!
 
-        @returns a new effect processor or nullptr if the identifier wasn't found.
+        @returns a new effect processor. This will be nullptr if the index wasn't found
+        or if the plugin failed to load for some reason (eg: debugger is was detected).
     */
     EffectProcessor::Ptr insert (int destinationIndex, const String& fileOrIdentifier);
 
@@ -92,7 +96,8 @@ public:
         @warning Callers need to remove plugin editors associated with the current index
                  or there will be dangling pointers to the removed plugin!
 
-        @returns a new effect processor or nullptr if the index wasn't found.
+        @returns a new effect processor. This will be nullptr if the index wasn't found
+        or if the plugin failed to load for some reason (eg: debugger is was detected).
     */
     EffectProcessor::Ptr replace (int destinationIndex, int pluginIndex);
 
@@ -104,8 +109,8 @@ public:
         @warning Callers need to remove plugin editors associated with the current index
                  or there will be dangling pointers to the removed plugin!
 
-        @returns a new effect processor, or nullptr if the identifier wasn't found
-                 or the index was out of range.
+        @returns a new effect processor. This will be nullptr if the index wasn't found
+        or if the plugin failed to load for some reason (eg: debugger is was detected).
     */
     EffectProcessor::Ptr replace (int destinationIndex, const String& fileOrIdentifier);
 

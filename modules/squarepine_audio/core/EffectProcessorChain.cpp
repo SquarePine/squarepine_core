@@ -48,12 +48,12 @@ EffectProcessor::Ptr EffectProcessorChain::insertInternal (int destinationIndex,
     return {};
 }
 
-EffectProcessor::Ptr EffectProcessorChain::add (int source)                     { return insertInternal (-1, source, InsertionStyle::append); }
-EffectProcessor::Ptr EffectProcessorChain::add (const String& source)               { return insertInternal (-1, source, InsertionStyle::append); }
-EffectProcessor::Ptr EffectProcessorChain::insert (int dest, int source)        { return insertInternal (dest, source); }
-EffectProcessor::Ptr EffectProcessorChain::insert (int dest, const String& source)  { return insertInternal (dest, source); }
-EffectProcessor::Ptr EffectProcessorChain::replace (int dest, int source)       { return insertInternal (dest, source, InsertionStyle::replace); }
-EffectProcessor::Ptr EffectProcessorChain::replace (int dest, const String& source) { return insertInternal (dest, source, InsertionStyle::replace); }
+EffectProcessor::Ptr EffectProcessorChain::add (int s)                          { return insertInternal (-1, s, InsertionStyle::append); }
+EffectProcessor::Ptr EffectProcessorChain::add (const String& s)                { return insertInternal (-1, s, InsertionStyle::append); }
+EffectProcessor::Ptr EffectProcessorChain::insert (int dest, int s)             { return insertInternal (dest, s); }
+EffectProcessor::Ptr EffectProcessorChain::insert (int dest, const String& s)   { return insertInternal (dest, s); }
+EffectProcessor::Ptr EffectProcessorChain::replace (int dest, int s)            { return insertInternal (dest, s, InsertionStyle::replace); }
+EffectProcessor::Ptr EffectProcessorChain::replace (int dest, const String& s)  { return insertInternal (dest, s, InsertionStyle::replace); }
 
 void EffectProcessorChain::move (int pluginIndex, int destinationIndex)
 {
