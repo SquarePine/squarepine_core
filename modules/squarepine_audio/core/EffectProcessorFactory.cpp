@@ -15,6 +15,9 @@ PluginDescription EffectProcessorFactory::createPluginDescription (const int plu
 
 PluginDescription EffectProcessorFactory::createPluginDescription (const String& fileOrIdentifier) const
 {
+    if (auto pd = knownPluginList.getTypeForIdentifierString (fileOrIdentifier))
+        return *pd;
+
     if (auto pd = knownPluginList.getTypeForFile (fileOrIdentifier))
         return *pd;
 
