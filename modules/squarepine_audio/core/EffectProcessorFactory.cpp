@@ -33,9 +33,6 @@ PluginDescription EffectProcessorFactory::createPluginDescription (const PluginD
 //==============================================================================
 AudioPluginPtr EffectProcessorFactory::createPlugin (const PluginDescription& description) const
 {
-    if (description.isInstrument)
-        return nullptr;
-
     String errorMessage;
     return getAudioPluginFormatManager().createPluginInstance (description, 44100.0, 256, errorMessage);
 }
