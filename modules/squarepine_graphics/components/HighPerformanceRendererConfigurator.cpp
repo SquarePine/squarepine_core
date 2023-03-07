@@ -28,9 +28,9 @@ void configureContextWithModernGL (OpenGLContext& context, bool shouldEnableMult
     context.setOpenGLVersionRequired (OpenGLContext::OpenGLVersion::openGL4_3);
     context.setTextureMagnificationFilter (OpenGLContext::linear);
 
-    context.setMultisamplingEnabled (true);
     if (shouldEnableMultisampling)
     {
+    	context.setMultisamplingEnabled (true);
         OpenGLPixelFormat pf;
         pf.stencilBufferBits = 8;
         pf.multisamplingLevel = 1;
