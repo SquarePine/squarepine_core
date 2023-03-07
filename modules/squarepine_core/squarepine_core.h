@@ -132,14 +132,12 @@
 
 //==============================================================================
 #if JUCE_MSVC && (__cplusplus == 199711L)
-   #if ! defined (_MSVC_LANG)
-    #error "We need to find another method to determine the C++ version at compile time!"
-   #endif
-
-   #if defined (_MSVC_LANG)
+   #ifdef _MSVC_LANG
     #ifndef JUCE_CXX20_IS_AVAILABLE
-     #define JUCE_CXX20_IS_AVAILABLE (_MSVC_LANG >= 202000L)
+        #define JUCE_CXX20_IS_AVAILABLE (_MSVC_LANG >= 202000L)
     #endif
+   #else
+    #error "We need to find another method to determine the C++ version at compile time!"
    #endif
 #else
    #ifndef JUCE_CXX20_IS_AVAILABLE
