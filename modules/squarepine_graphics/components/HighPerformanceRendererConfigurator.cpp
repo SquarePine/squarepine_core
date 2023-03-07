@@ -25,7 +25,7 @@ void configureContextWithModernGL (OpenGLContext& context, bool shouldEnableMult
     gl::loadExtensions();
 
     // NB: On failure, JUCE will backtrack to an earlier version of OpenGL.
-    context.setOpenGLVersionRequired (OpenGLContext::OpenGLVersion::openGL3_2);
+    context.setOpenGLVersionRequired (OpenGLContext::OpenGLVersion::openGL4_3);
     context.setTextureMagnificationFilter (OpenGLContext::linear);
 
     context.setMultisamplingEnabled (true);
@@ -149,7 +149,7 @@ void HighPerformanceRendererConfigurator::paintCallback()
         {
             (new DetachContextMessage (*this))->post();
             hasContextBeenForciblyDetached = true;
-            Logger::writeToLog ("WARNING!! --- Forcibly removed the OpenGL context because the system is so crappy...");
+            Logger::writeToLog ("WARNING!! --- Forcibly removed the OpenGL context because the system is ancient...");
         }
         else
         {
