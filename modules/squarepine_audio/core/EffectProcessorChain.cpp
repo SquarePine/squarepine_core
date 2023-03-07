@@ -2,6 +2,8 @@
 EffectProcessorChain::EffectProcessorChain (EffectProcessorFactory::Ptr epf) :
     factory (epf)
 {
+    SQUAREPINE_CRASH_TRACER
+
     jassert (factory != nullptr);
     plugins.ensureStorageAllocated (8);
 }
@@ -10,6 +12,8 @@ EffectProcessorChain::EffectProcessorChain (EffectProcessorFactory::Ptr epf) :
 template<typename Type>
 EffectProcessor::Ptr EffectProcessorChain::insertInternal (int destinationIndex, const Type& valueOrRef, InsertionStyle insertionStyle)
 {
+    SQUAREPINE_CRASH_TRACER
+
     if (factory == nullptr)
     {
         jassertfalse;
@@ -57,6 +61,8 @@ EffectProcessor::Ptr EffectProcessorChain::replace (int dest, const String& s)  
 
 void EffectProcessorChain::move (int pluginIndex, int destinationIndex)
 {
+    SQUAREPINE_CRASH_TRACER
+
     plugins.swap (pluginIndex, destinationIndex);
 }
 
@@ -67,6 +73,8 @@ int EffectProcessorChain::getNumEffects() const
 
 bool EffectProcessorChain::remove (int index)
 {
+    SQUAREPINE_CRASH_TRACER
+
     const auto startSize = getNumEffects();
     plugins.remove (index);
     return startSize != getNumEffects();
@@ -74,6 +82,8 @@ bool EffectProcessorChain::remove (int index)
 
 bool EffectProcessorChain::clear()
 {
+    SQUAREPINE_CRASH_TRACER
+
     const bool changed = ! plugins.isEmpty();
     if (changed)
     {
@@ -144,6 +154,8 @@ std::optional<bool> EffectProcessorChain::isPluginMissing (int index) const
 
 bool EffectProcessorChain::loadIfMissing (int index)
 {
+    SQUAREPINE_CRASH_TRACER
+
     if (isPositiveAndBelow (index, getNumEffects())
         && isPluginMissing (index))
     {
@@ -161,24 +173,32 @@ bool EffectProcessorChain::loadIfMissing (int index)
 
 void EffectProcessorChain::getChannelLevels (int index, Array<float>& destData)
 {
+    SQUAREPINE_CRASH_TRACER
+
     if (auto* lp = effectLevels[index])
         lp->getChannelLevels (destData);
 }
 
 void EffectProcessorChain::getChannelLevels (int index, Array<double>& destData)
 {
+    SQUAREPINE_CRASH_TRACER
+
     if (auto* lp = effectLevels[index])
         lp->getChannelLevels (destData);
 }
 
 void EffectProcessorChain::setMeteringMode (int index, MeteringMode mm)
 {
+    SQUAREPINE_CRASH_TRACER
+
     if (auto* lp = effectLevels[index])
         lp->setMeteringMode (mm);
 }
 
 std::optional<MeteringMode> EffectProcessorChain::getMeteringMode (int index) const
 {
+    SQUAREPINE_CRASH_TRACER
+
     if (auto* lp = effectLevels[index])
         return lp->getMeteringMode();
 
@@ -188,6 +208,8 @@ std::optional<MeteringMode> EffectProcessorChain::getMeteringMode (int index) co
 //==============================================================================
 bool EffectProcessorChain::setEffectProperty (int index, std::function<void (EffectProcessor::Ptr)> func)
 {
+    SQUAREPINE_CRASH_TRACER
+
     jassert (func != nullptr);
 
     if (auto effect = getEffectProcessor (index))
@@ -217,6 +239,8 @@ bool EffectProcessorChain::setMixLevel (int index, float mixLevel)
 //==============================================================================
 int EffectProcessorChain::getNumRequiredChannels() const
 {
+    SQUAREPINE_CRASH_TRACER
+
     int newRequiredChannels = 0;
 
     for (auto effect : plugins)
@@ -229,6 +253,8 @@ int EffectProcessorChain::getNumRequiredChannels() const
 
 void EffectProcessorChain::updateLatency()
 {
+    SQUAREPINE_CRASH_TRACER
+
     requiredChannels = getNumRequiredChannels();
 
     int newLatency = 0;
@@ -243,6 +269,8 @@ void EffectProcessorChain::updateLatency()
 
 void EffectProcessorChain::prepareToPlay (double sampleRate, int estimatedSamplesPerBlock)
 {
+    SQUAREPINE_CRASH_TRACER
+
     setRateAndBufferSizeDetails (sampleRate, estimatedSamplesPerBlock);
 
     const auto numChans = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels());
@@ -277,6 +305,8 @@ void EffectProcessorChain::processInternal (juce::AudioBuffer<FloatType>& source
                                             const int numChannels,
                                             const int numSamples)
 {
+    SQUAREPINE_CRASH_TRACER
+
     bufferPackage.prepare (numChannels, numSamples);
 
     addFrom (bufferPackage.mixingBuffer, source, numChannels, numSamples);
@@ -331,6 +361,8 @@ void EffectProcessorChain::process (juce::AudioBuffer<FloatType>& buffer,
                                     MidiBuffer& midiMessages,
                                     BufferPackage<FloatType>& package)
 {
+    SQUAREPINE_CRASH_TRACER
+
     const ScopedNoDenormals snd;
 
     if (isBypassed())
@@ -354,6 +386,8 @@ void EffectProcessorChain::processBlock (juce::AudioBuffer<double>& buffer, Midi
 //==============================================================================
 double EffectProcessorChain::getTailLengthSeconds() const
 {
+    SQUAREPINE_CRASH_TRACER
+
     auto largestTailLength = 0.0;
 
     for (auto effect : plugins)
@@ -366,6 +400,8 @@ double EffectProcessorChain::getTailLengthSeconds() const
 
 void EffectProcessorChain::setNonRealtime (bool isNonRealtime) noexcept
 {
+    SQUAREPINE_CRASH_TRACER
+
     for (auto effect : plugins)
         if (effect != nullptr)
             if (auto plugin = effect->plugin)
@@ -398,6 +434,8 @@ namespace ChainIds
 
 void EffectProcessorChain::getStateInformation (MemoryBlock& destData)
 {
+    SQUAREPINE_CRASH_TRACER
+
     XmlElement effectChainElement (getIdentifier().toString());
     effectChainElement.setAttribute (ChainIds::rootBypassed, InternalProcessor::isBypassed() ? 1 : 0);
 
@@ -436,6 +474,8 @@ XmlElement* EffectProcessorChain::createElementForEffect (EffectProcessor::Ptr e
 //==============================================================================
 void EffectProcessorChain::setStateInformation (const void* const data, const int sizeInBytes)
 {
+    SQUAREPINE_CRASH_TRACER
+
     const ScopedBypass sb (*this);
 
     clear();

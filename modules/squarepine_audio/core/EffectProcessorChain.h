@@ -351,6 +351,8 @@ private:
     template<typename Type>
     std::optional<Type> getEffectProperty (int index, std::function<Type (EffectProcessor::Ptr)> func) const
     {
+        SQUAREPINE_CRASH_TRACER
+
         if (isPositiveAndBelow (index, getNumEffects()))
             if (auto effect = plugins[index])
                 return { func (effect) };
@@ -361,6 +363,8 @@ private:
     template<void (AudioProcessor::*function)()>
     void loopThroughEffectsAndCall()
     {
+        SQUAREPINE_CRASH_TRACER
+
         for (auto effect : plugins)
             if (effect != nullptr)
                 if (auto* plugin = effect->plugin.get())
