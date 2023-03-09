@@ -22,10 +22,18 @@ EffectProcessor::Ptr EffectProcessorChain::insertInternal (int destinationIndex,
 
     if (auto pluginInstance = factory->createPlugin (valueOrRef))
     {
-        effectLevels.add (new LevelsProcessor())->prepareToPlay (getSampleRate(), getBlockSize());
+        auto prepareInternal = [&] (AudioProcessor& proc)
+        {
+            proc.setPlayHead (getPlayHead());
+            proc.setProcessingPrecision (getProcessingPrecision());
+            proc.setRateAndBufferSizeDetails (getSampleRate(), getBlockSize());
+            proc.prepareToPlay (getSampleRate(), getBlockSize());
+        };
 
-        pluginInstance->setPlayHead (getPlayHead());
-        pluginInstance->prepareToPlay (getSampleRate(), getBlockSize());
+        if (auto* proc = effectLevels.add (new LevelsProcessor()))
+            prepareInternal (*proc);
+
+        prepareInternal (*pluginInstance);
 
         auto effect = new EffectProcessor (std::move (pluginInstance), factory->createPluginDescription (valueOrRef));
 
@@ -68,7 +76,7 @@ void EffectProcessorChain::move (int pluginIndex, int destinationIndex)
 
 int EffectProcessorChain::getNumEffects() const
 {
-    return static_cast<int> (plugins.size());
+    return plugins.size();
 }
 
 bool EffectProcessorChain::remove (int index)
@@ -88,7 +96,7 @@ bool EffectProcessorChain::clear()
     if (changed)
     {
         plugins.clear();
-        updateLatency(); // Doing this here to avoid doubly locking.
+        updateLatency();
     }
 
     if (changed)
@@ -273,25 +281,30 @@ void EffectProcessorChain::prepareToPlay (double sampleRate, int estimatedSample
 
     setRateAndBufferSizeDetails (sampleRate, estimatedSamplesPerBlock);
 
-    const auto numChans = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels());
+    const auto numChans = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels(), requiredChannels.load());
 
     effectLevels.clearQuick (true);
 
     floatBuffers.prepare (numChans, estimatedSamplesPerBlock);
     doubleBuffers.prepare (numChans, estimatedSamplesPerBlock);
 
-    for (auto effect : plugins)
+    auto prepareInternal = [&] (AudioProcessor& proc)
     {
-        effectLevels.add (new LevelsProcessor())->prepareToPlay (sampleRate, estimatedSamplesPerBlock);
+        proc.setPlayHead (getPlayHead());
+        proc.setProcessingPrecision (getProcessingPrecision());
+        proc.setRateAndBufferSizeDetails (sampleRate, estimatedSamplesPerBlock);
+        proc.prepareToPlay (sampleRate, estimatedSamplesPerBlock);
+    };
 
-        if (effect != nullptr)
-        {
+    for (int i = 0; i < plugins.size(); ++i)
+    {
+        if (i >= effectLevels.size())
+            if (auto* proc = effectLevels.add (new LevelsProcessor()))
+                prepareInternal (*proc);
+
+        if (auto effect = plugins.getUnchecked (i))
             if (auto plugin = effect->plugin)
-            {
-                plugin->setPlayHead (getPlayHead());
-                plugin->prepareToPlay (sampleRate, estimatedSamplesPerBlock);
-            }
-        }
+                prepareInternal (*plugin);
     }
 
     updateLatency();
@@ -303,24 +316,28 @@ void EffectProcessorChain::processInternal (juce::AudioBuffer<FloatType>& source
                                             MidiBuffer& midiMessages,
                                             BufferPackage<FloatType>& bufferPackage,
                                             const int numChannels,
+                                            const int maxNumChannels,
                                             const int numSamples)
 {
     SQUAREPINE_CRASH_TRACER
 
-    bufferPackage.prepare (numChannels, numSamples);
+    bufferPackage.prepare (maxNumChannels, numSamples);
 
     addFrom (bufferPackage.mixingBuffer, source, numChannels, numSamples);
 
     for (auto effect : plugins)
     {
-        if (effect == nullptr || ! effect->canBeProcessed())
+        if (effect == nullptr)
             continue;
 
         // Process the effect:
         bufferPackage.effectBuffer.clear();
         addFrom (bufferPackage.effectBuffer, bufferPackage.mixingBuffer, numChannels, numSamples);
 
-        effect->plugin->processBlock (bufferPackage.effectBuffer, midiMessages);
+        if (! effect->canBeProcessed())
+            bufferPackage.effectBuffer.clear();
+        else
+            effect->plugin->processBlock (bufferPackage.effectBuffer, midiMessages);
 
         // Add the effect-saturated samples at the specified mix level:
         const auto mixLevel = effect->mixLevel.getNextValue();
@@ -369,6 +386,7 @@ void EffectProcessorChain::process (juce::AudioBuffer<FloatType>& buffer,
         return; // Pass through
 
     const auto numChannels = jmin (buffer.getNumChannels(), requiredChannels.load());
+    const auto maxNumChannels = jmax (buffer.getNumChannels(), requiredChannels.load());
     const auto numSamples = buffer.getNumSamples();
 
     if (! plugins.isEmpty()
@@ -376,7 +394,8 @@ void EffectProcessorChain::process (juce::AudioBuffer<FloatType>& buffer,
         && numSamples > 0
         && ! isWholeChainBypassed())
     {
-        processInternal (buffer, midiMessages, package, numChannels, numSamples);
+        processInternal (buffer, midiMessages, package,
+                         numChannels, maxNumChannels, numSamples);
     }
 }
 

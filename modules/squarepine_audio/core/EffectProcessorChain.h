@@ -1,13 +1,29 @@
-/** Contains an array of effect plugins that connect to each other in series.
+/** Contains an array of effect plugins that are processed in series.
 
-    This will call updateHostDisplayin the event that any effect is added,
+    Unlike juce::AudioProcessorGraph, which can process connections in parallel,
+    this boils down the process serially.
+    The main problem this class solves is to contain and simplify
+    creating various plugin instances for them to be processed in series,
+    with the option of controlling the mix level and bypass of each plugin independently.
+
+    The order of the effects in the chain is the direct processing order.
+
+    This will call updateHostDisplay() in the event that any effect is added,
     removed/cleared, or has changed position in the list. This is because
-    the latency may change, among other things.
-    Use a AudioProcessorListener to be notified of any such changes.
+    the latency may change, among other things. Use a juce::AudioProcessorListener
+    to be notified of any such changes.
 
-    @note EffectProcessorFactory is the main class that helps control creation of effect
-          based AudioProcessor objects. This is absolutely necessary so as to be able to
-          save and recall an EffectProcessorChain's state!
+    EffectProcessorFactory is the main class that helps control creation of effect
+    based AudioProcessor objects. This is absolutely necessary so as to be able to
+    save and recall an EffectProcessorChain's state!
+
+    @warning The bypass in this case is a separate parameter from that of a
+             contained plugin's bypass. This is because not every plugin or
+             plugin format supports bypassing, resulting in the need of
+             a higher level function. On the bright side, the chain and
+             the subsequent EffectProcessor instances will help you store
+             and restore the bypassing state along with the mix level,
+             and the state of the plugin itse;f.
 
     @see EffectProcessor, EffectProcessorFactory
 */
@@ -206,23 +222,38 @@ public:
     [[nodiscard]] std::optional<bool> isBypassed (int index) const;
 
     /** @returns the mix level of the effect at the specified index (normalised, 0.0f to 1.0f).
-                 This will return {} if the index is out of range.
+        This will return {} if the index is out of range.
     */
     [[nodiscard]] std::optional<float> getMixLevel (int index) const;
 
     /** @returns the last known top-left position of an effect's editor.
-                 This will return {} if the index is out of range.
+        This will return {} if the index is out of range.
     */
     [[nodiscard]] std::optional<juce::Point<int>> getLastUIPosition (int index) const;
 
     //==============================================================================
-    /** */
+    /** Retrieve the float-processed channel levels.
+
+        @param[in] index        The index of the plugin whose channel levels you want to retrieve.
+        @param[in/out] destData The measured levels, whose method of measurement relies on the set MeteringMode.
+
+        @see setMeteringMode
+    */
     void getChannelLevels (int index, Array<float>& destData);
-    /** */
+
+    /** Retrieve the double-processed channel levels.
+
+        @param[in] index        The index of the plugin whose channel levels you want to retrieve.
+        @param[in/out] destData The measured levels, whose method of measurement relies on the set MeteringMode.
+
+        @see setMeteringMode
+    */
     void getChannelLevels (int index, Array<double>& destData);
 
     /** Changes the mode of analysis for the audio levels for the
         particular effect at the provided index.
+
+        @see getChannelLevels
     */
     void setMeteringMode (int index, MeteringMode);
 
@@ -297,15 +328,19 @@ private:
                 buff->clear();
         }
 
-        void prepare (int numChannels, int numSamples)
+        void prepare (int numChans, int numSamps)
         {
+            numChannels = jmax (numChannels, numChans);
+            numSamples = jmax (numSamples, numSamps);
+
             for (auto& buff : buffers)
             {
-                buff->setSize (numChannels, numSamples, false, true, true);
+                buff->setSize (numChannels, numSamples, false, false, true);
                 buff->clear();
             }
         }
 
+        int numChannels = 0, numSamples = 0;
         Buffer mixingBuffer, effectBuffer, lastBuffer;
         std::array<Buffer*, 3> buffers = { &mixingBuffer, &effectBuffer, &lastBuffer };
     };
@@ -343,7 +378,8 @@ private:
 
     template<typename FloatType>
     void processInternal (juce::AudioBuffer<FloatType>& source, MidiBuffer& midiMessages,
-                          BufferPackage<FloatType>& bufferPackage, int numChannels, int numSamples);
+                          BufferPackage<FloatType>& bufferPackage,
+                          int sourceNumChannels, int maxNumChannels, int numSamples);
 
     template<typename Type>
     [[nodiscard]] EffectProcessor::Ptr insertInternal (int destinationIndex, const Type& valueOrRef, InsertionStyle insertionStyle = InsertionStyle::insert);
