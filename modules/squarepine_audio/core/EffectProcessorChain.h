@@ -366,7 +366,6 @@ private:
         replace
     };
 
-    [[nodiscard]] bool isWholeChainBypassed() const;
     void updateLatency();
     [[nodiscard]] int getNumRequiredChannels() const;
     [[nodiscard]] XmlElement* createElementForEffect (EffectProcessor::Ptr effect);

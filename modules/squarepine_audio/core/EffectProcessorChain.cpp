@@ -334,20 +334,27 @@ void EffectProcessorChain::processInternal (juce::AudioBuffer<FloatType>& source
         bufferPackage.effectBuffer.clear();
         addFrom (bufferPackage.effectBuffer, bufferPackage.mixingBuffer, numChannels, numSamples);
 
-        if (! effect->canBeProcessed())
+        if (effect->plugin->isSuspended())
+        {
             bufferPackage.effectBuffer.clear();
+        }
         else
-            effect->plugin->processBlock (bufferPackage.effectBuffer, midiMessages);
+        {
+            if (effect->canBeProcessed())
+                effect->plugin->processBlock (bufferPackage.effectBuffer, midiMessages);
+            else
+                effect->plugin->processBlockBypassed (bufferPackage.effectBuffer, midiMessages);
+        }
 
         // Add the effect-saturated samples at the specified mix level:
-        const auto mixLevel = effect->mixLevel.getNextValue();
-        jassert (isPositiveAndBelow (mixLevel, 1.00001f));
+        const auto mixLevel = static_cast<FloatType> (effect->mixLevel.getNextValue());
+        jassert (approximatelyEqual (effect->mixLevel.getTargetValue(), 1.0f));
 
         bufferPackage.lastBuffer.clear();
         addFrom (bufferPackage.lastBuffer, bufferPackage.effectBuffer, numChannels, numSamples, mixLevel);
 
         // Add the original samples, at a percentage of the original gain, if the effect level isn't 100%:
-        if (mixLevel < 1.0f)
+        if (mixLevel < static_cast<FloatType> (1))
             addFrom (bufferPackage.lastBuffer, bufferPackage.mixingBuffer, numChannels, numSamples, mixLevel);
 
         // Copy the result:
@@ -362,17 +369,6 @@ void EffectProcessorChain::processInternal (juce::AudioBuffer<FloatType>& source
     addFrom (source, bufferPackage.mixingBuffer, numChannels, numSamples);
 }
 
-bool EffectProcessorChain::isWholeChainBypassed() const
-{
-    int numBypassedPlugins = 0;
-
-    for (auto effect : plugins)
-        if (effect == nullptr || ! effect->canBeProcessed())
-            ++numBypassedPlugins;
-
-    return numBypassedPlugins == plugins.size();
-}
-
 template<typename FloatType>
 void EffectProcessorChain::process (juce::AudioBuffer<FloatType>& buffer,
                                     MidiBuffer& midiMessages,
@@ -382,21 +378,22 @@ void EffectProcessorChain::process (juce::AudioBuffer<FloatType>& buffer,
 
     const ScopedNoDenormals snd;
 
-    if (isBypassed())
-        return; // Pass through
-
     const auto numChannels = jmin (buffer.getNumChannels(), requiredChannels.load());
-    const auto maxNumChannels = jmax (buffer.getNumChannels(), requiredChannels.load());
     const auto numSamples = buffer.getNumSamples();
 
-    if (! plugins.isEmpty()
-        && numChannels > 0
-        && numSamples > 0
-        && ! isWholeChainBypassed())
+    if (isBypassed()
+        || plugins.isEmpty()
+        || numChannels <= 0
+        || numSamples <= 0)
     {
-        processInternal (buffer, midiMessages, package,
-                         numChannels, maxNumChannels, numSamples);
+        // @todo Latency compensation. juce::dsp::DelayLine?
+        return;
     }
+
+    const auto maxNumChannels = jmax (buffer.getNumChannels(), requiredChannels.load());
+
+    processInternal (buffer, midiMessages, package,
+                     numChannels, maxNumChannels, numSamples);
 }
 
 void EffectProcessorChain::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages)  { process<float> (buffer, midiMessages, floatBuffers); }

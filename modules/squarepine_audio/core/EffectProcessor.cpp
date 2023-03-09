@@ -28,10 +28,7 @@ EffectProcessor::~EffectProcessor()
 //==============================================================================
 bool EffectProcessor::canBeProcessed() const noexcept
 {
-    return ! isMissing()
-        && ! isBypassed()
-        && getMixLevel() > 0.0f
-        && (plugin != nullptr && ! plugin->isSuspended());
+    return ! isMissing() && ! isBypassed();
 }
 
 String EffectProcessor::getName() const                                 { return state[nameId].toString(); }
