@@ -70,8 +70,10 @@ inline void clearBuffers (juce::AudioBuffer<FloatType>& buffer, MidiBuffer& midi
 }
 
 template<typename FloatType>
-inline void addFrom (juce::AudioBuffer<FloatType>& destination, juce::AudioBuffer<FloatType>& source,
-                     int numChannels, int numSamples, float gainFactor = 1.0f)
+inline void addFrom (juce::AudioBuffer<FloatType>& destination,
+                     juce::AudioBuffer<FloatType>& source,
+                     int numChannels, int numSamples,
+                     FloatType gainFactor = (FloatType) 1)
 {
     // NB: This first bit is for copying mono to stereo.
     if (numChannels == 1 && destination.getNumChannels() == 2)
@@ -87,7 +89,9 @@ inline void addFrom (juce::AudioBuffer<FloatType>& destination, juce::AudioBuffe
 }
 
 template<typename FloatType>
-inline void addFrom (juce::AudioBuffer<FloatType>& destination, juce::AudioBuffer<FloatType>& source, float gainFactor = 1.0f)
+inline void addFrom (juce::AudioBuffer<FloatType>& destination,
+                     juce::AudioBuffer<FloatType>& source,
+                     FloatType gainFactor = (FloatType) 1)
 {
     addFrom (destination, source,
              jmin (source.getNumChannels(), destination.getNumChannels()),
@@ -103,10 +107,10 @@ inline void addFrom (juce::AudioBuffer<FloatType>& destination, juce::AudioBuffe
     const auto absMillisecs = std::abs (millisecs);
 
     return String::formatted ("%02d:%02d:%02d.%03d",
-                                millisecs / 3600000,
-                                (absMillisecs / 60000) % 60,
-                                (absMillisecs / 1000)  % 60,
-                                absMillisecs % 1000);
+                              millisecs / 3600000,
+                              (absMillisecs / 60000) % 60,
+                              (absMillisecs / 1000)  % 60,
+                              absMillisecs % 1000);
 }
 
 /** Quick-and-dirty function to format a bars/beats string. */
