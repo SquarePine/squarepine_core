@@ -1,18 +1,35 @@
+#
+# By default, we're going to assume that files that aren't explicitly mentioned
+# are formatted as plaintext, UTF8 (probably), and CRLF (for Windows' sake).
+#
+
 * text eol=crlf
+
+#
+# Alphabetically sorted list of text file extensions, grouped by default line-endings type.
+#
+
+*.gitignore text eol=lf
 *.gitmodules text eol=lf
 *.sh text eol=lf
-*.bat text eol=crlf
 
-# Various misc binary files:
+#
+# Alphabetically sorted list of binary file extensions like audio, video, images, etc...
+#
 
 *.7z binary
 *.a binary
 *.aif binary
 *.aiff binary
 *.asf binary
+*.avci binary
+*.avcs binary
+*.avif binary
 *.bmp binary
 *.crt binary
+*.dib binary
 *.dll binary
+*.drw binary
 *.dylib binary
 *.eot binary
 *.fla binary
@@ -20,13 +37,28 @@
 *.flv binary
 *.gif binary
 *.gz binary
+*.hdp binary
+*.heic binary
+*.heics binary
+*.heif binary
+*.heifs binary
+*.icb binary
 *.ico binary
+*.j2c binary
+*.jp2 binary
 *.jpeg binary
+*.jpf binary
+*.jpg2 binary
 *.jpg binary
+*.jpj binary
+*.jpm binary
+*.jpx binary
+*.jxl binary
 *.la binary
 *.lai binary
 *.lib binary
 *.mid binary
+*.mj2 binary
 *.mov binary
 *.mp2 binary
 *.mp3 binary
@@ -34,18 +66,28 @@
 *.ogg binary
 *.otc binary
 *.otf binary
+*.pbm binary
+*.pcx binary
 *.pdf binary
+*.pgm binary
 *.png binary
+*.pnm binary
+*.ppm binary
 *.pyc binary
 *.so binary
 *.swf binary
 *.tga binary
+*.tif binary
+*.tiff binary
 *.ttc binary
 *.ttf binary
+*.vda binary
+*.vst binary
 *.wav binary
+*.wdp binary
 *.webp binary
-*.wm binary
 *.wma binary
+*.wm binary
 *.wmv binary
 *.woff binary
 *.zip binary

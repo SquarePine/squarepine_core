@@ -49,13 +49,12 @@
 CVS
 
 # Various other file types
-*.pkg
-*.zip
-*.exe
-*.app
-*.msi
-*.vst3
-*.component
-*.vst
 *.aax
 *.aaxplugin
+*.app
+*.component
+*.exe
+*.msi
+*.pkg
+*.vst
+*.vst3
