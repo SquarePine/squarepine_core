@@ -533,6 +533,7 @@ public:
                                                                         return String (value, 1);
                                                                     });
 
+        setPrimaryParameter(normFreqParam);
         normFreqParam = normFreq.get();
         normFreqParam->addListener (this);
 
@@ -570,7 +571,7 @@ public:
     /** @internal */
     const String getName() const override { return TRANS ("SEM Filter"); }
     /** @internal */
-    Identifier getIdentifier() const override { return "semFilter" + String (idNumber); }
+    Identifier getIdentifier() const override { return "SEM Filter" + String (idNumber); }
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return false; }
 
@@ -617,6 +618,7 @@ public:
 
     void process (juce::AudioBuffer<float>& buffer)
     {
+        if(isBypassed())return;
         const auto numChannels = buffer.getNumChannels();
         const auto numSamples = buffer.getNumSamples();
 

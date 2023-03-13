@@ -1,9 +1,7 @@
 
 InsertProcessor::InsertProcessor (bool bandProcessingActive): performBandProcessing (bandProcessingActive)
 {
-    auto bypassParam = getBypassParameter();
-    if (bypassParam != nullptr)
-        bypassParam->setValue (1);
+    setBypass(false);
 }
 InsertProcessor::~InsertProcessor()
 {
