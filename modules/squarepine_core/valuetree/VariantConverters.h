@@ -88,7 +88,7 @@ namespace juce
                 return IPAddress (v.toString());
 
             jassertfalse;
-            return IPAddress();
+            return {};
         }
 
         /** */
@@ -107,7 +107,7 @@ namespace juce
                 return MACAddress (v.toString());
 
             jassertfalse;
-            return MACAddress();
+            return {};
         }
 
         /** */
@@ -126,7 +126,7 @@ namespace juce
                 return URL (v.toString());
 
             jassertfalse;
-            return URL();
+            return {};
         }
 
         /** */
@@ -190,7 +190,7 @@ namespace juce
         static var toVar (const RelativeTime& rt)           { return rt.inSeconds(); }
     };
 
-   #endif //JUCE_MODULE_AVAILABLE_juce_core
+   #endif // JUCE_MODULE_AVAILABLE_juce_core
 
     //==============================================================================
    #if JUCE_MODULE_AVAILABLE_juce_graphics
@@ -429,7 +429,7 @@ namespace juce
                 return Colour::fromString (v.toString());
 
             jassertfalse;
-            return Colour();
+            return {};
         }
 
         /** */
@@ -448,7 +448,7 @@ namespace juce
                 return static_cast<int> (v);
 
             jassertfalse;
-            return RectanglePlacement();
+            return {};
         }
 
         /** */
@@ -516,7 +516,7 @@ namespace juce
         }
     };
 
-   #endif //JUCE_MODULE_AVAILABLE_juce_graphics
+   #endif // JUCE_MODULE_AVAILABLE_juce_graphics
 
     //==============================================================================
 
@@ -616,6 +616,6 @@ namespace juce
 
     //==============================================================================
 
-   #endif //JUCE_MODULE_AVAILABLE_squarepine_core
+   #endif // JUCE_MODULE_AVAILABLE_squarepine_core
 
 } // juce
