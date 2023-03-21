@@ -20,11 +20,12 @@ TimeKeeper& TimeKeeper::setSamplingRate (double rate)
     return *this;
 }
 
-TimeKeeper& TimeKeeper::setSamplingRate (AudioDeviceManager& device)
+TimeKeeper& TimeKeeper::setSamplingRate (AudioDeviceManager& deviceManager)
 {
-    AudioDeviceManager::AudioDeviceSetup config;
-    device.getAudioDeviceSetup (config);
-    setSamplingRate (config.sampleRate);
+    const auto config = deviceManager.getAudioDeviceSetup();
+    if (config.sampleRate > 0.0)
+        setSamplingRate (config.sampleRate);
+
     return *this;
 }
 
