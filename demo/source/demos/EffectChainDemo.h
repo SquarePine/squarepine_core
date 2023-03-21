@@ -256,6 +256,8 @@ public:
     /** @internal */
     int getNumRows() override                                       { return effectChain.getNumEffects(); }
     /** @internal */
+    bool mayDragToExternalWindows() const override                  { return false; }
+    /** @internal */
     void paintListBoxItem (int, Graphics&, int, int, bool) override { }
     /** @internal */
     void backgroundClicked (const MouseEvent&) override             { listbox.deselectAllRows(); }

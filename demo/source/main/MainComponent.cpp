@@ -1,3 +1,18 @@
+inline Rectangle<int> getBoundsAccountingForKeyboard ()
+{
+    if (auto* display { Desktop::getInstance ().getDisplays ().getPrimaryDisplay () })
+    {
+        auto bounds { display->userArea };
+
+        // display->safeAreaInsets.subtractFrom (bounds);
+        // display->keyboardInsets.subtractFrom (bounds);
+
+        return bounds;
+    }
+
+    return {};
+}
+
 MainComponent::MainComponent (SharedObjects& sharedObjs) :
     tabbedComponent (TabbedButtonBar::TabsAtTop)
 {
@@ -41,6 +56,8 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
 
    #if SQUAREPINE_IS_DESKTOP
     setSize (1024, 768);
+   #else
+    setBounds (getBoundsAccountingForKeyboard());
    #endif
 }
 
@@ -56,7 +73,15 @@ void MainComponent::paint (Graphics& g)
 
 void MainComponent::resized()
 {
-    tabbedComponent.setBounds (getLocalBounds ().reduced (4));
+    auto b = getLocalBounds();
+
+   #if SQUAREPINE_IS_MOBILE
+    b = getBoundsAccountingForKeyboard();
+    if (b.isEmpty())
+        b = getLocalBounds();
+   #endif
+
+    tabbedComponent.setBounds (b.reduced (4));
 }
 
 void MainComponent::languageChanged (const IETFLanguageFile&)

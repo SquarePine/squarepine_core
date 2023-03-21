@@ -19,13 +19,12 @@ DemoLookAndFeel::~DemoLookAndFeel()
 
 void DemoLookAndFeel::darkModeSettingChanged()
 {
-
-return;
-
+   #if 0 // TODO
     if (Desktop::getInstance().isDarkModeActive())
         DarkColourScheme().applyTo (*this);
     else
         LightColourScheme().applyTo (*this);
+   #endif
 }
 
 //==============================================================================

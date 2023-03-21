@@ -425,12 +425,8 @@ EffectChainDemo::EffectChainDemo (SharedObjects& sharedObjs) :
     transportNode   = graph.addNode (std::unique_ptr<AudioProcessor> (transport));
     effectChainNode = graph.addNode (std::unique_ptr<AudioProcessor> (effectChain));
 
-    for (const auto& type : knownPluginList.getTypes())
-        effectChain->add (type.fileOrIdentifier);
-
-    reconnect();
-
     updateFromAudioDeviceManager();
+    reconnect();
 
     addAndMakeVisible (play);
     addAndMakeVisible (loop);
@@ -452,6 +448,7 @@ EffectChainDemo::~EffectChainDemo()
 void EffectChainDemo::changeListenerCallback (ChangeBroadcaster*)
 {
     updateFromAudioDeviceManager();
+    reconnect();
 }
 
 void EffectChainDemo::mouseDown (const MouseEvent& e)
@@ -560,6 +557,14 @@ void EffectChainDemo::updateLoopState()
 
 void EffectChainDemo::reconnect()
 {
+    const auto setup = sharedObjects.audioDeviceManager.getAudioDeviceSetup();
+
+    if (setup.inputChannels.toInteger() <= 0
+        || setup.outputChannels.toInteger() <= 0)
+    {
+        return;
+    }
+
     auto nodes = graph.getNodes();
 
     for (const auto& node : graph.getNodes())
@@ -628,9 +633,9 @@ void EffectChainDemo::movePlayhead (const MouseEvent& e)
 
     const auto mousePos = audioThumbnailArea.getConstrainedPoint (e.getMouseDownPosition());
     const auto timeSeconds = jmap (mousePos.toDouble().x,
-                                    (double) audioThumbnailArea.getX(),
-                                    (double) audioThumbnailArea.getWidth(),
-                                    0.0, audioThumbnail->getTotalLength());
+                                   (double) audioThumbnailArea.getX(),
+                                   (double) audioThumbnailArea.getWidth(),
+                                   0.0, audioThumbnail->getTotalLength());
 
     transport->setCurrentTime (timeSeconds);
     repaint();
@@ -648,7 +653,7 @@ void EffectChainDemo::setFile (const File& file, AudioFormatManager* audioFormat
         readerSource.reset (new AudioFormatReaderSource (reader, true));
 
         transport->setSource (readerSource.get(), 0, nullptr,
-                                sharedObjects.audioDeviceManager.getAudioDeviceSetup().sampleRate);
+                              sharedObjects.audioDeviceManager.getAudioDeviceSetup().sampleRate);
         play.setEnabled (true);
         goToStart.setEnabled (true);
     }

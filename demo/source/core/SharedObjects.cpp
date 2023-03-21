@@ -190,44 +190,55 @@ Result SharedObjects::reloadAudioDeviceManagerFromSettings()
 {
     SQUAREPINE_CRASH_TRACER
 
-#if 0
-    if (auto* us = applicationProperties.getUserSettings())
+    if (RuntimePermissions::isGranted (RuntimePermissions::recordAudio))
     {
-        if (us->containsKey (audioDeviceSettingsId))
+#if 0
+        if (auto* us = applicationProperties.getUserSettings())
         {
-            auto s = us->getValue (audioDeviceSettingsId);
-
-            MemoryOutputStream out;
-            if (Base64::convertFromBase64 (out, s))
+            if (us->containsKey (audioDeviceSettingsId))
             {
-                if (auto xml = parseXML (out.toString()))
+                auto s = us->getValue (audioDeviceSettingsId);
+
+                MemoryOutputStream out;
+                if (Base64::convertFromBase64 (out, s))
                 {
-                    AudioDeviceManager::AudioDeviceSetup setup;
-                    setup.sampleRate = 48000.0;
-                    setup.bufferSize = 1024;
+                    if (auto xml = parseXML (out.toString()))
+                    {
+                        AudioDeviceManager::AudioDeviceSetup setup;
+                        setup.sampleRate = 48000.0;
+                        setup.bufferSize = 1024;
 
-                    const auto result = audioDeviceManager.initialise (2, 2, xml.get(), true, {}, &setup).trim();
-                    if (result.isEmpty())
-                        return Result::ok();
+                        const auto result = audioDeviceManager.initialise (2, 2, xml.get(), true, {}, &setup).trim();
+                        if (result.isEmpty())
+                            return Result::ok();
 
-                    Logger::writeToLog (result);
-                    jassertfalse;
+                        Logger::writeToLog (result);
+                        jassertfalse;
+                    }
                 }
             }
         }
+    #endif
+
+        const auto result = audioDeviceManager.initialiseWithDefaultDevices (128, 128);
+        audioDeviceManager.addAudioDeviceType (std::make_unique<DummyAudioIODeviceType>());
+
+        if (result.isEmpty())
+            return Result::ok();
+
+        // No soundcard, driver shit the bed, or something?
+        Logger::writeToLog (result);
+        jassertfalse;
+        return Result::fail (result);
     }
-#endif
 
-    const auto result = audioDeviceManager.initialiseWithDefaultDevices (128, 128);
-    audioDeviceManager.addAudioDeviceType (std::make_unique<DummyAudioIODeviceType>());
+    RuntimePermissions::request (RuntimePermissions::recordAudio, [this] (bool wasGranted)
+    {
+        if (wasGranted)
+            MessageManager::callAsync ([this]() { reloadAudioDeviceManagerFromSettings(); });
+    });
 
-    if (result.isEmpty())
-        return Result::ok();
-
-    // No soundcard, driver shit the bed, or something?
-    Logger::writeToLog (result);
-    jassertfalse;
-    return Result::fail (result);
+    return Result::ok();
 }
 
 //==============================================================================

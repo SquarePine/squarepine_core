@@ -43,7 +43,7 @@
 
 #define JUCE_USE_DARK_SPLASH_SCREEN 1
 
-#define JUCE_PROJUCER_VERSION 0x70003
+#define JUCE_PROJUCER_VERSION 0x70005
 
 //==============================================================================
 #define JUCE_MODULE_AVAILABLE_juce_analytics              1
@@ -68,7 +68,6 @@
 #define JUCE_MODULE_AVAILABLE_squarepine_audio            1
 #define JUCE_MODULE_AVAILABLE_squarepine_core             1
 #define JUCE_MODULE_AVAILABLE_squarepine_graphics         1
-#define JUCE_MODULE_AVAILABLE_squarepine_images           1
 
 #define JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED 1
 

@@ -66,6 +66,19 @@ public:
         customLookAndFeel (sharedObjects),
         mainComponent (sharedObjects)
     {
+        RuntimePermissions::request (RuntimePermissions::recordAudio, [this] (bool)
+        {
+            audioWaiter.signal();
+        });
+
+        audioWaiter.wait();
+
+        if (! RuntimePermissions::isGranted (RuntimePermissions::recordAudio))
+        {
+            closeButtonPressed();
+            return;
+        }
+
         googleAnalyticsReporter->startSession();
 
         setAccessible (false);
@@ -102,8 +115,16 @@ public:
         JUCEApplication::getInstance()->systemRequestedQuit();
     }
 
+    /** @internal */
+    void parentSizeChanged() override
+    {
+        for (auto& c : getChildren())
+            c->resized();
+    }
+
 private:
     //==============================================================================
+    WaitableEvent audioWaiter;
     SharedObjects sharedObjects;
     SharedResourcePointer<sp::GoogleAnalyticsReporter> googleAnalyticsReporter;
     DemoLookAndFeel customLookAndFeel;
@@ -127,13 +148,13 @@ public:
 
     //==============================================================================
     /** @internal */
-    const String getApplicationName() override      { return ProjectInfo::projectName; }
+    String getAppName() const override      { return ProjectInfo::projectName; }
     /** @internal */
-    const String getApplicationVersion() override   { return ProjectInfo::versionString; }
+    String getAppVersion() const override   { return ProjectInfo::versionString; }
 
     //==============================================================================
     /** @internal */
-    DocumentWindow* createWindow() const override
+    std::unique_ptr<DocumentWindow> createWindow() const override
     {
         String windowName;
         windowName
@@ -145,7 +166,7 @@ public:
         windowName << " [DEBUG]";
        #endif
 
-        return new MainWindow (windowName);
+        return std::make_unique<MainWindow> (windowName);
     }
 
     String getLoggerFilePath() const override
