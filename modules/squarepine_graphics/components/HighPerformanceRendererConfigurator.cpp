@@ -38,7 +38,7 @@ void configureContextWithModernGL (OpenGLContext& context, bool shouldEnableMult
     }
 }
 
-void logOpenGLInfoCallback (OpenGLContext&)
+void logOpenGLInfoCallback (OpenGLContext& context)
 {
    #if SQUAREPINE_LOG_OPENGL_INFO
     using namespace juce::gl;
@@ -64,23 +64,31 @@ void logOpenGLInfoCallback (OpenGLContext&)
     << "OpenGL Extensions:" << newLine
     << newLine;
 
-    auto extensionsFromGL = getGLString (GL_EXTENSIONS).trim();
-    if (extensionsFromGL.isEmpty())
-        for (GLuint i = 0; i < (GLuint) numExtensions; ++i)
-            extensionsFromGL << getGLString (GL_EXTENSIONS, i) << " ";
+    // JUCE decided it was a better idea to use the core profile for everything...
+    // which is banal outside of macOS (because Apple always does whatever they want).
+    // https://www.khronos.org/opengl/wiki/OpenGL_Context#Context_types
+    if (! context.isCoreProfile())
+    {
+        auto extensionsFromGL = getGLString (GL_EXTENSIONS).trim();
+        if (extensionsFromGL.isEmpty())
+            for (GLuint i = 0; i < (GLuint) numExtensions; ++i)
+                extensionsFromGL << getGLString (GL_EXTENSIONS, i) << " ";
 
-    auto ext = StringArray::fromTokens (extensionsFromGL, " ", "");
-    ext.trim();
-    ext.removeEmptyStrings();
-    ext.removeDuplicates (true);
-    ext.sort (true);
+        auto ext = StringArray::fromTokens (extensionsFromGL, " ", "");
+        ext.trim();
+        ext.removeEmptyStrings();
+        ext.removeDuplicates (true);
+        ext.sort (true);
 
-    for (const auto& s : ext)
-        stats << "\t- " << s << newLine;
+        for (const auto& s : ext)
+            stats << "\t- " << s << newLine;
+    }
 
     stats << newLine << separatorLine << newLine;
 
     Logger::writeToLog (stats);
+   #else
+    ignoreUnused (context);
    #endif
 }
 
