@@ -142,7 +142,7 @@ class ValueTreeAllEventListener : public ValueTree::Listener
 {
 public:
     /** */
-    ~ValueTreeAllEventListener() = default;
+    ~ValueTreeAllEventListener() override = default;
 
     /** */
     virtual void valueTreeChanged() = 0;
