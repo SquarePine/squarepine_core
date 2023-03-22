@@ -79,7 +79,7 @@ class TemplatedResampler final : public Resampler
 {
 public:
     /** Default Constructor. */
-    TemplatedResampler() noexcept = default;
+    TemplatedResampler() = default;
 
     /** Call this to prepare this fairly straightforward resampler. */
     void prepare (int numChannels)
