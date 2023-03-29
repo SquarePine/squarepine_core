@@ -1,4 +1,9 @@
-/** An element comparator used for sorting files in an ascending or descending manner. */
+/** An element comparator used for sorting files in an ascending or descending manner.
+
+    @warning You should prefer FileSorter over juce::File::NaturalFileComparator because
+             that specific object incorrectly assumes case-sensitive filesystems
+             at compile time, which makes absolutely no sense!
+*/
 class FileSorter final
 {
 public:
