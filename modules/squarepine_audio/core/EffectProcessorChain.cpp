@@ -509,7 +509,7 @@ void EffectProcessorChain::setStateInformation (const void* const data, const in
 
     auto chainElement = AudioProcessor::getXmlFromBinary (data, sizeInBytes);
 
-    if (chainElement != nullptr && chainElement->getTagName() == getIdentifier().toString())
+    if (chainElement != nullptr && chainElement->hasTagName (getIdentifier().toString()))
     {
         InternalProcessor::setBypassed (chainElement->getBoolAttribute (ChainIds::rootBypassed));
 

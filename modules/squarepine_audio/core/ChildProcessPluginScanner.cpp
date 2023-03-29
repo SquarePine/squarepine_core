@@ -53,6 +53,9 @@ bool ChildProcessPluginScanner::findPluginTypesFor (AudioPluginFormat& format,
 
 String ChildProcessPluginScanner::getCommandLineArg (const String& commandLine)
 {
+    if (commandLine.isEmpty())
+        return {};
+
     const auto toks = StringArray::fromTokens (commandLine, " ", "\"");
 
     MemoryOutputStream textStream;
