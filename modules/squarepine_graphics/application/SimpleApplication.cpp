@@ -98,7 +98,7 @@ void SimpleApplication::shutdown()
 {
     SQUAREPINE_CRASH_TRACER
 
-    Logger::writeToLog ("Shutdown called.");
+    Logger::writeToLog ("Shutdown was called.");
     mainWindow = nullptr;
 }
 
