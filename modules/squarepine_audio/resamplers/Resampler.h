@@ -12,7 +12,13 @@ public:
     /**  */
     virtual void prepare (int numChannels, double sampleRate, int numSamples) = 0;
 
-    /**  */
+    /** Configures the give audio buffers with the appropriate channels and samples.
+
+        @param numResultingSamples  This is the destination number of samples.
+        @param numChannels          The number of channels you plan on processing.
+        @param source               The source audio buffer to configure.
+        @param destination          The destination audio buffer to configure.
+    */
     virtual void configure (int numResultingSamples, int numChannels,
                             juce::AudioBuffer<float>& source,
                             juce::AudioBuffer<float>& destination)
@@ -32,7 +38,7 @@ public:
                             least (speedRatio * numOutputSamplesToProduce) samples.
         @param destination  The buffer to write the results into.
 
-        @returns the actual number of input samples that were used
+        @returns the actual number of input samples that were used.
     */
     virtual int process (juce::AudioBuffer<float>& source,
                          juce::AudioBuffer<float>& destination) = 0;
