@@ -118,7 +118,6 @@ private:
             case FilterType::bandpass:
                 coeffs = Coeffs::makePeakFilter (sampleRate, c, r, g);
                 break;
-
             default:
                 jassertfalse;
                 break;
