@@ -1,7 +1,14 @@
+#define JUCE_CORE_INCLUDE_JNI_HELPERS 1
+
 #include "squarepine_graphics.h"
 
 #if JUCE_MODULE_AVAILABLE_squarepine_images
     #include <squarepine_images/squarepine_images.h>
+#endif
+
+#if JUCE_ANDROID
+    #include <sys/system_properties.h>
+    #include <android/api-level.h>
 #endif
 
 namespace sp

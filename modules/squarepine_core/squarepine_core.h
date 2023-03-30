@@ -220,6 +220,15 @@ namespace sp
     using namespace juce;
 
     //==============================================================================
+    /** @returns Android's release version, which should look
+        something like "Android 13".
+
+        This will be empty if something goes wrong; who knows if you can
+        call this outside of the main thread, who knows what manufacturers
+        will do, etc...
+    */
+    String getAndroidReleaseVersion();
+
     #include "misc/Macros.h"
     #include "maths/Maths.h"
     #include "valuetree/ValueTreeHelpers.h"

@@ -3,6 +3,8 @@
     #define JUCE_CORE_INCLUDE_NATIVE_HEADERS 1
 #endif
 
+#define JUCE_CORE_INCLUDE_JNI_HELPERS 1
+
 #include "squarepine_core.h"
 
 #if JUCE_WINDOWS
@@ -10,6 +12,8 @@
     #include <Wlanapi.h>
     #pragma comment (lib, "iphlpapi.lib")
     #pragma comment (lib, "wlanapi.lib")
+#elif JUCE_ANDROID
+    #include <sys/system_properties.h>
 #endif
 
 //==============================================================================
@@ -26,6 +30,17 @@
 //==============================================================================
 namespace sp
 {
+    String getAndroidReleaseVersion()
+    {
+       #if JUCE_ANDROID
+        char osVersion[PROP_VALUE_MAX + 1] = { 0 };
+        __system_property_get ("ro.build.version.release", osVersion);
+        return String (osVersion).trim ();
+       #else
+        return {};
+       #endif
+    }
+
     #include "cryptography/CRC.cpp"
     //#include "cryptography/SHA1.cpp"
     #include "debugging/CrashStackTracer.cpp"

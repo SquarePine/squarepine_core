@@ -9,6 +9,8 @@ SimpleApplication::~SimpleApplication()
     SQUAREPINE_CRASH_TRACER
 
     Logger::writeToLog ("*** Shutting Down Application ***");
+    std::cout << std::flush;
+    std::cerr << std::flush;
     Logger::setCurrentLogger (nullptr);
     logger = nullptr;
 }
@@ -37,25 +39,43 @@ void SimpleApplication::initialise (const String& commandLine)
     enableLogging();
     Logger::writeToLog ("*** Starting Application ***");
 
+    const auto separator = String::repeatedString ("-", 30);
+
+    auto createLogTitle = [] (const String& name) -> String
+    {
+        return "=== " + name + " ===";
+    };
+
     String stats;
+    stats.preallocateBytes (512);
+
     stats
-        << "---------------------------" << newLine
-        << "=== Operating System ===" << newLine
+        << separator << newLine
+        << createLogTitle ("Operating System") << newLine
         << "Name: " << SystemStats::getOperatingSystemName() << newLine
+       #if JUCE_ANDROID
+        << "Android Release: " << getAndroidReleaseVersion() << newLine
+        << "Android SDK: " << getAndroidSDKVersion() << newLine
+       #if __ANDROID_API__ >= 24
+        << "Android Target SDK: " << android_get_application_target_sdk_version() << newLine
+       #endif
+       #endif
         << "Is OS 64-bit? " << booleanToString (SystemStats::isOperatingSystem64Bit(), true) << newLine
-        << "RAM (MB): " << String (SystemStats::getMemorySizeInMegabytes()) << newLine
-        << "---------------------------" << newLine
-        << "=== User Information ===" << newLine
-        << "Display Language: " << SystemStats::getDisplayLanguage() << newLine
+        << "Memory: " << SystemStats::getMemorySizeInMegabytes() << " MiB" << newLine
+        << newLine
+        << createLogTitle ("User") << newLine
+        << "User Language: " << SystemStats::getUserLanguage() << newLine
         << "User Region: " << SystemStats::getUserRegion() << newLine
+        << "Display Language: " << SystemStats::getDisplayLanguage() << newLine
         << "Device Description: " << SystemStats::getDeviceDescription() << newLine
-        << "---------------------------" << newLine
-        << "=== CPU Info ===" << newLine
+        << "Device Manufacturer: " << SystemStats::getDeviceManufacturer() << newLine
+        << newLine
+        << createLogTitle ("CPU") << newLine
         << "CPU Model: " << SystemStats::getCpuModel() << newLine
         << "CPU Vendor: " << SystemStats::getCpuVendor() << newLine
-        << "CPU Speed (MHz): " << String (SystemStats::getCpuSpeedInMegahertz()) << newLine
-        << "Num CPUs: " << String (SystemStats::getNumCpus()) << newLine
-        << "Num Physical CPUs: " << String (SystemStats::getNumPhysicalCpus()) << newLine
+        << "CPU Speed: " << SystemStats::getCpuSpeedInMegahertz() << " MHz" << newLine
+        << "Num CPUs: " << SystemStats::getNumCpus() << newLine
+        << "Num Physical CPUs: " << SystemStats::getNumPhysicalCpus() << newLine
         << "CPU Features: " << newLine;
 
     auto appendIfTrue = [&] (const String& name, bool b)
@@ -88,7 +108,7 @@ void SimpleApplication::initialise (const String& commandLine)
     appendIfTrue ("AVX512VPOPCNTDQ",    SystemStats::hasAVX512VPOPCNTDQ());
     appendIfTrue ("Neon",               SystemStats::hasNeon());
 
-    stats << "---------------------------" << newLine << newLine;
+    stats << separator << newLine << newLine;
     Logger::writeToLog (stats);
 
     mainWindow = createWindow();
