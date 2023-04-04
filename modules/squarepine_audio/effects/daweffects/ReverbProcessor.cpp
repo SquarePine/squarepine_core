@@ -116,7 +116,7 @@ void ReverbProcessor::processAudioBlock (juce::AudioBuffer<float>& buffer, MidiB
 
     updateReverbParams();
 
-    auto** chans = buffer.getArrayOfWritePointers();
+    auto chans = buffer.getArrayOfWritePointers();
 
     const ScopedLock sl (getCallbackLock());
 

@@ -74,7 +74,7 @@ void ResamplingAudioFormatReader::prepare (double currentOutputSampleRate, int e
 }
 
 //==============================================================================
-bool ResamplingAudioFormatReader::readSamples (int** destSamples, int numDestChannels, int startOffsetInDestBuffer,
+bool ResamplingAudioFormatReader::readSamples (int* const* destSamples, int numDestChannels, int startOffsetInDestBuffer,
                                                int64 startSampleInFile, int numSamples)
 {
     jassert (reader != nullptr && ! approximatelyEqual (sampleRate, 0.0));

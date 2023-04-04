@@ -3,9 +3,9 @@ DummyAudioIODeviceCallback::DummyAudioIODeviceCallback()
 }
 
 //==============================================================================
-void DummyAudioIODeviceCallback::audioDeviceIOCallbackWithContext (const float**,
+void DummyAudioIODeviceCallback::audioDeviceIOCallbackWithContext (const float* const*,
                                                                    int,
-                                                                   float** outputChannelData,
+                                                                   float* const* outputChannelData,
                                                                    int numOutputChannels,
                                                                    int numSamples,
                                                                    const AudioIODeviceCallbackContext&)
