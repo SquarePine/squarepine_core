@@ -189,6 +189,7 @@ String getInternalProcessorTypeName();
 #include "time/TimeKeeper.h"
 #include "wrappers/AudioSourceProcessor.h"
 #include "wrappers/AudioTransportProcessor.h"
+#include "effects/daweffects/GainProcessor.h"
 }
 
 //==============================================================================

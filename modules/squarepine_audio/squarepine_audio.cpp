@@ -103,4 +103,6 @@ String getInternalProcessorTypeName()
 #include "time/TimeSignature.cpp"
 #include "wrappers/AudioSourceProcessor.cpp"
 #include "wrappers/AudioTransportProcessor.cpp"
+#include "effects/daweffects/GainProcessor.cpp"
+
 }
