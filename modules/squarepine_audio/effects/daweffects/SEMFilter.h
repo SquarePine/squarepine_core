@@ -2,6 +2,9 @@
 // This model is based on the Virtual Analog analysis
 // by Will Pirkle: https://github.com/ddiakopoulos/MoogLadders/blob/master/src/OberheimVariationModel.h
 
+namespace djdawprocessor
+{
+
 class SEMLowPassFilter
 {
 public:
@@ -231,21 +234,21 @@ public:
     {
         this->filterType = filterTypeParam;
     }
-    
+
     void processBuffer (juce::AudioBuffer<float>& buffer, MidiBuffer&)
     {
-        for (int c = 0 ; c < buffer.getNumChannels() ; ++c)
+        for (int c = 0; c < buffer.getNumChannels(); ++c)
         {
-            for (int n = 0 ; n < buffer.getNumSamples() ; ++n)
+            for (int n = 0; n < buffer.getNumSamples(); ++n)
             {
                 float x = buffer.getWritePointer (c)[n];
-                float y = processSample (x,c);
+                float y = processSample (x, c);
                 buffer.getWritePointer (c)[n] = y;
             }
         }
     }
-    
-    double processSample(double x, int channel)
+
+    double processSample (double x, int channel)
     {
         performSmoothing();
 
@@ -489,7 +492,7 @@ class SEMFilter final : public InternalProcessor,
                         public AudioProcessorParameter::Listener
 {
 public:
-    SEMFilter (int idNum=1)
+    SEMFilter (int idNum = 1)
         : idNumber (idNum)
     {
         reset();
@@ -533,7 +536,7 @@ public:
                                                                         return String (value, 1);
                                                                     });
 
-        setPrimaryParameter(normFreqParam);
+        setPrimaryParameter (normFreqParam);
         normFreqParam = normFreq.get();
         normFreqParam->addListener (this);
 
@@ -618,7 +621,8 @@ public:
 
     void process (juce::AudioBuffer<float>& buffer)
     {
-        if(isBypassed())return;
+        if (isBypassed())
+            return;
         const auto numChannels = buffer.getNumChannels();
         const auto numSamples = buffer.getNumSamples();
 
@@ -690,3 +694,5 @@ private:
     SEMHighPassFilter hpf;
     DigitalFilter hpf2;// Use for now. Swap out later for a better model of  the SEMHighPassFilter
 };
+
+}

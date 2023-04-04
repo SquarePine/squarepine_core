@@ -1,4 +1,8 @@
-CrushProcessor::CrushProcessor (int idNum): idNumber (idNum)
+namespace djdawprocessor
+{
+
+CrushProcessor::CrushProcessor (int idNum)
+    : idNumber (idNum)
 {
     reset();
 
@@ -7,18 +11,20 @@ CrushProcessor::CrushProcessor (int idNum): idNumber (idNum)
                                                                    true,// isAutomatable
                                                                    "Dry/Wet",
                                                                    AudioProcessorParameter::genericParameter,
-                                                                   [] (float value, int) -> String {
+                                                                   [] (float value, int) -> String
+                                                                   {
                                                                        int percentage = roundToInt (value * 100);
                                                                        String txt (percentage);
                                                                        return txt << "%";
                                                                    });
 
-    auto fxon = std::make_unique<NotifiableAudioParameterBool> ("fxonoff", "FX On", true, "FX On/Off ", true, [] (bool value, int) -> String {
-        if (value > 0)
-            return TRANS ("On");
-        return TRANS ("Off");
-        ;
-    });
+    auto fxon = std::make_unique<NotifiableAudioParameterBool> ("fxonoff", "FX On", true, "FX On/Off ", true, [] (bool value, int) -> String
+                                                                {
+                                                                    if (value > 0)
+                                                                        return TRANS ("On");
+                                                                    return TRANS ("Off");
+                                                                    ;
+                                                                });
 
     /*
      Turn counterclockwise: Increases the sound’s distortion.
@@ -29,8 +35,9 @@ CrushProcessor::CrushProcessor (int idNum): idNumber (idNum)
                                                                    true,// isAutomatable
                                                                    "Colour ",
                                                                    AudioProcessorParameter::genericParameter,
-                                                                   [] (float value, int) -> String {
-                                                                       String txt (std::round (100.f*value) / 100.f);
+                                                                   [] (float value, int) -> String
+                                                                   {
+                                                                       String txt (std::round (100.f * value) / 100.f);
                                                                        return txt;
                                                                        ;
                                                                    });
@@ -40,7 +47,8 @@ CrushProcessor::CrushProcessor (int idNum): idNumber (idNum)
                                                                   true,// isAutomatable
                                                                   "Other ",
                                                                   AudioProcessorParameter::genericParameter,
-                                                                  [] (float value, int) -> String {
+                                                                  [] (float value, int) -> String
+                                                                  {
                                                                       int percentage = roundToInt (value * 100);
                                                                       String txt (percentage);
                                                                       return txt << "%";
@@ -83,7 +91,7 @@ void CrushProcessor::prepareToPlay (double sampleRate, int bufferSize)
     bitCrusher.prepareToPlay (sampleRate, bufferSize);
     highPassFilter.setFilterType (DigitalFilter::FilterType::HPF);
     highPassFilter.setFs (sampleRate);
-    
+
     dryBuffer = AudioBuffer<float> (2, bufferSize);
 }
 void CrushProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midi)
@@ -95,23 +103,23 @@ void CrushProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&
         wet = wetDryParam->get();
         isOn = fxOnParam->get();
     }
-        
-    if (!isOn)
+
+    if (! isOn)
         return;
-    
-    for (int c = 0 ; c < buffer.getNumChannels(); ++c)
+
+    for (int c = 0; c < buffer.getNumChannels(); ++c)
     {
-        dryBuffer.copyFrom (c,0, buffer,c,0,buffer.getNumSamples());
+        dryBuffer.copyFrom (c, 0, buffer, c, 0, buffer.getNumSamples());
     }
     bitCrusher.processBlock (buffer, midi);
     highPassFilter.processBuffer (buffer, midi);
-    
+
     buffer.applyGain (wet);
-    dryBuffer.applyGain (1.f-wet);
-    
-    for (int c = 0 ; c < buffer.getNumChannels(); ++c)
+    dryBuffer.applyGain (1.f - wet);
+
+    for (int c = 0; c < buffer.getNumChannels(); ++c)
     {
-        buffer.addFrom (c,0, dryBuffer,c,0,buffer.getNumSamples());
+        buffer.addFrom (c, 0, dryBuffer, c, 0, buffer.getNumSamples());
     }
 }
 
@@ -124,8 +132,10 @@ bool CrushProcessor::supportsDoublePrecisionProcessing() const { return false; }
 void CrushProcessor::parameterValueChanged (int paramNum, float value)
 {
     const ScopedLock sl (getCallbackLock());
-    if (paramNum == 2) {}// wet/dry
-    else if (paramNum == 3) // "color"
+    if (paramNum == 2)
+    {
+    }// wet/dry
+    else if (paramNum == 3)// "color"
     {
         if (value <= 0.f)
         {
@@ -133,18 +143,19 @@ void CrushProcessor::parameterValueChanged (int paramNum, float value)
             float normValue = (value * -1.f);
             // 3 bits -> normValue = 0
             // 8 bits -> normValue = 1
-            bitCrusher.setBitDepth (5.f * std::sqrt(1.f - normValue) + 3.f);
+            bitCrusher.setBitDepth (5.f * std::sqrt (1.f - normValue) + 3.f);
         }
         else
         {
             float normValue = value;
             // freqHz = 20 -> 5000
-            float freqHz = 2.f * std::powf(10.f,3.f * (normValue * 0.8f) + 1.f);
+            float freqHz = 2.f * std::powf (10.f, 3.f * (normValue * 0.8f) + 1.f);
             highPassFilter.setFreq (freqHz);
             // 8 bits -> value = 0.5, normValue = 0
             // 3 bits -> value = 1, normValue = 0
-            bitCrusher.setBitDepth (5.f * std::sqrt(1.f - normValue) + 3.f);
+            bitCrusher.setBitDepth (5.f * std::sqrt (1.f - normValue) + 3.f);
         }
     }
 }
 
+}

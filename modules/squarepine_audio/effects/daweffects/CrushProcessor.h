@@ -1,12 +1,14 @@
 /// This placeholder class with No DSP.  It's purpose is to provide an appropriate parameter interface for recording useful information..
+namespace djdawprocessor
+{
 
-class DubEchoProcessor final : public V10SendProcessor
-
+class CrushProcessor final : public InternalProcessor,
+                             public AudioProcessorParameter::Listener
 {
 public:
     //Constructor with ID
-    DubEchoProcessor (int idNum = 1);
-    ~DubEchoProcessor() override;
+    CrushProcessor (int idNum = 1);
+    ~CrushProcessor() override;
 
     //============================================================================== Audio processing
     void prepareToPlay (double Fs, int bufferSize) override;
@@ -20,15 +22,22 @@ public:
     //============================================================================== Parameter callbacks
     void parameterValueChanged (int paramNum, float value) override;
     void parameterGestureChanged (int, bool) override {}
-
 private:
     AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     NotifiableAudioParameterFloat* wetDryParam = nullptr;
-    NotifiableAudioParameterFloat* timeParam = nullptr;
-    NotifiableAudioParameterFloat* echoColourParam = nullptr;
-    NotifiableAudioParameterFloat* feedbackParam = nullptr;
+    NotifiableAudioParameterFloat* colourParam = nullptr;
+    NotifiableAudioParameterFloat* emphasisParam = nullptr;
     AudioParameterBool* fxOnParam = nullptr;
 
+    //bool isBypassed = false;
+
     int idNumber = 1;
+
+    BitCrusherProcessor bitCrusher;
+    DigitalFilter highPassFilter;
+
+    AudioBuffer<float> dryBuffer;
 };
+
+}

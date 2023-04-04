@@ -57,12 +57,10 @@ String getInternalProcessorTypeName()
 #include "effects/MuteProcessor.cpp"
 #include "effects/PanProcessor.cpp"
 #include "effects/SpaceProcessor.cpp"
-#include "effects/DubEchoProcessor.cpp"
 #include "effects/ShortDelayProcessor.cpp"
 #include "effects/LongDelayProcessor.cpp"
 #include "effects/SweepProcessor.cpp"
 #include "effects/NoiseProcessor.cpp"
-#include "effects/CrushProcessor.cpp"
 #include "effects/BandProcessor.cpp"
 #include "effects/DelayProcessor.cpp"
 #include "effects/EchoProcessor.cpp"
@@ -104,5 +102,7 @@ String getInternalProcessorTypeName()
 #include "wrappers/AudioSourceProcessor.cpp"
 #include "wrappers/AudioTransportProcessor.cpp"
 #include "effects/daweffects/GainProcessor.cpp"
+#include "effects/daweffects/DubEchoProcessor.cpp"
+#include "effects/daweffects/CrushProcessor.cpp"
 
 }

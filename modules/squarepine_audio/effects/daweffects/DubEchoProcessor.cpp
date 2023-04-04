@@ -1,4 +1,8 @@
-DubEchoProcessor::DubEchoProcessor (int idNum): idNumber (idNum)
+namespace djdawprocessor
+{
+
+DubEchoProcessor::DubEchoProcessor (int idNum)
+    : idNumber (idNum)
 {
     reset();
 
@@ -7,24 +11,27 @@ DubEchoProcessor::DubEchoProcessor (int idNum): idNumber (idNum)
                                                                    true,// isAutomatable
                                                                    "Dry/Wet",
                                                                    AudioProcessorParameter::genericParameter,
-                                                                   [] (float value, int) -> String {
+                                                                   [] (float value, int) -> String
+                                                                   {
                                                                        int percentage = roundToInt (value * 100);
                                                                        String txt (percentage);
                                                                        return txt << "%";
                                                                    });
 
-    auto fxon = std::make_unique<AudioParameterBool> ("fxonoff", "FX On", true, "FX On/Off ", [] (bool value, int) -> String {
-        if (value > 0)
-            return TRANS ("On");
-        return TRANS ("Off");
-        ;
-    });
+    auto fxon = std::make_unique<AudioParameterBool> ("fxonoff", "FX On", true, "FX On/Off ", [] (bool value, int) -> String
+                                                      {
+                                                          if (value > 0)
+                                                              return TRANS ("On");
+                                                          return TRANS ("Off");
+                                                          ;
+                                                      });
     NormalisableRange<float> timeRange = { 1.f, 4000.0f };
     auto time = std::make_unique<NotifiableAudioParameterFloat> ("delayTime", "Echo Time", timeRange, 200.f,
                                                                  true,// isAutomatable
                                                                  "Delay Time",
                                                                  AudioProcessorParameter::genericParameter,
-                                                                 [] (float value, int) -> String {
+                                                                 [] (float value, int) -> String
+                                                                 {
                                                                      String txt (roundToInt (value));
                                                                      return txt << "ms";
                                                                      ;
@@ -34,7 +41,8 @@ DubEchoProcessor::DubEchoProcessor (int idNum): idNumber (idNum)
                                                                    true,// isAutomatable
                                                                    "Colour ",
                                                                    AudioProcessorParameter::genericParameter,
-                                                                   [] (float value, int) -> String {
+                                                                   [] (float value, int) -> String
+                                                                   {
                                                                        String txt (value);
                                                                        return txt;
                                                                        ;
@@ -45,7 +53,8 @@ DubEchoProcessor::DubEchoProcessor (int idNum): idNumber (idNum)
                                                                      true,// isAutomatable
                                                                      "Feedback ",
                                                                      AudioProcessorParameter::genericParameter,
-                                                                     [] (float value, int) -> String {
+                                                                     [] (float value, int) -> String
+                                                                     {
                                                                          int percentage = roundToInt (value * 100);
                                                                          String txt (percentage);
                                                                          return txt << "%";
@@ -103,4 +112,6 @@ bool DubEchoProcessor::supportsDoublePrecisionProcessing() const { return false;
 //============================================================================== Parameter callbacks
 void DubEchoProcessor::parameterValueChanged (int, float)
 {
+}
+
 }

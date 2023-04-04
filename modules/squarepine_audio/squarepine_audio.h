@@ -140,18 +140,15 @@ String getInternalProcessorTypeName();
 #include "effects/PanProcessor.h"
 #include "effects/PolarityInversionProcessor.h"
 #include "effects/SimpleDistortionProcessor.h"
-#include "effects/SEMFilter.h"
 #include "effects/SimpleEQProcessor.h"
 #include "effects/StereoWidthProcessor.h"
 #include "effects/GainProcessor.h"
 #include "effects/V10SendProcessor.h"
 #include "effects/SpaceProcessor.h"
-#include "effects/DubEchoProcessor.h"
 #include "effects/ShortDelayProcessor.h"
 #include "effects/LongDelayProcessor.h"
 #include "effects/SweepProcessor.h"
 #include "effects/NoiseProcessor.h"
-#include "effects/CrushProcessor.h"
 #include "effects/BandProcessor.h"
 #include "effects/DelayProcessor.h"
 #include "effects/EchoProcessor.h"
@@ -190,6 +187,11 @@ String getInternalProcessorTypeName();
 #include "wrappers/AudioSourceProcessor.h"
 #include "wrappers/AudioTransportProcessor.h"
 #include "effects/daweffects/GainProcessor.h"
+#include "effects/daweffects/DubEchoProcessor.h"
+#include "effects/daweffects/SEMFilter.h"
+#include "effects/daweffects/CrushProcessor.h"
+
+
 }
 
 //==============================================================================

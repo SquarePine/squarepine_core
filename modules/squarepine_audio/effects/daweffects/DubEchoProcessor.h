@@ -1,12 +1,15 @@
+namespace djdawprocessor
+{
+
 /// This placeholder class with No DSP.  It's purpose is to provide an appropriate parameter interface for recording useful information..
 
-class CrushProcessor final : public InternalProcessor,
-                             public AudioProcessorParameter::Listener
+class DubEchoProcessor final : public V10SendProcessor
+
 {
 public:
     //Constructor with ID
-    CrushProcessor (int idNum = 1);
-    ~CrushProcessor()override;
+    DubEchoProcessor (int idNum = 1);
+    ~DubEchoProcessor() override;
 
     //============================================================================== Audio processing
     void prepareToPlay (double Fs, int bufferSize) override;
@@ -19,23 +22,17 @@ public:
     bool supportsDoublePrecisionProcessing() const override;
     //============================================================================== Parameter callbacks
     void parameterValueChanged (int paramNum, float value) override;
-    void parameterGestureChanged (int, bool) override{}
-
+    void parameterGestureChanged (int, bool) override {}
 private:
     AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     NotifiableAudioParameterFloat* wetDryParam = nullptr;
-    NotifiableAudioParameterFloat* colourParam = nullptr;
-    NotifiableAudioParameterFloat* emphasisParam = nullptr;
+    NotifiableAudioParameterFloat* timeParam = nullptr;
+    NotifiableAudioParameterFloat* echoColourParam = nullptr;
+    NotifiableAudioParameterFloat* feedbackParam = nullptr;
     AudioParameterBool* fxOnParam = nullptr;
 
-    //bool isBypassed = false;
-    
     int idNumber = 1;
-
-    BitCrusherProcessor bitCrusher;
-    DigitalFilter highPassFilter;
-    
-    AudioBuffer<float> dryBuffer;
 };
 
+}
