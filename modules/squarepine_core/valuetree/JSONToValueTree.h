@@ -1,13 +1,9 @@
 //==============================================================================
-/** */
-ValueTree createValueTreeFromJSON (const var& json);
+/** @returns */
+ValueTree createValueTreeFromJSON (const var& json, const Identifier& rootId);
 
-/** */
-ValueTree createValueTreeFromJSON (const String& data);
+/** @returns */
+ValueTree createValueTreeFromJSON (const String& data, const Identifier& rootId);
 
-//==============================================================================
-/** */
-var createJSONFromXML (const XmlElement& xml);
-
-/** */
-var createJSONFromValueTree (const ValueTree& tree, const Identifier& rootArrayName);
+/** @returns */
+String toJSONString (const ValueTree&);

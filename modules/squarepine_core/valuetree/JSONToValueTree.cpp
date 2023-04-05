@@ -1,68 +1,59 @@
-namespace jsonhelpers
+namespace
 {
-    const Identifier rootId = "root";
-    const Identifier propertyId = "property";
-
-    inline void setProperty (ValueTree& source, const Identifier& id, const var& v)
+    inline DynamicObject::Ptr toDynamicObj (const ValueTree& root)
     {
-        jassert (id.isValid() && ! v.isVoid());
-        source.setProperty (id, v, nullptr);
+        DynamicObject::Ptr result (new DynamicObject());
+
+        for (int i = 0; i < root.getNumProperties(); ++i)
+        {
+            const auto name = root.getPropertyName (i);
+            result->setProperty (name, root[name]);
+        }
+
+        for (const auto& child : root)
+            if (auto dynObj = toDynamicObj (child))
+                result->setProperty (child.getType(), dynObj.get());
+
+        return result;
     }
 
-    inline void appendValueTree (ValueTree& parent, const Identifier& id, const var& v)
+    inline ValueTree toValueTree (DynamicObject* ptr, const Identifier& rootId)
     {
-        if (! parent.isValid() || id.isNull() || v.isVoid())
-            return;
+        if (ptr == nullptr)
+            return {};
 
-        if (auto* ar = v.getArray())
+        ValueTree result (rootId);
+
+        for (auto& p : ptr->getProperties())
         {
-            for (const auto& item : *ar)
-            {
-                ValueTree child (rootId);
-                parent.appendChild (child, nullptr);
-                appendValueTree (child, propertyId, item);
-            }
-
-            return;
+            if (auto* dynObj = p.value.getDynamicObject())
+                result.appendChild (toValueTree (dynObj, p.name), nullptr);
+            else
+                result.setProperty (p.name, p.value, nullptr);
         }
 
-        if (auto* object = v.getDynamicObject())
-        {
-            ValueTree child (id);
-            parent.appendChild (child, nullptr);
-
-            for (const auto& prop : object->getProperties())
-                appendValueTree (parent, prop.name, prop.value);
-
-            return;
-        }
-
-        ValueTree child (id);
-        parent.appendChild (child, nullptr);
-        setProperty (child, Identifier (String ("property") + String (parent.getNumProperties())), v);
+        return result;
     }
 }
 
-ValueTree createValueTreeFromJSON (const var& json)
+ValueTree createValueTreeFromJSON (const var& json, const Identifier& rootId)
 {
-    using namespace jsonhelpers;
-
-    if (json.isVoid())
-        return {};
-
-    ValueTree root (rootId);
-    appendValueTree (root, rootId, json);
-    return root;
+    return toValueTree (json.getDynamicObject(), rootId);
 }
 
-ValueTree createValueTreeFromJSON (const String& data)
+ValueTree createValueTreeFromJSON (const String& data, const Identifier& rootId)
 {
-    return createValueTreeFromJSON (JSON::parse (data));
+    return createValueTreeFromJSON (JSON::parse (data), rootId);
 }
 
-//==============================================================================
-var createJSONFromXML (const XmlElement&)
+String toJSONString (const ValueTree& tree)
 {
-    jassertfalse; // @todo
-    return var::undefined();
+    if (auto dynObj = toDynamicObj (tree))
+    {
+        MemoryOutputStream stream;
+        dynObj->writeAsJSON (stream, 4, false, 3);
+        return stream.getMemoryBlock().toString();
+    }
+
+    return {};
 }
