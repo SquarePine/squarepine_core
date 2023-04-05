@@ -114,6 +114,11 @@ EffectProcessor::Ptr EffectProcessorChain::getEffectProcessor (int index) const
     return {};
 }
 
+int EffectProcessorChain::indexOf (EffectProcessor::Ptr effect) const
+{
+    return plugins.indexOf (effect);
+}
+
 std::optional<String> EffectProcessorChain::getPluginInstanceName (int index) const
 {
     return getEffectProperty<String> (index, [&] (EffectProcessor::Ptr e)

@@ -59,6 +59,9 @@ public:
     /** @returns the effect at the provided index, or nullptr if it was out of range. */
     [[nodiscard]] EffectProcessor::Ptr getEffectProcessor (int index) const;
 
+    /** @returns the effect at the provided index, or nullptr if it was out of range. */
+    [[nodiscard]] int indexOf (EffectProcessor::Ptr) const;
+
     //==============================================================================
     /** Add a new effect at the end of the existing array of plugins.
 
