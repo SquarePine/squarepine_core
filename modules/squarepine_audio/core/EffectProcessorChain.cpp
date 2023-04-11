@@ -335,7 +335,10 @@ void EffectProcessorChain::processInternal (juce::AudioBuffer<FloatType>& source
 
     addFrom (bufferPackage.mixingBuffer, source, numChannels, numSamples);
 
-    for (auto effect : plugins)
+    // Making this copy in case effects are changed around somehow (CRUD, etc):
+    auto plugs = plugins;
+
+    for (auto effect : plugs)
     {
         if (effect == nullptr)
             continue;
@@ -344,7 +347,7 @@ void EffectProcessorChain::processInternal (juce::AudioBuffer<FloatType>& source
         bufferPackage.effectBuffer.clear();
         addFrom (bufferPackage.effectBuffer, bufferPackage.mixingBuffer, numChannels, numSamples);
 
-        if (effect->plugin->isSuspended())
+        if (effect->plugin == nullptr || effect->plugin->isSuspended())
         {
             bufferPackage.effectBuffer.clear();
         }
