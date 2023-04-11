@@ -74,6 +74,11 @@ void EffectProcessorChain::move (int pluginIndex, int destinationIndex)
     plugins.swap (pluginIndex, destinationIndex);
 }
 
+void EffectProcessorChain::swap (int index1, int index2)
+{
+    plugins.swap (index1, index2);
+}
+
 int EffectProcessorChain::getNumEffects() const
 {
     return plugins.size();

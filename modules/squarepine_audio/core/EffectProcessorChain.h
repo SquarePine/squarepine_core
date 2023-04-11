@@ -143,6 +143,13 @@ public:
     */
     void move (int sourceIndex, int destinationIndex);
 
+    /** Swaps a pair of effects in the chain.
+
+        If either of the indexes passed in is out-of-range, nothing will happen,
+        otherwise the two effects at these positions will be exchanged.
+    */
+    void swap (int index1, int index2);
+
     /** Remove an effect at the specific index, or a no-op if it's out of range.
 
         @param index Index within the array of plugins.
