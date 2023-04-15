@@ -53,15 +53,6 @@ namespace sp
     using namespace juce;
 
     /** */
-    std::unique_ptr<Drawable> createDrawableFromSVG (const File& file);
-    /** */
-    std::unique_ptr<Drawable> createDrawableFromSVG (const char* const data);
-    /** */
-    Image createImageForDrawable (Drawable* drawable, int width, int height);
-    /** */
-    void replaceAllDrawableColours (juce::Component&, juce::Colour colour);
-
-    /** */
     class WaitCursorAutoHider final
     {
     public:
@@ -196,6 +187,7 @@ namespace sp
     #include "components/ValueTreeEditor.h"
     #include "images/BlendingEffects.h"
     #include "images/BMPImageFormat.h"
+    #include "images/DrawableHelpers.h"
     #include "images/ImageEffects.h"
     #include "images/ImageFormatManager.h"
     #include "images/Resizer.h"
