@@ -13,6 +13,7 @@ template<typename Type>
 EffectProcessor::Ptr EffectProcessorChain::insertInternal (int destinationIndex, const Type& valueOrRef, InsertionStyle insertionStyle)
 {
     SQUAREPINE_CRASH_TRACER
+    const ScopedBypass sb (*this);
 
     if (factory == nullptr)
     {
@@ -70,12 +71,16 @@ EffectProcessor::Ptr EffectProcessorChain::replace (int dest, const String& s)  
 void EffectProcessorChain::move (int pluginIndex, int destinationIndex)
 {
     SQUAREPINE_CRASH_TRACER
+    const ScopedBypass sb (*this);
 
     plugins.swap (pluginIndex, destinationIndex);
 }
 
 void EffectProcessorChain::swap (int index1, int index2)
 {
+    SQUAREPINE_CRASH_TRACER
+    const ScopedBypass sb (*this);
+
     plugins.swap (index1, index2);
 }
 
@@ -87,6 +92,7 @@ int EffectProcessorChain::getNumEffects() const
 bool EffectProcessorChain::remove (int index)
 {
     SQUAREPINE_CRASH_TRACER
+    const ScopedBypass sb (*this);
 
     const auto startSize = getNumEffects();
     plugins.remove (index);
@@ -96,6 +102,7 @@ bool EffectProcessorChain::remove (int index)
 bool EffectProcessorChain::clear()
 {
     SQUAREPINE_CRASH_TRACER
+    const ScopedBypass sb (*this);
 
     const bool changed = ! plugins.isEmpty();
     if (changed)
@@ -113,10 +120,7 @@ bool EffectProcessorChain::clear()
 //==============================================================================
 EffectProcessor::Ptr EffectProcessorChain::getEffectProcessor (int index) const
 {
-    if (isPositiveAndBelow (index, getNumEffects()))
-        return plugins[index];
-
-    return {};
+    return plugins[index];
 }
 
 int EffectProcessorChain::indexOf (EffectProcessor::Ptr effect) const
