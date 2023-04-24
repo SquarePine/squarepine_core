@@ -59,7 +59,7 @@ public:
     /** @returns the effect at the provided index, or nullptr if it was out of range. */
     [[nodiscard]] EffectProcessor::Ptr getEffectProcessor (int index) const;
 
-    /** @returns the effect at the provided index, or nullptr if it was out of range. */
+    /** @returns the index of the effect or -1 if it wasn't found. */
     [[nodiscard]] int indexOf (EffectProcessor::Ptr) const;
 
     //==============================================================================
