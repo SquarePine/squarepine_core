@@ -31,9 +31,6 @@ EffectProcessor::Ptr EffectProcessorChain::insertInternal (int destinationIndex,
             proc.prepareToPlay (getSampleRate(), getBlockSize());
         };
 
-        if (auto* proc = effectLevels.add (new LevelsProcessor()))
-            prepareInternal (*proc);
-
         prepareInternal (*pluginInstance);
 
         auto effect = new EffectProcessor (std::move (pluginInstance), factory->createPluginDescription (valueOrRef));
@@ -51,6 +48,10 @@ EffectProcessor::Ptr EffectProcessorChain::insertInternal (int destinationIndex,
         {
             plugins.set (destinationIndex, effect);
         }
+
+        while (effectLevels.size() < plugins.size())
+            if (auto* proc = effectLevels.add (new LevelsProcessor()))
+                prepareInternal (*proc);
 
         updateLatency();
         updateHostDisplay();
@@ -481,6 +482,8 @@ void EffectProcessorChain::getStateInformation (MemoryBlock& destData)
 
 XmlElement* EffectProcessorChain::createElementForEffect (EffectProcessor::Ptr effect)
 {
+    SQUAREPINE_CRASH_TRACER
+
     if (effect == nullptr)
     {
         jassertfalse;
@@ -543,6 +546,8 @@ void EffectProcessorChain::setStateInformation (const void* const data, const in
 
 EffectProcessor::Ptr EffectProcessorChain::createEffectProcessorFromXML (XmlElement* const effectXML)
 {
+    SQUAREPINE_CRASH_TRACER
+
     if (effectXML == nullptr)
     {
         jassertfalse;
