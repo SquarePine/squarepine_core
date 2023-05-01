@@ -111,7 +111,8 @@ void SimpleApplication::initialise (const String& commandLine)
     stats << separator << newLine << newLine;
     Logger::writeToLog (stats);
 
-    mainWindow = createWindow();
+    if (! Desktop::getInstance().isHeadless())
+        mainWindow = createWindow();
 }
 
 void SimpleApplication::shutdown()
