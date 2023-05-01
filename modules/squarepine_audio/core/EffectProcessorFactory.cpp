@@ -15,6 +15,8 @@ PluginDescription EffectProcessorFactory::createPluginDescription (const int plu
 
 PluginDescription EffectProcessorFactory::createPluginDescription (const String& fileOrIdentifier) const
 {
+    SQUAREPINE_CRASH_TRACER
+
     if (auto pd = knownPluginList.getTypeForIdentifierString (fileOrIdentifier))
         return *pd;
 
@@ -33,6 +35,8 @@ PluginDescription EffectProcessorFactory::createPluginDescription (const PluginD
 //==============================================================================
 AudioPluginPtr EffectProcessorFactory::createPlugin (const PluginDescription& description) const
 {
+    SQUAREPINE_CRASH_TRACER
+
     String errorMessage;
     return getAudioPluginFormatManager().createPluginInstance (description, 44100.0, 256, errorMessage);
 }
@@ -50,6 +54,8 @@ AudioPluginPtr EffectProcessorFactory::createPlugin (const String& fileOrIdentif
 //==============================================================================
 void EffectProcessorFactory::createPluginAsync (const PluginDescription& description, PluginCreationCallback callback)
 {
+    SQUAREPINE_CRASH_TRACER
+
     if (description.isInstrument)
         return;
 

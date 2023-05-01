@@ -2,6 +2,8 @@ EffectProcessor::EffectProcessor (AudioPluginPtr api, const PluginDescription& p
     plugin (std::move (api)),
     description (pd)
 {
+    SQUAREPINE_CRASH_TRACER
+
     setName ({});
     setMixLevel (1.0f);
     setBypassed (false);
