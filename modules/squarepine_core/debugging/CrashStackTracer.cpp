@@ -3,18 +3,15 @@
 class GlobalCrashTracer final
 {
 public:
-    GlobalCrashTracer()
-    {
-        entries.ensureStorageAllocated (64);
-    }
+    GlobalCrashTracer() = default;
 
     ~GlobalCrashTracer()
     {
         entries.clear(); // Explicitly calling this to avoid a possible deadlock.
     }
 
-    void push (CrashStackTracer* c)  { const EntryList::ScopedLockType sl (entries.getLock()); entries.add (c); }
-    void pop (CrashStackTracer* c)   { const EntryList::ScopedLockType sl (entries.getLock()); entries.removeFirstMatchingValue (c); }
+    void push (CrashStackTracer* c)  { const ScopedLockType sl (entries.getLock()); entries.add (c); }
+    void pop (CrashStackTracer* c)   { const ScopedLockType sl (entries.getLock()); entries.removeFirstMatchingValue (c); }
 
     void dump() const
     {
@@ -30,7 +27,7 @@ public:
 
         {
             // NB: This is here to simply make the lock lock once, and recursively...
-            const EntryList::ScopedLockType sl (entries.getLock());
+            const ScopedLockType sl (entries.getLock());
 
             for (auto* entry : entries)
                 threads.addIfNotAlreadyThere (entry->threadID);
@@ -81,7 +78,9 @@ public:
     }
 
 private:
-    using EntryList = Array<CrashStackTracer*, CriticalSection, 100>;
+    using EntryList         = Array<CrashStackTracer*, CriticalSection, 100>;
+    using ScopedLockType    = EntryList::ScopedLockType;
+
     EntryList entries;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GlobalCrashTracer)
