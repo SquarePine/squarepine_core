@@ -34,11 +34,11 @@ public:
     //==============================================================================
     enum class NetworkType
     {
-        none,   /*!< There is no network connection. */
-        wifi,   /*!< The current network connection is wifi. */
-        wired,  /*!< The current network connection is wired, such as an ethernet connection. */
-        mobile, /*!< The current network connection is mobile, such as a 3G or 4G network. */
-        other   /*!< There is a network connection but the exact type cannot be determined (coffee machine?). */
+        none,   /** There is no network connection. */
+        wifi,   /** The current network connection is Wi-Fi. */
+        wired,  /** The current network connection is wired, such as an ethernet connection. */
+        mobile, /** The current network connection is mobile, such as a 3G or 4G network. */
+        other   /** There is a network connection but the exact type cannot be determined (coffee machine?). */
     };
 
     /** @returns the last scanned for and known network type.
@@ -63,7 +63,7 @@ public:
         If anything this is just to get a sense of the signal strength, which may
         be 0 on most platforms.
 
-        @note This is only applicable to wifi and mobile data connectivity.
+        @note This is only applicable to Wi-Fi and mobile data connectivity.
     */
     double getRSSI() const;
 
