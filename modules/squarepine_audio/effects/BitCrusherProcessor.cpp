@@ -39,6 +39,14 @@ inline FloatType decimate (FloatType input, int keepBits)
 #endif
 
 //==============================================================================
+// bit-crusher algorithm
+template<typename FloatType>
+inline FloatType bitCrusher (FloatType sample, int bitDepth)
+{
+    const auto maxInt = (1 << bitDepth) - 1;
+    return (int) std::round (sample * (FloatType) maxInt) / maxInt;
+}
+
 inline double crushToNBit (double sample, int bitDepth)
 {
     constexpr auto one = 1.0;

@@ -1,3 +1,19 @@
+// dithering DSP function
+inline void ditherTPDF (float* inputBuffer, float* outputBuffer, int bufferSize, int bitDepth = 32)
+{
+    std::random_device rd;
+    std::mt19937 gen (rd());
+    std::uniform_real_distribution<float> dist (-0.5f / (1 << (bitDepth - 1)), 0.5f / (1 << (bitDepth - 1)));
+
+    for (int i = 0; i < bufferSize; ++i)
+    {
+        auto input = inputBuffer[i];
+        auto output = input + dist (gen) + dist (gen);
+        output = jlimit (-1.0f, 1.0f, output);
+        outputBuffer[i] = output;
+    }
+}
+
 /** This is a basic 1st order noise-shaping dither. */
 class BasicDither final
 {

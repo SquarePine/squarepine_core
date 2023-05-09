@@ -215,6 +215,19 @@ public:
         return cabs (inputSample);
     }
 
+    /**
+
+        @param inputSample
+
+        @returns a distorted sample.
+    */
+    [[nodiscard]] static constexpr FloatType tubeSaturation (FloatType inputSample, FloatType drive)
+    {
+        const auto output = twoPi * std::atan (inputSample * drive);
+        // mix dry and wet signals
+        return (0.5 * inputSample) + (0.5 * output);
+    }
+
     //==============================================================================
     static void perform (juce::AudioBuffer<FloatType>& buffer,
                          std::function<FloatType (FloatType)> function) noexcept
@@ -258,6 +271,9 @@ private:
 
     static inline constexpr auto oneThird   = static_cast<FloatType> (1.0 / 3.0);
     static inline constexpr auto twoThirds  = static_cast<FloatType> (2.0 / 3.0);
+
+    static inline constexpr auto pi         = MathConstants<FloatType>::pi;
+    static inline constexpr auto twoPi      = MathConstants<FloatType>::twoPi;
 
     //==============================================================================
     SQUAREPINE_DECLARE_TOOL_CLASS (DistortionFunctions)

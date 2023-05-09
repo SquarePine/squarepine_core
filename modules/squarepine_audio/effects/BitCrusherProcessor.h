@@ -7,7 +7,7 @@ public:
 
     //==============================================================================
     /** */
-    void setBitDepth (int newBitDepth);
+    void setBitDepth (int);
 
     /** */
     int getBitDepth() const noexcept;

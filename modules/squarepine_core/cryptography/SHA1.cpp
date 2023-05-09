@@ -1,3 +1,179 @@
+#if 0
+
+
+    /** */
+    static constexpr uint32_t rol (uint32_t value, uint32_t count) noexcept
+    {
+        return (value << count) | (value >> (32 - count));
+    }
+
+    /** */
+    static std::array<uint32_t, 5> sha1(const std::string& data)
+    {
+        constexpr uint32_t constants[] = { 0x5a827999, 0x6ed9eba1, 0x8f1bbcdc, 0xca62c1d6 };
+
+        const size_t blocks = ((data.size() + 8) / 64) + 1;
+        const size_t bytes = blocks * 64;
+        std::vector<uint8_t> buffer (bytes);
+        std::memcpy (buffer.data(), data.data(), data.size());
+        buffer[data.size()] = 0x80;
+        uint64_t len = data.size() * 8;
+        std::memcpy (buffer.data() + bytes - 8, &len, sizeof (len));
+        std::array<uint32_t, 5> digest = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0 };
+
+        // Hash 512-bit/64 bytes at a time:
+        for (size_t i = 0; i < bytes; i += 64)
+        {
+            std::array<uint32_t, 80> w{};
+
+            for (size_t j = 0; j < 16; ++j)
+            {
+                const auto index = i + j * 4;
+                w[j] = (buffer[index + 0] << 24)
+                     | (buffer[index + 1] << 16)
+                     | (buffer[index + 2] << 8)
+                     | (buffer[index + 3]);
+            }
+
+            for (size_t j = 16; j < 80; ++j)
+                w[j] = rol (w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16], 1);
+
+            auto a = digest[0];
+            auto b = digest[1];
+            auto c = digest[2];
+            auto d = digest[3];
+            auto e = digest[4];
+
+            for (size_t j = 0; j < 80; ++j)
+            {
+                uint32_t f, k;
+
+                if (j < 20)
+                {
+                    f = (b & c) | ((~b) & d);
+                    k = 0x5a827999;
+                }
+                else if (j < 40)
+                {
+                    f = b ^ c ^ d;
+                    k = 0x6ed9eba1;
+                }
+                else if (j < 60)
+                {
+                    f = (b & c) | (b & d) | (c & d);
+                    k = 0x8f1bbcdc;
+                }
+                else
+                {
+                    f = b ^ c ^ d;
+                    k = 0xca62c1d6;
+                }
+
+                const auto temp = rol (a, 5) + f + e + k + w[j];
+                e = d;
+                d = c;
+                c = rol(b, 30);
+                b = a;
+                a = temp;
+            }
+
+            digest[0] += a;
+            digest[1] += b;
+            digest[2] += c;
+            digest[3] += d;
+            digest[4] += e;
+        }
+
+        return digest;
+    }
+
+/*
+        auto digest = sha1 ("Hello, world!");
+
+        // Expected: 943a702d06f34599aee1f8da8ef9f7296031d699
+        // 0540d0ffea5fa6a4f3980dfcb5bb617d82024ff5
+        DBG (String::toHexString (digest.data(), sizeof (digest), 0));
+*/
+
+std::array<uint32_t, 5> sha1(const std::string& data)
+{
+    const uint32_t k[] = { 0x5a827999, 0x6ed9eba1, 0x8f1bbcdc, 0xca62c1d6 };
+    const size_t blocks = ((data.size() + 8) / 64) + 1;
+    const size_t bytes = blocks * 64;
+    std::vector<uint8_t> buffer(bytes);
+    std::memcpy(buffer.data(), data.data(), data.size());
+    buffer[data.size()] = 0x80;
+    uint64_t len = data.size() * 8;
+    std::memcpy(buffer.data() + bytes - 8, &len, sizeof(len));
+    std::array<uint32_t, 5> h = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0 };
+
+    for (size_t i = 0; i < bytes; i += 64)
+    {
+        std::array<uint32_t, 80> w{};
+
+        for (size_t j = 0; j < 16; j++)
+        {
+            w[j] = (buffer[i + j * 4] << 24) |
+                   (buffer[i + j * 4 + 1] << 16) |
+                   (buffer[i + j * 4 + 2] << 8) |
+                   (buffer[i + j * 4 + 3]);
+        }
+
+        for (size_t j = 16; j < 80; j++)
+            w[j] = rol(w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16], 1);
+
+        auto a = h[0];
+        auto b = h[1];
+        auto c = h[2];
+        auto d = h[3];
+        auto e = h[4];
+
+        for (size_t j = 0; j < 80; j++)
+        {
+            uint32_t f, k;
+
+            if (j < 20)
+            {
+                f = (b & c) | ((~b) & d);
+                k = 0x5a827999;
+            }
+            else if (j < 40)
+            {
+                f = b ^ c ^ d;
+                k = 0x6ed9eba1;
+            }
+            else if (j < 60)
+            {
+                f = (b & c) | (b & d) | (c & d);
+                k = 0x8f1bbcdc;
+            }
+            else
+            {
+                f = b ^ c ^ d;
+                k = 0xca62c1d6;
+            }
+
+            auto temp = rol(a, 5) + f + e + k + w[j];
+            e = d;
+            d = c;
+            c = rol(b, 30);
+            b = a;
+            a = temp;
+        }
+
+        h[0] += a;
+        h[1] += b;
+        h[2] += c;
+        h[3] += d;
+        h[4] += e;
+    }
+
+    return h;
+}
+
+#endif
+
+
 struct SHA1Processor
 {
     SHA1Processor()
@@ -158,14 +334,9 @@ SHA1::SHA1 (const File& file)
     FileInputStream fin (file);
 
     if (fin.getStatus().wasOk())
-    {
-        SHA1Processor processor;
-        processor.processStream (fin, -1, result);
-    }
+        SHA1Processor().processStream (fin, -1, result);
     else
-    {
         zerostruct (result);
-    }
 }
 
 SHA1::SHA1 (CharPointer_UTF8 utf8) noexcept
@@ -177,8 +348,7 @@ SHA1::SHA1 (CharPointer_UTF8 utf8) noexcept
 void SHA1::process (const void* data, size_t numBytes)
 {
     MemoryInputStream m (data, numBytes, false);
-    SHA1Processor processor;
-    processor.processStream (m, -1, result);
+    SHA1Processor().processStream (m, -1, result);
 }
 
 MemoryBlock SHA1::getRawData() const
