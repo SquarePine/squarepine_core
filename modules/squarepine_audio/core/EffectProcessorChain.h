@@ -164,7 +164,7 @@ public:
     //==============================================================================
     /** Change the display name of a contained effect.
 
-        @param index    Index within the array of plugins
+        @param index    Index within the array of effects.
         @param name     New name.
 
         @returns true if the action changed anything.
@@ -173,8 +173,8 @@ public:
 
     /** Set whether to bypass or process a contained effect.
 
-        @param index        Index within the array of plugins.
-        @param shouldBypass Set to true if you would like the plugin to be bypassed.
+        @param index        Index within the array of effects.
+        @param shouldBypass Set to true if you would like the effect to be bypassed.
 
         @returns true if the action changed anything.
     */
@@ -182,7 +182,7 @@ public:
 
     /** Change the mix level of a contained effect.
 
-        @param index    Index within the array of plugins.
+        @param index    Index within the array of effects.
         @param mixLevel Normalised range; from 0.0f to 1.0f.
 
         @returns true if the action changed anything.
@@ -190,11 +190,11 @@ public:
     bool setMixLevel (int index, float mixLevel);
 
     //==============================================================================
-    /** Obtain the name of a plugin that exists within the array of effect plugins
+    /** Obtain the name of a plugin that exists within the array of effects.
 
         @param index Index within the array of effect plugins.
 
-        @returns the name of the effect or {} if the index is out of range.
+        @returns the name of the effect, {} otherwise.
     */
     [[nodiscard]] std::optional<String> getEffectName (int index) const;
 
@@ -202,7 +202,7 @@ public:
 
         @param index Index within the array of effect plugins.
 
-        @returns the name of the plugin instance or {} if the index is out of range.
+        @returns the name of the plugin instance, {} otherwise.
     */
     [[nodiscard]] std::optional<String> getPluginInstanceName (int index) const;
 
@@ -226,8 +226,7 @@ public:
     */
     [[nodiscard]] std::optional<PluginDescription> getPluginDescription (int index) const;
 
-    /** @returns true if the effect at the specified index is bypassed.
-        This will return {} if the index is out of range.
+    /** @returns true if the effect at the specified index is bypassed, {} otherwise.
     */
     [[nodiscard]] std::optional<bool> isBypassed (int index) const;
 
@@ -236,9 +235,7 @@ public:
     */
     [[nodiscard]] std::optional<float> getMixLevel (int index) const;
 
-    /** @returns the last known top-left position of an effect's editor.
-        This will return {} if the index is out of range.
-    */
+    /** @returns the last known top-left position of an effect's editor, {} otherwise. */
     [[nodiscard]] std::optional<juce::Point<int>> getLastUIPosition (int index) const;
 
     //==============================================================================
@@ -359,7 +356,7 @@ private:
     EffectProcessorFactory::Ptr factory;
 
     using ContainerType = ReferenceCountedArray<EffectProcessor>;
-    ContainerType plugins;
+    ContainerType effects;
 
     std::atomic<int> requiredChannels { 0 };
 
@@ -378,16 +375,16 @@ private:
 
     void updateLatency();
     [[nodiscard]] int getNumRequiredChannels() const;
-    [[nodiscard]] XmlElement* createElementForEffect (EffectProcessor::Ptr effect);
-    [[nodiscard]] EffectProcessor::Ptr createEffectProcessorFromXML (XmlElement* state);
-    [[nodiscard]] bool setEffectProperty (int index, std::function<void (EffectProcessor::Ptr)> func);
+    [[nodiscard]] static XmlElement* toXml (EffectProcessor::Ptr);
+    [[nodiscard]] EffectProcessor::Ptr createEffectProcessorFromXML (XmlElement*);
+    [[nodiscard]] bool setEffectProperty (int index, std::function<void (EffectProcessor::Ptr)>);
 
     template<typename FloatType>
     void process (juce::AudioBuffer<FloatType>&, MidiBuffer&, BufferPackage<FloatType>&);
 
     template<typename FloatType>
-    void processInternal (juce::AudioBuffer<FloatType>& source, MidiBuffer& midiMessages,
-                          BufferPackage<FloatType>& bufferPackage,
+    void processInternal (juce::AudioBuffer<FloatType>& source, MidiBuffer&,
+                          BufferPackage<FloatType>&,
                           int sourceNumChannels, int maxNumChannels, int numSamples);
 
     template<typename Type>
@@ -399,7 +396,7 @@ private:
         SQUAREPINE_CRASH_TRACER
 
         if (isPositiveAndBelow (index, getNumEffects()))
-            if (auto effect = plugins[index])
+            if (auto effect = effects[index])
                 return { func (effect) };
 
         return {};
@@ -410,7 +407,7 @@ private:
     {
         SQUAREPINE_CRASH_TRACER
 
-        for (auto effect : plugins)
+        for (auto effect : effects)
             if (effect != nullptr)
                 if (auto* plugin = effect->plugin.get())
                     (plugin->*function)();
