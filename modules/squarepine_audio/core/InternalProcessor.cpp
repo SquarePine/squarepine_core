@@ -18,6 +18,21 @@ private:
 };
 
 //==============================================================================
+ScopedSuspend::ScopedSuspend (AudioProcessor& ap) :
+    proc (ap),
+    wasSuspended (ap.isSuspended())
+{
+    if (! wasSuspended)
+        proc.suspendProcessing (true);
+}
+
+ScopedSuspend::~ScopedSuspend()
+{
+    if (! wasSuspended)
+        proc.suspendProcessing (false);
+}
+
+//==============================================================================
 InternalProcessor::ScopedBypass::ScopedBypass (InternalProcessor& ip) :
     internalProcessor (ip),
     wasBypassed (ip.isBypassed())
@@ -181,12 +196,12 @@ void InternalProcessor::setStateInformation (const void* data, const int sizeInB
         }
         else
         {
-            if (valueTree.getType() == getIdentifier())
+            if (valueTree.hasType (getIdentifier()))
                 for (int i = 0; i < valueTree.getNumProperties(); ++i)
                     for (auto* param : getParameters())
                         if (auto* const p = dynamic_cast<AudioProcessorParameterWithID*> (param))
-                            if (Identifier (p->paramID) == valueTree.getPropertyName (i))
-                                p->setValue (valueTree.getProperty (valueTree.getPropertyName (i)));
+                            if (const auto propName = valueTree.getPropertyName (i); Identifier (p->paramID) == propName)
+                                p->setValue (valueTree.getProperty (propName));
         }
     }
 

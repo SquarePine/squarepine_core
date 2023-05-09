@@ -13,6 +13,24 @@ inline Array<AudioProcessorParameter*> getAllParametersExcludingBypass (AudioPro
 }
 
 //==============================================================================
+/** An RAII mechanism that automatically suspends/unsuspends an AudioProcessor. */
+class ScopedSuspend final
+{
+public:
+    /** Begins suspending the audio processor if it wasn't already. */
+    ScopedSuspend (AudioProcessor&);
+
+    /** Restores the last suspension state. */
+    ~ScopedSuspend();
+
+private:
+    AudioProcessor& proc;
+    const bool wasSuspended;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ScopedSuspend)
+};
+
+//==============================================================================
 /** A base class for basic internal processors, processors which you 
     don't typically expose to the user (or at least not in the same way
     you would expose usual plugin formats via the usual UX).
