@@ -37,6 +37,8 @@ AudioPluginPtr EffectProcessorFactory::createPlugin (const PluginDescription& de
 {
     SQUAREPINE_CRASH_TRACER
 
+    Logger::writeToLog ("EffectProcessorFactory: creating plugin " + description.createIdentifierString());
+
     String errorMessage;
     return getAudioPluginFormatManager().createPluginInstance (description, 44100.0, 256, errorMessage);
 }

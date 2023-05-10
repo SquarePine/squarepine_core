@@ -33,6 +33,11 @@ bool EffectProcessor::canBeProcessed() const noexcept
     return ! isMissing() && ! isBypassed();
 }
 
+String EffectProcessor::getPluginName() const
+{
+    return plugin != nullptr ? plugin->getName() : "";
+}
+
 String EffectProcessor::getName() const                                 { return state[nameId].toString(); }
 void EffectProcessor::setName (const String& n, UndoManager* um)        { state.setProperty (nameId, n, um); }
 Value EffectProcessor::getNameValueObject (UndoManager* um, bool b)     { return state.getPropertyAsValue (nameId, um, b); }

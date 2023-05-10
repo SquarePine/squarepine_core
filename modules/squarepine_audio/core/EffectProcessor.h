@@ -33,10 +33,12 @@ public:
 
     //==============================================================================
     /** @returns */
-    [[nodiscard]] AudioPluginPtr getPlugin() const { return plugin; }
+    [[nodiscard]] AudioPluginPtr getPlugin() const      { return plugin; }
+    /** @returns */
+    [[nodiscard]] String getPluginName() const;
 
     /** @returns true if the contained plugin is null, which is interpreted as likely missing. */
-    [[nodiscard]] bool isMissing() const noexcept { return plugin == nullptr; }
+    [[nodiscard]] bool isMissing() const noexcept       { return plugin == nullptr; }
 
     /** @returns true if the plugin is not missing nor bypassed,
         and can generally be run as part of a process chain.

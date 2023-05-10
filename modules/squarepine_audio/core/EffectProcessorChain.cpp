@@ -17,6 +17,7 @@ EffectProcessor::Ptr EffectProcessorChain::insertInternal (int destinationIndex,
 
     if (factory == nullptr)
     {
+        Logger::writeToLog ("EffectProcessorChain: factory not found!");
         jassertfalse;
         return {};
     }
@@ -33,21 +34,32 @@ EffectProcessor::Ptr EffectProcessorChain::insertInternal (int destinationIndex,
 
         prepareInternal (*pluginInstance);
 
-        auto effect = new EffectProcessor (std::move (pluginInstance), factory->createPluginDescription (valueOrRef));
+        const auto description = factory->createPluginDescription (valueOrRef);
+        auto effect = new EffectProcessor (std::move (pluginInstance), description);
+
+        auto logMessage = String ("EffectProcessorChain: ACTION effect XYZ (\"PLUG\", \"ID\").")
+                            .replace ("XYZ", effect->getName())
+                            .replace ("PLUG", effect->getPluginName())
+                            .replace ("ID", description.createIdentifierString());
 
         if (insertionStyle == InsertionStyle::append
             || ! isPositiveAndBelow (destinationIndex, getNumEffects()))
         {
             effects.add (effect);
+            logMessage = logMessage.replace ("ACTION", "adding");
         }
         else if (insertionStyle == InsertionStyle::insert)
         {
             effects.insert (destinationIndex, effect);
+            logMessage = logMessage.replace ("ACTION", "inserting (index " + String (destinationIndex) + ")");
         }
         else
         {
             effects.set (destinationIndex, effect);
+            logMessage = logMessage.replace ("ACTION", "setting (index " + String (destinationIndex) + ")");
         }
+
+        Logger::writeToLog (logMessage);
 
         while (effectLevels.size() < effects.size())
             if (auto* proc = effectLevels.add (new LevelsProcessor()))
@@ -76,6 +88,10 @@ void EffectProcessorChain::move (int pluginIndex, int destinationIndex)
     const ScopedBypass sb (*this);
 
     effects.swap (pluginIndex, destinationIndex);
+
+    Logger::writeToLog (String ("EffectProcessorChain: moving index ABC to XYZ")
+                            .replace ("ABC", String (pluginIndex))
+                            .replace ("XYZ", String (destinationIndex)));
 }
 
 void EffectProcessorChain::swap (int index1, int index2)
@@ -84,6 +100,10 @@ void EffectProcessorChain::swap (int index1, int index2)
     const ScopedBypass sb (*this);
 
     effects.swap (index1, index2);
+
+    Logger::writeToLog (String ("EffectProcessorChain: swapping index ABC with XYZ.")
+                            .replace ("ABC", String (index1))
+                            .replace ("XYZ", String (index2)));
 }
 
 bool EffectProcessorChain::remove (int index)
@@ -93,7 +113,15 @@ bool EffectProcessorChain::remove (int index)
 
     const auto startSize = getNumEffects();
     effects.remove (index);
-    return startSize != getNumEffects();
+
+    if (startSize != getNumEffects())
+    {
+        Logger::writeToLog (String ("EffectProcessorChain: removed index XYZ.")
+                                .replace ("XYZ", String (index)));
+        return true;
+    }
+
+    return false;
 }
 
 bool EffectProcessorChain::clear()
@@ -109,7 +137,10 @@ bool EffectProcessorChain::clear()
     }
 
     if (changed)
+    {
+        Logger::writeToLog ("EffectProcessorChain: cleared.");
         updateHostDisplay();
+    }
 
     return changed;
 }
