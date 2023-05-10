@@ -235,8 +235,8 @@ public:
     */
     [[nodiscard]] std::optional<float> getMixLevel (int index) const;
 
-    /** @returns the last known top-left position of an effect's editor, {} otherwise. */
-    [[nodiscard]] std::optional<juce::Point<int>> getLastUIPosition (int index) const;
+    /** @returns the last known effect editor's window bounds, or {} otherwise. */
+    [[nodiscard]] std::optional<juce::Rectangle<int>> getLastWindowBounds (int index) const;
 
     //==============================================================================
     /** Retrieve the float-processed channel levels.
@@ -375,8 +375,8 @@ private:
 
     void updateLatency();
     [[nodiscard]] int getNumRequiredChannels() const;
-    [[nodiscard]] static XmlElement* toXml (EffectProcessor::Ptr);
-    [[nodiscard]] EffectProcessor::Ptr createEffectProcessorFromXML (XmlElement*);
+    [[nodiscard]] var toJSON (EffectProcessor::Ptr) const;
+    [[nodiscard]] bool appendEffectFromJSON (const var&);
     [[nodiscard]] bool setEffectProperty (int index, std::function<void (EffectProcessor::Ptr)>);
 
     template<typename FloatType>

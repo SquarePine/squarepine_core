@@ -1,4 +1,17 @@
 //==============================================================================
+namespace
+{
+    inline void prepareInternal (AudioProcessor& parent, AudioProcessor& proc)
+    {
+        proc.enableAllBuses();
+        proc.setPlayHead (parent.getPlayHead());
+        proc.setProcessingPrecision (parent.getProcessingPrecision());
+        proc.setRateAndBufferSizeDetails (parent.getSampleRate(), parent.getBlockSize());
+        proc.prepareToPlay (parent.getSampleRate(), parent.getBlockSize());
+    }
+}
+
+//==============================================================================
 EffectProcessorChain::EffectProcessorChain (EffectProcessorFactory::Ptr epf) :
     factory (epf)
 {
@@ -24,15 +37,7 @@ EffectProcessor::Ptr EffectProcessorChain::insertInternal (int destinationIndex,
 
     if (auto pluginInstance = factory->createPlugin (valueOrRef))
     {
-        auto prepareInternal = [&] (AudioProcessor& proc)
-        {
-            proc.setPlayHead (getPlayHead());
-            proc.setProcessingPrecision (getProcessingPrecision());
-            proc.setRateAndBufferSizeDetails (getSampleRate(), getBlockSize());
-            proc.prepareToPlay (getSampleRate(), getBlockSize());
-        };
-
-        prepareInternal (*pluginInstance);
+        prepareInternal (*this, *pluginInstance);
 
         const auto description = factory->createPluginDescription (valueOrRef);
         auto effect = new EffectProcessor (std::move (pluginInstance), description);
@@ -63,7 +68,7 @@ EffectProcessor::Ptr EffectProcessorChain::insertInternal (int destinationIndex,
 
         while (effectLevels.size() < effects.size())
             if (auto* proc = effectLevels.add (new LevelsProcessor()))
-                prepareInternal (*proc);
+                prepareInternal (*this, *proc);
 
         updateLatency();
         updateHostDisplay();
@@ -89,7 +94,7 @@ void EffectProcessorChain::move (int pluginIndex, int destinationIndex)
 
     effects.swap (pluginIndex, destinationIndex);
 
-    Logger::writeToLog (String ("EffectProcessorChain: moving index ABC to XYZ")
+    Logger::writeToLog (String ("EffectProcessorChain: moving index ABC to XYZ.")
                             .replace ("ABC", String (pluginIndex))
                             .replace ("XYZ", String (destinationIndex)));
 }
@@ -192,9 +197,9 @@ std::optional<float> EffectProcessorChain::getMixLevel (int index) const
     return getEffectProperty<float> (index, [&] (EffectProcessor::Ptr e) { return e->getMixLevel(); });
 }
 
-std::optional<juce::Point<int>> EffectProcessorChain::getLastUIPosition (int index) const
+std::optional<juce::Rectangle<int>> EffectProcessorChain::getLastWindowBounds (int index) const
 {
-    return getEffectProperty<juce::Point<int>> (index, [&] (EffectProcessor::Ptr e) { return e->lastUIPosition; });
+    return getEffectProperty<juce::Rectangle<int>> (index, [&] (EffectProcessor::Ptr e) { return e->windowBounds; });
 }
 
 std::optional<bool> EffectProcessorChain::isPluginMissing (int index) const
@@ -294,9 +299,23 @@ int EffectProcessorChain::getNumRequiredChannels() const
     int newRequiredChannels = 0;
 
     for (auto effect : effects)
+    {
         newRequiredChannels = jmax (newRequiredChannels,
                                     effect->description.numInputChannels,
                                     effect->description.numOutputChannels);
+
+        if (auto plugin = effect->plugin)
+        {
+            for (const auto b : { true, false })
+            {
+                const int numBs = plugin->getBusCount (b);
+
+                for (int i = 0; i < numBs; ++i)
+                    newRequiredChannels = jmax (newRequiredChannels,
+                                                plugin->getChannelCountOfBus (b, i));
+            }
+        }
+    }
 
     return newRequiredChannels;
 }
@@ -334,23 +353,15 @@ void EffectProcessorChain::prepareToPlay (double sampleRate, int estimatedSample
     floatBuffers.prepare (numChans, estimatedSamplesPerBlock);
     doubleBuffers.prepare (numChans, estimatedSamplesPerBlock);
 
-    auto prepareInternal = [&] (AudioProcessor& proc)
-    {
-        proc.setPlayHead (getPlayHead());
-        proc.setProcessingPrecision (getProcessingPrecision());
-        proc.setRateAndBufferSizeDetails (sampleRate, estimatedSamplesPerBlock);
-        proc.prepareToPlay (sampleRate, estimatedSamplesPerBlock);
-    };
-
     for (int i = 0; i < effects.size(); ++i)
     {
         if (i >= effectLevels.size())
             if (auto* proc = effectLevels.add (new LevelsProcessor()))
-                prepareInternal (*proc);
+                prepareInternal (*this, *proc);
 
         if (auto effect = effects.getUnchecked (i))
             if (auto plugin = effect->plugin)
-                prepareInternal (*plugin);
+                prepareInternal (*this, *plugin);
     }
 
     updateLatency();
@@ -485,21 +496,16 @@ void EffectProcessorChain::numBusesChanged()            { loopThroughEffectsAndC
 void EffectProcessorChain::processorLayoutsChanged()    { loopThroughEffectsAndCall<&AudioProcessor::processorLayoutsChanged>(); }
 
 //==============================================================================
-namespace ChainIds
+namespace chainIds
 {
-    #define CREATE_ATTRIBUTE(name) \
-        static const String name = JUCE_STRINGIFY (name);
-
-    CREATE_ATTRIBUTE (rootBypassed)
-    CREATE_ATTRIBUTE (effectRoot)
-    CREATE_ATTRIBUTE (effectName)
-    CREATE_ATTRIBUTE (effectBypassed)
-    CREATE_ATTRIBUTE (effectMixLevel)
-    CREATE_ATTRIBUTE (effectUIX)
-    CREATE_ATTRIBUTE (effectUIY)
-    CREATE_ATTRIBUTE (effectState)
-
-    #undef CREATE_ATTRIBUTE
+    CREATE_INLINE_IDENTIFIER (effects)              // Type: Array (of effect states)
+    CREATE_INLINE_IDENTIFIER (bypassed)             // Type: bool
+    CREATE_INLINE_IDENTIFIER (name)                 // Type: string
+    CREATE_INLINE_IDENTIFIER (mixLevel)             // Type: double
+    CREATE_INLINE_IDENTIFIER (meteringMode)         // Type: int
+    CREATE_INLINE_IDENTIFIER (windowBounds)         // Type: string, from Rectangle::toString
+    CREATE_INLINE_IDENTIFIER (pluginDescription)    // Type: string, Base64
+    CREATE_INLINE_IDENTIFIER (state)                // Type: string, Base64
 }
 
 void EffectProcessorChain::getStateInformation (MemoryBlock& destData)
@@ -508,41 +514,72 @@ void EffectProcessorChain::getStateInformation (MemoryBlock& destData)
 
     Logger::writeToLog ("EffectProcessorChain: giving the state information to the host.");
 
-    XmlElement effectChainElement (getIdentifier().toString());
-    effectChainElement.setAttribute (ChainIds::rootBypassed, isBypassed() ? 1 : 0);
+    const ScopedSuspend ss (*this);
+
+    DynamicObject obj;
+    obj.setProperty (chainIds::bypassedId, isBypassed());
+
+    Array<var> effectVars;
 
     for (auto effect : effects)
-        if (effect != nullptr)
-            effectChainElement.addChildElement (toXml (effect));
+        effectVars.add (toJSON (effect));
 
-    AudioProcessor::copyXmlToBinary (effectChainElement, destData);
+    obj.setProperty (chainIds::effectsId, effectVars);
+
+    const auto jsonString = [&]()
+    {
+        String r;
+        {
+            MemoryOutputStream mos (2048);
+            obj.writeAsJSON (mos, 4, false, 4);
+            r = mos.toString();
+        }
+
+        beautifyJSON (r);
+        return r;
+    }();
+
+    File::getSpecialLocation (File::SpecialLocationType::userDesktopDirectory)
+        .getChildFile ("test.json")
+        .replaceWithText (jsonString);
+
+    MemoryOutputStream mos (destData, true);
+    mos.writeText (jsonString, false, false, NewLine::getDefault());
 }
 
-XmlElement* EffectProcessorChain::toXml (EffectProcessor::Ptr effect)
+var EffectProcessorChain::toJSON (EffectProcessor::Ptr effect) const
 {
     SQUAREPINE_CRASH_TRACER
 
     if (effect == nullptr)
     {
         jassertfalse;
-        return nullptr;
+        return {};
     }
 
-    auto* effectElement = new XmlElement (ChainIds::effectRoot);
-    effectElement->setAttribute (ChainIds::effectName, effect->getName());
-    effectElement->setAttribute (ChainIds::effectBypassed, effect->isBypassed() ? 1 : 0);
-    effectElement->setAttribute (ChainIds::effectMixLevel, effect->getMixLevel());
-    effectElement->setAttribute (ChainIds::effectUIX, effect->lastUIPosition.x);
-    effectElement->setAttribute (ChainIds::effectUIY, effect->lastUIPosition.y);
-    effectElement->addChildElement (effect->description.createXml().release());
+    auto* obj = new DynamicObject();
 
+    obj->setProperty (chainIds::nameId,         effect->getName());
+    obj->setProperty (chainIds::bypassedId,     effect->isBypassed());
+    obj->setProperty (chainIds::mixLevelId,     effect->getMixLevel());
+    obj->setProperty (chainIds::windowBoundsId, effect->windowBounds.toString());
+
+    if (auto meteringMode = getMeteringMode (indexOf (effect)); meteringMode.has_value())
+        obj->setProperty (chainIds::meteringModeId, static_cast<int> (meteringMode.value()));
+
+    if (auto xml = effect->description.createXml())
+        obj->setProperty (chainIds::pluginDescriptionId, Base64::toBase64 (xml->toString()));
+
+    if (auto plugin = effect->plugin)
     {
-        MemoryBlock m;
-        effect->plugin->getStateInformation (m);
-        effectElement->createNewChildElement (ChainIds::effectState)->addTextElement (Base64::toBase64 (m.getData(), m.getSize()));
+        MemoryBlock data;
+        plugin->getStateInformation (data);
+
+        if (! data.isEmpty())
+            obj->setProperty (chainIds::stateId, Base64::toBase64 (data.getData(), data.getSize()));
     }
 
-    return effectElement;
+    return obj;
 }
 
 //==============================================================================
@@ -564,74 +601,116 @@ void EffectProcessorChain::setStateInformation (const void* const data, const in
     }
 
     const ScopedSuspend ss (*this);
+
+    releaseResources();
     clear();
 
-    auto chainElement = AudioProcessor::getXmlFromBinary (data, sizeInBytes);
+    var stateVar;
 
-    if (chainElement != nullptr && chainElement->hasTagName (getIdentifier().toString()))
     {
-        setBypassed (chainElement->getBoolAttribute (ChainIds::rootBypassed));
+        MemoryInputStream mis (data, sizeInBytes, false);
+        stateVar = JSON::parse (mis);
+    }
 
-        for (auto* e : chainElement->getChildWithTagNameIterator (ChainIds::effectRoot))
-            effects.add (createEffectProcessorFromXML (e));
+    bool succeeded = true;
 
-        updateLatency();
-        Logger::writeToLog ("EffectProcessorChain: succeeded!");
+    if (stateVar.hasProperty (chainIds::bypassedId)
+        && stateVar.hasProperty (chainIds::effectsId))
+    {
+        setBypassed (static_cast<bool> (stateVar[chainIds::bypassedId]));
+
+        if (auto effectsVar = stateVar[chainIds::effectsId].getArray())
+            for (const auto& effectState : *effectsVar)
+                succeeded &= appendEffectFromJSON (effectState);
     }
     else
     {
-        Logger::writeToLog ("EffectProcessorChain: state setting failed - bad data.");
+        succeeded = false;
         setBypassed (false); // To reset back to a normal state
         jassertfalse;
     }
+
+    if (succeeded)
+        Logger::writeToLog ("EffectProcessorChain: succeeded!");
+    else
+        Logger::writeToLog ("EffectProcessorChain: state setting failed - bad data.");
+
+    updateLatency();
 }
 
-EffectProcessor::Ptr EffectProcessorChain::createEffectProcessorFromXML (XmlElement* const effectXML)
+bool EffectProcessorChain::appendEffectFromJSON (const var& stateVar)
 {
     SQUAREPINE_CRASH_TRACER
 
-    if (effectXML == nullptr)
+    const auto descXmlString = [&]()
     {
-        jassertfalse;
-        return {};
-    }
+        const auto r = stateVar[chainIds::pluginDescriptionId].toString();
+        MemoryOutputStream mos;
+        return Base64::convertFromBase64 (mos, r)
+                ? mos.toString()
+                : String();
+    }();
 
-    auto* pdState = effectXML->getChildByName ("PLUGIN");
-    if (pdState == nullptr)
+    XmlDocument doc (descXmlString);
+    if (const auto message = doc.getLastParseError(); message.isNotEmpty())
     {
+        Logger::writeToLog ("EffectProcessorChain: error parsing effect description --- " + message);
         jassertfalse;
-        return {};
+        return false;
     }
 
     PluginDescription description;
-    if (! description.loadFromXml (*pdState))
+    auto xml = doc.getDocumentElement();
+    if (xml == nullptr || ! description.loadFromXml (*xml))
     {
         jassertfalse;
-        return {};
+        return false;
     }
 
     if (auto newEffect = insertInternal (-1, description, InsertionStyle::append))
     {
-        MemoryBlock data;
-        newEffect->plugin->getStateInformation (data);
-        newEffect->setDefaultState (data);
-        newEffect->setLastState (data);
-
-        if (const auto* const state = effectXML->getChildByName (ChainIds::effectState))
+        // It's fine if this is null because the user's system might simply
+        // not have the plugin available. This can happen when sharing projects
+        // across systems, the user could have updated the plugin
+        // which could potentially change the PluginDescription, etc...
+        if (auto plugin = newEffect->plugin)
         {
-            MemoryOutputStream mos (data, false);
-            if (Base64::convertFromBase64 (mos, state->getAllSubText()))
-                newEffect->setLastState (data);
+            MemoryBlock data;
+            plugin->getStateInformation (data);
+            newEffect->setDefaultState (data);
         }
 
-        newEffect->setName (effectXML->getStringAttribute (ChainIds::effectName, String()).trim());
-        newEffect->setMixLevel ((float) effectXML->getDoubleAttribute (ChainIds::effectMixLevel, 1.0));
-        newEffect->setBypassed (effectXML->getBoolAttribute (ChainIds::effectBypassed));
-        newEffect->lastUIPosition.x = effectXML->getIntAttribute (ChainIds::effectUIX);
-        newEffect->lastUIPosition.y = effectXML->getIntAttribute (ChainIds::effectUIY);
+        newEffect->setName (stateVar[chainIds::nameId].toString());
+        newEffect->setMixLevel (static_cast<float> (stateVar[chainIds::mixLevelId]));
+        newEffect->setBypassed (static_cast<bool> (stateVar[chainIds::bypassedId]));
+        newEffect->windowBounds = Rectangle<int>::fromString (stateVar[chainIds::windowBoundsId].toString());
+
+        const auto meteringModeInt = static_cast<int> (stateVar[chainIds::meteringModeId]);
+        const auto meteringMode = static_cast<MeteringMode> (meteringModeInt);
+        setMeteringMode (indexOf (newEffect), meteringMode);
+
+        const auto stateData = [&]()
+        {
+            MemoryOutputStream mos;
+            return Base64::convertFromBase64 (mos, stateVar[chainIds::stateId].toString())
+                    ? mos.getMemoryBlock()
+                    : MemoryBlock();
+        }();
+
+        if (! stateData.isEmpty())
+        {
+            newEffect->setLastState (stateData);
+        }
+        else
+        {
+            Logger::writeToLog ("EffectProcessorChain: error parsing effect state!");
+            jassertfalse;
+        }
+
         newEffect->reloadFromStateIfValid();
-        return newEffect;
+
+        return true;
     }
 
-    return {};
+    return false;
 }

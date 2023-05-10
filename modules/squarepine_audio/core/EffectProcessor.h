@@ -54,18 +54,18 @@ public:
     [[nodiscard]] Value getNameValueObject (UndoManager*, bool shouldUpdateSynchronously = false);
 
     /** @returns */
-    [[nodiscard]] float getMixLevel() const;
-    /** */
-    void setMixLevel (float, UndoManager* undoManager = nullptr);
-    /** @returns */
-    [[nodiscard]] Value getMixValueObject (UndoManager*, bool shouldUpdateSynchronously = false);
-
-    /** @returns */
     [[nodiscard]] bool isBypassed() const;
     /** */
     void setBypassed (bool, UndoManager* undoManager = nullptr);
     /** @returns */
     [[nodiscard]] Value getBypassValueObject (UndoManager*, bool shouldUpdateSynchronously = false);
+
+    /** @returns */
+    [[nodiscard]] float getMixLevel() const;
+    /** */
+    void setMixLevel (float, UndoManager* undoManager = nullptr);
+    /** @returns */
+    [[nodiscard]] Value getMixValueObject (UndoManager*, bool shouldUpdateSynchronously = false);
 
     //==============================================================================
     /** @returns true if the plugin was able to be restored from its last known state. */
@@ -83,7 +83,7 @@ private:
 
     std::atomic<bool> bypassed { false };           //<
     LinearSmoothedValue<float> mixLevel { 1.0f };   //< The normalised mix level.
-    juce::Point<int> lastUIPosition;                //<
+    juce::Rectangle<int> windowBounds;              //<
     AudioPluginPtr plugin;                          //<
     const PluginDescription description;            //<
 
