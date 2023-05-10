@@ -321,6 +321,10 @@ void EffectProcessorChain::prepareToPlay (double sampleRate, int estimatedSample
 {
     SQUAREPINE_CRASH_TRACER
 
+    Logger::writeToLog (String ("EffectProcessorChain: preparing to play (sr: RATE, block: SIZE).")
+                            .replace ("RATE", String (sampleRate))
+                            .replace ("SIZE", String (estimatedSamplesPerBlock)));
+
     setRateAndBufferSizeDetails (sampleRate, estimatedSamplesPerBlock);
 
     const auto numChans = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels(), requiredChannels.load());
@@ -464,6 +468,10 @@ void EffectProcessorChain::setNonRealtime (bool isNonRealtime) noexcept
 {
     SQUAREPINE_CRASH_TRACER
 
+    Logger::writeToLog (String ("EffectProcessorChain: setting to ")
+                        + (isNonRealtime ? "offline" : "real-time")
+                        + ".");
+
     for (auto effect : effects)
         if (effect != nullptr)
             if (auto plugin = effect->plugin)
@@ -497,6 +505,8 @@ namespace ChainIds
 void EffectProcessorChain::getStateInformation (MemoryBlock& destData)
 {
     SQUAREPINE_CRASH_TRACER
+
+    Logger::writeToLog ("EffectProcessorChain: giving the state information to the host.");
 
     XmlElement effectChainElement (getIdentifier().toString());
     effectChainElement.setAttribute (ChainIds::rootBypassed, isBypassed() ? 1 : 0);
@@ -540,12 +550,15 @@ void EffectProcessorChain::setStateInformation (const void* const data, const in
 {
     SQUAREPINE_CRASH_TRACER
 
+    Logger::writeToLog ("EffectProcessorChain: attempting to set the state...");
+
     if (! MessageManager::getInstance()->isThisTheMessageThread())
     {
         /** All supported 3rd-party plugin formats (eg: VST2, VST3, AU),
             for various reasons, require being created on the message thread!
             Restructure your code to make it so!
         */
+        Logger::writeToLog ("EffectProcessorChain: state setting failed -- wrong thread.");
         jassertfalse;
         return;
     }
@@ -563,9 +576,11 @@ void EffectProcessorChain::setStateInformation (const void* const data, const in
             effects.add (createEffectProcessorFromXML (e));
 
         updateLatency();
+        Logger::writeToLog ("EffectProcessorChain: succeeded!");
     }
     else
     {
+        Logger::writeToLog ("EffectProcessorChain: state setting failed - bad data.");
         setBypassed (false); // To reset back to a normal state
         jassertfalse;
     }
