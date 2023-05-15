@@ -8,9 +8,16 @@ class ComponentWindow final : public DocumentWindow
 {
 public:
     /** Constructor. */
-    ComponentWindow (const String& windowName, Component* componentToOwn, Colour c = Colours::lightgrey) :
-        DocumentWindow (windowName, c, DocumentWindow::allButtons)
+    ComponentWindow (const String& windowName,
+                     Component* componentToOwn,
+                     Colour c = Colours::lightgrey,
+                     int requiredButtons = DocumentWindow::allButtons) :
+        DocumentWindow (windowName, c, requiredButtons)
     {
+        // This isn't a window into Narnia or something;
+        // you need a component.
+        jassert (componentToOwn != nullptr);
+
         setOpaque (true);
         setUsingNativeTitleBar (true);
         setResizable (true, false);
@@ -20,28 +27,16 @@ public:
     }
 
     //==============================================================================
-    /** Callback for when the user signals to close the window. */
-    std::function<void ()> onClose;
+    /** @internal */
+    void closeButtonPressed() override      { if (onClose != nullptr) onClose(); }
+    /** @internal */
+    void moved() override                   { DocumentWindow::resized(); }
+    /** @internal */
+    void lookAndFeelChanged() override      { setBackgroundColour (getBackgroundColour()); }
 
     //==============================================================================
-    /** @internal */
-    void closeButtonPressed() override
-    {
-        if (onClose != nullptr)
-            onClose();
-    }
-
-    /** @internal */
-    void moved() override
-    {
-        DocumentWindow::resized();
-    }
-
-    /** @internal */
-    void lookAndFeelChanged() override
-    {
-        setBackgroundColour (getBackgroundColour());
-    }
+    /** Callback for when the user signals to close the window. */
+    std::function<void ()> onClose;
 
 private:
     //==============================================================================
