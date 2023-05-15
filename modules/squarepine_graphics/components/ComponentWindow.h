@@ -13,10 +13,10 @@ public:
     {
         setOpaque (true);
         setUsingNativeTitleBar (true);
-        setVisible (true);
         setResizable (true, false);
         setContentOwned (componentToOwn, true);
         centreWithSize (componentToOwn->getWidth(), componentToOwn->getHeight());
+        setVisible (true);
     }
 
     //==============================================================================
