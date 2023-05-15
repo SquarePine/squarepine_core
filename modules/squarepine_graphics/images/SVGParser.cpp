@@ -233,18 +233,18 @@ inline bool parseNextFlag (String::CharPointerType& text, bool& value)
 //==============================================================================
 inline PathStrokeType::JointStyle getJointStyle (const String& join) noexcept
 {
-    if (join.equalsIgnoreCase ("round"))  return PathStrokeType::curved;
-    if (join.equalsIgnoreCase ("bevel"))  return PathStrokeType::beveled;
+    if (join.equalsIgnoreCase ("round"))  return PathStrokeType::JointStyle::curved;
+    if (join.equalsIgnoreCase ("bevel"))  return PathStrokeType::JointStyle::beveled;
 
-    return PathStrokeType::mitered;
+    return PathStrokeType::JointStyle::mitered;
 }
 
 inline PathStrokeType::EndCapStyle getEndCapStyle (const String& cap) noexcept
 {
-    if (cap.equalsIgnoreCase ("round"))   return PathStrokeType::rounded;
-    if (cap.equalsIgnoreCase ("square"))  return PathStrokeType::square;
+    if (cap.equalsIgnoreCase ("round"))   return PathStrokeType::EndCapStyle::rounded;
+    if (cap.equalsIgnoreCase ("square"))  return PathStrokeType::EndCapStyle::square;
 
-    return PathStrokeType::butt;
+    return PathStrokeType::EndCapStyle::butt;
 }
 
 //==============================================================================
