@@ -671,8 +671,8 @@ bool EffectProcessorChain::appendEffectFromJSON (const var& stateVar)
     {
         // It's fine if this is null because the user's system might simply
         // not have the plugin available. This can happen when sharing projects
-        // across systems, the user could have updated the plugin
-        // which could potentially change the PluginDescription, etc...
+        // across systems, the user could have updated the plugin which
+        // could have potentially changed the PluginDescription, etc...
         if (auto plugin = newEffect->plugin)
         {
             MemoryBlock data;
@@ -685,8 +685,12 @@ bool EffectProcessorChain::appendEffectFromJSON (const var& stateVar)
         newEffect->setBypassed (static_cast<bool> (stateVar[chainIds::bypassedId]));
         newEffect->windowBounds = Rectangle<int>::fromString (stateVar[chainIds::windowBoundsId].toString());
 
-        const auto meteringModeInt = static_cast<int> (stateVar[chainIds::meteringModeId]);
-        const auto meteringMode = static_cast<MeteringMode> (meteringModeInt);
+        const auto meteringMode = [&]()
+        {
+            const auto meteringModeInt = static_cast<int> (stateVar[chainIds::meteringModeId]);
+            return static_cast<MeteringMode> (meteringModeInt);
+        }();
+
         setMeteringMode (indexOf (newEffect), meteringMode);
 
         const auto stateData = [&]()
