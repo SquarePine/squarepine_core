@@ -40,7 +40,7 @@ EffectProcessor::Ptr EffectProcessorChain::insertInternal (int destinationIndex,
         prepareInternal (*this, *pluginInstance);
 
         const auto description = factory->createPluginDescription (valueOrRef);
-        auto effect = new EffectProcessor (std::move (pluginInstance), description);
+        auto effect = make_refptr<EffectProcessor> (std::move (pluginInstance), description);
 
         auto logMessage = String ("EffectProcessorChain: ACTION effect XYZ (\"PLUG\", \"ID\").")
                             .replace ("XYZ", effect->getName())
@@ -127,6 +127,11 @@ bool EffectProcessorChain::remove (int index)
     }
 
     return false;
+}
+
+bool EffectProcessorChain::contains (EffectProcessor::Ptr effect) const
+{
+    return effects.contains (effect);
 }
 
 bool EffectProcessorChain::clear()

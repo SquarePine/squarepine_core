@@ -158,6 +158,9 @@ public:
     */
     bool remove (int index);
 
+    /** @returns true if this chain contains the given effect. */
+    bool contains (EffectProcessor::Ptr) const;
+
     /** Removes all of the effects in the chain. */
     bool clear();
 
