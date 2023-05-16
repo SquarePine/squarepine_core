@@ -60,6 +60,11 @@ public:
                     int readAheadBufferSize = 0,
                     TimeSliceThread* readAheadThread = nullptr);
 
+    /** */
+    void setSource (AudioFormatReader* reader,
+                    int readAheadBufferSize = 0,
+                    TimeSliceThread* readAheadThread = nullptr);
+
     //==============================================================================
     /** @internal */
     const String getName() const override;

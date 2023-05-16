@@ -134,6 +134,15 @@ void AudioTransportProcessor::setSource (AudioFormatReaderSource* const readerSo
     setSource (readerSource, readAheadBufferSize, readAheadThread, sampleRate, maxNumChans);
 }
 
+void AudioTransportProcessor::setSource (AudioFormatReader* const reader,
+                                         const int readAheadBufferSize,
+                                         TimeSliceThread* const readAheadThread)
+{
+    jassert (reader != nullptr);
+
+    setSource (new AudioFormatReaderSource (reader, true), readAheadBufferSize, readAheadThread);
+}
+
 //==============================================================================
 
 void AudioTransportProcessor::prepareToPlay (const double newSampleRate, const int estimatedSamplesPerBlock)
