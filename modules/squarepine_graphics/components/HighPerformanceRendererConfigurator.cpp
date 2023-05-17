@@ -120,10 +120,7 @@ static inline void logGlInfoOnce (OpenGLContext& c)
 #endif
 
 //==============================================================================
-/** This is needed in order to deal with craptacular systems from the lower 2010s and below.
-
-    I suppose cheap people will always exist...
-*/
+/** This is needed in order to deal with craptacular systems. */
 class HighPerformanceRendererConfigurator::DetachContextMessage final : public MessageManager::MessageBase
 {
 public:
@@ -141,47 +138,72 @@ public:
     }
 
 private:
-    WeakReference<HighPerformanceRendererConfigurator> configurator;
+    WeakRef configurator;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DetachContextMessage)
 };
 
 //==============================================================================
-void HighPerformanceRendererConfigurator::configureWithOpenGLIfAvailable (Component& component)
+void HighPerformanceRendererConfigurator::configureWithOpenGLIfAvailable (Component& component, bool continuouslyRepaint, bool allowVsync)
 {
    #if JUCE_MODULE_AVAILABLE_juce_opengl
     context.reset (new OpenGLContext());
     configureContextWithModernGL (*context.get());
 
-    context->setContinuousRepainting (false);
-
+    context->setContinuousRepainting (continuouslyRepaint);
     context->attachTo (component);
+
+    if (allowVsync)
+    {
+        context->executeOnGLThread ([this, weakPtr = WeakRef (this),
+                                     ptr = Component::SafePointer (&component)]
+                                    (OpenGLContext& c)
+        {
+            SQUAREPINE_CRASH_TRACER
+            if (weakPtr == nullptr)
+                return;
+
+            if (! hasContextBeenForciblyDetached
+                && context != nullptr
+                && context->isActive()
+                && context->isAttached())
+            {
+                GLint major = 0;
+                gl::glGetIntegerv (gl::GL_MAJOR_VERSION, &major);
+
+                if (major < 3 || gl::glBindVertexArray == nullptr)
+                {
+                    (new DetachContextMessage (*this))->post();
+                    hasContextBeenForciblyDetached = true;
+                    Logger::writeToLog ("WARNING!! --- Forcibly removed the OpenGL context because the system is ancient...");
+                }
+                else
+                {
+                    logGlInfoOnce (c);
+                }
+            }
+
+            if (ptr != nullptr && ! hasContextBeenForciblyDetached)
+            {
+                if (auto* tlc = ptr->getTopLevelComponent())
+                {
+                    if (auto* peer = tlc->getPeer())
+                    {
+                        const auto vsyncIndex = [peer]()
+                        {
+                            const auto extensions = getOpenGLExtensions (peer);
+                            if (containsSubstring (extensions, "swap_control_tear"))    return -1;  // Adaptive
+                            if (containsSubstring (extensions, "swap_control"))         return 1;   // Standard
+                            return 0;                                                               // Off
+                        }();
+
+                        context->setSwapInterval (vsyncIndex);
+                    }
+                }
+            }
+        }, false);
+    }
    #else
     ignoreUnused (component);
-   #endif
-}
-
-void HighPerformanceRendererConfigurator::paintCallback()
-{
-   #if JUCE_MODULE_AVAILABLE_juce_opengl
-    if (! hasContextBeenForciblyDetached
-        && context != nullptr
-        && context->isActive()
-        && context->isAttached())
-    {
-        GLint major = 0;
-        gl::glGetIntegerv (gl::GL_MAJOR_VERSION, &major);
-
-        if (major < 3 || gl::glBindVertexArray == nullptr)
-        {
-            (new DetachContextMessage (*this))->post();
-            hasContextBeenForciblyDetached = true;
-            Logger::writeToLog ("WARNING!! --- Forcibly removed the OpenGL context because the system is ancient...");
-        }
-        else
-        {
-            context->executeOnGLThread (logGlInfoOnce, false);
-        }
-    }
    #endif
 }

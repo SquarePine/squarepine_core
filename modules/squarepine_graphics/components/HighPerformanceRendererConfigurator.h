@@ -39,14 +39,16 @@ StringArray getOpenGLExtensions (ComponentPeer* peer = nullptr);
     If the driver supplies OpenGL 3.1, this will configure the window to use that.
     Otherwise the software renderer will be used.
 */
-class HighPerformanceRendererConfigurator
+class HighPerformanceRendererConfigurator final
 {
 public:
+    //==============================================================================
+    /** Handy shortcut because typing long junk like this is tedious. */
+    using WeakRef = WeakReference<HighPerformanceRendererConfigurator>;
+
+    //==============================================================================
     /** Constructor. */
     HighPerformanceRendererConfigurator() = default;
-
-    /** Destructor. */
-    virtual ~HighPerformanceRendererConfigurator() = default;
 
     //==============================================================================
     /** This will try to configure the window with OpenGL.
@@ -58,11 +60,17 @@ public:
         only to fallback to software rendering.
 
         @warning You must call this BEFORE calling DocumentWindow::setContentOwned().
-    */
-    virtual void configureWithOpenGLIfAvailable (Component&);
 
-    /** Call this in your rendering or painting routine. */
-    void paintCallback();
+        @param component            The target Component to configure with OpenGL.
+        @param continuouslyRepaint  If set to true, this will force the context to continuously repaint
+                                    the specified Component.
+        @param allowVsync           If set to true, this will try to figure out of vsync is available,
+                                    and if an adaptable option is available. It will then set this
+                                    up accordingly, prioritising adaptive first.
+    */
+    void configureWithOpenGLIfAvailable (Component& component,
+                                         bool continuouslyRepaint = false,
+                                         bool allowVsync = true);
 
     //==============================================================================
    #if JUCE_MODULE_AVAILABLE_juce_opengl
