@@ -21,6 +21,15 @@ void configureContextWithModernGL (OpenGLContext&, bool shouldEnableMultisamplin
 */
 void logOpenGLInfoCallback (OpenGLContext&);
 
+/** @returns the list of available OpenGL extensions (if any).
+    Be warned that this can only be called on the OpenGL thread!
+
+    @param peer If you pass a valid ComponentPeer, this will try to resolve
+                the additional extension as provided by wglGetExtensionsStringARB()
+                on Windows.
+*/
+StringArray getOpenGLExtensions (ComponentPeer* peer = nullptr);
+
 #endif // JUCE_MODULE_AVAILABLE_juce_opengl
 
 //==============================================================================

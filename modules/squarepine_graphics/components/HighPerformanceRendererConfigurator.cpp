@@ -38,6 +38,44 @@ void configureContextWithModernGL (OpenGLContext& context, bool shouldEnableMult
     }
 }
 
+StringArray getOpenGLExtensions (ComponentPeer* peer)
+{
+    using namespace juce::gl;
+
+    GLint numExtensions = 0;
+    glGetIntegerv (GL_NUM_EXTENSIONS, &numExtensions);
+
+    StringArray extensions;
+    extensions.ensureStorageAllocated ((int) numExtensions);
+
+    for (GLint i = 0; i < numExtensions; ++i)
+        extensions.add (getGLString (GL_EXTENSIONS, (GLuint) i));
+
+   #if JUCE_WINDOWS
+    if (peer != nullptr)
+    {
+        if (auto* dc = GetDC ((HWND) peer->getNativeHandle()))
+        {
+            typedef const char* (*wglGetExtensionsStringARBType) (HDC);
+            auto wglGetExtensionsStringARB = (wglGetExtensionsStringARBType) OpenGLHelpers::getExtensionFunction ("wglGetExtensionsStringARB");
+            if (wglGetExtensionsStringARB != nullptr)
+                if (auto results = wglGetExtensionsStringARB (dc))
+                    extensions.mergeArray (StringArray::fromTokens (results, true));
+        }
+    }
+   #else
+    ignoreUnused (peer);
+   #endif
+
+    extensions.trim();
+    extensions.removeEmptyStrings();
+    extensions.removeDuplicates (true);
+    extensions.sort (true);
+    extensions.minimiseStorageOverheads();
+
+    return extensions;
+}
+
 void logOpenGLInfoCallback (OpenGLContext&)
 {
    #if SQUAREPINE_LOG_OPENGL_INFO
@@ -64,18 +102,7 @@ void logOpenGLInfoCallback (OpenGLContext&)
     << "OpenGL Extensions:" << newLine
     << newLine;
 
-    StringArray extensions;
-    extensions.ensureStorageAllocated ((int) numExtensions);
-
-    for (GLint i = 0; i < numExtensions; ++i)
-        extensions.add (getGLString (GL_EXTENSIONS, (GLuint) i));
-
-    extensions.trim();
-    extensions.removeEmptyStrings();
-    extensions.removeDuplicates (true);
-    extensions.sort (true);
-
-    for (const auto& s : extensions)
+    for (const auto& s : getOpenGLExtensions())
         stats << "\t- " << s << newLine;
 
     stats << newLine << separatorLine << newLine;
