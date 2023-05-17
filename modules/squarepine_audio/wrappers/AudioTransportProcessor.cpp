@@ -82,6 +82,8 @@ void AudioTransportProcessor::setSource (PositionableAudioSource* const s,
     if (source == s)
         return;
 
+    transport->setSource (nullptr);
+
     source.set (s, transportOwnsSource);
     transport->setSource (source, readAheadBufferSize, readAheadThread,
                           sourceSampleRateToCorrectFor, maxNumChannels);
