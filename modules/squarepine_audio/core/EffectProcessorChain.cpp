@@ -8,6 +8,7 @@ namespace
         proc.setProcessingPrecision (parent.getProcessingPrecision());
         proc.setRateAndBufferSizeDetails (parent.getSampleRate(), parent.getBlockSize());
         proc.prepareToPlay (parent.getSampleRate(), parent.getBlockSize());
+        proc.setNonRealtime (parent.isNonRealtime());
     }
 }
 
@@ -544,10 +545,6 @@ void EffectProcessorChain::getStateInformation (MemoryBlock& destData)
         return r;
     }();
 
-    File::getSpecialLocation (File::SpecialLocationType::userDesktopDirectory)
-        .getChildFile ("test.json")
-        .replaceWithText (jsonString);
-
     MemoryOutputStream mos (destData, true);
     mos.writeText (jsonString, false, false, NewLine::getDefault());
 }
@@ -617,30 +614,25 @@ void EffectProcessorChain::setStateInformation (const void* const data, const in
         stateVar = JSON::parse (mis);
     }
 
-    bool succeeded = true;
-
-    if (stateVar.hasProperty (chainIds::bypassedId)
-        && stateVar.hasProperty (chainIds::effectsId))
+    const bool shouldBypass = [&]()
     {
-        setBypassed (static_cast<bool> (stateVar[chainIds::bypassedId]));
+        if (stateVar.hasProperty (chainIds::bypassedId))
+            return static_cast<bool> (stateVar[chainIds::bypassedId]);
 
+        return false;
+    }();
+
+    Logger::writeToLog ("EffectProcessorChain: setting state bypassing to \"" + booleanToString (shouldBypass).toLowerCase() + "\".");
+    setBypassed (shouldBypass);
+
+    if (stateVar.hasProperty (chainIds::effectsId))
         if (auto effectsVar = stateVar[chainIds::effectsId].getArray())
             for (const auto& effectState : *effectsVar)
-                succeeded &= appendEffectFromJSON (effectState);
-    }
-    else
-    {
-        succeeded = false;
-        setBypassed (false); // To reset back to a normal state
-        jassertfalse;
-    }
+                appendEffectFromJSON (effectState);
 
-    if (succeeded)
-        Logger::writeToLog ("EffectProcessorChain: succeeded!");
-    else
-        Logger::writeToLog ("EffectProcessorChain: state setting failed - bad data.");
 
     updateLatency();
+    updateHostDisplay();
 }
 
 bool EffectProcessorChain::appendEffectFromJSON (const var& stateVar)
@@ -668,6 +660,7 @@ bool EffectProcessorChain::appendEffectFromJSON (const var& stateVar)
     auto xml = doc.getDocumentElement();
     if (xml == nullptr || ! description.loadFromXml (*xml))
     {
+        Logger::writeToLog ("EffectProcessorChain: error parsing PluginDescription...");
         jassertfalse;
         return false;
     }
@@ -683,17 +676,35 @@ bool EffectProcessorChain::appendEffectFromJSON (const var& stateVar)
             MemoryBlock data;
             plugin->getStateInformation (data);
             newEffect->setDefaultState (data);
+            Logger::writeToLog ("EffectProcessorChain: found default state for effect.");
         }
 
         newEffect->setName (stateVar[chainIds::nameId].toString());
-        newEffect->setMixLevel (static_cast<float> (stateVar[chainIds::mixLevelId]));
-        newEffect->setBypassed (static_cast<bool> (stateVar[chainIds::bypassedId]));
-        newEffect->windowBounds = Rectangle<int>::fromString (stateVar[chainIds::windowBoundsId].toString());
+
+        if (stateVar.hasProperty (chainIds::mixLevelId))
+            newEffect->setMixLevel (static_cast<float> (stateVar[chainIds::mixLevelId]));
+        else
+            Logger::writeToLog ("EffectProcessorChain: missing mix level property...");
+
+        if (stateVar.hasProperty (chainIds::bypassedId))
+            newEffect->setBypassed (static_cast<bool> (stateVar[chainIds::bypassedId]));
+        else
+            Logger::writeToLog ("EffectProcessorChain: missing bypass property...");
+
+        if (stateVar.hasProperty (chainIds::windowBoundsId))
+            newEffect->windowBounds = Rectangle<int>::fromString (stateVar[chainIds::windowBoundsId].toString());
+        else
+            Logger::writeToLog ("EffectProcessorChain: missing window bounds property...");
 
         const auto meteringMode = [&]()
         {
-            const auto meteringModeInt = static_cast<int> (stateVar[chainIds::meteringModeId]);
-            return static_cast<MeteringMode> (meteringModeInt);
+            if (stateVar.hasProperty (chainIds::meteringModeId))
+            {
+                const auto meteringModeInt = static_cast<int> (stateVar[chainIds::meteringModeId]);
+                return static_cast<MeteringMode> (meteringModeInt);
+            }
+
+            return MeteringMode::peak;
         }();
 
         setMeteringMode (indexOf (newEffect), meteringMode);
