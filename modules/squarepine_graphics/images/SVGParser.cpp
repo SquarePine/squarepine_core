@@ -1401,8 +1401,8 @@ Drawable* SVGState::parseText (const XmlPath& xml, bool shouldParseTransform,
             dt->setColour (parseColour (xml, "fill", Colours::black)
                             .withMultipliedAlpha (parseSafeFloat (getStyleAttribute (xml, "fill-opacity", "1"))));
 
-            Rectangle<float> bounds (xCoords[0], yCoords[0] - font.getAscent(),
-                                     font.getStringWidthFloat (text), font.getHeight());
+            juce::Rectangle<float> bounds (xCoords[0], yCoords[0] - font.getAscent(),
+                                           font.getStringWidthFloat (text), font.getHeight());
 
             if (anchorStr == "middle")
                 bounds.setX (bounds.getX() - bounds.getWidth() / 2.0f);
@@ -1544,10 +1544,10 @@ Drawable* SVGState::parseImage (const XmlPath& xml, bool shouldParseTransform,
 
             const auto pathBounds = path.getBounds();
 
-            Rectangle<float> imageBounds (parseSafeFloat (xml->getStringAttribute ("x")),
-                                          parseSafeFloat (xml->getStringAttribute ("y")),
-                                          parseSafeFloat (xml->getStringAttribute ("width",  String (pathBounds.getWidth()))),
-                                          parseSafeFloat (xml->getStringAttribute ("height", String (pathBounds.getHeight()))));
+            juce::Rectangle<float> imageBounds (parseSafeFloat (xml->getStringAttribute ("x")),
+                                                parseSafeFloat (xml->getStringAttribute ("y")),
+                                                parseSafeFloat (xml->getStringAttribute ("width",  String (pathBounds.getWidth()))),
+                                                parseSafeFloat (xml->getStringAttribute ("height", String (pathBounds.getHeight()))));
 
             dp->setPath (path);
             dp->setTransformToFit (imageBounds, placementFlags);
@@ -1569,10 +1569,10 @@ Drawable* SVGState::parseImage (const XmlPath& xml, bool shouldParseTransform,
 
         setCommonAttributes (*di, xml);
 
-        Rectangle<float> imageBounds (parseSafeFloat (xml->getStringAttribute ("x")),
-                                      parseSafeFloat (xml->getStringAttribute ("y")),
-                                      parseSafeFloat (xml->getStringAttribute ("width",  String (image.getWidth()))),
-                                      parseSafeFloat (xml->getStringAttribute ("height", String (image.getHeight()))));
+        juce::Rectangle<float> imageBounds (parseSafeFloat (xml->getStringAttribute ("x")),
+                                            parseSafeFloat (xml->getStringAttribute ("y")),
+                                            parseSafeFloat (xml->getStringAttribute ("width",  String (image.getWidth()))),
+                                            parseSafeFloat (xml->getStringAttribute ("height", String (image.getHeight()))));
 
         di->setImage (image.rescaled ((int) imageBounds.getWidth(), (int) imageBounds.getHeight()));
 

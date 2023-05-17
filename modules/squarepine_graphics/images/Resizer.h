@@ -60,7 +60,7 @@ private:
     RectanglePlacement placement = RectanglePlacement::centred;
 
     Image resizedImage;
-    Rectangle<int> lastKnownBounds;
+    juce::Rectangle<int> lastKnownBounds;
 
     //==============================================================================
     std::unique_ptr<AccessibilityHandler> createAccessibilityHandler() override;

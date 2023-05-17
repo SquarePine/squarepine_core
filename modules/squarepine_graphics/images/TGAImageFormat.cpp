@@ -23,7 +23,7 @@ public:
     }
 
     /** Set the header's bounds, as per a rectangle */
-    static void setBounds (TargaHeader& header, Rectangle<int> bounds)
+    static void setBounds (TargaHeader& header, juce::Rectangle<int> bounds)
     {
         header.originX = toInt16 (bounds.getX());
         header.originY = toInt16 (bounds.getY());

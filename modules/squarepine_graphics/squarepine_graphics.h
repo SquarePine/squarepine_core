@@ -94,7 +94,7 @@ namespace sp
     /** */
     inline void drawFittedText (Graphics& g,
                                 const String& text,
-                                const Rectangle<float>& area,
+                                const juce::Rectangle<float>& area,
                                 Justification justification = Justification::centredLeft,
                                 int maximumNumberOfLines = 1,
                                 float minimumHorizontalScale = 1.0f)
@@ -117,7 +117,7 @@ namespace sp
     /** */
     inline void drawFittedText (Graphics& g,
                                 const String& text,
-                                const Rectangle<int>& area,
+                                const juce::Rectangle<int>& area,
                                 Justification justification = Justification::centredLeft,
                                 int maximumNumberOfLines = 1,
                                 float minimumHorizontalScale = 1.0f)
@@ -163,7 +163,7 @@ namespace sp
     inline void updateWithNewHeight (RectangleList<ValueType>& rectList, ValueType newHeight) noexcept
     {
         for (auto& r : rectList)
-            const_cast<Rectangle<ValueType>&> (r).setHeight (newHeight);
+            const_cast<juce::Rectangle<ValueType>&> (r).setHeight (newHeight);
     }
 
     /** Why waste memory and cycles reallocating a RectangleList when you can just
@@ -173,7 +173,7 @@ namespace sp
     inline void updateWithNewWidth (RectangleList<ValueType>& rectList, ValueType newWidth) noexcept
     {
         for (auto& r : rectList)
-            const_cast<Rectangle<ValueType>&> (r).setWidth (newWidth);
+            const_cast<juce::Rectangle<ValueType>&> (r).setWidth (newWidth);
     }
 
     //==============================================================================

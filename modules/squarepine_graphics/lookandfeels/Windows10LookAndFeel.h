@@ -20,7 +20,9 @@ public:
     //==============================================================================
     /** */
     static void drawTextInRegion (Graphics& g, const Font& f, const String& text, Justification j,
-                                  const Rectangle<int>& region, Colour colour = Colours::darkgrey, bool isEnabled = true);
+                                  const juce::Rectangle<int>& region,
+                                  Colour colour = Colours::darkgrey,
+                                  bool isEnabled = true);
 
     /** */
     static Grid createDefaultGrid();
@@ -35,7 +37,7 @@ public:
     /** @internal */
     Typeface::Ptr getTypefaceForFont (const Font& f) override;
     /** @internal */
-    Rectangle<int> getTooltipBounds (const String& tipText, Point<int> screenPos, Rectangle<int> parentArea) override;
+    juce::Rectangle<int> getTooltipBounds (const String& tipText, Point<int> screenPos, juce::Rectangle<int> parentArea) override;
     /** @internal */
     void drawTooltip (Graphics&, const String& text, int width, int height) override;
     /** @internal */
@@ -51,7 +53,7 @@ public:
     /** @internal */
     int getTabButtonBestWidth (TabBarButton&, int) override;
     /** @internal */
-    Rectangle<int> getTabButtonExtraComponentBounds (const TabBarButton&, Rectangle<int>&, Component&) override;
+    juce::Rectangle<int> getTabButtonExtraComponentBounds (const TabBarButton&, juce::Rectangle<int>&, Component&) override;
     /** @internal */
     void drawTabButton (TabBarButton&, Graphics&, bool, bool) override;
     /** @internal */
@@ -109,7 +111,7 @@ public:
 private:
     //==============================================================================
     TextLayout layoutTooltipText (const String& text, Colour textColour) const;
-    Rectangle<float> getTooltipBoundsFloat (const String& tipText, Point<int> screenPos, Rectangle<int> parentArea) const;
+    juce::Rectangle<float> getTooltipBoundsFloat (const String& tipText, Point<int> screenPos, juce::Rectangle<int> parentArea) const;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Windows10LookAndFeel)

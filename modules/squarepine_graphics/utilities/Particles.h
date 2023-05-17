@@ -6,7 +6,7 @@ struct Particle
     virtual void update() = 0;
     virtual void paint (Graphics& g) = 0;
 
-    Rectangle<float> bounds;
+    juce::Rectangle<float> bounds;
     float opacity = 1.0f;
     float rotationDegrees = 0.0f;
     Point<float> velocity, scale { 1.0f, 1.0f };
@@ -74,7 +74,7 @@ struct Emitter
     }
 
     bool active = true;
-    Rectangle<float> bounds;
+    juce::Rectangle<float> bounds;
     int maxNumParticles = 500;
     OwnedArray<Particle> particles;
 };

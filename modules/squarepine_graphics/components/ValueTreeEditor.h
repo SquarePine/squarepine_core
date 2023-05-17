@@ -187,7 +187,7 @@ private:
             }
 
             g.drawText (propertySummary,
-                        Rectangle<float> (propertyX, 0.0f, (float) w - propertyX, (float) h),
+                        juce::Rectangle<float> (propertyX, 0.0f, (float) w - propertyX, (float) h),
                         Justification::centredLeft, true);
         }
 

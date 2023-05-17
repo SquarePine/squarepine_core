@@ -98,7 +98,7 @@
         Image dest (Image::ARGB, width, height, true);
         {
             Graphics g (dest);
-            g.drawImage (source, Rectangle<int> (width, height).toFloat());
+            g.drawImage (source, juce::Rectangle<int> (width, height).toFloat());
         }
 
         return dest;

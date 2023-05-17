@@ -83,16 +83,16 @@ TextLayout Windows10LookAndFeel::layoutTooltipText (const String& text, Colour t
     return tl;
 }
 
-Rectangle<float> Windows10LookAndFeel::getTooltipBoundsFloat (const String& tipText, Point<int> screenPos, Rectangle<int> parentArea) const
+juce::Rectangle<float> Windows10LookAndFeel::getTooltipBoundsFloat (const String& tipText, Point<int> screenPos, juce::Rectangle<int> parentArea) const
 {
     const auto tl = layoutTooltipText (tipText, Colours::black);
 
-    return Rectangle<float> (tl.getWidth(), tl.getHeight())
+    return juce::Rectangle<float> (tl.getWidth(), tl.getHeight())
             .withPosition (screenPos.toFloat())
             .constrainedWithin (parentArea.toFloat());
 }
 
-Rectangle<int> Windows10LookAndFeel::getTooltipBounds (const String& tipText, Point<int> screenPos, Rectangle<int> parentArea)
+juce::Rectangle<int> Windows10LookAndFeel::getTooltipBounds (const String& tipText, Point<int> screenPos, juce::Rectangle<int> parentArea)
 {
     return getTooltipBoundsFloat (tipText, screenPos, parentArea)
             .getSmallestIntegerContainer();
@@ -103,7 +103,7 @@ void Windows10LookAndFeel::drawTooltip (Graphics& g, const String& text, int w, 
     if (text.isEmpty())
         return;
 
-    const auto bounds = Rectangle<int> (w, h).toFloat();
+    const auto bounds = juce::Rectangle<int> (w, h).toFloat();
 
     const auto bgColour = findColour (TooltipWindow::backgroundColourId);
     jassert (bgColour.isOpaque());
@@ -137,7 +137,7 @@ int Windows10LookAndFeel::getTabButtonBestWidth (TabBarButton& button, int tabDe
 }
 
 void Windows10LookAndFeel::drawTextInRegion (Graphics& g, const Font& font, const String& text, Justification j,
-                                        const Rectangle<int>& region, Colour colour, bool isEnabled)
+                                             const juce::Rectangle<int>& region, Colour colour, bool isEnabled)
 {
     g.setColour (colour.withMultipliedAlpha (isEnabled ? 1.0f : 0.5f));
     g.setFont (font);
@@ -174,9 +174,9 @@ void Windows10LookAndFeel::drawLabel (Graphics& g, Label& label)
     g.drawRect (label.getLocalBounds());
 }
 
-Rectangle<int> Windows10LookAndFeel::getTabButtonExtraComponentBounds (const TabBarButton& button, Rectangle<int>& textArea, Component& comp)
+juce::Rectangle<int> Windows10LookAndFeel::getTabButtonExtraComponentBounds (const TabBarButton& button, juce::Rectangle<int>& textArea, Component& comp)
 {
-    Rectangle<int> extraComp;
+    juce::Rectangle<int> extraComp;
 
     const auto orientation = button.getTabbedButtonBar().getOrientation();
 
@@ -272,7 +272,7 @@ void Windows10LookAndFeel::drawTabButtonText (TabBarButton& button, Graphics& g,
     g.addTransform (t);
 
     drawFittedText (g, button.getButtonText(),
-                    Rectangle<float> (length, depth),
+                    juce::Rectangle<float> (length, depth),
                     Justification::centred,
                     roundToInt (jmax (1.0f, depth / 12.0f)));
 }
@@ -326,7 +326,7 @@ Button* Windows10LookAndFeel::createTabBarExtrasButton()
 void Windows10LookAndFeel::drawComboBox (Graphics& g, int width, int height, bool isButtonDown,
                                             int, int, int, int, ComboBox& box)
 {
-    auto boxBounds = Rectangle<int> (width, height).toFloat();
+    auto boxBounds = juce::Rectangle<int> (width, height).toFloat();
 
     g.setColour (box.findColour (ComboBox::backgroundColourId));
     g.fillRect (boxBounds);
@@ -334,7 +334,7 @@ void Windows10LookAndFeel::drawComboBox (Graphics& g, int width, int height, boo
     g.setColour (box.findColour (ComboBox::outlineColourId));
     g.drawRect (boxBounds.reduced (0.5f, 0.5f));
 
-    const auto arrowZone = Rectangle<int> (width - 30, 0, 20, height).toFloat();
+    const auto arrowZone = juce::Rectangle<int> (width - 30, 0, 20, height).toFloat();
     constexpr auto arrowSize = MathConstants<float>::pi;
 
     Path path;
@@ -426,7 +426,7 @@ void Windows10LookAndFeel::drawDrawableButton (Graphics& g, DrawableButton& butt
                            .withMultipliedAlpha (button.isEnabled() ? 1.0f : 0.4f));
 
         drawFittedText (g, button.getButtonText(),
-                        Rectangle<float> (2.0f, (float) button.getHeight() - textH - 1.0f, (float) button.getWidth() - 4.0f, textH),
+                        juce::Rectangle<float> (2.0f, (float) button.getHeight() - textH - 1.0f, (float) button.getWidth() - 4.0f, textH),
                         Justification::centred);
     }
 }
@@ -453,7 +453,7 @@ void Windows10LookAndFeel::drawButtonText (Graphics& g, TextButton& button, bool
 
     if (textWidth > 0.0f)
         drawFittedText (g, button.getButtonText(),
-                        Rectangle<float> (0.0f, yIndent, textWidth, (float) button.getHeight() - yIndent * 2.0f),
+                        juce::Rectangle<float> (0.0f, yIndent, textWidth, (float) button.getHeight() - yIndent * 2.0f),
                         Justification::centred, 2, 1.0f);
 }
 
@@ -466,7 +466,7 @@ void Windows10LookAndFeel::drawTickBox (Graphics& g, Component& component,
 {
     ignoreUnused (isEnabled, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown);
 
-    const auto tickBounds = Rectangle<float> (x, y, w, h);
+    const auto tickBounds = juce::Rectangle<float> (x, y, w, h);
 
     g.setColour (component.findColour (ToggleButton::tickDisabledColourId));
     g.drawRect (tickBounds);
@@ -492,7 +492,7 @@ void Windows10LookAndFeel::fillTextEditorBackground (Graphics& g, int width, int
     else
     {
         g.setColour (textEditor.findColour (TextEditor::backgroundColourId));
-        g.fillRect (Rectangle<int> (width, height).toFloat());
+        g.fillRect (juce::Rectangle<int> (width, height).toFloat());
     }
 }
 
@@ -507,7 +507,7 @@ void Windows10LookAndFeel::drawTextEditorOutline (Graphics& g, int width, int he
             else
                 g.setColour (textEditor.findColour (TextEditor::outlineColourId));
 
-            g.drawRect (Rectangle<int> (width, height).toFloat());
+            g.drawRect (juce::Rectangle<int> (width, height).toFloat());
         }
     }
 }
@@ -526,7 +526,7 @@ void Windows10LookAndFeel::drawScrollbar (Graphics& g, ScrollBar& scrollbar,
 {
     g.fillAll (scrollbar.findColour (ScrollBar::backgroundColourId));
 
-    Rectangle<int> thumbBounds;
+    juce::Rectangle<int> thumbBounds;
 
     if (isScrollbarVertical)
         thumbBounds = { x, thumbStartPosition, width, thumbSize };

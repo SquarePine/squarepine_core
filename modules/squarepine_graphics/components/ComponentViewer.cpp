@@ -89,7 +89,7 @@ public:
             const auto w = getWidth() / zoom + 1;
             const auto h = getHeight() / zoom + 1;
             const auto z = roundToInt ((float) zoom / scale);
-            const auto rc = Rectangle<int> (w / 2 * zoom, h / 2 * zoom, z, z);
+            const auto rc = juce::Rectangle<int> (w / 2 * zoom, h / 2 * zoom, z, z);
             const auto c = image.getPixelAt (rc.getX(), rc.getY());
 
             g.setColour (c.contrasting());

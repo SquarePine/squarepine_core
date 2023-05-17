@@ -20,7 +20,7 @@ Image createImageFromDrawable (Drawable* drawable, int width, int height)
     Image image (Image::ARGB, width, height, true);
     Graphics g (image);
 
-    drawable->drawWithin (g, Rectangle<int> (width, height).toFloat(), RectanglePlacement::centred, 1.0f);
+    drawable->drawWithin (g, juce::Rectangle<int> (width, height).toFloat(), RectanglePlacement::centred, 1.0f);
     return image;
 }
 
