@@ -259,7 +259,7 @@ public:
 SimpleEQProcessor::SimpleEQProcessor() :
     InternalProcessor (false)
 {
-    apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", createParameterLayout()));
+    resetAPVTSWithLayout (std::move (createParameterLayout()));
 
     programs.add (new Program()); // TODO
 

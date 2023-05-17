@@ -6,7 +6,7 @@ DecimalTime::DecimalTime (double time) noexcept :
 }
 
 DecimalTime::DecimalTime (int64 timeInSamples, double sampleRate) noexcept :
-    DecimalTime (timeSamplesToSeconds (timeInSamples, sampleRate))
+    DecimalTime (samplesToSeconds (timeInSamples, sampleRate))
 {
 }
 

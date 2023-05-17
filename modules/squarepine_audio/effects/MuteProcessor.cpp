@@ -9,7 +9,7 @@ MuteProcessor::MuteProcessor (bool startMuted) :
 
     layout.add (std::move (vp));
 
-    apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
+    resetAPVTSWithLayout (std::move (layout));
 }
 
 //==============================================================================

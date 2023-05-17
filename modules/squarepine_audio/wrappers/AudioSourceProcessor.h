@@ -12,14 +12,17 @@ public:
     /** Wrap an AudioSource in this processor
 
         To remove the audio source, simply pass in nullptr.
+
+        @param source           The audio source to process.
+        @param takeOwnership    
     */
     void setAudioSource (AudioSource* source, bool takeOwnership = true);
 
     //==============================================================================
     /** @internal */
-    const String getName() const override;
+    const String getName() const override { return TRANS ("Audio Source"); }
     /** @internal */
-    Identifier getIdentifier() const override;
+    Identifier getIdentifier() const override { return "AudioSourceProcessor"; }
     /** @internal */
     bool isInstrument() const override { return true; }
     /** @internal */
@@ -33,7 +36,6 @@ private:
     //==============================================================================
     OptionalScopedPointer<AudioSource> audioSource;
     AudioSourceChannelInfo info;
-    juce::AudioBuffer<float> intermittentBuffer;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioSourceProcessor)

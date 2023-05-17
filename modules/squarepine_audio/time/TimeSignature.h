@@ -230,19 +230,19 @@ public:
     /** @returns how long a beat will be in audio samples. */
     static constexpr int64 toSamples (const Tempo& tempo, const TimeSignature& timeSignature, double sampleRate) noexcept
     {
-        return timeSecondsToSamples<int64> (toSeconds (tempo, timeSignature), sampleRate);
+        return secondsToSamples<int64> (toSeconds (tempo, timeSignature), sampleRate);
     }
 
     /** @returns what time a beat will be in audio samples. */
     static constexpr int64 toSamples (double beats, const Tempo& tempo, const TimeSignature& timeSignature, double sampleRate) noexcept
     {
-        return timeSecondsToSamples<int64> (toSeconds (beats, tempo, timeSignature), sampleRate);
+        return secondsToSamples<int64> (toSeconds (beats, tempo, timeSignature), sampleRate);
     }
 
     /** @returns a "beat" corresponding to the provided samples. */
     static constexpr double fromSamples (int64 samples, const Tempo& tempo, double sampleRate) noexcept
     {
-        return fromSeconds (timeSamplesToSeconds (samples, sampleRate), tempo);
+        return fromSeconds (samplesToSeconds (samples, sampleRate), tempo);
     }
 
 private:

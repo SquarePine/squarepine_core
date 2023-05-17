@@ -61,12 +61,12 @@ InternalProcessor::InternalProcessor (bool applyDefaultBypassParam)
 }
 
 //==============================================================================
-[[nodiscard]] std::unique_ptr<AudioParameterBool> InternalProcessor::createBypassParameter() const
+std::unique_ptr<AudioParameterBool> InternalProcessor::createBypassParameter() const
 {
     return std::make_unique<BypassParameter>();
 }
 
-[[nodiscard]] AudioProcessorValueTreeState::ParameterLayout InternalProcessor::createDefaultParameterLayout (bool addBypassParam)
+AudioProcessorValueTreeState::ParameterLayout InternalProcessor::createDefaultParameterLayout (bool addBypassParam)
 {
     AudioProcessorValueTreeState::ParameterLayout layout;
 
@@ -80,33 +80,39 @@ InternalProcessor::InternalProcessor (bool applyDefaultBypassParam)
     return layout;
 }
 
-//==============================================================================
-[[nodiscard]] ValueTree InternalProcessor::getState() const
+void InternalProcessor::resetAPVTSWithLayout (AudioProcessorValueTreeState::ParameterLayout&& layout,
+                                              UndoManager* undoManagerToUse)
 {
-    // This kind of thing is only usable from the message thread!
-    JUCE_ASSERT_MESSAGE_THREAD;
+    apvts.reset (new AudioProcessorValueTreeState (*this, undoManagerToUse,
+                                                   "parameters", std::move (layout)));
+}
+
+//==============================================================================
+ValueTree InternalProcessor::getState() const
+{
+    JUCE_ASSERT_MESSAGE_THREAD
 
     return hasAPVTS()
             ? apvts->state
             : ValueTree();
 }
 
-[[nodiscard]] Value InternalProcessor::getPropertyAsValue (const Identifier& id, UndoManager* um, bool b)
+Value InternalProcessor::getPropertyAsValue (const Identifier& id, UndoManager* um, bool b)
 {
     return getState().getPropertyAsValue (id, um, b);
 }
 
-[[nodiscard]] const var& InternalProcessor::getProperty (const Identifier& id) const
+const var& InternalProcessor::getProperty (const Identifier& id) const
 {
     return getState().getProperty (id);
 }
 
-[[nodiscard]] var InternalProcessor::getProperty (const Identifier& id, const var& d) const
+var InternalProcessor::getProperty (const Identifier& id, const var& d) const
 {
     return getState().getProperty (id, d);
 }
 
-[[nodiscard]] const var* InternalProcessor::getPropertyPointer (const Identifier& id) const
+const var* InternalProcessor::getPropertyPointer (const Identifier& id) const
 {
     return getState().getPropertyPointer (id);
 }
@@ -117,7 +123,7 @@ InternalProcessor& InternalProcessor::setProperty (const Identifier& id, const v
     return *this;
 }
 
-[[nodiscard]] bool InternalProcessor::hasProperty (const Identifier& id) const
+bool InternalProcessor::hasProperty (const Identifier& id) const
 {
     return getState().hasProperty (id);
 }
@@ -134,7 +140,7 @@ void InternalProcessor::setBypassed (const bool shouldBeBypassed)
         bypassParameter->operator= (shouldBeBypassed);
 }
 
-[[nodiscard]] bool InternalProcessor::isBypassed() const noexcept
+bool InternalProcessor::isBypassed() const noexcept
 {
     return bypassParameter != nullptr
             ? bypassParameter->get()

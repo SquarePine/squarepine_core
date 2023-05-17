@@ -1,6 +1,5 @@
 AudioSourceProcessor::AudioSourceProcessor() :
-    info (nullptr, 0, 1),
-    intermittentBuffer (2, 1024)
+    info (nullptr, 0, 1)
 {
 }
 
@@ -12,16 +11,6 @@ void AudioSourceProcessor::setAudioSource (AudioSource* newSource, const bool ta
 }
 
 //==============================================================================
-const String AudioSourceProcessor::getName() const
-{
-    return TRANS ("Audio Source");
-}
-
-Identifier AudioSourceProcessor::getIdentifier() const
-{
-    return "AudioSourceProcessor";
-}
-
 void AudioSourceProcessor::prepareToPlay (const double newSampleRate, const int estimatedSamplesPerBlock)
 {
     setRateAndBufferSizeDetails (newSampleRate, estimatedSamplesPerBlock);
@@ -38,12 +27,15 @@ void AudioSourceProcessor::releaseResources()
 
 void AudioSourceProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)
 {
+    buffer.clear();
+
+    if (isSuspended() || isBypassed())
+        return;
+
     if (audioSource != nullptr)
     {
-        buffer.clear();
         info.numSamples = buffer.getNumSamples();
         info.buffer = &buffer;
-
         audioSource->getNextAudioBlock (info);
     }
 }

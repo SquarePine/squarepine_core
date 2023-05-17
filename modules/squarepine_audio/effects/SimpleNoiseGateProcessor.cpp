@@ -16,7 +16,7 @@ SimpleNoiseGateProcessor::SimpleNoiseGateProcessor() :
     attack      = addFloatParam ("attack",      NEEDS_TRANS ("Attack"),     0.0f, 1.0f, 1.0f);
     release     = addFloatParam ("release",     NEEDS_TRANS ("Release"),    0.0f, 99.0f, 50.0f);
 
-    apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
+    resetAPVTSWithLayout (std::move (layout));
 }
 
 //==============================================================================

@@ -3,12 +3,8 @@
 */
 inline Array<AudioProcessorParameter*> getAllParametersExcludingBypass (AudioProcessor& processor)
 {
-    Array<AudioProcessorParameter*> params;
-
-    for (auto* param : processor.getParameters())
-        if (param != processor.getBypassParameter())
-            params.addIfNotAlreadyThere (param);
-
+    auto params = processor.getParameters();
+    params.removeAllInstancesOf (processor.getBypassParameter());
     return params;
 }
 
@@ -34,19 +30,27 @@ private:
 /** A base class for basic internal processors, processors which you 
     don't typically expose to the user (or at least not in the same way
     you would expose usual plugin formats via the usual UX).
+    That being said, you could use an InternalProcessor as basis
+    for a user-facing plugin, though it's with little added benefit.
 
     This class fills out typically unused methods for you,
     adds a bypass parameter by default (which is optional on construction),
-    and gives some fine tuning control over the creation of a PluginDescription.
+    and gives some finely tuned control over the creation of a PluginDescription.
 
     It also extends itself with an AudioProcessorValueTreeState,
     giving you more control and less boilerplate that you would
     usually find yourself writing for fully fledged plugins,
     or for more flexible control with small internal plugins.
 
-    For an assortment of highly flexible internal processors,
-    have a look at EffectProcessorChain and the assortment of effects
-    like PanProcessor, MuteProcessor, and SimpleEQProcessor.
+    This approach is purely mechanical and ideal
+    over using AudioProcessor::addParameterGroup()
+    and AudioPluginInstance::addHostedParameterGroup()
+    because you have very finely tuned control over the parameters,
+    as well as the power of the ValueTree itself for any extraneous things.
+
+    For an assortment of extremely useful internal processors,
+    have a look at EffectProcessorChain, LevelsProcessor,
+    MuteProcessor, AudioTransportProcessor, and SimpleEQProcessor.
 */
 class InternalProcessor : public AudioPluginInstance
 {
@@ -72,7 +76,7 @@ public:
     */
     virtual String getVersion() const { return "1.0"; }
 
-    /** @returns the APVTS ID to use for this processor.
+    /** @returns the top-level APVTS ID to use for this processor.
         This will be used when creating a PluginDescription.
     */
     virtual Identifier getIdentifier() const = 0;
@@ -99,7 +103,7 @@ public:
     /** @returns a direct Value to a property inside the APVTS.
 
         If no APVTS is present, or if the Value wasn't found,
-        this will return a null/blank Value.
+        this will return an empty Value.
     */
     [[nodiscard]] Value getPropertyAsValue (const Identifier&,
                                             UndoManager* undoManager = nullptr,
@@ -227,11 +231,16 @@ protected:
     */
     AudioParameterBool* bypassParameter = nullptr;
 
+    //==============================================================================
     /** */
     [[nodiscard]] std::unique_ptr<AudioParameterBool> createBypassParameter() const;
 
     /** */
     [[nodiscard]] AudioProcessorValueTreeState::ParameterLayout createDefaultParameterLayout (bool addBypassParam = true);
+
+    /** */
+    void resetAPVTSWithLayout (AudioProcessorValueTreeState::ParameterLayout&& layout,
+                               UndoManager* undoManagerToUse = nullptr);
 
 private:
     //==============================================================================

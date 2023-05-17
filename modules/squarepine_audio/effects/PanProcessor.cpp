@@ -24,7 +24,7 @@ public:
             return String (vr) + "% " + labelName;
         };
 
-        auto l = String ("Centre");
+        auto l = TRANS ("Centre");
 
         if (v < centre)         l = createSnappedValueString (v, "L");
         else if (v > centre)    l = createSnappedValueString (v, "R");
@@ -53,24 +53,29 @@ class PanProcessor::PanRuleParameter final : public AudioParameterChoice
 {
 public:
     PanRuleParameter() :
-        AudioParameterChoice ("panRule", TRANS ("Pan Rule"), getChoices(),
+        AudioParameterChoice ("panRule", TRANS ("Pan Rule"), createChoices(),
                               static_cast<int> (PanProcessor::defaultPannerRule))
     {
     }
 
-private:
-    static StringArray getChoices()
+    String getText (float v, int) const override
     {
-        StringArray choices;
-        choices.add (NEEDS_TRANS ("Linear"));
-        choices.add (NEEDS_TRANS ("Balanced"));
-        choices.add (NEEDS_TRANS ("-3.0 dBFS"));
-        choices.add (NEEDS_TRANS ("-4.5 dBFS"));
-        choices.add (NEEDS_TRANS ("-6.0 dBFS"));
-        choices.add (NEEDS_TRANS ("-3.0 dBFS Square"));
-        choices.add (NEEDS_TRANS ("-4.5 dBFS Square"));
+        const auto index = (int) convertFrom0to1 (v);
+        return TRANS (choices[index]);
+    }
 
-        return choices;
+private:
+    static StringArray createChoices()
+    {
+        StringArray c;
+        c.add (NEEDS_TRANS ("Linear"));
+        c.add (NEEDS_TRANS ("Balanced"));
+        c.add (NEEDS_TRANS ("-3.0 dBFS"));
+        c.add (NEEDS_TRANS ("-4.5 dBFS"));
+        c.add (NEEDS_TRANS ("-6.0 dBFS"));
+        c.add (NEEDS_TRANS ("-3.0 dBFS Square"));
+        c.add (NEEDS_TRANS ("-4.5 dBFS Square"));
+        return c;
     }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PanRuleParameter)
@@ -90,7 +95,7 @@ PanProcessor::PanProcessor() :
     panRuleParam = prp.get();
     layout.add (std::move (prp));
 
-    apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
+    resetAPVTSWithLayout (std::move (layout));
 }
 
 //==============================================================================

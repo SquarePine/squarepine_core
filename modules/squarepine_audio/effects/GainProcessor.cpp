@@ -27,8 +27,7 @@ GainProcessor::GainProcessor (NormalisableRange<float> gainRange) :
     layout.add (std::move (vp));
 
     setGain (getGain());
-
-    apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
+    resetAPVTSWithLayout (std::move (layout));
 }
 
 //==============================================================================

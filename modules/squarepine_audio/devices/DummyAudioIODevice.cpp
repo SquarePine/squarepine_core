@@ -180,7 +180,7 @@ void DummyAudioIODevice::run()
             }
         }
 
-        const auto sleepTime = Time::secondsToHighResolutionTicks (timeSamplesToSeconds (numSamples, sampleRate));
+        const auto sleepTime = Time::secondsToHighResolutionTicks (samplesToSeconds (numSamples, sampleRate));
         lastRenderTimeTicks += sleepTime;
         waitUntilTime (lastRenderTimeTicks, 1);
     }

@@ -114,7 +114,7 @@ String TimeKeeper::toString() const
         {
             jassert (sampleRate > 0.0); // Did you forget to set the sample rate?
 
-            return String (timeSecondsToSamples<int64> (timeSeconds, sampleRate));
+            return String (secondsToSamples<int64> (timeSeconds, sampleRate));
         }
         break;
 

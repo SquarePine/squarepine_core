@@ -31,7 +31,7 @@ LevelsProcessor::LevelsProcessor() :
     meteringModeParam = mmp.get();
     layout.add (std::move (mmp));
 
-    apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
+    resetAPVTSWithLayout (std::move (layout));
 }
 
 //==============================================================================

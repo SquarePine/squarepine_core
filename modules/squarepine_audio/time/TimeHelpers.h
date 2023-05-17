@@ -132,26 +132,22 @@ inline double ticksToSeconds (double time, const MidiMessageSequence& tempoAndTS
 
 /** */
 template<typename Type = int64>
-constexpr double timeSamplesToSeconds (Type samplePos, double sampleRate) noexcept
+constexpr double samplesToSeconds (Type samplePos, double sampleRate) noexcept
 {
-    return sampleRate <= 0.0
-            ? 0.0
-            : static_cast<double> (samplePos) / sampleRate;
+    return static_cast<double> (samplePos) / std::max (0.0, sampleRate);
 }
 
 /** */
-constexpr double timeSamplesToSeconds (const AudioFormatReader& reader) noexcept
+constexpr double samplesToSeconds (const AudioFormatReader& reader) noexcept
 {
-    return timeSamplesToSeconds (reader.lengthInSamples, reader.sampleRate);
+    return samplesToSeconds (reader.lengthInSamples, reader.sampleRate);
 }
 
 /** */
 template<typename Type = int64>
-constexpr Type timeSecondsToSamples (double timeSeconds, double sampleRate) noexcept
+constexpr Type secondsToSamples (double timeSeconds, double sampleRate) noexcept
 {
-    return sampleRate <= 0.0
-            ? static_cast<Type> (0)
-            : static_cast<Type> (timeSeconds * sampleRate);
+    return static_cast<Type> (timeSeconds * std::max (0.0, sampleRate));
 }
 
 /** */

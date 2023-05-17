@@ -15,7 +15,7 @@ public:
     void setPan (float newPan);
 
     /** @returns the current pan */
-    float getPan() const noexcept;
+    [[nodiscard]] float getPan() const noexcept;
 
     /** Full left. */
     static constexpr auto fullLeft = -1.0f;
@@ -31,7 +31,7 @@ public:
     void setPannerRule (dsp::PannerRule newRule);
 
     /** @returns the current panning rule. */
-    dsp::PannerRule getPannerRule() const noexcept;
+    [[nodiscard]] dsp::PannerRule getPannerRule() const noexcept;
 
     /** The default panning rule. */
     static constexpr auto defaultPannerRule = dsp::PannerRule::squareRoot3dB;

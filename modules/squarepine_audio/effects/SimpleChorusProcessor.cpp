@@ -17,7 +17,7 @@ SimpleChorusProcessor::SimpleChorusProcessor() :
     feedback    = addFloatParam ("feedback",    NEEDS_TRANS ("Feedback"),       -1.0f, 1.0f, 0.25f);
     mix         = addFloatParam ("mix",         NEEDS_TRANS ("Mix"),            0.0f, 1.0f, 1.0f);
 
-    apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
+    resetAPVTSWithLayout (std::move (layout));
 }
 
 //==============================================================================

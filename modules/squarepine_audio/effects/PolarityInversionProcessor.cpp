@@ -7,7 +7,7 @@ PolarityInversionProcessor::PolarityInversionProcessor (bool startActive) :
     invertParameter = vp.get();
     layout.add (std::move (vp));
 
-    apvts.reset (new AudioProcessorValueTreeState (*this, nullptr, "parameters", std::move (layout)));
+    resetAPVTSWithLayout (std::move (layout));
 
     setActive (startActive);
 }
