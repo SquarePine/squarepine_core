@@ -379,7 +379,7 @@ private:
     void updateLatency();
     [[nodiscard]] int getNumRequiredChannels() const;
     [[nodiscard]] var toJSON (EffectProcessor::Ptr) const;
-    [[nodiscard]] bool appendEffectFromJSON (const var&);
+    bool appendEffectFromJSON (const var&);
     [[nodiscard]] bool setEffectProperty (int index, std::function<void (EffectProcessor::Ptr)>);
 
     template<typename FloatType>
