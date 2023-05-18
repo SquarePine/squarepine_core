@@ -259,7 +259,7 @@ public:
 SimpleEQProcessor::SimpleEQProcessor() :
     InternalProcessor (false)
 {
-    resetAPVTSWithLayout (std::move (createParameterLayout()));
+    resetAPVTSWithLayout (createParameterLayout());
 
     programs.add (new Program()); // TODO
 

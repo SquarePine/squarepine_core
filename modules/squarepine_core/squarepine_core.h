@@ -47,9 +47,7 @@
 #endif
 
 #if JUCE_MINGW
-    #error "Message from SquarePine: First of all, you're on Windows, not Linux." \
-           "Secondly, MinGW is too outdated and crappy." \
-           "Seriously, just use Visual Studio Community - it's literally free."
+    #error "PSA from SquarePine: I've no interest in supporting the piece of crap toolchain called MinGW."
 #endif
 
 //==============================================================================

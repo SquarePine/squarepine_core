@@ -610,7 +610,7 @@ void EffectProcessorChain::setStateInformation (const void* const data, const in
     var stateVar;
 
     {
-        MemoryInputStream mis (data, sizeInBytes, false);
+        MemoryInputStream mis (data, (size_t) sizeInBytes, false);
         stateVar = JSON::parse (mis);
     }
 
