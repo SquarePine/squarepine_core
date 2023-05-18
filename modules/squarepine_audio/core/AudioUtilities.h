@@ -13,6 +13,25 @@ inline void resetBuses (AudioProcessor& processor,
 }
 
 //==============================================================================
+/** @returns true if a buffer is actually clear, not just by its clear flag. */
+template<typename FloatType>
+inline bool isCleared (const juce::AudioBuffer<FloatType>& buffer)
+{
+    if (buffer.hasBeenCleared())
+        return true;
+
+    const int numSamples = buffer.getNumSamples();
+    if (auto channels = buffer.getArrayOfReadPointers())
+        for (int i = buffer.getNumChannels(); --i >= 0;)
+            if (auto channel = channels[i])
+                for (int f = numSamples; --f >= 0;)
+                    if (! approximatelyEqual (channel[f], FloatType()))
+                        return false;
+
+    return true;
+}
+
+//==============================================================================
 /** Properly denormalises an audio buffer if denormalisation occurred.
 
     @see FPUFlags
