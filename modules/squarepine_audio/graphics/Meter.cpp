@@ -135,10 +135,10 @@ bool Meter::refresh()
                 isMaxLevelDelayExpired = true;
             }
 
-            areLevelsDifferent |= channel.getMaxLevel() != channel.getLastMaxLevel();
+            areLevelsDifferent |= ! approximatelyEqual (channel.getMaxLevel(), channel.getLastMaxLevel());
         }
 
-        areLevelsDifferent |= channel.getLevel() != channel.getLastLevel();
+        areLevelsDifferent |= ! approximatelyEqual (channel.getLevel(), channel.getLastLevel());
 
         channel.setLastLevel (channel.getLevel());
         channel.setLastMaxLevel (channel.getMaxLevel());

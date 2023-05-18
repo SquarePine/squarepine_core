@@ -18,10 +18,6 @@ SMPTETime::SMPTETime (const SMPTETime& smpteTime) noexcept :
     moveIntoRange();
 }
 
-SMPTETime::~SMPTETime() noexcept
-{
-}
-
 void SMPTETime::moveIntoRange()
 {
     if (frameRate < 24.0 || frameRate > 60.0)
@@ -69,7 +65,7 @@ bool SMPTETime::operator== (const SMPTETime& other) const noexcept
            && minutes == other.minutes
            && seconds == other.seconds
            && frames == other.frames
-           && frameRate == other.frameRate;
+           && approximatelyEqual (frameRate, other.frameRate);
 }
 
 bool SMPTETime::operator!= (const SMPTETime& other) const noexcept

@@ -8,7 +8,7 @@ public:
     /** */
     SMPTETime (const SMPTETime& smpteTime) noexcept;
     /** */
-    ~SMPTETime() noexcept override;
+    ~SMPTETime() noexcept override = default;
 
     //==============================================================================
     /** */
@@ -42,8 +42,8 @@ public:
     bool operator!= (const SMPTETime& other) const noexcept;
 
     //==============================================================================
-    int hours, minutes, seconds, frames;
-    double frameRate;
+    int hours = 0, minutes = 0, seconds = 0, frames = 0;
+    double frameRate = 60.0;
 
 private:
     //==============================================================================

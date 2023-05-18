@@ -114,7 +114,7 @@ inline double ticksToSeconds (double time, const MidiMessageSequence& tempoAndTS
             {
                 const auto& m2 = tempoAndTSEvents.getEventPointer (i + 1)->message;
 
-                if (m2.getTimeStamp() != eventTime)
+                if (! approximatelyEqual (m2.getTimeStamp(), eventTime))
                     break;
 
                 if (m2.isTempoMetaEvent())

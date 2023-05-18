@@ -484,7 +484,7 @@ void applyBrightnessContrast (Image& img, float brightness, float contrast, Thre
             auto b = s->getBlue();
             auto a = s->getAlpha();
 
-            if (divide == 0)
+            if (approximatelyEqual (divide, 0.0f))
             {
                 auto i = getIntensity (toByte (r), toByte (g), toByte (b));
                 auto c = rgbTable[i];

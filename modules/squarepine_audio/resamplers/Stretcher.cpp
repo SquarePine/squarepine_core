@@ -31,7 +31,7 @@ void Stretcher::setStretchAndPitch (double stretch, double pitch, bool exactStre
 
 void Stretcher::setStretch (double stretch)
 {
-    if (stretch != stretchFactor)
+    if (! approximatelyEqual (stretch, stretchFactor))
     {
         stretchFactor = std::clamp (stretch, 0.1, 10.0);
         update (true);
@@ -40,7 +40,7 @@ void Stretcher::setStretch (double stretch)
 
 void Stretcher::setPitch (const double pitch)
 {
-    if (pitch != pitchFactor)
+    if (! approximatelyEqual (pitch, pitchFactor))
     {
         pitchFactor = std::clamp (pitch, 0.1, 10.0);
         update (false);

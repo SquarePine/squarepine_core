@@ -44,7 +44,7 @@ void ResamplingAudioFormatReader::prepare (double currentOutputSampleRate, int e
 
     // We're in a resampling situation, and the block size has changed, probably due to time-stretching
     const bool blockSizeChanged = approximatelyEqual (sampleRate, currentOutputSampleRate)
-                               && currentOutputSampleRate != originalSampleRate
+                               && ! approximatelyEqual (currentOutputSampleRate, originalSampleRate)
                                && expectedReadBlockSize != sourceBlockSize;
 
     // We're currently using a sample rate that's different than the current sample rate used by the interface
@@ -53,7 +53,8 @@ void ResamplingAudioFormatReader::prepare (double currentOutputSampleRate, int e
         sampleRate = currentOutputSampleRate;
         lengthInSamples = std::llround (static_cast<double> (reader->lengthInSamples) * sourceRatio);
 
-        if (sampleRate != originalSampleRate || expectedReadBlockSize != sourceBlockSize)
+        if (! approximatelyEqual (sampleRate, originalSampleRate)
+            || expectedReadBlockSize != sourceBlockSize)
         {
             if (source == nullptr)
                 source.reset (new AudioTransportSource());
