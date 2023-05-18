@@ -369,8 +369,6 @@ void EffectProcessorChain::prepareToPlay (double sampleRate, int estimatedSample
             if (auto plugin = effect->plugin)
                 prepareInternal (*this, *plugin);
     }
-
-    updateLatency();
 }
 
 //==============================================================================
