@@ -62,6 +62,12 @@ public:
     /** @returns the index of the effect or -1 if it wasn't found. */
     [[nodiscard]] int indexOf (EffectProcessor::Ptr) const;
 
+    /** The type of container that manages a list of effect instances. */
+    using ContainerType = ReferenceCountedArray<EffectProcessor>;
+
+    /** @returns all of the effects. */
+    [[nodiscard]] ContainerType getEffects() const { return effects; }
+
     //==============================================================================
     /** Add a new effect at the end of the existing array of plugins.
 
@@ -357,15 +363,10 @@ private:
 
     //==============================================================================
     EffectProcessorFactory::Ptr factory;
-
-    using ContainerType = ReferenceCountedArray<EffectProcessor>;
-    ContainerType effects;
-
     std::atomic<int> requiredChannels { 0 };
-
     BufferPackage<float> floatBuffers;
     BufferPackage<double> doubleBuffers;
-
+    ContainerType effects;
     OwnedArray<LevelsProcessor> effectLevels;
 
     //==============================================================================
