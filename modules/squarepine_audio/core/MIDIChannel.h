@@ -12,11 +12,13 @@ struct MIDIChannel final
 
     /** Creates a MIDI channel.
 
-        It's up to the caller to be sure this is valid!
+        The value will be appropriately clamped to 1 - 16 (within the valid MIDI channel range).
     */
     explicit constexpr MIDIChannel (int channelNumber1to16) noexcept :
         channel (std::clamp (channelNumber1to16, 1, 16))
     {
+        // Not sure what trick you're trying to pull...!
+        jassert (isValueBetween (channelNumber1to16, 1, 16));
     }
 
     //==============================================================================
