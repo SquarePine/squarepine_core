@@ -14,7 +14,7 @@ struct MIDIChannel final
 
         The value will be appropriately clamped to 1 - 16 (within the valid MIDI channel range).
     */
-    explicit constexpr MIDIChannel (int channelNumber1to16) noexcept :
+    MIDIChannel (int channelNumber1to16) noexcept :
         channel (std::clamp (channelNumber1to16, 1, 16))
     {
         // Not sure what trick you're trying to pull...!
