@@ -30,9 +30,9 @@
 
 //==============================================================================
 #if DOXYGEN || JUCE_WINDOWS || JUCE_LINUX || JUCE_MAC || JUCE_BSD || JUCE_WASM
-    #define SQUAREPINE_IS_DESKTOP      1 //< Currently running on a desktop.
+    #define SQUAREPINE_IS_DESKTOP      1 // Currently running on a desktop.
 #elif JUCE_ANDROID || JUCE_IPHONE || JUCE_IOS
-    #define SQUAREPINE_IS_MOBILE       1 //< Currently running on a mobile device.
+    #define SQUAREPINE_IS_MOBILE       1 // Currently running on a mobile device.
 #else
     #error "What kind of operating system is this? Please fix the project platform format macro!"
 #endif

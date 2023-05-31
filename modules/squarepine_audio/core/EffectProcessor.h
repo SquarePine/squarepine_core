@@ -81,11 +81,11 @@ private:
 
     ValueTree state { "state" };
 
-    std::atomic<bool> bypassed { false };           //<
-    LinearSmoothedValue<float> mixLevel { 1.0f };   //< The normalised mix level.
-    juce::Rectangle<int> windowBounds;              //<
-    AudioPluginPtr plugin;                          //<
-    const PluginDescription description;            //<
+    std::atomic<bool> bypassed { false };           // The active bypass state of the effect.
+    LinearSmoothedValue<float> mixLevel { 1.0f };   // The normalised mix level.
+    juce::Rectangle<int> windowBounds;              // The window bounds.
+    AudioPluginPtr plugin;                          // The plugin instance.
+    const PluginDescription description;            // The plugin instance's description.
 
     //==============================================================================
     /** */

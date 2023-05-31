@@ -63,8 +63,8 @@ protected:
     //==============================================================================
     double sampleRate = 44100.0;
     int outputLength = 0;
-    double stretchFactor = 1.0; //< Linear time stretching scaling factor: 0.1 to 10.0.
-    double pitchFactor = 1.0;   //< Linear pitch shifting scaling factor: 0.1 to 10.0.
+    double stretchFactor = 1.0; // Linear time stretching scaling factor: 0.1 to 10.0.
+    double pitchFactor = 1.0;   // Linear pitch shifting scaling factor: 0.1 to 10.0.
 
 private:
     //==============================================================================

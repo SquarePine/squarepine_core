@@ -15,7 +15,7 @@ enum class ISO6393
     por,
     deu,
     nld,
-    tlh //< Klingon
+    tlh             // Klingon
 };
 
 /** A more descriptive alternative to ISO 639-3. */

@@ -193,12 +193,12 @@ public:
         const Rectangle<int>& getMeterArea() const noexcept { return meterArea; }
 
     private:
-        float level = 0.0f;         //< The last measured audio absolute volume level.
-        float lastLevel = 0.0f;     //< The volume level of the last update, used to check if levels have changed for repainting.
-        float maxLevel = 0.0f;      //< The maximum audio levels of the trailing 3 seconds.
-        float lastMaxLevel = 0.0f;  //< The max volume level of the last update.
-        int64 timeOfMaximumMs = 0;  //< The time of the last maximum audio level.
-        Rectangle<int> meterArea;   //< The left/right drawable regions for the meter.
+        float level = 0.0f;         // The last measured audio absolute volume level.
+        float lastLevel = 0.0f;     // The volume level of the last update, used to check if levels have changed for repainting.
+        float maxLevel = 0.0f;      // The maximum audio levels of the trailing 3 seconds.
+        float lastMaxLevel = 0.0f;  // The max volume level of the last update.
+        int64 timeOfMaximumMs = 0;  // The time of the last maximum audio level.
+        Rectangle<int> meterArea;   // The left/right drawable regions for the meter.
 
         void set (float& value, float newValue)
         {

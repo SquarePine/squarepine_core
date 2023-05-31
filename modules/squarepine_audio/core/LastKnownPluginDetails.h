@@ -70,12 +70,12 @@ struct LastKnownPluginDetails final
     }
 
     //==============================================================================
-    double sampleRate = 0.0;            //< Indicates the last known sample rate.
-    int blockSize = 0,                  //< Indicates the last known buffer or block size, in samples.
-        numInputBuses = 0,              //< Indicates the last known number of input buses.
-        numOutputBuses = 0,             //< Indicates the last known number of output buses.
-        numInputMainBusChannels = 0,    //< Indicates the last known number of main input bus channels.
-        numOutputMainBusChannels = 0,   //< Indicates the last known number of main output bus channels.
-        totalNumInputChannels = 0,      //< Indicates the last known total number of input channels.
-        totalNumOutputChannels = 0;     //< Indicates the last known total number of output channels.
+    double sampleRate = 0.0;            // Indicates the last known sample rate.
+    int blockSize = 0,                  // Indicates the last known buffer or block size, in samples.
+        numInputBuses = 0,              // Indicates the last known number of input buses.
+        numOutputBuses = 0,             // Indicates the last known number of output buses.
+        numInputMainBusChannels = 0,    // Indicates the last known number of main input bus channels.
+        numOutputMainBusChannels = 0,   // Indicates the last known number of main output bus channels.
+        totalNumInputChannels = 0,      // Indicates the last known total number of input channels.
+        totalNumOutputChannels = 0;     // Indicates the last known total number of output channels.
 };

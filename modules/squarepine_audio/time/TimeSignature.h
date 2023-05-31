@@ -107,8 +107,8 @@ public:
     bool operator>= (const TimeSignature&) const noexcept;
 
     //==============================================================================
-    int numerator = defaultNumerator,       //< The '7' of '7:8'.
-        denominator = defaultDenominator;   //< The '8' of '7:8'.
+    int numerator = defaultNumerator,       // The '7' of '7:8'.
+        denominator = defaultDenominator;   // The '8' of '7:8'.
 
 private:
     //==============================================================================

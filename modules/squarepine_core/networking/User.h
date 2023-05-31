@@ -24,7 +24,7 @@ namespace user
     /** Top-level "billing" properties, with all of its sub-properties.
         @see https://woocommerce.github.io/woocommerce-rest-api-docs/#customer-properties
     */
-    CREATE_INLINE_IDENTIFIER (billing)      //< Top-level property
+    CREATE_INLINE_IDENTIFIER (billing)      // Top-level property
     namespace billing
     {
         CREATE_INLINE_IDENTIFIER (first_name)
@@ -43,7 +43,7 @@ namespace user
     /** Top-level "shipping" properties, with all of its sub-properties.
         @see https://woocommerce.github.io/woocommerce-rest-api-docs/#customer-shipping-properties
     */
-    CREATE_INLINE_IDENTIFIER (shipping)     //< Top-level property
+    CREATE_INLINE_IDENTIFIER (shipping)     // Top-level property
     namespace shipping
     {
         CREATE_INLINE_IDENTIFIER (first_name)
@@ -60,7 +60,7 @@ namespace user
     /** Top-level "meta_data" properties, with all of its sub-properties.
         @see https://woocommerce.github.io/woocommerce-rest-api-docs/#customer-meta-data-properties
     */
-    CREATE_INLINE_IDENTIFIER (meta_data)    //< Top-level property
+    CREATE_INLINE_IDENTIFIER (meta_data)    // Top-level property
     namespace metadata
     {
         CREATE_INLINE_IDENTIFIER (id)

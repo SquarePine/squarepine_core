@@ -106,7 +106,7 @@ public:
 
 private:
     //==============================================================================
-    double value = defaultTempo; //< The tempo value, in beats per minute.
+    double value = defaultTempo; // The tempo value, in beats per minute.
 
     //==============================================================================
     /** You can't negate a tempo... This library isn't meant to be a time machine. */
