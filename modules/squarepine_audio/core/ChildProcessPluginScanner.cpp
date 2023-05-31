@@ -33,7 +33,7 @@ bool ChildProcessPluginScanner::findPluginTypesFor (AudioPluginFormat& format,
 
     args.add (Base64::toBase64 (JSON::toString (object)));
 
-    DBG (args.joinIntoString (" "));
+    Logger::writeToLog (args.joinIntoString (" "));
 
     {
         ChildProcess child;
