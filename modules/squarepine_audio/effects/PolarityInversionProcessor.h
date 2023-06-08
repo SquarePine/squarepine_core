@@ -3,11 +3,10 @@
 template<typename FloatType>
 inline void invertPolarity (juce::AudioBuffer<FloatType>& buffer)
 {
-    const auto numSamples = buffer.getNumSamples();
-    auto channels = buffer.getArrayOfWritePointers();
-
-    for (auto i = buffer.getNumChannels(); --i >= 0;)
-        FloatVectorOperations::multiply (channels[i], static_cast<FloatType> (-1), numSamples);
+    if (const auto numSamples = buffer.getNumSamples(); numSamples > 0)
+        if (auto channels = buffer.getArrayOfWritePointers())
+            for (auto i = buffer.getNumChannels(); --i >= 0;)
+                FloatVectorOperations::multiply (channels[i], static_cast<FloatType> (-1), numSamples);
 }
 
 //==============================================================================
@@ -23,7 +22,7 @@ public:
     void setActive (bool shouldBeActive);
 
     /** @returns true if the polarity is reversed. */
-    bool isActive() const;
+    [[nodiscard]] bool isActive() const;
 
     //==============================================================================
     /** @internal */

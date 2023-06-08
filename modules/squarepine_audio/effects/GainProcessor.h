@@ -35,19 +35,19 @@ public:
     void setGain (float newGain);
 
     /** @returns the current gain. */
-    float getGain() const noexcept;
+    [[nodiscard]] float getGain() const noexcept;
 
     /** @returns the minimum gain this gain processor supports.
 
         @see NormalisableRange
     */
-    float getMinimumGain() const noexcept;
+    [[nodiscard]] float getMinimumGain() const noexcept;
 
     /** @returns the maximum gain this gain processor supports.
 
         @see NormalisableRange
     */
-    float getMaximumGain() const noexcept;
+    [[nodiscard]] float getMaximumGain() const noexcept;
 
     //==============================================================================
     /** @internal */

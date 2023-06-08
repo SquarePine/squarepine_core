@@ -16,7 +16,7 @@ public:
     void setWidth (float newWidth);
 
     /** @returns the current stereo width. */
-    float getWidth() const noexcept;
+    [[nodiscard]] float getWidth() const noexcept;
 
     //==============================================================================
     /** */

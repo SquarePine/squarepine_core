@@ -10,7 +10,7 @@ public:
     void setBitDepth (int newBitDepth);
 
     /** */
-    int getBitDepth() const noexcept;
+    [[nodiscard]] int getBitDepth() const noexcept;
 
     //==============================================================================
     /** @internal */

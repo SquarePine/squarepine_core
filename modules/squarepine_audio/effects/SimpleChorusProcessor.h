@@ -12,13 +12,13 @@ public:
     void setRate (float);
 
     /** @returns the current rate, in Hz. */
-    float getRate() const;
+    [[nodiscard]] float getRate() const;
 
     /** Sets the volume of the LFO modulating the chorus delay line (between 0 and 1). */
     void setDepth (float);
 
     /** @returns the current depth. */
-    float getDepth() const;
+    [[nodiscard]] float getDepth() const;
 
     /** Sets the centre delay in milliseconds of the chorus delay line modulation.
         This delay must be between 1 and 100 ms.
@@ -26,7 +26,7 @@ public:
     void setCentreDelay (float);
 
     /** @returns the current centre delay. */
-    float getCentreDelay() const;
+    [[nodiscard]] float getCentreDelay() const;
 
     /** Sets the feedback volume (between -1 and 1) of the chorus delay line.
         Negative values can be used to get specific chorus sounds.
@@ -34,7 +34,7 @@ public:
     void setFeedback (float);
 
     /** @returns the current feedback for the delay line. */
-    float getFeedback() const;
+    [[nodiscard]] float getFeedback() const;
 
     /** Sets the amount of dry and wet signal in the output of the chorus,
         between 0 for full dry and 1 for full wet.
@@ -42,7 +42,7 @@ public:
     void setMix (float);
 
     /** @returns the current mix. */
-    float getMix() const;
+    [[nodiscard]] float getMix() const;
 
     //==============================================================================
     /** @internal */

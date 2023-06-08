@@ -32,7 +32,7 @@ public:
     void setMeteringMode (MeteringMode);
 
     /** @returns the current mode for audio levels analysis. */
-    MeteringMode getMeteringMode() const;
+    [[nodiscard]] MeteringMode getMeteringMode() const;
 
     //==============================================================================
     /** @internal */

@@ -22,14 +22,14 @@ private:
     ADSR adsr;
 
     template<typename FloatType>
-    void process (juce::AudioBuffer<FloatType>& buffer)
+    void process (juce::AudioBuffer<FloatType>& buffer, MidiBuffer& midiBuffer)
     {
         if (isBypassed())
             return;
 
         const auto& params = getParameters();
 
-        ADSR::Parameters adsrParams =
+        const ADSR::Parameters adsrParams =
         {
             params.getUnchecked (0)->getValue(),
             params.getUnchecked (1)->getValue(),
@@ -38,6 +38,23 @@ private:
         };
 
         adsr.setParameters (adsrParams);
+
+        bool hasNoteOn = false, hasNoteOff = false;
+
+        for (const auto& e : midiBuffer)
+        {
+            const auto message = e.getMessage();
+            if (message.isNoteOn())
+                hasNoteOn = true;
+            else if (message.isNoteOff())
+                hasNoteOff = true;
+        }
+
+        if (hasNoteOn)
+            adsr.noteOn();
+        else if (hasNoteOff)
+            adsr.noteOff();
+
         adsr.applyEnvelopeToBuffer (buffer, 0, buffer.getNumSamples());
     }
 

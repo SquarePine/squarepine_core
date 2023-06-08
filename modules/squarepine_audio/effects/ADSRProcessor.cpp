@@ -1,9 +1,19 @@
 ADSRProcessor::ADSRProcessor()
 {
-    AudioProcessor::addParameter (new AudioParameterFloat ("attack", "Attack", 0.0f, 1.0f, 0.1f));
-    AudioProcessor::addParameter (new AudioParameterFloat ("decay", "Decay", 0.0f, 1.0f, 0.1f));
-    AudioProcessor::addParameter (new AudioParameterFloat ("sustain", "Sustain", 0.0f, 1.0f, 1.0f));
-    AudioProcessor::addParameter (new AudioParameterFloat ("release", "Release", 0.0f, 1.0f, 0.1f));
+    auto layout = createDefaultParameterLayout();
+
+    auto addFloatParam = [&] (const Identifier& id, StringRef name, float defaultValue)
+    {
+        auto apf = std::make_unique<AudioParameterFloat> (id, name, 0.0f, 1.0f, defaultValue);
+        layout.add (std::move (pp));
+    };
+
+    addFloatParam ("attack",     NEEDS_TRANS ("Attack"), 0.1f);
+    addFloatParam ("decay",      NEEDS_TRANS ("Decay"), 0.1f);
+    addFloatParam ("sustain",    NEEDS_TRANS ("Sustain"), 1.0f);
+    addFloatParam ("release",    NEEDS_TRANS ("Release"), 0.1f);
+
+    resetAPVTSWithLayout (std::move (layout));
 }
 
 //==============================================================================

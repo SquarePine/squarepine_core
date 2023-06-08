@@ -22,7 +22,7 @@ public:
     void setMuted (bool shouldBeMuted);
 
     /** @returns true if this mute processor is muted. */
-    bool isMuted() const noexcept;
+    [[nodiscard]] bool isMuted() const noexcept;
 
     //==============================================================================
     /** @internal */

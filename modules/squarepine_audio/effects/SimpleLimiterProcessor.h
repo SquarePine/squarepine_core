@@ -10,13 +10,13 @@ public:
     void setThreshold (float);
 
     /** @returns the threshold in dB. */
-    float getThreshold() const;
+    [[nodiscard]] float getThreshold() const;
 
     /** Sets the release time in milliseconds.*/
     void setRelease (float);
 
     /** @returns the release time in milliseconds. */
-    float getRelease() const;
+    [[nodiscard]] float getRelease() const;
 
     //==============================================================================
     /** @internal */

@@ -10,25 +10,25 @@ public:
     void setThreshold (float);
 
     /** @returns the threshold in dB. */
-    float getThreshold() const;
+    [[nodiscard]] float getThreshold() const;
 
     /** Sets the ratio (must be higher or equal to 1).*/
     void setRatio (float);
 
     /** @returns the ratio. */
-    float getRatio() const;
+    [[nodiscard]] float getRatio() const;
 
     /** Sets the attack time in milliseconds.*/
     void setAttack (float);
 
     /** @returns the attack time in milliseconds. */
-    float getAttack() const;
+    [[nodiscard]] float getAttack() const;
 
     /** Sets the release time in milliseconds. */
     void setRelease (float);
 
     /** @returns the release time in milliseconds. */
-    float getRelease() const;
+    [[nodiscard]] float getRelease() const;
 
     //==============================================================================
     /** @internal */

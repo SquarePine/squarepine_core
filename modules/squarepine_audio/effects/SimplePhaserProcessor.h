@@ -12,7 +12,7 @@ public:
     void setRate (float);
 
     /** @returns the current rate, in Hz. */
-    float getRate() const;
+    [[nodiscard]] float getRate() const;
 
     /** Sets the volume (between 0 and 1) of the
         LFO modulating the phaser all-pass filters.
@@ -20,7 +20,7 @@ public:
     void setDepth (float);
 
     /** @returns the current depth. */
-    float getDepth() const;
+    [[nodiscard]] float getDepth() const;
 
     /** Sets the centre frequency (in Hz) of the phaser's
         all-pass filters modulation.
@@ -28,7 +28,7 @@ public:
     void setCentreFrequency (float);
 
     /** @returns the current centre frequency. */
-    float getCentreFrequency() const;
+    [[nodiscard]] float getCentreFrequency() const;
 
     /** Sets the feedback volume (between -1 and 1) of the phaser.
         Negative can be used to get specific phaser sounds.
@@ -36,7 +36,7 @@ public:
     void setFeedback (float);
 
     /** @returns the current feedback for the delay line. */
-    float getFeedback() const;
+    [[nodiscard]] float getFeedback() const;
 
     /** Sets the amount of dry and wet signal in the output of the phaser
         (between 0 for full dry and 1 for full wet).
@@ -44,7 +44,7 @@ public:
     void setMix (float);
 
     /** @returns the current mix. */
-    float getMix() const;
+    [[nodiscard]] float getMix() const;
 
     //==============================================================================
     /** @internal */
