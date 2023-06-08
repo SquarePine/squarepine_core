@@ -5,16 +5,33 @@
 class FontWeight final
 {
 public:
-    /** Constructs a set of null typefaces to outline a particular font weight. */
-    FontWeight() = default;
+    /** Constructs a set of typefaces to outline a particular font weight.
 
-    //==============================================================================
-    /** It's strongly suggested to call this before laying out all of the typefaces! */
-    void assignAllToNormal (Typeface::Ptr normalTypeface)
+        @param normalTypeface
+        @param setAllToNormal If true, all typefaces will be set to the normal typeface.
+    */
+    FontWeight (Typeface::Ptr normalTypeface, bool setAllToNormal = true) :
+        normal (normalTypeface)
     {
-        thin = ultraLight = light = semiLight =
-        normal = medium = semiBold = bold = extraBold =
-        black = extraBlack = ultraBlack = normalTypeface;
+        jassert (normal != nullptr);
+
+        if (setAllToNormal)
+            thin = ultraLight = light = semiLight
+                 = medium = semiBold = bold = extraBold
+                 = black = extraBlack = ultraBlack = normal;
+    }
+
+    /** Constructs a set of typefaces to outline a particular font weight.
+
+        @param normalTypefaceData
+        @param normalTypefaceDataSize
+        @param setAllToNormal If true, all typefaces will be set to the normal typeface.
+    */
+    FontWeight (const char* normalTypefaceData,
+                int normalTypefaceDataSize,
+                bool setAllToNormal = true) :
+        FontWeight (Typeface::createSystemTypefaceFor (normalTypefaceData, normalTypefaceDataSize), setAllToNormal)
+    {
     }
 
     //==============================================================================
@@ -34,20 +51,36 @@ private:
 class FontFamily final
 {
 public:
-    //==============================================================================
-    /** */
-    FontFamily (const String& familyName) :
-        name (familyName)
+    /** Constructs a family of typefaces.
+
+        @param familyName
+        @param normalTypeface
+        @param setAllToNormal If true, all typefaces will be set to the normal typeface.
+    */
+    FontFamily (const String& familyName,
+                Typeface::Ptr normalTypeface,
+                bool setAllToNormal = true) :
+        name (familyName),
+        regular (normalTypeface, setAllToNormal),
+        italic (normalTypeface, setAllToNormal)
     {
         jassert (name.isNotEmpty());
     }
 
-    //==============================================================================
-    /** It's strongly suggested to call this before laying out all of the typefaces! */
-    void assignAllToNormal (Typeface::Ptr normalTypeface)
+    /** Constructs a family of typefaces.
+
+        @param familyName
+        @param normalTypefaceData
+        @param normalTypefaceDataSize
+        @param setAllToNormal           If true, all typefaces will be set to the normal typeface.
+    */
+    FontFamily (const String& familyName,
+                const char* normalTypefaceData,
+                int normalTypefaceDataSize,
+                bool setAllToNormal = true) :
+        FontFamily (familyName, Typeface::createSystemTypefaceFor (normalTypefaceData, normalTypefaceDataSize), setAllToNormal)
     {
-        regular.assignAllToNormal (normalTypeface);
-        italic.assignAllToNormal (normalTypeface);
+        jassert (name.isNotEmpty());
     }
 
     //==============================================================================
