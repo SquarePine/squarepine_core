@@ -44,25 +44,25 @@ public:
 
     //==============================================================================
     /** */
-    Type getType() const noexcept { return type; }
+    [[nodiscard]] Type getType() const noexcept { return type; }
 
     /** */
-    String getName() const;
+    [[nodiscard]] String getName() const;
     /** */
-    String getShortName() const;
+    [[nodiscard]] String getShortName() const;
 
     /** */
-    Array<int> getSteps (int octaves = 1) const;
+    [[nodiscard]] Array<int> getSteps (int octaves = 1) const;
 
     /** */
-    String getIntervalName (IntervalType interval) const;
+    [[nodiscard]] String getIntervalName (IntervalType interval) const;
 
     /** */
-    const Array<Chord>& getTriads() const noexcept { return triads; }
+    [[nodiscard]] const Array<Chord>& getTriads() const noexcept { return triads; }
     /** */
-    const Array<Chord>& getSixths() const noexcept { return sixths; }
+    [[nodiscard]] const Array<Chord>& getSixths() const noexcept { return sixths; }
     /** */
-    const Array<Chord>& getSevenths() const noexcept { return sevenths; }
+    [[nodiscard]] const Array<Chord>& getSevenths() const noexcept { return sevenths; }
 
     //==============================================================================
     /** */

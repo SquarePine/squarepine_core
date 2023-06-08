@@ -45,13 +45,13 @@ public:
 
     //==============================================================================
     /** @returns the frequency of the pitch in Hz. */
-    double getFrequencyHz() const noexcept { return frequency; }
+    [[nodiscard]] double getFrequencyHz() const noexcept { return frequency; }
 
     /** @returns the MIDI note of the pitch. e.g. 440 = 69. */
-    int getMIDINote() const { return frequencyToMIDINote (frequency); }
+    [[nodiscard]] int getMIDINote() const { return frequencyToMIDINote (frequency); }
 
     /** @returns the note name of the pitch. e.g. 440 = A4. */
-    String getMIDINoteName() const;
+    [[nodiscard]] String getMIDINoteName() const;
 
     //==============================================================================
     /** @returns a Unicode sharp symbol.

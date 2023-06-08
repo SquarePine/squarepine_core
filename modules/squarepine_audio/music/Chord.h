@@ -55,7 +55,7 @@ public:
 
     //==============================================================================
     /** */
-    String toString() const;
+    [[nodiscard]] String toString() const;
     /** */
     static Chord fromString (const String&);
 
@@ -63,21 +63,21 @@ public:
     static Array<Type> getAllChordTypes();
 
     /** */
-    Type getType() const noexcept { return type; }
+    [[nodiscard]] Type getType() const noexcept { return type; }
     /** */
-    bool isValid() const noexcept { return type != Type::invalid; }
+    [[nodiscard]] bool isValid() const noexcept { return type != Type::invalid; }
 
     //==============================================================================
-    /** */
-    String getName() const;
-    /** */
-    String getShortName() const;
-    /** */
-    String getSymbol() const;
-    /** */
-    Array<int> getSteps() const;
-    /** */
-    Array<int> getSteps (int inversion) const;
+    /** @returns */
+    [[nodiscard]] String getName() const;
+    /** @returns */
+    [[nodiscard]] String getShortName() const;
+    /** @returns */
+    [[nodiscard]] String getSymbol() const;
+    /** @returns */
+    [[nodiscard]] Array<int> getSteps() const;
+    /** @returns */
+    [[nodiscard]] Array<int> getSteps (int inversion) const;
 
 private:
     //==============================================================================

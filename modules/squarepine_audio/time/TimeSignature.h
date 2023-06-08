@@ -55,24 +55,24 @@ public:
 
         @warning The provided numerator will be snapped if it's out of range!
     */
-    TimeSignature withNumerator (int n) const;
+    [[nodiscard]] TimeSignature withNumerator (int n) const;
 
     /** Creates a copy of this time signature swapping out
         its denominator for the provided one.
 
         @warning The provided denominator will be snapped if it's out of range!
     */
-    TimeSignature withDenominator (int d) const;
+    [[nodiscard]] TimeSignature withDenominator (int d) const;
 
     //==============================================================================
     /** */
-    double getNumQuarterNotesPerMeasure() const noexcept;
+    [[nodiscard]] double getNumQuarterNotesPerMeasure() const noexcept;
 
     /** */
-    double getNumSecondsPerMeasure (const Tempo&) const noexcept;
+    [[nodiscard]] double getNumSecondsPerMeasure (const Tempo&) const noexcept;
 
     /** */
-    double getNumSecondsPerMeasure (double tempo) const noexcept;
+    [[nodiscard]] double getNumSecondsPerMeasure (double tempo) const noexcept;
 
     //==============================================================================
     /** Tries to find a global time signature from the provided MidiFile. */
@@ -83,7 +83,7 @@ public:
 
     //==============================================================================
     /** */
-    String toString() const;
+    [[nodiscard]] String toString() const;
 
     /** */
     static TimeSignature fromString (const String&);
