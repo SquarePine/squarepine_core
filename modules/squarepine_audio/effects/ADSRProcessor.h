@@ -9,6 +9,8 @@ public:
     /** @internal */
     Identifier getIdentifier() const override { return "ADSR"; }
     /** @internal */
+    bool acceptsMidi() const override { return true; }
+    /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
     void prepareToPlay (double, int) override;
