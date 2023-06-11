@@ -12,7 +12,8 @@ StereoWidthProcessor::StereoWidthProcessor() :
 
     layout.add (std::move (vp));
 
-    setWidth (getWidth());
+    setWidth (defaultValue);
+    parameterValueChanged (0, defaultValue);
 
     resetAPVTSWithLayout (std::move (layout));
 }
@@ -71,15 +72,18 @@ void StereoWidthProcessor::process (juce::AudioBuffer<FloatType>& buffer,
         return;
     }
 
-    constexpr auto one = static_cast<FloatType> (1);
-    constexpr auto two = static_cast<FloatType> (2);
+    const auto val = value.getNextValue();
+    if (approximatelyEqual (val, static_cast<FloatType> (defaultValue)))
+        return; // Nothing to do!
 
-    const auto localWidth = value.getNextValue() * two;
-    const auto coeffM = one / jmax (one + localWidth, two);
-    const auto coeffS = localWidth * coeffM;
+    constexpr auto one      = static_cast<FloatType> (1);
+    constexpr auto two      = static_cast<FloatType> (2);
+    const auto localWidth   = val * two;
+    const auto coeffM       = one / jmax (one + localWidth, two);
+    const auto coeffS       = localWidth * coeffM;
 
-    auto* leftChannel = buffer.getWritePointer (0);
-    auto* rightChannel = buffer.getWritePointer (1);
+    auto* leftChannel       = buffer.getWritePointer (0);
+    auto* rightChannel      = buffer.getWritePointer (1);
 
     for (int i = 0; i < numSamples; ++i)
     {
