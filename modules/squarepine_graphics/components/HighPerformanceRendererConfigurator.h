@@ -25,7 +25,7 @@ void logOpenGLInfoCallback (OpenGLContext&);
     Be warned that this can only be called on the OpenGL thread!
 
     @param peer If you pass a valid ComponentPeer, this will try to resolve
-                the additional extension as provided by wglGetExtensionsStringARB()
+                the additional extensions as provided by wglGetExtensionsStringARB()
                 on Windows.
 */
 StringArray getOpenGLExtensions (ComponentPeer* peer = nullptr);
