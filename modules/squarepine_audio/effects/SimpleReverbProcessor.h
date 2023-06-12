@@ -21,11 +21,11 @@ private:
     //==============================================================================
     Reverb reverb;
 
-    AudioParameterFloat* roomSize = nullptr;
-    AudioParameterFloat* damping = nullptr;
-    AudioParameterFloat* wetLevel = nullptr;
-    AudioParameterFloat* dryLevel = nullptr;
-    AudioParameterFloat* width = nullptr;
+    using FloatParam = AudioParameterFloat*;
+    FloatParam roomSize = nullptr, damping = nullptr,
+               wetLevel = nullptr, dryLevel = nullptr,
+               width = nullptr;
+
     AudioParameterBool* freezeMode = nullptr;
 
     //==============================================================================
