@@ -1,6 +1,6 @@
 /** Use this processor to add periodic hissing over the provided audio.
 
-    This is useful for creating processors that are in demo/trial mode, or the liking.
+    This is useful for creating processors that are in demo/trial mode or the liking.
 */
 class HissingProcessor final : public InternalProcessor
 {
