@@ -652,7 +652,7 @@ void EffectChainDemo::setFile (const File& file, AudioFormatManager* audioFormat
     {
         readerSource.reset (new AudioFormatReaderSource (reader, true));
 
-        transport->setSource (readerSource.get(), 0, nullptr,
+        transport->setSource (readerSource.get(), false, 0, nullptr,
                               sharedObjects.audioDeviceManager.getAudioDeviceSetup().sampleRate);
         play.setEnabled (true);
         goToStart.setEnabled (true);

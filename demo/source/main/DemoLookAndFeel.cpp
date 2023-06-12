@@ -43,7 +43,7 @@ Typeface::Ptr DemoLookAndFeel::getTypefaceForFont (const Font& f)
     }
 
     if (typefaceToUse == nullptr) typefaceToUse = getTypefaceFromFamily (f, *sharedObjects.defaultFamily);
-    if (typefaceToUse == nullptr) typefaceToUse = getTypefaceFromFamily (f, sharedObjects.lato);
+    if (typefaceToUse == nullptr) typefaceToUse = getTypefaceFromFamily (f, *sharedObjects.lato);
 
     if (typefaceToUse != nullptr)
         return typefaceToUse;

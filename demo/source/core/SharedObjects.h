@@ -92,8 +92,8 @@ public:
 
     Value fullscreen;
 
-    FontFamily lato { "Lato" };
-    FontFamily* defaultFamily = &lato;
+    std::unique_ptr<FontFamily> lato;
+    FontFamily* defaultFamily = nullptr;
 
 private:
     //==============================================================================

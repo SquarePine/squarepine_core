@@ -35,16 +35,11 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
 
    #if SP_DEMO_USE_OPENGL
     // Need to call this later on - once JUCE, the GL content, and the OS decide it's cool to talk to each other.
-    MessageManager::callAsync ([&]()
+    MessageManager::callAsync ([this, ptr = SafePointer (this)]()
     {
-        rendererConfigurator.configureWithOpenGLIfAvailable (*this);
-
-        if (auto* context = rendererConfigurator.context.get())
-            context->executeOnGLThread ([&] (OpenGLContext& c)
-            {
-                c.setSwapInterval (1);                  // Make sure vsync is active.
-                rendererConfigurator.paintCallback();   // Need to force a repaint.
-            }, false);
+        SQUAREPINE_CRASH_TRACER
+        if (ptr != nullptr)
+            rendererConfigurator.configureWithOpenGLIfAvailable (*this, true);
     });
 
     addTab (new OpenGLDetailsDemo (sharedObjs, rendererConfigurator));
