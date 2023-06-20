@@ -18,21 +18,6 @@ private:
 };
 
 //==============================================================================
-ScopedSuspend::ScopedSuspend (AudioProcessor& ap) :
-    proc (ap),
-    wasSuspended (ap.isSuspended())
-{
-    if (! wasSuspended)
-        proc.suspendProcessing (true);
-}
-
-ScopedSuspend::~ScopedSuspend()
-{
-    if (! wasSuspended)
-        proc.suspendProcessing (false);
-}
-
-//==============================================================================
 InternalProcessor::ScopedBypass::ScopedBypass (InternalProcessor& ip) :
     internalProcessor (ip),
     wasBypassed (ip.isBypassed())
