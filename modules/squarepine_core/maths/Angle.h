@@ -32,7 +32,7 @@ struct Angle final
     [[nodiscard]] static Angle fromDegrees (Type degrees) noexcept              { return Angle (degreesToRadians (degrees)); }
 
     /** @returns a conversion of radians to degrees. */
-    [[nodiscard]] Type toDegrees() const noexcept                               { return radiansToDegrees (radians); }
+    [[nodiscard]] constexpr Type toDegrees() const noexcept                     { return radiansToDegrees (radians); }
 
     //==============================================================================
     /** @returns an angle in radians from a value in turns. */
@@ -191,3 +191,11 @@ struct Angle final
     //==============================================================================
     Type radians {}; /** The angle in radians. */
 };
+
+//==============================================================================
+/** Converts an angle in radians to degrees. */
+template <typename FloatType>
+constexpr FloatType radiansToDegrees (Angle<FloatType> radians) noexcept
+{
+    return radians.toDegrees();
+}
