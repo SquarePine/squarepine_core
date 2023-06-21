@@ -48,6 +48,7 @@ namespace sp
     #include "misc/CodeBeautifiers.cpp"
     #include "misc/CommandHelpers.cpp"
     #include "misc/FPUFlags.cpp"
+    #include "misc/MainThreadLogger.cpp"
     #include "networking/GoogleAnalyticsReporter.cpp"
     #include "networking/NetworkCache.cpp"
 

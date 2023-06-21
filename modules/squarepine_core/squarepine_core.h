@@ -86,6 +86,17 @@
     #define SQUAREPINE_LOG_NETWORK_CALLS JUCE_DEBUG
 #endif
 
+/** Config: SQUAREPINE_AUTOCONFIG_MAIN_THREAD_LOG_FILTERS
+
+    Enable this to automatically configure the MainThreadLogger's
+    filter to "debug" in Debug and to "warnings" in Release.
+
+    @see MainThreadLogger
+*/
+#ifndef SQUAREPINE_AUTOCONFIG_MAIN_THREAD_LOG_FILTERS
+    #define SQUAREPINE_AUTOCONFIG_MAIN_THREAD_LOG_FILTERS 1
+#endif
+
 /** Config: SQUAREPINE_USE_GOOGLE_ANALYTICS
 
     Enable or disable using Google Analytics based on
@@ -230,6 +241,7 @@ namespace sp
     #include "misc/Macros.h"
     #include "maths/Maths.h"
     #include "valuetree/ValueTreeHelpers.h"
+    #include "misc/MainThreadLogger.h"
 
     #include "behaviours/CreationControl.h"
     #include "behaviours/DeletionNotifier.h"
