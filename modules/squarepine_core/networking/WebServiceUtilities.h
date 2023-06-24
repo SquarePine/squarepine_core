@@ -34,15 +34,15 @@ inline String toString (HTTPRequest type)
 /** @returns a converted String to an HTTPRequest. On failure, this will simply return GET. */
 inline HTTPRequest createHTTPRequestTypeFromString (const String& type)
 {
-    if (type.compareIgnoreCase ("GET") == 0)            return HTTPRequest::GET;
-    else if (type.compareIgnoreCase ("HEAD") == 0)      return HTTPRequest::HEAD;
-    else if (type.compareIgnoreCase ("POST") == 0)      return HTTPRequest::POST;
-    else if (type.compareIgnoreCase ("PUT") == 0)       return HTTPRequest::PUT;
-    else if (type.compareIgnoreCase ("DELETE") == 0)    return HTTPRequest::DELETE;
-    else if (type.compareIgnoreCase ("CONNECT") == 0)   return HTTPRequest::CONNECT;
-    else if (type.compareIgnoreCase ("OPTIONS") == 0)   return HTTPRequest::OPTIONS;
-    else if (type.compareIgnoreCase ("TRACE") == 0)     return HTTPRequest::TRACE;
-    else if (type.compareIgnoreCase ("PATCH") == 0)     return HTTPRequest::PATCH;
+    if (type.equalsIgnoreCase ("GET"))          return HTTPRequest::GET;
+    else if (type.equalsIgnoreCase ("HEAD"))    return HTTPRequest::HEAD;
+    else if (type.equalsIgnoreCase ("POST"))    return HTTPRequest::POST;
+    else if (type.equalsIgnoreCase ("PUT"))     return HTTPRequest::PUT;
+    else if (type.equalsIgnoreCase ("DELETE"))  return HTTPRequest::DELETE;
+    else if (type.equalsIgnoreCase ("CONNECT")) return HTTPRequest::CONNECT;
+    else if (type.equalsIgnoreCase ("OPTIONS")) return HTTPRequest::OPTIONS;
+    else if (type.equalsIgnoreCase ("TRACE"))   return HTTPRequest::TRACE;
+    else if (type.equalsIgnoreCase ("PATCH"))   return HTTPRequest::PATCH;
 
     jassertfalse; //?
     return HTTPRequest::GET;

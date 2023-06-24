@@ -36,12 +36,15 @@ public:
     //==============================================================================
     /** @returns the total size of the allocator's heap. */
     size_t getSize() const noexcept                 { return sizeBytes; }
+
     /** @returns the byte of alignment of the allocations.
         By default, this is 4 bytes which you can configure on construction of an Allocator.
     */
     size_t getAlignment() const noexcept            { return alignmentBytes; }
+
     /** @returns the current pointer position within the allocator's heap. */
     intptr_t getCurrentPosition() const noexcept    { return (intptr_t) marker; }
+
     /** @returns the remaining space available for allocations. */
     size_t getRemainingSpace() const noexcept       { return getSize() - getCurrentPosition(); }
 

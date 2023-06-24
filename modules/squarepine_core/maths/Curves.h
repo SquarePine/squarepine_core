@@ -165,22 +165,3 @@ public:
 private:
     MassSpringModel() = delete;
 };
-
-//==============================================================================
-namespace ease
-{
-    namespace spring
-    {
-        namespace in
-        {
-        }
-
-        namespace out
-        {
-        }
-
-        namespace inOut
-        {
-        }
-    }
-}

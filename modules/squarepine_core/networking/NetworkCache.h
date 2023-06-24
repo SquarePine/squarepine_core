@@ -21,19 +21,22 @@ public:
     /** Copies another CacheControlType object. */
     CacheControlType& operator= (const CacheControlType&) = default;
 
-    bool operator== (const CacheControlType& other) const noexcept  { return flags == other.flags; }
-    bool operator!= (const CacheControlType& other) const noexcept  { return flags != other.flags; }
+    /** */
+    constexpr bool operator== (const CacheControlType& other) const noexcept  { return flags == other.flags; }
+    /** */
+    constexpr bool operator!= (const CacheControlType& other) const noexcept  { return ! operator== (other); }
 
     //==============================================================================
     /** @returns the raw flags that are set for this network cache control. */
-    int getFlags() const noexcept { return flags; }
+    constexpr int getFlags() const noexcept { return flags; }
 
     /** Tests a set of flags for this object.
         @returns true if any of the flags passed in are set on this object.
     */
-    bool testFlags (int flagsToTest) const noexcept { return (flags & flagsToTest) != 0; }
+    constexpr bool testFlags (int flagsToTest) const noexcept { return (flags & flagsToTest) != 0; }
 
-    bool canBeCachedAndStored() const noexcept
+    /** */
+    constexpr bool canBeCachedAndStored() const noexcept
     {
         return ! testFlags (CacheControlType::noStore) && ! testFlags (CacheControlType::noCache);
     }
@@ -42,10 +45,10 @@ public:
     /** Flag values that can be combined and used in the constructor. */
     enum Flags
     {
-        noStore     = 1,
-        noCache     = 2,
-        isPublic    = 4,
-        isPrivate   = 8
+        noStore     = 1,    // 
+        noCache     = 2,    // 
+        isPublic    = 4,    // 
+        isPrivate   = 8     // 
     };
 
 private:
@@ -54,16 +57,24 @@ private:
 };
 
 //==============================================================================
+/** */
 struct NetworkCacheConfiguration
 {
-    int64 age = 0, maxAge = 0, expiry = 0, contentLength = 0;
-    int64 requestDate = 0, responseDate = 0, lastModifiedDate = 0;
-    bool isContentText = false;
-    CacheControlType type;
-    String etag, contentEncoding;
+    int64 age = 0,              // 
+          maxAge = 0,           // 
+          expiry = 0,           // 
+          contentLength = 0,    // 
+          requestDate = 0,      // 
+          responseDate = 0,     // 
+          lastModifiedDate = 0; // 
+    bool isContentText = false; // 
+    CacheControlType type;      // 
+    String etag,                // 
+           contentEncoding;     // 
 };
 
 //==============================================================================
+/** */
 class NetworkResponse final : public ReferenceCountedObject
 {
 public:
@@ -75,16 +86,24 @@ public:
     /** Assumes a valid URL is provided. */
     NetworkResponse (const URL& sourceUrl);
 
+    /** Destructor. */
     ~NetworkResponse();
 
+    //==============================================================================
+    /** */
     bool fetch();
 
+    /** */
     const URL& getSourceURL() const noexcept { return url; }
 
+    /** */
     bool hasDownloaded() const noexcept { return stream != nullptr; }
+    /** */
     const MemoryBlock& getBody() const;
+    /** */
     String getContentLength() const;
 
+    /** */
     const StringPairArray& getResponseHeaders() const;
 
     /**
@@ -114,6 +133,8 @@ private:
     MemoryBlock body;
     File storedLocation;
 
+    //==============================================================================
+    /** */
     void reset();
 
     //==============================================================================
@@ -122,21 +143,28 @@ private:
 };
 
 //==============================================================================
+/** */
 class NetworkCache : public DeletedAtShutdown,
                      public Thread
 {
 public:
+    /** */
     NetworkCache();
+
+    /** */
     ~NetworkCache() override;
 
     //==============================================================================
+    /** */
     static void shutdown();
 
     //==============================================================================
     using ResponseCallback = std::function<void (int, NetworkResponse::Ptr)>;
 
+    /** */
     void enqueue (const URL& url, std::weak_ptr<ResponseCallback> callback = {});
 
+    /** */
     void purgeCache();
 
     //==============================================================================
@@ -150,8 +178,12 @@ private:
     //==============================================================================
     ReferenceCountedArray<NetworkResponse, SpinLock> responses;
 
+    //==============================================================================
+    /** */
     void purgeIfExpired (NetworkResponse::Ptr);
+    /** */
     void purge (NetworkResponse::Ptr);
+    /** */
     void purgeInternal (NetworkResponse::Ptr, bool mustCheckForExpiry, bool mustCheckIfExists);
 
     //==============================================================================

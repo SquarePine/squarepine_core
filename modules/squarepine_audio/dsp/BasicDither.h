@@ -2,9 +2,11 @@
 class BasicDither final
 {
 public:
+    /** */
     BasicDither() noexcept { reset(); }
 
     //==============================================================================
+    /** */
     void reset() noexcept
     {
         generator.setSeedRandomly();
@@ -15,18 +17,21 @@ public:
         offset = invWordLen / 2.0f;
     }
 
-    float generateNextSample (float inputSample) const noexcept
+    /** */
+    [[nodiscard]] float generateNextSample (float inputSample) const noexcept
     {
         return inputSample + offset + amp * (float) (random1 - random2);
     }
 
-    void processAdditiveDither (float& inputSample) const noexcept
+    /** */
+    [[nodiscard]] void processAdditiveDither (float& inputSample) const noexcept
     {
         dsp::util::snapToZero (inputSample);
         inputSample += 0.5f * (s1 + s1 - s2);
         dsp::util::snapToZero (inputSample);
     }
 
+    /** */
     void process (float& inputSample, float& outSample) noexcept
     {
         processAdditiveDither (inputSample);
@@ -34,6 +39,7 @@ public:
         dsp::util::snapToZero (outSample);
     }
 
+    /** */
     void process (float* channel, int numSamples) noexcept
     {
         if (channel == nullptr || numSamples <= 0)

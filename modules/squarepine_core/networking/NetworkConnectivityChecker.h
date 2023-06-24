@@ -34,11 +34,11 @@ public:
     //==============================================================================
     enum class NetworkType
     {
-        none,   /** There is no network connection. */
-        wifi,   /** The current network connection is Wi-Fi. */
-        wired,  /** The current network connection is wired, such as an ethernet connection. */
-        mobile, /** The current network connection is mobile, such as a 3G or 4G network. */
-        other   /** There is a network connection but the exact type cannot be determined (coffee machine?). */
+        none,   // There is no known network connection.
+        wifi,   // The current network connection is Wi-Fi.
+        wired,  // The current network connection is wired, such as an ethernet connection.
+        mobile, // The current network connection is mobile, such as a 3G, 4G, or 5G network.
+        other   // There is a network connection but the exact type cannot be determined (coffee machine?).
     };
 
     /** @returns the last scanned for and known network type.

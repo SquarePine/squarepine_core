@@ -144,9 +144,11 @@ public:
     /** */
     ~ValueTreeAllEventListener() override = default;
 
+    //==============================================================================
     /** */
     virtual void valueTreeChanged() = 0;
 
+    //==============================================================================
     /** @internal */
     void valueTreePropertyChanged (ValueTree&, const Identifier&) override  { valueTreeChanged(); }
     /** @internal */
@@ -172,6 +174,7 @@ public:
         attributeToSort (attributeToSort_), direction (forwards ? 1 : -1)
     {}
 
+    //==============================================================================
     /** */
     int compareElements (const ValueTree& first, const ValueTree& second) const
     {
@@ -180,9 +183,11 @@ public:
     }
 
 private:
+    //==============================================================================
     const Identifier attributeToSort;
     const int direction;
 
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ValueTreeComparator)
 };
 
@@ -205,6 +210,7 @@ public:
     {
     }
 
+    //==============================================================================
     /** */
     void add (const Identifier& property, double value)
     {
@@ -222,6 +228,7 @@ public:
     }
 
 private:
+    //==============================================================================
     /** */
     struct PropertiesToSet
     {
@@ -233,6 +240,7 @@ private:
     ValueTree source;
     UndoManager* undoManager = nullptr;
 
+    //==============================================================================
     PropertyListUpdater() = delete;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PropertyListUpdater)
 };

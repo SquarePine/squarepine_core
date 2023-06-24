@@ -38,7 +38,7 @@ namespace ease
             /** @returns */
             ease_inline sine (double weight)                { return 1.0 - std::cos ((weight * MathConstants<double>::pi) / 2.0); }
             /** @returns */
-            ease_inline back (double weight)                { return 2.70158 * cube (weight) - 1.70158 * square (weight); }
+            ease_constexpr back (double weight)             { return 2.70158 * cube (weight) - 1.70158 * square (weight); }
 
             /** @returns a value that may be negative! */
             ease_inline elastic (double weight)

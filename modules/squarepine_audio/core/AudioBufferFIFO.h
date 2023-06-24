@@ -18,7 +18,7 @@ public:
 
     //==============================================================================
     /** @returns the number of channels of the underlying buffer. */
-    int getNumChannels() const noexcept { return buffer.getNumChannels(); }
+    [[nodiscard]] int getNumChannels() const noexcept { return buffer.getNumChannels(); }
 
     //==============================================================================
     /** Resize the buffer with new number of channels and new number of samples. */
