@@ -43,7 +43,7 @@ private:
 
         bool hasNoteOn = false, hasNoteOff = false;
 
-        for (const auto& e : midiBuffer)
+        for (auto e : midiBuffer)
         {
             const auto message = e.getMessage();
             if (message.isNoteOn())

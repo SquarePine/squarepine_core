@@ -30,7 +30,7 @@ public:
     FontWeight (const char* normalTypefaceData,
                 int normalTypefaceDataSize,
                 bool setAllToNormal = true) :
-        FontWeight (Typeface::createSystemTypefaceFor (normalTypefaceData, normalTypefaceDataSize), setAllToNormal)
+        FontWeight (Typeface::createSystemTypefaceFor (normalTypefaceData, (size_t) normalTypefaceDataSize), setAllToNormal)
     {
     }
 
@@ -78,7 +78,7 @@ public:
                 const char* normalTypefaceData,
                 int normalTypefaceDataSize,
                 bool setAllToNormal = true) :
-        FontFamily (familyName, Typeface::createSystemTypefaceFor (normalTypefaceData, normalTypefaceDataSize), setAllToNormal)
+        FontFamily (familyName, Typeface::createSystemTypefaceFor (normalTypefaceData, (size_t) normalTypefaceDataSize), setAllToNormal)
     {
         jassert (name.isNotEmpty());
     }

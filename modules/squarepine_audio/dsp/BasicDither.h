@@ -24,7 +24,7 @@ public:
     }
 
     /** */
-    [[nodiscard]] void processAdditiveDither (float& inputSample) const noexcept
+    void processAdditiveDither (float& inputSample) const noexcept
     {
         dsp::util::snapToZero (inputSample);
         inputSample += 0.5f * (s1 + s1 - s2);
