@@ -35,10 +35,12 @@ public:
 
     /** Logs a message with a filter.
 
-        If the given filter to use is lesser than the set filter,
-        the message will not be logged.
+        @param filterToUse If the given filter to use is lesser than the set filter,
+                           the message will not be logged.
+
+        @param message The message to log.
     */
-    void logMessage (Filter filterToUse, const String&);
+    void logMessage (Filter filterToUse, const String& message);
 
     //==============================================================================
     /** @internal */
@@ -73,14 +75,30 @@ private:
 };
 
 //==============================================================================
-/** */
-void logDebug (const String& message);
+#undef SP_MAKE_LOG_FUNCTION
+
+#if SQUAREPINE_AUTOLOG_FUNCTION_AND_LINE
+    #define SP_MAKE_LOG_FUNCTION(funcName) \
+        void log##funcName (const String& message, \
+                            const String& callerFunction = std::source_location::current().function_name(), \
+                            uint64 line = (uint64) std::source_location::current().line());
+#else
+    #define SP_MAKE_LOG_FUNCTION(funcName) \
+        void log##funcName (const String& message, \
+                            const String& callerFunction = {}, \
+                            uint64 line = 0);
+#endif
 
 /** */
-void logInfo (const String& message);
+SP_MAKE_LOG_FUNCTION (Debug)
 
 /** */
-void logWarning (const String& message);
+SP_MAKE_LOG_FUNCTION (Info)
 
 /** */
-void logError (const String& message);
+SP_MAKE_LOG_FUNCTION (Warning)
+
+/** */
+SP_MAKE_LOG_FUNCTION (Error)
+
+#undef SP_MAKE_LOG_FUNCTION

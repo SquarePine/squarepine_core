@@ -91,10 +91,30 @@
     Enable this to automatically configure the MainThreadLogger's
     filter to "debug" in Debug and to "warnings" in Release.
 
+    If you disable this, you will need to manually change the filter
+    to suit your needs because it will be set to debug by default.
+
     @see MainThreadLogger
 */
 #ifndef SQUAREPINE_AUTOCONFIG_MAIN_THREAD_LOG_FILTERS
     #define SQUAREPINE_AUTOCONFIG_MAIN_THREAD_LOG_FILTERS 1
+#endif
+
+/** Config: SQUAREPINE_AUTOLOG_FUNCTION_AND_LINE
+
+    Enable this to automatically configure the various
+    logging functions to track the calling function and line number.
+
+    By default, this is available in debug builds only.
+    This is just in case you don't want to leak secret details
+    in a Release build!
+
+    Only available with C++20 or later.
+
+    @see MainThreadLogger
+*/
+#ifndef SQUAREPINE_AUTOLOG_FUNCTION_AND_LINE
+    #define SQUAREPINE_AUTOLOG_FUNCTION_AND_LINE JUCE_DEBUG
 #endif
 
 /** Config: SQUAREPINE_USE_GOOGLE_ANALYTICS
@@ -156,6 +176,11 @@
 
 #if JUCE_CXX20_IS_AVAILABLE
     #include <bit>
+    #include <source_location>
+#endif
+
+#if ! JUCE_CXX20_IS_AVAILABLE
+    #undef SQUAREPINE_AUTOLOG_FUNCTION_AND_LINE
 #endif
 
 //==============================================================================

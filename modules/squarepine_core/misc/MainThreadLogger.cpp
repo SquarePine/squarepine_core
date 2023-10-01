@@ -75,35 +75,61 @@ void MainThreadLogger::logInternal (File dest, String message, Filter filterToUs
 }
 
 //==============================================================================
-inline void logWithFilter (MainThreadLogger::Filter filter, const String& tagName, const String& message)
+inline void logWithFilter (MainThreadLogger::Filter filter,
+                           const String& tagName,
+                           const String& message,
+                           const String& callerFunction,
+                           uint64 line)
 {
     auto* currentLogger = dynamic_cast<MainThreadLogger*> (Logger::getCurrentLogger());
 
     /** You seem to be trying to log with something other than the MainThreadLogger.
-        Please call Logger::setCurrentLogger() before doing so!
+        Please call Logger::setCurrentLogger() with a MainThreadLogger before doing so!
     */
     jassert (currentLogger != nullptr);
+    if (currentLogger == nullptr)
+        return;
 
-    if (currentLogger != nullptr)
-        currentLogger->logMessage (filter, tagName + ": " + message);
+    String completeMessage;
+    completeMessage.preallocateBytes (64);
+
+    if (callerFunction.isNotEmpty())
+    {
+        completeMessage
+            << callerFunction
+            << (line > 0 ? " (" + String (line) + ") " : "")
+            << " - ";
+    }
+
+    completeMessage << tagName << ": " << message;
+
+    currentLogger->logMessage (filter, completeMessage);
 }
 
-void logDebug (const String& message)
+void logDebug (const String& message,
+               const String& callerFunction,
+               uint64 line)
 {
-    logWithFilter (MainThreadLogger::Filter::debug, "DEBUG", message);
+    logWithFilter (MainThreadLogger::Filter::debug, "DEBUG", message, callerFunction, line);
 }
 
-void logInfo (const String& message)
+void logInfo (const String& message,
+              const String& callerFunction,
+              uint64 line)
 {
-    logWithFilter (MainThreadLogger::Filter::information, "INFO", message);
+    logWithFilter (MainThreadLogger::Filter::information, "INFO", message, callerFunction, line);
 }
 
-void logWarning (const String& message)
+void logWarning (const String& message,
+                 const String& callerFunction,
+                 uint64 line)
 {
-    logWithFilter (MainThreadLogger::Filter::warnings, "WARNING", message);
+    logWithFilter (MainThreadLogger::Filter::warnings, "WARNING", message, callerFunction, line);
 }
 
-void logError (const String& message)
+void logError (const String& message,
+               const String& callerFunction,
+               uint64 line)
 {
-    logWithFilter (MainThreadLogger::Filter::errors, "ERROR", message);
+    logWithFilter (MainThreadLogger::Filter::errors, "ERROR", message, callerFunction, line);
 }
