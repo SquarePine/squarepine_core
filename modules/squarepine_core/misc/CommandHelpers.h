@@ -5,8 +5,8 @@ class AsyncCommandRetrier final : private Timer
 public:
     /**
     */
-    AsyncCommandRetrier (ApplicationCommandManager& acm,
-                         const ApplicationCommandTarget::InvocationInfo& inf);
+    AsyncCommandRetrier (ApplicationCommandManager&,
+                         const ApplicationCommandTarget::InvocationInfo&);
 
     /** @internal */
     void timerCallback() override;
@@ -21,16 +21,16 @@ private:
 //============================================================================
 /**
 */
-bool reinvokeCommandAfterCancellingModalComps (ApplicationCommandManager& acm,
-                                               const ApplicationCommandTarget::InvocationInfo& info);
+bool reinvokeCommandAfterCancellingModalComps (ApplicationCommandManager&,
+                                               const ApplicationCommandTarget::InvocationInfo&);
 
 /**
 */
-void addShortcut (Array<KeyPress>& keyPresses, const KeyPress& keyPress);
+void addShortcut (Array<KeyPress>& keyPresses, const KeyPress&);
 
 /**
 */
-void addShortcut (ApplicationCommandInfo& result, const KeyPress& keyPress);
+void addShortcut (ApplicationCommandInfo& result, const KeyPress&);
 
 /**
 */

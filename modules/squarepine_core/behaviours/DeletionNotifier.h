@@ -13,10 +13,10 @@ public:
     struct DeletionListener
     {
         /** */
-        virtual ~DeletionListener() noexcept { }
+        virtual ~DeletionListener() noexcept = default;
 
         /** */
-        virtual void handleDeletion (DeletionNotifier* object) = 0;
+        virtual void handleDeletion (DeletionNotifier*) = 0;
     };
 
     /** */
@@ -31,7 +31,7 @@ private:
 
     void notifyDeletionListeners()
     {
-        deletionListeners.call ([&] (DeletionListener& l) { l.handleDeletion (this); });
+        deletionListeners.call ([this] (DeletionListener& l) { l.handleDeletion (this); });
     }
 
     //==============================================================================

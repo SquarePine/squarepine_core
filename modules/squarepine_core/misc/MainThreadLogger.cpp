@@ -76,9 +76,9 @@ void MainThreadLogger::logInternal (File dest, String message, Filter filterToUs
 
 //==============================================================================
 inline void logWithFilter (MainThreadLogger::Filter filter,
-                           const String& tagName,
-                           const String& message,
-                           const String& callerFunction,
+                           StringRef tagName,
+                           StringRef message,
+                           StringRef callerFunction,
                            uint64 line)
 {
     auto* currentLogger = dynamic_cast<MainThreadLogger*> (Logger::getCurrentLogger());

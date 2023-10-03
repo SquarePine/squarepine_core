@@ -1,33 +1,3 @@
-inline Component* realGetComponent (Component& p, Point<int> screenPos)
-{
-    if (p.getScreenBounds().contains (screenPos))
-    {
-        for (auto* c : p.getChildren())
-            if (auto* r = realGetComponent (*c, screenPos))
-                return r;
-
-        return &p;
-    }
-
-    return nullptr;
-}
-
-inline Component* realGetComponentUnderMouse()
-{
-    const auto mouse = Desktop::getInstance().getMainMouseSource();
-    const auto pos = mouse.getScreenPosition().toInt();
-
-    auto& desktop = Desktop::getInstance();
-
-    for (int i = desktop.getNumComponents(); --i >= 0;)
-        if (auto* dtc = desktop.getComponent (i))
-            if (dtc->isVisible())
-                if (auto* c = realGetComponent (*dtc, pos))
-                    return c;
-
-    return {};
-}
-
 //==============================================================================
 class ComponentViewer::Snapshot final : public Component
 {
@@ -145,6 +115,36 @@ public:
     {
         if (! isTimerRunning())
             startTimer (30);
+    }
+
+    static Component* findComponentAtScreenPos (Component& p, Point<int> screenPos)
+    {
+        if (p.getScreenBounds().contains (screenPos))
+        {
+            for (auto* c : p.getChildren())
+                if (auto* r = findComponentAtScreenPos (*c, screenPos))
+                    return r;
+
+            return &p;
+        }
+
+        return {};
+    }
+
+    static Component* realGetComponentUnderMouse()
+    {
+        const auto mouse = Desktop::getInstance().getMainMouseSource();
+        const auto pos = mouse.getScreenPosition().toInt();
+
+        auto& desktop = Desktop::getInstance();
+
+        for (int i = desktop.getNumComponents(); --i >= 0;)
+            if (auto* dtc = desktop.getComponent (i))
+                if (dtc->isVisible())
+                    if (auto* c = findComponentAtScreenPos (*dtc, pos))
+                        return c;
+
+        return {};
     }
 
     void updateComponentDetails()
