@@ -13,6 +13,7 @@
         #undef CORSAIR_LIGHTING_SDK_DISABLE_DEPRECATION_WARNINGS
         #define CORSAIR_LIGHTING_SDK_DISABLE_DEPRECATION_WARNINGS 1
         #include "../../../../sdks/CUESDK/include/CUESDK.h"
+        #undef CORSAIR_LIGHTING_SDK_DISABLE_DEPRECATION_WARNINGS
 
         //==============================================================================
         /** @returns an 'ok' result on sucess and a 'fail' result otherwise. */

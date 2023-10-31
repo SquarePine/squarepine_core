@@ -56,11 +56,11 @@ private:
     {
         void prepare (int numChannels)
         {
-            channels.resize (numChannels);
-            channels.clearQuick();
-
-            tempBuffer.resize (numChannels);
-            tempBuffer.clearQuick();
+            for (auto& a : { &channels, &tempBuffer })
+            {
+                a->resize (numChannels);
+                a->clearQuick();
+            }
         }
 
         template<typename OtherFloatType>
