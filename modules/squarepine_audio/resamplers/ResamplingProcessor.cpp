@@ -34,7 +34,7 @@ void ResamplingProcessor::prepareToPlay (double newSampleRate, int estimatedSamp
 {
     setRateAndBufferSizeDetails (newSampleRate, estimatedSamplesPerBlock);
 
-    const int numChans = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels());
+    const int numChans = std::max (getTotalNumInputChannels(), getTotalNumOutputChannels());
 
     jassert (realtime != nullptr);
     realtime->prepare (numChans, estimatedSamplesPerBlock, newSampleRate);
@@ -61,7 +61,7 @@ void ResamplingProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBu
     jassert (resamplerToUse != nullptr);
     resamplerToUse->setRatio (r);
 
-    const auto newSize = (int) jmax (1.0, (double) numSamples / r);
+    const auto newSize = (int) std::max (1.0, (double) numSamples / r);
     result.setSize (buffer.getNumChannels(), newSize, false, false, true);
     result.clear();
 

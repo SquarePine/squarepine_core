@@ -167,7 +167,7 @@ GoogleAnalyticsMetadata& GoogleAnalyticsMetadata::with (const String& key, const
         String v;
 
         if (maxSizeBytes > 0)
-            v = String::fromUTF8 (value.toRawUTF8(), jmin (maxSizeBytes, (int) CharPointer_UTF8::getBytesRequiredFor (value.getCharPointer())));
+            v = String::fromUTF8 (value.toRawUTF8(), std::min (maxSizeBytes, (int) CharPointer_UTF8::getBytesRequiredFor (value.getCharPointer())));
         else
             v = value;
 
@@ -391,7 +391,7 @@ GoogleAnalyticsReporter::~GoogleAnalyticsReporter()
 
 void GoogleAnalyticsReporter::setConnectionTimeoutMs (int newTimeoutMs)
 {
-    timeoutMs = jmax (1000, newTimeoutMs);
+    timeoutMs = std::max (1000, newTimeoutMs);
 }
 
 void GoogleAnalyticsReporter::startSession()

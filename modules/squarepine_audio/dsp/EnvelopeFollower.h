@@ -53,7 +53,7 @@ private:
         /** */
         void set (FloatType newTimeMs, FloatType sampleRate_) noexcept
         {
-		    timeMs = jmax (newTimeMs, (FloatType) 1e-15);
+		    timeMs = std::max (newTimeMs, (FloatType) 1e-15);
             coefficient = std::exp (std::log ((FloatType) 0.01) / (timeMs * sampleRate_ * (FloatType) 0.001));
         }
 

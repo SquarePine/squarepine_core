@@ -622,14 +622,14 @@ template<typename Type>
 /** @returns a MIDI note converted from a frequency. */
 [[nodiscard]] inline int frequencyToMIDINote (double frequency) noexcept
 {
-    const auto pitchRatio = jmax (0.0, frequency / 440.0);
+    const auto pitchRatio = std::max (0.0, frequency / 440.0);
     return roundToInt (69.0 + pitchRatioToSemitones (pitchRatio));
 }
 
 /** @returns a frequency converted from a MIDI note. */
 [[nodiscard]] inline double midiNoteToFrequency (int midiNoteNumber) noexcept
 {
-    const auto semitones = jmax (0, midiNoteNumber);
+    const auto semitones = std::max (0, midiNoteNumber);
     return 440.0 * semitonesToPitchRatio (static_cast<double> (semitones) - 69.0);
 }
 

@@ -1,5 +1,5 @@
 Pitch::Pitch (double frequencyHz) noexcept :
-    frequency (jmax (0.0, frequencyHz))
+    frequency (std::max (0.0, frequencyHz))
 {
 }
 

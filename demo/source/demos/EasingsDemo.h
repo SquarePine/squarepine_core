@@ -29,8 +29,8 @@ public:
             plot.addLineSegment ({ last.toFloat(), c.toFloat() }, lineThickness);
             last = c;
 
-            genMin = jmin (genMin, c.y);
-            genMax = jmax (genMax, c.y);
+            genMin = std::min (genMin, c.y);
+            genMax = std::max (genMax, c.y);
         }
 
         // Because JUCE's coords are backwards...

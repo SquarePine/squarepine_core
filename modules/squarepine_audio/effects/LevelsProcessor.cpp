@@ -60,7 +60,7 @@ void LevelsProcessor::prepareToPlay (double newSampleRate, int newBufferSize)
 {
     setRateAndBufferSizeDetails (newSampleRate, newBufferSize);
 
-    const auto numChannels = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels());
+    const auto numChannels = std::max (getTotalNumInputChannels(), getTotalNumOutputChannels());
 
     floatChannelDetails.prepare (numChannels);
     doubleChannelDetails.prepare (numChannels);

@@ -79,7 +79,7 @@ void StereoWidthProcessor::process (juce::AudioBuffer<FloatType>& buffer,
     constexpr auto one      = static_cast<FloatType> (1);
     constexpr auto two      = static_cast<FloatType> (2);
     const auto localWidth   = val * two;
-    const auto coeffM       = one / jmax (one + localWidth, two);
+    const auto coeffM       = one / std::max (one + localWidth, two);
     const auto coeffS       = localWidth * coeffM;
 
     auto* leftChannel       = buffer.getWritePointer (0);

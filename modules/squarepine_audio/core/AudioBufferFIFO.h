@@ -32,7 +32,7 @@ public:
     /** Push samples into the FIFO from raw float arrays. */
     void push (const FloatType** samples, int numSamples)
     {
-        numSamples = jmin (getFreeSpace(), numSamples);
+        numSamples = std::min (getFreeSpace(), numSamples);
         if (numSamples <= 0)
             return;
 
@@ -61,7 +61,7 @@ public:
     /** Add silence to the FIFO. */
     void pushSilence (int numSamples)
     {
-        numSamples = jmin (getFreeSpace(), numSamples);
+        numSamples = std::min (getFreeSpace(), numSamples);
         if (numSamples <= 0)
             return;
 
@@ -81,7 +81,7 @@ public:
     /** Read samples from the FIFO into raw float arrays. */
     void readTo (FloatType** samples, int numSamples)
     {
-        numSamples = jmin (getNumReady(), numSamples);
+        numSamples = std::min (getNumReady(), numSamples);
         if (numSamples <= 0)
             return;
 
@@ -121,7 +121,7 @@ public:
     /** Read samples from the FIFO and add it to raw float arrays. */
     void readToAdding (FloatType** samples, int numSamples, FloatType gain = FloatType (1))
     {
-        numSamples = jmin (getNumReady(), numSamples);
+        numSamples = std::min (getNumReady(), numSamples);
         if (numSamples <= 0)
             return;
 
@@ -168,7 +168,7 @@ public:
     /** Pop (consume/remove) samples from the FIFO, ignoring them. */
     void pop (int numSamples)
     {
-        numSamples = jmin (getNumReady(), numSamples);
+        numSamples = std::min (getNumReady(), numSamples);
         if (numSamples <= 0)
             return;
 

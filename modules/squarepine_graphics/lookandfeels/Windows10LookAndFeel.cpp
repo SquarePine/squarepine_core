@@ -133,7 +133,7 @@ int Windows10LookAndFeel::getTabButtonBestWidth (TabBarButton& button, int tabDe
         width += button.getTabbedButtonBar().isVertical() ? extraComponent->getHeight()
                                                           : extraComponent->getWidth();
 
-    return jlimit (tabDepth * 2, tabDepth * 8, width);
+    return std::clamp (width, tabDepth * 2, tabDepth * 8);
 }
 
 void Windows10LookAndFeel::drawTextInRegion (Graphics& g, const Font& font, const String& text, Justification j,
@@ -274,7 +274,7 @@ void Windows10LookAndFeel::drawTabButtonText (TabBarButton& button, Graphics& g,
     drawFittedText (g, button.getButtonText(),
                     juce::Rectangle<float> (length, depth),
                     Justification::centred,
-                    roundToInt (jmax (1.0f, depth / 12.0f)));
+                    roundToInt (std::max (1.0f, depth / 12.0f)));
 }
 
 void Windows10LookAndFeel::drawTabButton (TabBarButton& button, Graphics& g, bool isMouseOver, bool isMouseDown)
@@ -354,7 +354,7 @@ void Windows10LookAndFeel::drawComboBox (Graphics& g, int width, int height, boo
 
 Font Windows10LookAndFeel::getTextButtonFont (TextButton&, int buttonHeight)
 {
-    return { jmin (16.0f, (float) buttonHeight * 0.75f) };
+    return { std::min (16.0f, (float) buttonHeight * 0.75f) };
 }
 
 void Windows10LookAndFeel::drawButtonBackground (Graphics& g, Button& button, const Colour& backgroundColour,
@@ -380,7 +380,7 @@ void Windows10LookAndFeel::drawToggleButton (Graphics& g, ToggleButton& button,
                                              bool shouldDrawButtonAsHighlighted,
                                              bool shouldDrawButtonAsDown)
 {
-    const auto fontSize = jmin (16.0f, (float) button.getHeight() * 0.75f);
+    const auto fontSize = std::min (16.0f, (float) button.getHeight() * 0.75f);
     const auto tickWidth = fontSize * 1.1f;
 
     drawTickBox (g, button, 4.0f, ((float) button.getHeight() - tickWidth) * 0.5f,
@@ -415,7 +415,7 @@ void Windows10LookAndFeel::drawDrawableButton (Graphics& g, DrawableButton& butt
     g.fillAll (button.findColour (toggleState ? DrawableButton::backgroundOnColourId : DrawableButton::backgroundColourId));
 
     const auto textH = button.getStyle() == DrawableButton::ImageAboveTextLabel
-                        ? jmin (16.0f, (float) button.getHeight() * 0.25f)
+                        ? std::min (16.0f, (float) button.getHeight() * 0.25f)
                         : 0.0f;
 
     if (textH > 0.0f)
@@ -433,7 +433,7 @@ void Windows10LookAndFeel::drawDrawableButton (Graphics& g, DrawableButton& butt
 
 void Windows10LookAndFeel::changeToggleButtonWidthToFitText (ToggleButton& button)
 {
-    const auto fontSize = jmin (15.0f, (float) button.getHeight() * 0.75f);
+    const auto fontSize = std::min (15.0f, (float) button.getHeight() * 0.75f);
     const auto tickWidth = fontSize * 1.1f;
 
     button.setSize (roundToIntAccurate (Font (fontSize).getStringWidthFloat (button.getButtonText()) + tickWidth + 14.0f),
@@ -448,7 +448,7 @@ void Windows10LookAndFeel::drawButtonText (Graphics& g, TextButton& button, bool
                                                             : TextButton::textColourOffId)
                        .withMultipliedAlpha (button.isEnabled() ? 1.0f : 0.5f));
 
-    const auto yIndent      = jmin (4.0f, (float) button.getHeight() * 0.3f);
+    const auto yIndent      = std::min (4.0f, (float) button.getHeight() * 0.3f);
     const auto textWidth    = (float) button.getWidth();
 
     if (textWidth > 0.0f)

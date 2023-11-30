@@ -5,19 +5,19 @@ double DecibelHelpers::calculateSnapPoint (double snapDb) noexcept
 
 double DecibelHelpers::gainToMeterProportion (double gain, int minimumDecibels, int maximumDecibels) noexcept
 {
-    const auto decibels = jlimit ((double) minimumDecibels, (double) maximumDecibels, Decibels::gainToDecibels (gain));
+    const auto decibels = std::clamp (Decibels::gainToDecibels (gain), (double) minimumDecibels, (double) maximumDecibels);
     return decibelsToMeterProportion (decibels, minimumDecibels, maximumDecibels);
 }
 
 double DecibelHelpers::meterProportionToGain (double meterProportion, int minimumDecibels, int maximumDecibels) noexcept
 {
     const auto decibels = meterProportionToDecibels (meterProportion, minimumDecibels, maximumDecibels);
-    return jlimit ((double) minimumDecibels, (double) maximumDecibels, Decibels::decibelsToGain(decibels));
+    return std::clamp (Decibels::decibelsToGain (decibels), (double) minimumDecibels, (double) maximumDecibels);
 }
 
 double DecibelHelpers::decibelsToMeterProportion (double decibels, int minimumDecibels, int maximumDecibels) noexcept
 {
-    decibels = jlimit ((double) minimumDecibels, (double) maximumDecibels, decibels);
+    decibels = std::clamp (decibels, (double) minimumDecibels, (double) maximumDecibels);
     const auto linearProportion = (decibels - minimumDecibels) / (double) (maximumDecibels - minimumDecibels);
     return linearToCurved (linearProportion);
 }
@@ -26,13 +26,13 @@ double DecibelHelpers::meterProportionToDecibels (double meterProportion, int mi
 {
     const auto linearProportion = curvedToLinear (meterProportion);
     const auto decibels = minimumDecibels + linearProportion * (maximumDecibels - minimumDecibels);
-    return jlimit ((double) minimumDecibels, (double) maximumDecibels, decibels);
+    return std::clamp (decibels, (double) minimumDecibels, (double) maximumDecibels);
 }
 
 double DecibelHelpers::linearToCurved (double value) noexcept
 {
     const auto curvedValue = (std::exp (value * std::log (1 + curveTensionDb)) - 1.0) / (double) curveTensionDb;
-    return jlimit (0.0, 1.0, curvedValue);
+    return std::clamp (curvedValue, 0.0, 1.0);
 }
 
 double DecibelHelpers::curvedToLinear (double curvedValue) noexcept
@@ -113,7 +113,7 @@ bool Meter::refresh()
 
     bool areLevelsDifferent = false;
     bool isMaxLevelDelayExpired = false;
-    const auto numChans = jmin (levels.size(), channels.size());
+    const auto numChans = std::min (levels.size(), channels.size());
 
     for (int i = 0; i < numChans; ++i)
     {
@@ -154,7 +154,7 @@ void Meter::updateClippingLevel (bool timeToUpdate)
 {
     auto maxLevel = 0.0f;
     for (const auto& channel : channels)
-        maxLevel = jmax (channel.getLevel(), maxLevel);
+        maxLevel = std::max (channel.getLevel(), maxLevel);
 
     maxLevel = Decibels::gainToDecibels (maxLevel);
 

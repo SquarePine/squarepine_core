@@ -5,11 +5,11 @@ void HissingProcessor::prepareToPlay (const double newSampleRate, const int esti
     constexpr auto secondsBetweenHisses = 3;
 
     maxBlocksBetweenHisses = blocksBetweenHisses
-        = jmax (10, roundToInt ((newSampleRate * (double) (random.nextInt (10) + secondsBetweenHisses))
+        = std::max (10, roundToInt ((newSampleRate * (double) (random.nextInt (10) + secondsBetweenHisses))
                                 / (double) estimatedSamplesPerBlock));
 
     blockCounter = random.nextInt (blocksBetweenHisses);
-    blocksPerHiss = jmax (2, roundToInt (newSampleRate * 2.5 / estimatedSamplesPerBlock));
+    blocksPerHiss = std::max (2, roundToInt (newSampleRate * 2.5 / estimatedSamplesPerBlock));
     level = 0.001;
 }
 
@@ -36,7 +36,7 @@ void HissingProcessor::process (juce::AudioBuffer<FloatType>& buffer)
     if (++blockCounter >= blocksBetweenHisses)
     {
         resetParams();
-        blocksBetweenHisses = jmax (10, maxBlocksBetweenHisses - random.nextInt (maxBlocksBetweenHisses / 4));
+        blocksBetweenHisses = std::max (10, maxBlocksBetweenHisses - random.nextInt (maxBlocksBetweenHisses / 4));
     }
 
     if (blockCounter >= blocksPerHiss)

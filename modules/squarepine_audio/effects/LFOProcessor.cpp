@@ -102,7 +102,7 @@ void LFOProcessor::prepareToPlay (const double newSampleRate, const int samplesP
 {
     setRateAndBufferSizeDetails (newSampleRate, samplesPerBlock);
 
-    const auto numChans = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels());
+    const auto numChans = std::max (getTotalNumInputChannels(), getTotalNumOutputChannels());
 
     floatMulter.setSize (numChans, samplesPerBlock, false, true, true);
     doubleMulter.setSize (numChans, samplesPerBlock, false, true, true);

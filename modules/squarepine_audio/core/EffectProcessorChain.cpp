@@ -317,8 +317,8 @@ int EffectProcessorChain::getNumRequiredChannels() const
                 const int numBs = plugin->getBusCount (b);
 
                 for (int i = 0; i < numBs; ++i)
-                    newRequiredChannels = jmax (newRequiredChannels,
-                                                plugin->getChannelCountOfBus (b, i));
+                    newRequiredChannels = std::max (newRequiredChannels,
+                                                    plugin->getChannelCountOfBus (b, i));
             }
         }
     }
@@ -442,7 +442,7 @@ void EffectProcessorChain::process (juce::AudioBuffer<FloatType>& buffer,
 
     const ScopedNoDenormals snd;
 
-    const auto numChannels = jmin (buffer.getNumChannels(), requiredChannels.load());
+    const auto numChannels = std::min (buffer.getNumChannels(), requiredChannels.load());
     const auto numSamples = buffer.getNumSamples();
 
     if (isBypassed()
@@ -455,7 +455,7 @@ void EffectProcessorChain::process (juce::AudioBuffer<FloatType>& buffer,
         return;
     }
 
-    const auto maxNumChannels = jmax (buffer.getNumChannels(), requiredChannels.load());
+    const auto maxNumChannels = std::max (buffer.getNumChannels(), requiredChannels.load());
 
     processInternal (buffer, midiMessages, package,
                      numChannels, maxNumChannels, numSamples);
@@ -474,7 +474,7 @@ double EffectProcessorChain::getTailLengthSeconds() const
     for (auto effect : effects)
         if (effect != nullptr && effect->canBeProcessed())
             if (auto plugin = effect->plugin)
-                largestTailLength = jmax (largestTailLength, plugin->getTailLengthSeconds());
+                largestTailLength = std::max (largestTailLength, plugin->getTailLengthSeconds());
 
     return largestTailLength;
 }

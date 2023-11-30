@@ -8,8 +8,8 @@
     This section of code should help avoid clashing of sorts,
     and clearing up the already zany global namespace.
 
-    Give me a break - use jmin() and jmax() instead!
-    JUCE is equally at fault here, with its jmin() and jmax() functions.
+    Give me a break - use std::min() and std::max() instead!
+    JUCE is equally at fault here, with its std::min() and std::max() functions.
 */
 
 #undef NOMINMAX // Avoids additional clashing

@@ -121,12 +121,12 @@ public:
 
         int numSamplesUsed = 0;
         const auto numOutSamples = dest.getNumSamples();
-        const auto numChans = jmin (source.getNumChannels(), dest.getNumChannels(), resamplers.size());
+        const auto numChans = std::min (source.getNumChannels(), dest.getNumChannels(), resamplers.size());
         if (numChans <= 0)
             dest.clear();
 
         for (int i = numChans; --i >= 0;)
-            numSamplesUsed = jmax (numSamplesUsed,
+            numSamplesUsed = std::max (numSamplesUsed,
                                    resamplers.getUnchecked (i)->process (localRatio,
                                                                          source.getReadPointer (i),
                                                                          dest.getWritePointer (i),

@@ -120,10 +120,10 @@ struct Spline final
         if (i < 0)
             return points.getFirst().y;
 
-        const auto p0 = points.getReference (jmax (0, i - 1));
+        const auto p0 = points.getReference (std::max (0, i - 1));
         const auto p1 = points.getReference (i);
         const auto p2 = points.getReference (i + 1);
-        const auto p3 = points.getReference (jmin (num - 1, i + 2));
+        const auto p3 = points.getReference (std::min (num - 1, i + 2));
 
         const auto alpha = (x - p1.x) / (p2.x - p1.x);
         const auto alpha2 = square (alpha);

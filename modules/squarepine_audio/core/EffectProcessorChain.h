@@ -346,8 +346,8 @@ private:
 
         void prepare (int numChans, int numSamps)
         {
-            numChannels = jmax (numChannels, numChans);
-            numSamples = jmax (numSamples, numSamps);
+            numChannels = std::max (numChannels, numChans);
+            numSamples = std::max (numSamples, numSamps);
 
             for (auto& buff : buffers)
             {

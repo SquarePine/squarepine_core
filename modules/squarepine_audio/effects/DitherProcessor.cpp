@@ -4,7 +4,7 @@ void DitherProcessor::prepareToPlay (const double newSampleRate, const int estim
 
     dithers.clearQuick (true);
 
-    for (auto i = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels()); --i >= 0;)
+    for (auto i = std::max (getTotalNumInputChannels(), getTotalNumOutputChannels()); --i >= 0;)
         dithers.add (new BasicDither());
 }
 

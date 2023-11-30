@@ -437,7 +437,7 @@ private:
     {
         auto s = source;
 
-        for (int i = 0; i < jmin (index, 4); ++i)
+        for (int i = 0; i < std::min (index, 4); ++i)
             s = s.fromFirstOccurrenceOf (".", false, true);
 
         return s.trim().getIntValue();
@@ -751,9 +751,9 @@ private:
 
         usesFloatingPointData = safeUsesFloatingPointData.load();
         lengthInSamples = (int64) ((beats / bps) * info.sampleRate);
-        sampleRate = (double) jmax (0, info.sampleRate);
-        bitsPerSample = (uint32) jmax (0, info.bitDepth);
-        numChannels = (uint32) jmax (0, info.numChannels);
+        sampleRate = (double) std::max (0, info.sampleRate);
+        bitsPerSample = (uint32) std::max (0, info.bitDepth);
+        numChannels = (uint32) std::max (0, info.numChannels);
 
         safeNumChannels = (int) numChannels;
 
@@ -784,7 +784,7 @@ private:
                 return false;
 
             const auto offset = (int64) (((double) sliceInfo.ppqPos / standardREXPPQ) / ((double) info.tempo / 60000.0) * (double) info.sampleRate);
-            const auto numSamples = (int) jmin (lengthInSamples - offset, (int64) sliceInfo.sampleLength);
+            const auto numSamples = (int) std::min (lengthInSamples - offset, (int64) sliceInfo.sampleLength);
 
             if (numSamples > 0)
                 for (int i = 0; i < sliceData.getNumChannels(); ++i)

@@ -74,7 +74,7 @@ String DummyAudioIODevice::open (const BigInteger& inputChannels,
                                  const double sr,
                                  const int bufferSizeSamples)
 {
-    return open (jmax (inputChannels.countNumberOfSetBits(), outputChannels.countNumberOfSetBits()), sr, bufferSizeSamples);
+    return open (std::max (inputChannels.countNumberOfSetBits(), outputChannels.countNumberOfSetBits()), sr, bufferSizeSamples);
 }
 
 void DummyAudioIODevice::close()
@@ -125,7 +125,7 @@ void DummyAudioIODevice::setCurrentBufferSizeSamples (const int size)
     const auto it = std::min_element (sizes.begin(), sizes.end());
     jassert (it != sizes.end());
 
-    bufferSize = jmax (*it, size);
+    bufferSize = std::max (*it, size);
 }
 
 void DummyAudioIODevice::setCurrentSampleRate (const double sr)
@@ -134,12 +134,12 @@ void DummyAudioIODevice::setCurrentSampleRate (const double sr)
     const auto it = std::min_element (rates.begin(), rates.end());
     jassert (it != rates.end());
 
-    sampleRate = jmax (*it, sr);
+    sampleRate = std::max (*it, sr);
 }
 
 void DummyAudioIODevice::setNumChannels (const int numChans)
 {
-    numChannels = jmax (2, numChans);
+    numChannels = std::max (2, numChans);
 }
 
 //==============================================================================

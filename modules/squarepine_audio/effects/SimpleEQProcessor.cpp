@@ -37,8 +37,8 @@ public:
         const dsp::ProcessSpec spec
         {
             sampleRate,
-            (uint32) jmax (0, bufferSize),
-            (uint32) jmax (0, numChannels)
+            (uint32) std::max (0, bufferSize),
+            (uint32) std::max (0, numChannels)
         };
 
         floatPackage.processor.prepare (spec);
@@ -59,7 +59,7 @@ public:
         updateParamsFor (doublePackage);
     }
 
-    float getMagnitudeDbFromFrequency (float frequency) const
+    auto getMagnitudeDbFromFrequency (float frequency) const
     {
         jassert (sampleRate > 0.0);
 
@@ -76,7 +76,7 @@ public:
     void process (juce::AudioBuffer<double>& buffer)    { process (doublePackage, buffer); }
 
     //==============================================================================
-    static inline const float nonZeroMinimum = 0.00001f;
+    static inline constexpr float nonZeroMinimum = 0.00001f;
 
     const FilterType type = FilterType::bandpass;
     double sampleRate = 44100.0;
@@ -104,7 +104,8 @@ private:
     {
         auto snapToNonZero = [] (SampleType v) noexcept
         {
-            return jmax (static_cast<SampleType> (nonZeroMinimum), v);
+            constexpr auto t = static_cast<SampleType> (nonZeroMinimum);
+            return std::max (t, v);
         };
 
         const auto c = snapToNonZero (static_cast<SampleType> (cutoff->get()));
@@ -297,8 +298,8 @@ AudioProcessorValueTreeState::ParameterLayout SimpleEQProcessor::createParameter
     for (const auto& c : configs)
     {
         auto bypass = std::make_unique<FilterBypassParameter> (String ("bypassXYZ").replace ("XYZ", c.name),
-                                                            String (NEEDS_TRANS ("Bypass (XYZ)")).replace ("XYZ", c.name),
-                                                            false);
+                                                               String (NEEDS_TRANS ("Bypass (XYZ)")).replace ("XYZ", c.name),
+                                                               false);
 
         auto gain = std::make_unique<AudioParameterFloat> (String ("gainXYZ").replace ("XYZ", c.name),
                                                            String (NEEDS_TRANS ("Gain (XYZ)")).replace ("XYZ", c.name),
@@ -330,7 +331,7 @@ void SimpleEQProcessor::prepareToPlay (const double newSampleRate, const int buf
 {
     setRateAndBufferSizeDetails (newSampleRate, bufferSize);
 
-    const auto numChans = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels());
+    const auto numChans = std::max (getTotalNumInputChannels(), getTotalNumOutputChannels());
 
     for (auto* f : filters)
         f->prepare (newSampleRate, bufferSize, numChans);
@@ -350,11 +351,9 @@ void SimpleEQProcessor::process (juce::AudioBuffer<SampleType>& buffer)
                                   || numChannels <= 0
                                   || numSamples <= 0;
 
-    if (isWholeProcBypassed)
-        return;
-
-    for (auto* f : filters)
-        f->process (buffer);
+    if (! isWholeProcBypassed)
+        for (auto* f : filters)
+            f->process (buffer);
 }
 
 AudioProcessor::CurveData SimpleEQProcessor::getResponseCurve (CurveData::Type type) const

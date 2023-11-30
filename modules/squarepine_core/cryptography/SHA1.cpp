@@ -114,7 +114,7 @@ struct SHA1Processor
         for (;;)
         {
             uint8 buffer[64];
-            auto bytesRead = input.read (buffer, (int) jmin (numBytesToRead, (int64_t) sizeof (buffer)));
+            auto bytesRead = input.read (buffer, (int) std::min (numBytesToRead, (int64_t) sizeof (buffer)));
 
             if (bytesRead < (int) sizeof (buffer))
             {

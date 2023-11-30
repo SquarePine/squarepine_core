@@ -213,8 +213,8 @@ bool NetworkResponse::isExpired() const
         now
             is the current (local) time
     */
-    const auto apparentAge          = jmax ((int64) 0, cache.responseDate - cache.requestDate);
-    const auto correctedReceivedAge = jmax (apparentAge, cache.age);
+    const auto apparentAge          = std::max ((int64) 0, cache.responseDate - cache.requestDate);
+    const auto correctedReceivedAge = std::max (apparentAge, cache.age);
     const auto responseDelay        = cache.responseDate - cache.requestDate;
     const auto correctedInitialAge  = correctedReceivedAge + responseDelay;
     const auto residentTime         = getNow() - cache.responseDate;

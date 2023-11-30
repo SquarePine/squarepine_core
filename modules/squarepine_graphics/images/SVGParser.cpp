@@ -345,7 +345,7 @@ inline void endpointToCentreParameters (double x1, double y1,
 
     if (s <= 1.0)
     {
-        c = std::sqrt (jmax (0.0, ((rx2 * ry2) - (rx2 * yp2) - (ry2 * xp2)) / ((rx2 * yp2) + (ry2 * xp2))));
+        c = std::sqrt (std::max (0.0, ((rx2 * ry2) - (rx2 * yp2) - (ry2 * xp2)) / ((rx2 * yp2) + (ry2 * xp2))));
 
         if (largeArc == sweep)
             c = -c;

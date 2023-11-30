@@ -32,7 +32,7 @@ TimeKeeper& TimeKeeper::setSamplingRate (AudioDeviceManager& deviceManager)
 //==============================================================================
 TimeKeeper& TimeKeeper::setTime (double seconds)
 {
-    timeSeconds = jmax (0.0, seconds);
+    timeSeconds = std::max (0.0, seconds);
     return *this;
 }
 
@@ -137,7 +137,7 @@ String TimeKeeper::toString() const
             };
 
             return createString (whole, true) + ":"
-                 + createString (beats, jmax (timeSignature.numerator, timeSignature.denominator) > 10) + ":"
+                 + createString (beats, std::max (timeSignature.numerator, timeSignature.denominator) > 10) + ":"
                  + createString (ticks, true);
         }
 

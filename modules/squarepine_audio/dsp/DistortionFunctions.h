@@ -15,7 +15,7 @@ public:
     {
         const auto s = cabs (inputSample);
 
-        drive = jmax (one, cabs (drive) * static_cast<FloatType> (75));
+        drive = std::max (one, cabs (drive) * static_cast<FloatType> (75));
 
         return (inputSample * (s + drive))
                / (std::pow (inputSample, two) + ((drive - one) * s) + one);

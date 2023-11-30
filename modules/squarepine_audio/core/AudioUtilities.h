@@ -113,8 +113,8 @@ inline void addFrom (juce::AudioBuffer<FloatType>& destination,
                      FloatType gainFactor = (FloatType) 1)
 {
     addFrom (destination, source,
-             jmin (source.getNumChannels(), destination.getNumChannels()),
-             jmin (source.getNumSamples(), destination.getNumSamples()),
+             std::min (source.getNumChannels(), destination.getNumChannels()),
+             std::min (source.getNumSamples(), destination.getNumSamples()),
              gainFactor);
 }
 

@@ -149,7 +149,7 @@ int DemoLookAndFeel::getTabButtonBestWidth (TabBarButton& button, int tabDepth)
         width += button.getTabbedButtonBar().isVertical() ? extraComponent->getHeight()
                                                           : extraComponent->getWidth();
 
-    return jlimit (tabDepth * 2, tabDepth * 8, width);
+    return std::clamp (width, tabDepth * 2, tabDepth * 8);
 }
 
 void DemoLookAndFeel::drawTextInRegion (Graphics& g, const Font& font, const String& text, Justification j,
@@ -287,7 +287,7 @@ void DemoLookAndFeel::drawTabButtonText (TabBarButton& button, Graphics& g, bool
     drawFittedText (g, button.getButtonText(),
                     Rectangle<float> (length, depth),
                     Justification::centred,
-                    roundToInt (jmax (1.0f, depth / 12.0f)));
+                    roundToInt (std::max (1.0f, depth / 12.0f)));
 }
 
 void DemoLookAndFeel::drawTabButton (TabBarButton& button, Graphics& g, bool isMouseOver, bool isMouseDown)
@@ -484,9 +484,9 @@ void DemoLookAndFeel::drawButtonText (Graphics& g, TextButton& button, bool, boo
                                                             : TextButton::textColourOffId)
                        .withMultipliedAlpha (button.isEnabled() ? 1.0f : 0.5f));
 
-    const auto yIndent      = jmin (4.0f, (float) button.getHeight() * 0.3f);
-    const auto leftIndent   = jmin (defaultFontHeight, 2.0f + corner / (button.isConnectedOnLeft() ? 4.0f : 2.0f));
-    const auto rightIndent  = jmin (defaultFontHeight, 2.0f + corner / (button.isConnectedOnRight() ? 4.0f : 2.0f));
+    const auto yIndent      = std::min (4.0f, (float) button.getHeight() * 0.3f);
+    const auto leftIndent   = std::min (defaultFontHeight, 2.0f + corner / (button.isConnectedOnLeft() ? 4.0f : 2.0f));
+    const auto rightIndent  = std::min (defaultFontHeight, 2.0f + corner / (button.isConnectedOnRight() ? 4.0f : 2.0f));
     const auto textWidth    = (float) button.getWidth() - leftIndent - rightIndent;
 
     if (textWidth > 0.0f)

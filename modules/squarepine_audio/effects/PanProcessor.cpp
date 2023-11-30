@@ -128,7 +128,7 @@ void PanProcessor::prepareToPlay (double newSampleRate, int samplesPerBlock)
     {
         newSampleRate,
         (uint32) samplesPerBlock,
-        (uint32) jmax (getTotalNumInputChannels(), getTotalNumOutputChannels())
+        (uint32) std::max (getTotalNumInputChannels(), getTotalNumOutputChannels())
     };
 
     floatPanner.prepare (spec);

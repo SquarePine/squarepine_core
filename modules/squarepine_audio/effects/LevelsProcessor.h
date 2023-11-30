@@ -72,7 +72,7 @@ private:
 
             if (! possiblyBypassed)
             {
-                const auto numChannels = jmin (buffer.getNumChannels(), tempBuffer.size());
+                const auto numChannels = std::min (buffer.getNumChannels(), tempBuffer.size());
 
                 switch (meteringMode)
                 {

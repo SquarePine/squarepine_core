@@ -149,7 +149,7 @@ ArrayIterationUnroller::~ArrayIterationUnroller()
 //==============================================================================
 void ArrayIterationUnroller::resize (int newSize)
 {
-    sizeOfArray = jmax (newSize, 0);
+    sizeOfArray = std::max (newSize, 0);
 }
 
 void ArrayIterationUnroller::pairedPerform (int index)

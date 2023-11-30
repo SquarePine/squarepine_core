@@ -35,7 +35,7 @@ void SimpleDistortionProcessor::prepareToPlay (double newSampleRate, int samples
     {
         newSampleRate,
         (uint32) samplesPerBlock,
-        (uint32) jmax (getTotalNumInputChannels(), getTotalNumOutputChannels())
+        (uint32) std::max (getTotalNumInputChannels(), getTotalNumOutputChannels())
     };
 
     floatPackage.prepare (spec);

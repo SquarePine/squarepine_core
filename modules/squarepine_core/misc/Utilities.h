@@ -102,7 +102,7 @@ public:
     /** */
     void startTimer (double newIntervalSeconds) 
     {
-        intervalSeconds.store (jmax (newIntervalSeconds, 0.0));
+        intervalSeconds.store (std::max (newIntervalSeconds, 0.0));
 
         if (! isThreadRunning())
             startThread();
@@ -400,7 +400,7 @@ inline int getMaxPathLength()
     maxLength = roundToInt ((double) PATH_MAX / 3.0) - 1;
    #endif
 
-    return jmax (128, maxLength);
+    return std::max (128, maxLength);
 }
 
 //==============================================================================

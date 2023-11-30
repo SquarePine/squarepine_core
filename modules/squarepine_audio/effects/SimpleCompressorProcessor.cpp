@@ -38,7 +38,7 @@ void SimpleCompressorProcessor::prepareToPlay (double sampleRate, int bufferSize
     {
         sampleRate,
         (uint32) bufferSize,
-        (uint32) jmax (getTotalNumInputChannels(), getTotalNumOutputChannels())
+        (uint32) std::max (getTotalNumInputChannels(), getTotalNumOutputChannels())
     };
 
     floatCompressor.prepare (spec);

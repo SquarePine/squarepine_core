@@ -84,12 +84,12 @@ TimeSignature TimeSignature::getTimeSignature (const AudioFormatReader& reader)
 //==============================================================================
 void TimeSignature::snapToRange() noexcept
 {
-    numerator = jlimit (mininumNumerator, maximumNumerator, numerator);
+    numerator = std::clamp (numerator, mininumNumerator, maximumNumerator);
 
     if (! isPowerOfTwo (denominator))
         denominator = previousPowerOfTwo (denominator);
 
-    denominator = jlimit (mininumDenominator, maximumDenominator, denominator);
+    denominator = std::clamp (denominator, mininumDenominator, maximumDenominator);
 }
 
 //==============================================================================3
