@@ -535,7 +535,8 @@ void EffectProcessorChain::getStateInformation (MemoryBlock& destData)
         String r;
         {
             MemoryOutputStream mos (2048);
-            obj.writeAsJSON (mos, 4, false, 4);
+            obj.writeAsJSON (mos, JSON::FormatOptions()
+                                        .withIndentLevel (4));
             r = mos.toString();
         }
 

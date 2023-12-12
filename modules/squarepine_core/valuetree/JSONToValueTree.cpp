@@ -51,7 +51,9 @@ String toJSONString (const ValueTree& tree)
     if (auto dynObj = toDynamicObj (tree))
     {
         MemoryOutputStream stream;
-        dynObj->writeAsJSON (stream, 4, false, 3);
+
+        dynObj->writeAsJSON (stream, JSON::FormatOptions()
+                                        .withIndentLevel (4));
         return stream.getMemoryBlock().toString();
     }
 
