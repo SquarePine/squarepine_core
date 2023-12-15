@@ -66,15 +66,15 @@ public:
     /** @internal */
     Array<int> getPossibleBitDepths() override { return {}; }
     /** @internal */
-    bool canDoStereo() override{ return true; }
+    bool canDoStereo() override { return true; }
     /** @internal */
-    bool canDoMono() override{ return true; }
+    bool canDoMono() override { return true; }
     /** @internal */
-    bool isCompressed() override{ return true; }
+    bool isCompressed() override { return true; }
     /** @internal */
     AudioFormatReader* createReaderFor (InputStream*, bool) override;
     /** @internal */
-    AudioFormatWriter* createWriterFor (OutputStream*, double, unsignedint, int, const StringPairArray&, int) override { return nullptr; }
+    AudioFormatWriter* createWriterFor (OutputStream*, double, unsigned int, int, const StringPairArray&, int) override { return nullptr; }
 
 private:
     //==============================================================================

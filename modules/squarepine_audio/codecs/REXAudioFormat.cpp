@@ -651,16 +651,17 @@ public:
         loadedOk = decompress (system, rexData.getData(), rexData.getSize());
     }
 
-    bool readSamples (int** destSamples, int numDestChannels, int startOffsetInDestBuffer,
-                      int64 startSampleInFile, int numSamples) override
+    bool readSamples (int* const* destChannels, int numDestChannels,
+                      int startOffsetInDestBuffer, int64 startSampleInFile,
+                      int numSamples) override
     {
-        jassert (destSamples != nullptr);
+        jassert (destChannels != nullptr);
         jassert (loadedOk);
 
-        if (destSamples == nullptr || ! loadedOk)
+        if (destChannels == nullptr || ! loadedOk)
             return false;
 
-        clearSamplesBeyondAvailableLength (destSamples, numDestChannels, startOffsetInDestBuffer,
+        clearSamplesBeyondAvailableLength (destChannels, numDestChannels, startOffsetInDestBuffer,
                                            startSampleInFile, numSamples, lengthInSamples);
 
         if (numSamples <= 0)
@@ -674,7 +675,7 @@ public:
 
             for (int i = numDestChannels; --i >= 0;)
             {
-                if (auto* targetChannel = destSamples[i])
+                if (auto* targetChannel = destChannels[i])
                 {
                     const float* sourceChannel = nullptr;
 
@@ -691,13 +692,13 @@ public:
             return true;
         }
 
-        //Convert from float to int32:
+        // Convert from float to int32:
         using DestinationType = AudioData::Pointer<AudioData::Int32, AudioData::LittleEndian, AudioData::NonInterleaved, AudioData::NonConst>;
         using SourceType = AudioData::Pointer<AudioData::Float32, AudioData::LittleEndian, AudioData::NonInterleaved, AudioData::Const>;
 
         for (int i = numDestChannels; --i >= 0;)
         {
-            if (auto* targetChannel = destSamples[i])
+            if (auto* targetChannel = destChannels[i])
             {
                 DestinationType dest (targetChannel);
                 dest += startOffsetInDestBuffer;
@@ -780,7 +781,11 @@ private:
             AudioBuffer<float> sliceData (buffer.getNumChannels(), sliceInfo.sampleLength);
             sliceData.clear();
 
-            if (rs.renderSlice == nullptr || ! checkRexError (rs.renderSlice (handle->get(), j, sliceInfo.sampleLength, sliceData.getArrayOfWritePointers())))
+            if (rs.renderSlice == nullptr)
+                return false;
+
+            auto chans = (float**) sliceData.getArrayOfWritePointers();
+            if (! checkRexError (rs.renderSlice (handle->get(), j, sliceInfo.sampleLength, chans)))
                 return false;
 
             const auto offset = (int64) (((double) sliceInfo.ppqPos / standardREXPPQ) / ((double) info.tempo / 60000.0) * (double) info.sampleRate);
@@ -879,7 +884,7 @@ AudioFormatReader* REXAudioFormat::createReaderFor (InputStream* sourceStream, c
     }
     else
     {
-        return nullptr; //REX isn't a codec with headers, it's a system reliant on file extensions!
+        return nullptr; // REX isn't a codec with headers, it's a system reliant on file extensions!
     }
 
     reloadREXSystemIfNeeded();
