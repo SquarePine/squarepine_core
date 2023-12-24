@@ -18,7 +18,7 @@ This library is an assortment of loosely related or unrelated JUCE-based tools, 
 
 * Translation file notification using [`sp::LanguageHandler`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/text/LanguageHandler.h#L164).
 * A highly flexible memory pool allocation system called [`sp::Allocator`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/memory/Allocator.h).
-* [`sp::NetworkConnectivityChecker`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/networking/NetworkConnectivityChecker.h) will help you find out what kind of network your on, and will give you listener notifications when connectivity changes (connects or disconnects).
+* [`sp::NetworkConnectivityChecker`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/networking/NetworkConnectivityChecker.h) will help you find out what kind of network you're on, and will give you listener notifications when connectivity changes (connects or disconnects).
 * A wide array of math functions and structures, including [`sp::Vector4D`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/maths/Vector4D.h) and [`sp::Angle`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/maths/Angle.h).
 * Many `juce::XYZType` are available wihtin the `juce::ValueTree` ecosystem via the [`VariantConverters`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/valuetree/VariantConverters.h) provided.
 * Plenty [freestanding utilities](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/valuetree/ValueTreeHelpers.h) for the `juce::ValueTree` ecosystem.
