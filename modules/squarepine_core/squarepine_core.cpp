@@ -35,7 +35,7 @@ namespace sp
        #if JUCE_ANDROID
         char osVersion[PROP_VALUE_MAX + 1] = { 0 };
         __system_property_get ("ro.build.version.release", osVersion);
-        return String (osVersion).trim ();
+        return String (osVersion).trim();
        #else
         return {};
        #endif

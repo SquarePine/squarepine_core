@@ -31,6 +31,9 @@
 #include <stack>
 
 //==============================================================================
+#undef JUCE_CORE_INCLUDE_JNI_HELPERS
+#define JUCE_CORE_INCLUDE_JNI_HELPERS 1
+
 #include <juce_opengl/juce_opengl.h>
 #include <juce_audio_utils/juce_audio_utils.h>
 #include <juce_cryptography/juce_cryptography.h>
@@ -176,10 +179,14 @@
 
 #if JUCE_CXX20_IS_AVAILABLE
     #include <bit>
+
+    // Android doesn't have this because... Android.
+   #if ! JUCE_ANDROID
     #include <source_location>
+   #endif
 #endif
 
-#if ! JUCE_CXX20_IS_AVAILABLE
+#if ! JUCE_CXX20_IS_AVAILABLE || JUCE_ANDROID
     #undef SQUAREPINE_AUTOLOG_FUNCTION_AND_LINE
 #endif
 
@@ -263,6 +270,7 @@ namespace sp
     */
     String getAndroidReleaseVersion();
 
+    //==============================================================================
     #include "misc/Macros.h"
     #include "maths/Maths.h"
     #include "valuetree/ValueTreeHelpers.h"
