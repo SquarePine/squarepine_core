@@ -2,25 +2,35 @@
     as well as identifying your class instance with a standard juce::Identifier
     which is juce::ValueTree and generally juce::var compatible.
 
-    @see juce::Uuid
+    @warning The provided Identifier must be JSON and XML compatible.
+
+    @see juce::Uuid, juce::Identifier
 */
 class Identifiable
 {
 public:
     /** */
-    Identifiable() : identifier (String (Random::getSystemRandom().nextInt64())) { }
-
-    /** */
-    Identifiable (const Identifier& id) noexcept : identifier (id) { }
+    Identifiable (const Identifier& id) noexcept :
+        identifier (id)
+    {
+        // You've done something rather silly if you hit this.
+        jassert (Identifier::isValidIdentifier (id.toString()));
+    }
 
     /** */
     virtual ~Identifiable() noexcept = default;
 
     //==============================================================================
-    /** */
+    /** @returns the identifier for this object type. */
     [[nodiscard]] const Identifier& getIdentifier() const noexcept { return identifier; }
 
-    /** */
+    /** @returns true if the Identifiable has the provided type.
+        The comparison is case-sensitive.
+        @see getIdentifier
+    */
+    [[nodiscard]] bool hasType (const Identifier& typeName) const noexcept { return identifier == typeName; }
+
+    /** @returns the UUID for this object instance. */
     [[nodiscard]] const Uuid& getUuid() const noexcept { return uuid; }
 
 protected:
