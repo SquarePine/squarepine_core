@@ -147,11 +147,9 @@ private:
         {
             clearSubItems();
 
-            if (! isNowOpen)
-                return;
-
-            for (const auto& child : tree)
-                addSubItem (new Item (propertiesEditor, child));
+            if (isNowOpen)
+                for (const auto& child : tree)
+                    addSubItem (new Item (propertiesEditor, child));
         }
 
         void paintItem (Graphics& g, int w, int h) override
@@ -181,7 +179,7 @@ private:
             for (int i = 0; i < numProps; ++i)
             {
                 const auto name = tree.getPropertyName (i);
-                const auto& prop = tree.getProperty (name);
+                const auto& prop = tree[name];
 
                 propertySummary << " [" << name.toString() << "] " << PropertyEditor::toString (name, prop);
             }

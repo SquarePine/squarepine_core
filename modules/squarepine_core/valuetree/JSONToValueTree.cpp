@@ -2,7 +2,7 @@ namespace
 {
     inline DynamicObject::Ptr toDynamicObj (const ValueTree& root)
     {
-        DynamicObject::Ptr result (new DynamicObject());
+        auto result = make_refptr<DynamicObject>();
 
         for (int i = 0; i < root.getNumProperties(); ++i)
         {
