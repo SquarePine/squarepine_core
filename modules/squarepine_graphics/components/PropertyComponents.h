@@ -4,8 +4,11 @@ class PropertyComponentBase : public PropertyComponent,
                               private Value::Listener
 {
 public:
-    PropertyComponentBase (const Value& valueToControl, const String& propertyName) :
-        PropertyComponent (propertyName), value (valueToControl)
+    PropertyComponentBase (const Value& valueToControl,
+                           const String& propertyName,
+                           int preferredHeight = 32) :
+        PropertyComponent (propertyName, preferredHeight),
+        value (valueToControl)
     {
         value.addListener (this);
     }
@@ -99,8 +102,11 @@ class ColourPropertyComponent final : public PropertyComponentBase
 {
 public:
     /** */
-    ColourPropertyComponent (const Value& valueToControl, const String& propertyName, bool showAlpha = false) :
-        PropertyComponentBase (valueToControl, propertyName),
+    ColourPropertyComponent (const Value& valueToControl,
+                             const String& propertyName,
+                             bool showAlpha = false,
+                             int preferredHeight = 64) :
+        PropertyComponentBase (valueToControl, propertyName, preferredHeight),
         container (value, showAlpha)
     {
         addAndMakeVisible (container);
@@ -115,7 +121,7 @@ public:
     {
         PropertyComponent::paint (g);
 
-        g.setColour (findColour (BooleanPropertyComponent::backgroundColourId));
+        g.setColour (findColour (PropertyComponent::backgroundColourId));
         g.fillRect (container.getBounds());
 
         g.setColour (findColour (BooleanPropertyComponent::outlineColourId));
@@ -142,61 +148,47 @@ private:
         /** @internal */
         void paint (Graphics& g) override
         {
+            constexpr auto margin = 4;
+            auto b = getLocalBounds().reduced (margin);
             const auto c = getCurrentColour();
-
             g.setColour (c);
-            g.fillRect (getLocalBounds().reduced (4));
+            g.fillRect (b);
 
+            b = b.reduced (margin);
+            g.setFont ((float) b.reduced (margin / 2).getHeight());
             g.setColour (c.contrasting());
-            g.drawText (c.toDisplayString (alpha), getLocalBounds(), Justification::centred);
+            g.drawText ("0x" + c.toDisplayString (alpha), b, Justification::centredLeft);
         }
 
         /** @internal */
-        void mouseUp (const MouseEvent& e) override
-        {
-            if (e.mouseWasClicked())
-            {
-               #if JUCE_MODAL_LOOPS_PERMITTED
-                ColourSelector colourSelector (ColourSelector::showColourAtTop | ColourSelector::showSliders | ColourSelector::showColourspace);
-
-                colourSelector.setSize (300, 280);
-                colourSelector.setCurrentColour (getCurrentColour(), dontSendNotification);
-
-                CallOutBox callOut (colourSelector, getScreenBounds(), nullptr);
-                callOut.runModalLoop();
-
-                value = colourSelector.getCurrentColour().toString();
-               #else
-                jassertfalse; // TODO
-               #endif
-            }
-        }
-
         void mouseDown (const MouseEvent&) override
         {
-#if 0
-            auto colourSelector = std::make_unique<ColourSelector>();
+            int csflags = ColourSelector::showColourAtTop
+                        | ColourSelector::editableColour
+                        | ColourSelector::showSliders
+                        | ColourSelector::showColourspace;
+
+            if (alpha)
+                csflags |= ColourSelector::showAlphaChannel;
+
+            auto colourSelector = std::make_unique<ColourSelector> (csflags);
             colourSelector->setName ("Colour");
-            colourSelector->setCurrentColour (getColour());
+            colourSelector->setCurrentColour (getCurrentColour());
             colourSelector->addChangeListener (this);
-            colourSelector->setColour (ColourSelector::backgroundColourId, Colours::transparentBlack);
-            colourSelector->setSize (300, 400);
+            colourSelector->setColour (ColourSelector::backgroundColourId, findColour (PropertyComponent::backgroundColourId));
+            colourSelector->setSize (400, 400);
 
             CallOutBox::launchAsynchronously (std::move (colourSelector), getScreenBounds(), nullptr);
-
-#endif
         }
 
+        /** @internal */
         void changeListenerCallback (ChangeBroadcaster* source) override
         {
-            ignoreUnused (source);
-
-#if 0
             if (auto* cs = dynamic_cast<ColourSelector*> (source))
-                editor.applyNewValue (getAsString (cs->getCurrentColour(), true));
-
-            repaint();
-#endif
+            {
+                value.setValue (VariantConverter<Colour>::toVar (cs->getCurrentColour()));
+                repaint();
+            }
         }
 
     private:
@@ -213,4 +205,62 @@ private:
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ColourPropertyComponent)
+};
+
+//==============================================================================
+/** */
+class RectanglePropertyComponent final : public PropertyComponentBase
+{
+public:
+    /** */
+    RectanglePropertyComponent (const Value& valueToControl, const String& propertyName) :
+        PropertyComponentBase (valueToControl, propertyName)
+    {
+
+    }
+
+    //==============================================================================
+    /** @internal */
+    void refresh() override
+    {
+        // editor.setText (VariantConverter<juce::Rectangle<int>>::fromVar (value.getValue()).toString());
+    }
+
+private:
+    //==============================================================================
+    struct Combo final
+    {
+        Combo (RectanglePropertyComponent& rpc, int indexToUse) :
+            parent (rpc),
+            index (indexToUse)
+        {
+            editor.onReturnKey = [this]() { parent.applyTextChange (editor, index); };
+            editor.onFocusLost = [this]() { parent.applyTextChange (editor, index); };
+
+            parent.addAndMakeVisible (label);
+            parent.addAndMakeVisible (editor);
+        }
+
+        RectanglePropertyComponent& parent;
+        const int index;
+        Label label;
+        TextEditor editor;
+    };
+
+    friend Combo;
+    OwnedArray<Combo> combos;
+
+    //==============================================================================
+    void applyTextChange (TextEditor& editor, int index)
+    {
+        const auto strings = VariantConverter<juce::Rectangle<int>>::fromVar (value.getValue()).toString();
+        auto tokens = StringArray::fromTokens (strings, " ", "");
+        tokens.set (index, editor.getText());
+
+        const auto rect = juce::Rectangle<int>::fromString (tokens.joinIntoString (" "));
+        value = VariantConverter<juce::Rectangle<int>>::toVar (rect);
+    }
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RectanglePropertyComponent)
 };

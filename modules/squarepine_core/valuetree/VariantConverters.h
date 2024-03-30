@@ -425,6 +425,9 @@ namespace juce
         /** */
         static Colour fromVar (const var& v)
         {
+            if (v.isUndefined() || v.isVoid())
+                return Colours::transparentBlack;
+
             if (v.isString())
                 return Colour::fromString (v.toString());
 

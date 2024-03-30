@@ -178,7 +178,7 @@ namespace sp
 
     //==============================================================================
     #include "application/SimpleApplication.h"
-    #include "components/ColourPropertyComponent.h"
+    #include "components/PropertyComponents.h"
     #include "components/ComponentViewer.h"
     #include "components/ComponentWindow.h"
     #include "components/GoogleAnalyticsAttachment.h"
