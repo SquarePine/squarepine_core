@@ -47,7 +47,7 @@ public:
 
     /** @internal */
     std::unique_ptr<PropertyComponent> createPropertyComponent (const Value& valueToControl,
-                                                                const Identifier& nameId) const
+                                                                const Identifier& nameId) const override
     {
         return std::make_unique<FilePropertyComponent> (valueToControl, nameId.toString());
     }
@@ -90,7 +90,7 @@ public:
 
     /** @internal */
     std::unique_ptr<PropertyComponent> createPropertyComponent (const Value& valueToControl,
-                                                                const Identifier& nameId) const
+                                                                const Identifier& nameId) const override
     {
         return std::make_unique<RectanglePropertyComponent> (valueToControl, nameId.toString());
     }
@@ -127,7 +127,7 @@ public:
 
     /** @internal */
     std::unique_ptr<PropertyComponent> createPropertyComponent (const Value& valueToControl,
-                                                                const Identifier& nameId) const
+                                                                const Identifier& nameId) const override
     {
         return std::make_unique<ColourPropertyComponent> (valueToControl, nameId.toString(), true);
     }
@@ -262,7 +262,7 @@ private:
             return prop.toString();
         }
 
-        void setSource (ValueTree& newSource, const OwnedArray<PropertyParser>& parsers)
+        void setSource (ValueTree& newSource, const OwnedArray<PropertyParser>& parsers_)
         {
             clear();
 
@@ -279,7 +279,7 @@ private:
 
                 auto* tpc = [&]() -> PropertyComponent*
                 {
-                    for (auto* pp : parsers)
+                    for (auto* pp : parsers_)
                         if (pp->canUnderstand (tree, name, prop))
                             return pp->createPropertyComponent (value, name).release();
 
@@ -305,6 +305,7 @@ private:
                     }
                 }
 
+                jassert (tpc != nullptr);
                 pc.add (tpc);
             }
 

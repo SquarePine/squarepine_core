@@ -6,8 +6,8 @@ class PropertyComponentBase : public PropertyComponent,
 public:
     PropertyComponentBase (const Value& valueToControl,
                            const String& propertyName,
-                           int preferredHeight = 32) :
-        PropertyComponent (propertyName, preferredHeight),
+                           int preferredHeight_ = 32) :
+        PropertyComponent (propertyName, preferredHeight_),
         value (valueToControl)
     {
         value.addListener (this);
@@ -105,8 +105,8 @@ public:
     ColourPropertyComponent (const Value& valueToControl,
                              const String& propertyName,
                              bool showAlpha = false,
-                             int preferredHeight = 64) :
-        PropertyComponentBase (valueToControl, propertyName, preferredHeight),
+                             int preferredHeight_ = 64) :
+        PropertyComponentBase (valueToControl, propertyName, preferredHeight_),
         container (value, showAlpha)
     {
         addAndMakeVisible (container);
