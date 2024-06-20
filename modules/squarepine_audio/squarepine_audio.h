@@ -138,6 +138,7 @@ namespace sp
     #include "core/LastKnownPluginDetails.h"
     #include "core/MetadataUtilities.h"
     #include "core/MIDIChannel.h"
+    #include "codecs/ALACAudioFormat.h"
     #include "codecs/REXAudioFormat.h"
     #include "devices/DummyAudioIODevice.h"
     #include "devices/DummyAudioIODeviceCallback.h"

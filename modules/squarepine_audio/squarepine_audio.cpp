@@ -30,7 +30,8 @@ namespace sp
     {
         return "Internal";
     }
-    
+
+    #include "codecs/ALACAudioFormat.cpp"
     #include "codecs/REXAudioFormat.cpp"
     #include "core/ChildProcessPluginScanner.cpp"
     #include "core/EffectProcessor.cpp"

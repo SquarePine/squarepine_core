@@ -6,7 +6,7 @@
 //==============================================================================
 #if SQUAREPINE_USE_REX_AUDIO_FORMAT
 
-/**
+/** Reads REX files.
 
     @tags{Audio}
 */

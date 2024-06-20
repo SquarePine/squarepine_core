@@ -104,3 +104,17 @@ inline bool containsSubstring (const StringArray& source, const String& substrin
 
     return false;
 }
+
+//==============================================================================
+/** @returns */
+juce_wchar toUpperCase (juce_wchar character) noexcept;
+/** @returns */
+juce_wchar toLowerCase (juce_wchar character) noexcept;
+/** @returns */
+bool isUpperCase (juce_wchar character) noexcept;
+/** @returns */
+bool isLowerCase (juce_wchar character) noexcept;
+/** @returns */
+String toUpperCase (const String& source);
+/** @returns */
+String toLowerCase (const String& source);

@@ -3,9 +3,10 @@ namespace juce
 {
     //==============================================================================
     /** */
-    template<typename Type, int expectedNumElements>
+    template<typename UnderlyingType, int expectedNumElements>
     struct ArrayConverter final
     {
+        using Type = UnderlyingType;
         using ArrayType = juce::Array<Type>;
 
         enum
@@ -62,6 +63,8 @@ namespace juce
     template<>
     struct VariantConverter<Uuid> final
     {
+        using Type = String;
+
         /** */
         static Uuid fromVar (const var& v)
         {
@@ -81,6 +84,8 @@ namespace juce
     template<>
     struct VariantConverter<IPAddress> final
     {
+        using Type = String;
+
         /** */
         static IPAddress fromVar (const var& v)
         {
@@ -100,6 +105,8 @@ namespace juce
     template<>
     struct VariantConverter<MACAddress> final
     {
+        using Type = String;
+
         /** */
         static MACAddress fromVar (const var& v)
         {
@@ -119,6 +126,8 @@ namespace juce
     template<>
     struct VariantConverter<URL> final
     {
+        using Type = String;
+
         /** */
         static URL fromVar (const var& v)
         {
@@ -138,6 +147,8 @@ namespace juce
     template<>
     struct VariantConverter<File> final
     {
+        using Type = String;
+
         /** */
         static File fromVar (const var& v)
         {
@@ -157,6 +168,8 @@ namespace juce
     template<>
     struct VariantConverter<Time> final
     {
+        using Type = int64;
+
         /** */
         static Time fromVar (const var& v)
         {
@@ -176,6 +189,8 @@ namespace juce
     template<>
     struct VariantConverter<RelativeTime> final
     {
+        using Type = double;
+
         /** */
         static RelativeTime fromVar (const var& v)
         {
@@ -393,12 +408,9 @@ namespace juce
             s.trim();
             jassert (s.size() == 5);
 
-            Font f;
-            f.setTypefaceName (s[0]);
-            f.setStyleFlags (s[1].getIntValue());
-            f.setHeight (s[2].getFloatValue());
-            f.setHorizontalScale (s[3].getFloatValue());
-            f.setExtraKerningFactor (s[4].getFloatValue());
+            Font f = FontOptions (s[0], s[2].getFloatValue(), s[1].getIntValue())
+                        .withHorizontalScale (s[3].getFloatValue())
+                        .withKerningFactor (s[4].getFloatValue());
             return f;
         }
 

@@ -71,6 +71,7 @@ namespace sp
     #include "text/LanguageCodes.cpp"
     #include "text/CountryCodes.cpp"
     #include "text/LanguageHandler.cpp"
+    #include "text/Utilities.cpp"
     #include "valuetree/JSONToValueTree.cpp"
 
     #include "unittests/AllocatorUnitTests.cpp"

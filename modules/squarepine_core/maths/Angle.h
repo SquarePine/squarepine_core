@@ -191,11 +191,3 @@ struct Angle final
     //==============================================================================
     Type radians {}; /** The angle in radians. */
 };
-
-//==============================================================================
-/** Converts an angle in radians to degrees. */
-template <typename FloatType>
-constexpr FloatType radiansToDegrees (Angle<FloatType> radians) noexcept
-{
-    return radians.toDegrees();
-}
