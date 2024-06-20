@@ -15,7 +15,8 @@ public:
     virtual String toString (const Identifier& nameId, const var& prop) const = 0;
     /** @returns */
     virtual std::unique_ptr<PropertyComponent> createPropertyComponent (const Value& valueToControl,
-                                                                        const Identifier& nameId) const = 0;
+                                                                        const Identifier& nameId,
+                                                                        const String& propertyName) const = 0;
 
 private:
     //==============================================================================
@@ -47,9 +48,10 @@ public:
 
     /** @internal */
     std::unique_ptr<PropertyComponent> createPropertyComponent (const Value& valueToControl,
-                                                                const Identifier& nameId) const override
+                                                                [[maybe_unused]] const Identifier& nameId,
+                                                                const String& propertyName) const override
     {
-        return std::make_unique<FilePropertyComponent> (valueToControl, nameId.toString());
+        return std::make_unique<FilePropertyComponent> (valueToControl, propertyName);
     }
 
 private:
@@ -90,9 +92,10 @@ public:
 
     /** @internal */
     std::unique_ptr<PropertyComponent> createPropertyComponent (const Value& valueToControl,
-                                                                const Identifier& nameId) const override
+                                                                [[maybe_unused]] const Identifier& nameId,
+                                                                const String& propertyName) const override
     {
-        return std::make_unique<RectanglePropertyComponent> (valueToControl, nameId.toString());
+        return std::make_unique<RectanglePropertyComponent> (valueToControl, propertyName);
     }
 
 private:
@@ -127,9 +130,10 @@ public:
 
     /** @internal */
     std::unique_ptr<PropertyComponent> createPropertyComponent (const Value& valueToControl,
-                                                                const Identifier& nameId) const override
+                                                                [[maybe_unused]] const Identifier& nameId,
+                                                                const String& propertyName) const override
     {
-        return std::make_unique<ColourPropertyComponent> (valueToControl, nameId.toString(), true);
+        return std::make_unique<ColourPropertyComponent> (valueToControl, propertyName, true);
     }
 
 private:
@@ -150,8 +154,10 @@ public:
     ValueTreeEditor() :
         layoutResizer (&layout, 1, false)
     {
+        constexpr auto resizeSizePx = 8.0;
+
         layout.setItemLayout (0, -0.1, -0.9, -0.6);
-        layout.setItemLayout (1, 8.0, 8.0, 8.0);
+        layout.setItemLayout (1, resizeSizePx, resizeSizePx, resizeSizePx);
         layout.setItemLayout (2, -0.1, -0.9, -0.4);
 
         addAndMakeVisible (treeView);
@@ -231,8 +237,13 @@ public:
     {
         Component* comps[] = { &treeView, &layoutResizer, &propertyEditor };
 
-        layout.layOutComponents (comps, 3, 0, 0, getWidth(), getHeight(), true, true);
+        layout.layOutComponents (comps, numElementsInArray (comps),
+                                 0, 0, getWidth(), getHeight(),
+                                 true, true);
     }
+
+    //==============================================================================
+    std::function<String (const Identifier&)> translateIdToString;
 
 private:
     //==============================================================================
@@ -262,46 +273,55 @@ private:
             return prop.toString();
         }
 
-        void setSource (ValueTree& newSource, const OwnedArray<PropertyParser>& parsers_)
+        void setSource (ValueTree& newSource,
+                        std::function<String (const Identifier&)> translateIdToString_,
+                        const OwnedArray<PropertyParser>& parsers_)
         {
             clear();
 
             tree = newSource;
 
-            constexpr int maxChars = 200;
             Array<PropertyComponent*> pc;
 
             for (int i = 0; i < tree.getNumProperties(); ++i)
             {
-                const auto name     = tree.getPropertyName (i);
-                const auto value    = tree.getPropertyAsValue (name, nullptr);
+                const auto nameId   = tree.getPropertyName (i);
+                const auto value    = tree.getPropertyAsValue (nameId, nullptr);
                 const auto prop     = value.getValue();
+
+                const auto name = [&]()
+                {
+                    if (translateIdToString_ != nullptr)
+                        return translateIdToString_ (nameId);
+
+                    return nameId.toString();
+                }();
 
                 auto* tpc = [&]() -> PropertyComponent*
                 {
                     for (auto* pp : parsers_)
-                        if (pp->canUnderstand (tree, name, prop))
-                            return pp->createPropertyComponent (value, name).release();
+                        if (pp->canUnderstand (tree, nameId, prop))
+                            return pp->createPropertyComponent (value, nameId, name).release();
 
                     return {};
                 }();
 
                 if (tpc == nullptr)
                 {
-                    const auto& nameStr = name.toString();
+                    constexpr int maxChars = 200;
 
                     if (prop.isObject())
                     {
-                        tpc = new TextPropertyComponent (noEditValue, nameStr, maxChars, false, false);
+                        tpc = new TextPropertyComponent (noEditValue, name, maxChars, false, false);
                         tpc->setEnabled (false);
                     }
                     else if (prop.isBool())
                     {
-                        tpc = new BooleanPropertyComponent (value, nameStr, {});
+                        tpc = new BooleanPropertyComponent (value, name, {});
                     }
                     else
                     {
-                        tpc = new TextPropertyComponent (value, nameStr, maxChars, false);
+                        tpc = new TextPropertyComponent (value, name, maxChars, false);
                     }
                 }
 
@@ -377,7 +397,7 @@ private:
             if (isNowSelected)
             {
                 tree.removeListener (this);
-                propertiesEditor.setSource (tree, valueTreeEditor.parsers);
+                propertiesEditor.setSource (tree, valueTreeEditor.translateIdToString, valueTreeEditor.parsers);
                 tree.addListener (this);
             }
         }
@@ -388,10 +408,6 @@ private:
                 return;
 
             tree.removeListener (this);
-
-//            if (isSelected())
-//                propertiesEditor.setSource (tree);
-
             repaintItem();
             tree.addListener (this);
         }

@@ -83,7 +83,7 @@ class ComponentViewer::ContentComponent final : public Component,
 public:
     ContentComponent()
     {
-        const auto f = Font (Font::getDefaultMonospacedFontName(), 20.0f, Font::plain);
+        const auto f = Font (FontOptions (Font::getDefaultMonospacedFontName(), 20.0f, Font::plain));
 
         details.setFont (f);
         details.setMultiLine (true, false);

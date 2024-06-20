@@ -57,7 +57,7 @@ public:
     /** @internal */
     void drawTabButton (TabBarButton&, Graphics&, bool, bool) override;
     /** @internal */
-    Font getTabButtonFont (TabBarButton&, float height) override { return { height * 0.75f }; }
+    Font getTabButtonFont (TabBarButton&, float height) override { return FontOptions (height * 0.75f); }
     /** @internal */
     void drawTabButtonText (TabBarButton&, Graphics&, bool, bool) override;
     /** @internal */

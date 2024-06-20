@@ -10,7 +10,6 @@ namespace Win10Colours
 Windows10LookAndFeel::Windows10LookAndFeel()
 {
     Font::setDefaultMinimumHorizontalScaleFactor (1.0f);
-    Font::setFallbackFontName ("Arial");
     setDefaultSansSerifTypefaceName ("Segoe");
 
     setColourScheme
@@ -76,7 +75,7 @@ TextLayout Windows10LookAndFeel::layoutTooltipText (const String& text, Colour t
 
     AttributedString s;
     s.setJustification (Justification::topLeft);
-    s.append (text, Font (tooltipFontSize), textColour);
+    s.append (text, Font (FontOptions { tooltipFontSize }), textColour);
 
     TextLayout tl;
     tl.createLayoutWithBalancedLineLengths (s, (float) maxTooltipWidth);
@@ -126,8 +125,9 @@ void Windows10LookAndFeel::drawTooltip (Graphics& g, const String& text, int w, 
 //==============================================================================
 int Windows10LookAndFeel::getTabButtonBestWidth (TabBarButton& button, int tabDepth)
 {
-    auto width = Font ((float) tabDepth).getStringWidth (button.getButtonText().trim())
-                 + getTabButtonOverlap (tabDepth) * 2;
+    auto width = Font (FontOptions { (float) tabDepth })
+                 .getStringWidth (button.getButtonText().trim())
+                    + getTabButtonOverlap (tabDepth) * 2;
 
     if (auto* extraComponent = button.getExtraComponent())
         width += button.getTabbedButtonBar().isVertical() ? extraComponent->getHeight()
@@ -354,7 +354,7 @@ void Windows10LookAndFeel::drawComboBox (Graphics& g, int width, int height, boo
 
 Font Windows10LookAndFeel::getTextButtonFont (TextButton&, int buttonHeight)
 {
-    return { std::min (16.0f, (float) buttonHeight * 0.75f) };
+    return FontOptions { std::min (16.0f, (float) buttonHeight * 0.75f) };
 }
 
 void Windows10LookAndFeel::drawButtonBackground (Graphics& g, Button& button, const Colour& backgroundColour,
@@ -436,7 +436,7 @@ void Windows10LookAndFeel::changeToggleButtonWidthToFitText (ToggleButton& butto
     const auto fontSize = std::min (15.0f, (float) button.getHeight() * 0.75f);
     const auto tickWidth = fontSize * 1.1f;
 
-    button.setSize (roundToIntAccurate (Font (fontSize).getStringWidthFloat (button.getButtonText()) + tickWidth + 14.0f),
+    button.setSize (roundToIntAccurate (Font (FontOptions { fontSize }).getStringWidthFloat (button.getButtonText()) + tickWidth + 14.0f),
                     button.getHeight());
 }
 

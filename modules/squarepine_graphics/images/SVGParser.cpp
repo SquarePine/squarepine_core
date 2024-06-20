@@ -1422,7 +1422,7 @@ Drawable* SVGState::parseText (const XmlPath& xml, bool shouldParseTransform,
 
 Font SVGState::getFont (const XmlPath& xml) const
 {
-    Font f;
+    Font f (FontOptions {});
     const auto family = getStyleAttribute (xml, "font-family").unquoted().trim();
 
     if (family.isNotEmpty())
