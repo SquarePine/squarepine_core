@@ -237,7 +237,7 @@ public:
 
         auto& filts = parent.filters;
 
-        jassert (numElementsInArray (bands) == filts.size());
+        jassert ((int) std::size (bands) == filts.size());
 
         for (int i = 0; i < filts.size(); ++i)
         {
@@ -291,7 +291,7 @@ AudioProcessorValueTreeState::ParameterLayout SimpleEQProcessor::createParameter
         { NEEDS_TRANS ("HighShelf"), FilterType::lowpass, 19000.0f }
     };
 
-    filters.ensureStorageAllocated (numElementsInArray (configs));
+    filters.ensureStorageAllocated ((int) std::size (configs));
 
     auto layout = createDefaultParameterLayout();
 

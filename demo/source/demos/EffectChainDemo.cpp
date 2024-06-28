@@ -505,7 +505,7 @@ void EffectChainDemo::resized()
         topArea.removeFromLeft (margin);
         topArea.removeFromRight (margin);
 
-        const auto w = topArea.getWidth() / numElementsInArray (buttons);
+        const auto w = topArea.getWidth() / (int) std::size (buttons);
 
         for (auto* button : buttons)
             button->setBounds (topArea.removeFromLeft (w));

@@ -217,8 +217,8 @@ public:
     //==============================================================================
     bool write (const int** data, int numSamples) override
     {
-        jassert (numSamples >= 0);
-        jassert (data != nullptr && *data != nullptr); // the input must contain at least one channel!
+        jassertquiet (numSamples >= 0);
+        jassertquiet (data != nullptr && *data != nullptr); // the input must contain at least one channel!
 
         return true;
     }

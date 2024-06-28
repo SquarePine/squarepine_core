@@ -237,7 +237,7 @@ public:
     {
         Component* comps[] = { &treeView, &layoutResizer, &propertyEditor };
 
-        layout.layOutComponents (comps, numElementsInArray (comps),
+        layout.layOutComponents (comps, (int) std::size (comps),
                                  0, 0, getWidth(), getHeight(),
                                  true, true);
     }

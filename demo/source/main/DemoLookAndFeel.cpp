@@ -59,7 +59,7 @@ TextLayout DemoLookAndFeel::layoutTooltipText (const String& text, Colour textCo
 
     AttributedString s;
     s.setJustification (Justification::topLeft);
-    s.append (text, Font (tooltipFontSize), textColour);
+    s.append (text, Font (FontOptions (tooltipFontSize)), textColour);
 
     TextLayout tl;
     tl.createLayoutWithBalancedLineLengths (s, (float) maxTooltipWidth);
@@ -142,7 +142,7 @@ void DemoLookAndFeel::drawMenuBarItem (Graphics& g, int width, int height,
 //==============================================================================
 int DemoLookAndFeel::getTabButtonBestWidth (TabBarButton& button, int tabDepth)
 {
-    auto width = Font ((float) tabDepth).getStringWidth (button.getButtonText().trim())
+    auto width = Font (FontOptions ((float) tabDepth)).getStringWidth (button.getButtonText().trim())
                  + getTabButtonOverlap (tabDepth) * 2;
 
     if (auto* extraComponent = button.getExtraComponent())
@@ -368,7 +368,7 @@ void DemoLookAndFeel::drawComboBox (Graphics& g, int width, int height, bool isB
 
 Font DemoLookAndFeel::getTextButtonFont (TextButton&, int)
 {
-    return { defaultFontHeight };
+    return FontOptions (defaultFontHeight);
 }
 
 void DemoLookAndFeel::drawButtonBackground (Graphics& g, Button& button, const Colour& backgroundColour,
@@ -472,7 +472,7 @@ void DemoLookAndFeel::changeToggleButtonWidthToFitText (ToggleButton& button)
     const auto fontSize = defaultFontHeight;
     const auto tickWidth = fontSize * 1.1f;
 
-    button.setSize (roundToIntAccurate (Font (fontSize).getStringWidthFloat (button.getButtonText()) + tickWidth + defaultFontHeight),
+    button.setSize (roundToIntAccurate (Font (FontOptions (fontSize)).getStringWidthFloat (button.getButtonText()) + tickWidth + defaultFontHeight),
                     button.getHeight());
 }
 

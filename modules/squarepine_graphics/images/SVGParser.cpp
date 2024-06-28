@@ -293,7 +293,7 @@ inline AffineTransform parseTransform (String t)
 
         float numbers[6];
 
-        for (int i = 0; i < numElementsInArray (numbers); ++i)
+        for (int i = 0; i < (int) std::size (numbers); ++i)
             numbers[i] = parseSafeFloat (tokens[i]);
 
         AffineTransform trans;

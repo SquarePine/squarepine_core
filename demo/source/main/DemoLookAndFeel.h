@@ -219,7 +219,7 @@ public:
     /** @internal */
     int getDefaultMenuBarHeight() override { return roundToInt (defaultFontHeight * 1.5f); }
     /** @internal */
-    Font getMenuBarFont (MenuBarComponent&, int, const String&) override { return defaultFontHeight; }
+    Font getMenuBarFont (MenuBarComponent&, int, const String&) override { return FontOptions (defaultFontHeight); }
     /** @internal */
     void drawMenuBarBackground (Graphics&, int, int, bool, MenuBarComponent&) override;
     /** @internal */
@@ -235,7 +235,7 @@ public:
     /** @internal */
     void drawTooltip (Graphics&, const String&, int, int) override;
     /** @internal */
-    Font getPopupMenuFont() override { return defaultFontHeight; }
+    Font getPopupMenuFont() override { return FontOptions (defaultFontHeight); }
     /** @internal */
     void drawLabel (Graphics&, Label&) override;
     /** @internal */
@@ -253,7 +253,7 @@ public:
     /** @internal */
     void drawTabButton (TabBarButton&, Graphics&, bool, bool) override;
     /** @internal */
-    Font getTabButtonFont (TabBarButton&, float) override { return defaultFontHeight; }
+    Font getTabButtonFont (TabBarButton&, float) override { return FontOptions (defaultFontHeight); }
     /** @internal */
     void drawTabButtonText (TabBarButton&, Graphics&, bool, bool) override;
     /** @internal */

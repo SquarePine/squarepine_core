@@ -131,7 +131,7 @@ public:
 
             if (stroke)
                 PathStrokeType (1.0f)
-                    .createDashedStroke (scalablePlot, scalablePlot, dashPattern, numElementsInArray (dashPattern));
+                    .createDashedStroke (scalablePlot, scalablePlot, dashPattern, (int) std::size (dashPattern));
         }
 
         ballArea = b.reduced (halfMargin).toFloat();

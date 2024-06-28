@@ -20,30 +20,7 @@
 
 // [END_USER_CODE_SECTION]
 
-/*
-  ==============================================================================
-
-   In accordance with the terms of the JUCE 7 End-Use License Agreement, the
-   JUCE Code in SECTION A cannot be removed, changed or otherwise rendered
-   ineffective unless you have a JUCE Indie or Pro license, or are using JUCE
-   under the GPL v3 license.
-
-   End User License Agreement: www.juce.com/juce-7-licence
-
-  ==============================================================================
-*/
-
-// BEGIN SECTION A
-
-#ifndef JUCE_DISPLAY_SPLASH_SCREEN
- #define JUCE_DISPLAY_SPLASH_SCREEN 0
-#endif
-
-// END SECTION A
-
-#define JUCE_USE_DARK_SPLASH_SCREEN 1
-
-#define JUCE_PROJUCER_VERSION 0x70005
+#define JUCE_PROJUCER_VERSION 0x80000
 
 //==============================================================================
 #define JUCE_MODULE_AVAILABLE_juce_analytics              1
@@ -267,10 +244,6 @@
  //#define JUCE_USE_COREIMAGE_LOADER 1
 #endif
 
-#ifndef    JUCE_USE_DIRECTWRITE
- //#define JUCE_USE_DIRECTWRITE 1
-#endif
-
 #ifndef    JUCE_DISABLE_COREGRAPHICS_FONT_SMOOTHING
  //#define JUCE_DISABLE_COREGRAPHICS_FONT_SMOOTHING 0
 #endif
@@ -311,6 +284,10 @@
 
 #ifndef    JUCE_WEB_BROWSER
  //#define JUCE_WEB_BROWSER 1
+#endif
+
+#ifndef    JUCE_USE_WIN_WEBVIEW2_WITH_STATIC_LINKING
+ //#define JUCE_USE_WIN_WEBVIEW2_WITH_STATIC_LINKING 0
 #endif
 
 #ifndef    JUCE_USE_WIN_WEBVIEW2
@@ -368,6 +345,14 @@
 
 #ifndef    SQUAREPINE_LOG_NETWORK_CALLS
  //#define SQUAREPINE_LOG_NETWORK_CALLS 1
+#endif
+
+#ifndef    SQUAREPINE_AUTOCONFIG_MAIN_THREAD_LOG_FILTERS
+ //#define SQUAREPINE_AUTOCONFIG_MAIN_THREAD_LOG_FILTERS 0
+#endif
+
+#ifndef    SQUAREPINE_AUTOLOG_FUNCTION_AND_LINE
+ //#define SQUAREPINE_AUTOLOG_FUNCTION_AND_LINE 0
 #endif
 
 #ifndef    SQUAREPINE_USE_GOOGLE_ANALYTICS
