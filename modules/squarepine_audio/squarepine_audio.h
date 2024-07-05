@@ -77,6 +77,7 @@
 #endif
 
 //==============================================================================
+#include "core/DSPMatrixMaths.h"
 #include "linkers/ZplaneHelpers.h"
 
 namespace juce
@@ -127,6 +128,8 @@ namespace sp
     #include "core/AudioBufferView.h"
     #include "core/AudioBufferFIFO.h"
     #include "core/AudioUtilities.h"
+    #include "analog/AnalogComponent.h"
+    #include "analog/AnalogModel.h"
     #include "core/ChildProcessPluginScanner.h"
     #include "core/SquarePineAudioPluginFormat.h"
     #include "core/InternalProcessor.h"

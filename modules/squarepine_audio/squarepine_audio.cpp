@@ -31,6 +31,7 @@ namespace sp
         return "Internal";
     }
 
+    #include "analog/AnalogModel.cpp"
     #include "codecs/ALACAudioFormat.cpp"
     #include "codecs/REXAudioFormat.cpp"
     #include "core/ChildProcessPluginScanner.cpp"

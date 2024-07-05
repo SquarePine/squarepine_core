@@ -23,6 +23,7 @@
 #include <climits>
 #include <limits>
 
+#include <bitset>
 #include <forward_list>
 #include <list>
 #include <optional>
@@ -212,7 +213,7 @@
 
     #pragma clang diagnostic ignored "-Wswitch-enum" // Fairly useless warning...
 #elif JUCE_MSVC
-    #pragma warning (default: 4242 4254 4264 4265 4287 4296 4302 4342 4350 4355)
+    #pragma warning (default: 4242 4254 4264 4265 4287 4296 4302 4342 4350)
 #endif
 
 //==============================================================================
