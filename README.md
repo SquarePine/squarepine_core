@@ -12,6 +12,10 @@ The philosophy here is multi-part:
 
 This library is an assortment of loosely related or unrelated JUCE-based tools, audio or GUI or otherwise, all of which you can pull up at any given time and with limited hassle. Everything should _"Just Work™"_ with your JUCE project (assuming you're using the latest `develop` branch of JUCE).
 
+## Shields
+
+[![Version](https://img.shields.io/github/v/release/SquarePine/squarepine_core?color=gold&include_prereleases&label=Release&logo=Github)](https://github.com/SquarePine/squarepine_core/releases/latest)
+
 # Functionality Highlights
 
 ## `squarepine_core`
