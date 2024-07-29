@@ -51,7 +51,8 @@ private:
     //==============================================================================
     static inline constexpr int maxIter     = 10;
     static inline constexpr double eps      = 0.05;
-    static inline const AnalogMatrix ident  = AnalogMatrix::identity (1);
+
+    const AnalogMatrix ident  = AnalogMatrix::identity (1);
 /*
     struct NonlinearModel final
     {

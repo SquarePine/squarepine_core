@@ -35,18 +35,18 @@ public:
 
     //==============================================================================
     /** @returns the total size of the allocator's heap. */
-    size_t getSize() const noexcept                 { return sizeBytes; }
+    constexpr size_t getSize() const noexcept               { return sizeBytes; }
 
     /** @returns the byte of alignment of the allocations.
         By default, this is 4 bytes which you can configure on construction of an Allocator.
     */
-    size_t getAlignment() const noexcept            { return alignmentBytes; }
+    constexpr size_t getAlignment() const noexcept          { return alignmentBytes; }
 
     /** @returns the current pointer position within the allocator's heap. */
-    intptr_t getCurrentPosition() const noexcept    { return (intptr_t) marker; }
+    constexpr intptr_t getCurrentPosition() const noexcept  { return (intptr_t) marker; }
 
     /** @returns the remaining space available for allocations. */
-    size_t getRemainingSpace() const noexcept       { return getSize() - getCurrentPosition(); }
+    constexpr size_t getRemainingSpace() const noexcept     { return getSize() - getCurrentPosition(); }
 
     //==============================================================================
     /** Manually allocate some number of bytes.
@@ -91,6 +91,7 @@ public:
         if (auto* address = allocate (sizeof (Type)))
             return new (address) Type (constructorArgs...);
 
+        jassertfalse; // Out of memory!
         return nullptr;
     }
 
@@ -134,6 +135,7 @@ public:
         if (auto* const address = allocateObject<Type>())
             return new (address) Type (object);
 
+        jassertfalse; // Out of memory!
         return nullptr;
     }
 
@@ -150,7 +152,7 @@ public:
         if (object != nullptr)
             return createCopy<Type> (*object);
 
-        jassertfalse; //Not sure how you messed this up!
+        jassertfalse; // Not sure how you messed this up!
         return nullptr;
     }
 
@@ -167,6 +169,7 @@ public:
         if (auto* const address = allocateObject<Type>())
             return new (address) Type (object);
 
+        jassertfalse; // Out of memory!
         return nullptr;
     }
 

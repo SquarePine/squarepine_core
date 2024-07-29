@@ -7,7 +7,7 @@ inline float sinc (float x) noexcept        { return x == 0.0f ? 1.0f : (std::si
 
 /** Sinc function */
 template<typename Type>
-inline Type sinc (Type x) noexcept          { return (Type) sinc ((double) x); }
+inline Type sinc (Type x) noexcept          { return static_cast<Type> (sinc (static_cast<double> (x))); }
 
 //==============================================================================
 /** Normalised Sinc function */

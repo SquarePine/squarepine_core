@@ -15,11 +15,9 @@
 #define CREATE_INLINE_IDENTIFIER(name) \
     static const Identifier name##Id (JUCE_STRINGIFY (name));
 
-#if DOXYGEN || JUCE_CXX17_IS_AVAILABLE
-    /** */
-    #define CREATE_INLINE_CLASS_IDENTIFIER(name) \
-        inline static const Identifier name##Id = JUCE_STRINGIFY (name);
-#endif
+/** */
+#define CREATE_INLINE_CLASS_IDENTIFIER(name) \
+    inline static const Identifier name##Id = JUCE_STRINGIFY (name);
 
 //==============================================================================
 /** Appends a child tree to the parent tree, and returns the child.

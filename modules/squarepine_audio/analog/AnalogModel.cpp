@@ -108,7 +108,7 @@ void AnalogModel::solveNonlinearFunc (const AnalogMatrix& p, const AnalogMatrix&
                  v1     = v0 + (2.0 * eps),
                  eye    = AnalogMatrix::identity (std::max (v1.getNumRows(), v1.getNumColumns()));
 
-    while (iter > 0 && std::any_of (vectorise (std::abs (v1 - v0)) > eps))
+    while (iter > 0 && std::any_of (vectorise (abs (v1 - v0)) > eps))
     {
         v0 = v1;
         modelNonlinearity (v1, it, Jt);

@@ -25,7 +25,7 @@ namespace std
     {
         return all_of (mat, [] (FloatType v) { return v != static_cast<FloatType> (0); });
     }
-
+ 
     /** */
     template<typename FloatType, class PredicateFunc>
     inline bool any_of (const juce::dsp::Matrix<FloatType>& mat, PredicateFunc func)
@@ -50,10 +50,7 @@ namespace std
 
         return dest;
     }
-}
 
-namespace sp
-{
     /** */
     template<typename FloatType>
     inline juce::dsp::Matrix<FloatType> vectorise (const juce::dsp::Matrix<FloatType>& source)
@@ -68,8 +65,6 @@ namespace sp
     {
         return a;
     }
-
-
 
     /** */
     template<typename FloatType>

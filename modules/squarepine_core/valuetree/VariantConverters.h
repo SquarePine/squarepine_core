@@ -401,6 +401,8 @@ namespace juce
     template<>
     struct VariantConverter<Font> final
     {
+        using Type = Font;
+
         /** */
         static Font fromVar (const var& v)
         {
@@ -408,10 +410,9 @@ namespace juce
             s.trim();
             jassert (s.size() == 5);
 
-            Font f = FontOptions (s[0], s[2].getFloatValue(), s[1].getIntValue())
+            return FontOptions (s[0], s[2].getFloatValue(), s[1].getIntValue())
                         .withHorizontalScale (s[3].getFloatValue())
                         .withKerningFactor (s[4].getFloatValue());
-            return f;
         }
 
         /** */
@@ -434,6 +435,8 @@ namespace juce
     template<>
     struct VariantConverter<Colour> final
     {
+        using Type = Colour;
+
         /** */
         static Colour fromVar (const var& v)
         {
@@ -456,6 +459,8 @@ namespace juce
     template<>
     struct VariantConverter<RectanglePlacement> final
     {
+        using Type = RectanglePlacement;
+
         /** */
         static RectanglePlacement fromVar (const var& v) noexcept
         {
@@ -475,6 +480,8 @@ namespace juce
     template<>
     struct VariantConverter<Justification> final
     {
+        using Type = Justification;
+
         /** */
         static Justification fromVar (const var& v) noexcept
         {
@@ -494,6 +501,8 @@ namespace juce
     template<>
     struct VariantConverter<Image> final
     {
+        using Type = Image;
+
         /** */
         static Image fromVar (const var& v) noexcept
         {
