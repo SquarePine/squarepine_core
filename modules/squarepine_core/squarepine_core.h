@@ -23,6 +23,7 @@
 #include <climits>
 #include <limits>
 
+#include <bitset>
 #include <forward_list>
 #include <list>
 #include <optional>
@@ -47,10 +48,6 @@
 
     #include <fenv.h>
     #include <unistd.h>
-#endif
-
-#if JUCE_MINGW
-    #error "PSA from SquarePine: I've no interest in supporting the piece of crap toolchain called MinGW."
 #endif
 
 //==============================================================================
@@ -212,7 +209,7 @@
 
     #pragma clang diagnostic ignored "-Wswitch-enum" // Fairly useless warning...
 #elif JUCE_MSVC
-    #pragma warning (default: 4242 4254 4264 4265 4287 4296 4302 4342 4350 4355)
+    #pragma warning (default: 4242 4254 4264 4265 4287 4296 4302 4342 4350)
 #endif
 
 //==============================================================================
