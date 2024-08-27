@@ -677,7 +677,7 @@ namespace details
         { 0xff5a, 0xff3a }
     };
 
-    juce_wchar toUpperCase (juce_wchar character) noexcept
+    inline juce_wchar toUpperCase (juce_wchar character) noexcept
     {
         const auto iter = caseConversionMap.find (character);
         if (iter != std::cend (caseConversionMap))
@@ -686,7 +686,7 @@ namespace details
         return character;
     }
 
-    juce_wchar toLowerCase (juce_wchar character) noexcept
+    inline juce_wchar toLowerCase (juce_wchar character) noexcept
     {
         for (const auto& v : caseConversionMap)
             if (v.second == character)
@@ -696,7 +696,7 @@ namespace details
     }
 
     template<typename Func>
-    String toConvertedCase (const String& source, Func func)
+    inline String toConvertedCase (const String& source, Func func)
     {
         if (source.isEmpty())
             return source;
