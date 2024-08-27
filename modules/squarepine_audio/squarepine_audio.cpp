@@ -15,6 +15,10 @@
 
 #include "squarepine_audio.h"
 
+#if JUCE_MAC
+    #include <CoreFoundation/CoreFoundation.h>
+#endif
+
 #if SQUAREPINE_USE_R8BRAIN
     #include <r8brain/r8bbase.cpp>
 #endif

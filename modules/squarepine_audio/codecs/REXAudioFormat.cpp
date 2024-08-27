@@ -183,8 +183,8 @@ struct REXInfo
     REXInfo() noexcept { zerostruct (*this); }
 
     int numChannels, sampleRate, numSlices;
-    int tempo;            //Tempo set when exported from ReCycle, 123.456 BPM stored as 123456L etc.
-    int originalTempo;    //Original tempo of loop, as calculated by ReCycle from the locator positions and bars/beats/sign settings.
+    int tempo;            // Tempo set when exported from ReCycle, 123.456 BPM stored as 123456L etc.
+    int originalTempo;    // Original tempo of loop, as calculated by ReCycle from the locator positions and bars/beats/sign settings.
     int ppqLength, timeSignatureNumerator, timeSignatureDenominator, bitDepth;
 } JUCE_PACKED;
 
@@ -192,8 +192,8 @@ struct REXSliceInfo
 {
     REXSliceInfo() noexcept { zerostruct (*this); }
 
-    int ppqPos;         //Position of slice in loop
-    int sampleLength;   //Length of rendered slice, at its original sample rate.
+    int ppqPos;         // Position of slice in loop
+    int sampleLength;   // Length of rendered slice, at its original sample rate.
 } JUCE_PACKED;
 
 struct REXCreatorInfo
@@ -214,7 +214,7 @@ struct REXCreatorInfo
 #endif
 
 //==============================================================================
-struct REXDLLHandle
+struct REXDLLHandle final
 {
     REXDLLHandle (const File& moduleToLoad)
     {
@@ -271,7 +271,7 @@ private:
         const File file (filePath);
         const char* const utf8 = file.getFullPathName().toRawUTF8();
 
-        if (CFURLRef url = CFURLCreateFromFileSystemRepresentation (0, (const UInt8*) utf8, (CFIndex) std::strlen (utf8), file.isDirectory()))
+        if (CFURLRef url = CFURLCreateFromFileSystemRepresentation (nullptr, (const UInt8*) utf8, (CFIndex) std::strlen (utf8), file.isDirectory()))
         {
             bundleRef = CFBundleCreate (kCFAllocatorDefault, url);
             CFRelease (url);
@@ -309,7 +309,7 @@ private:
 //==============================================================================
 using REXHandle = void*;
 
-class REXAudioFormat::REXSystem
+class REXAudioFormat::REXSystem final
 {
 public:
     REXSystem (const File& rexLibraryDllOrBundle) :
@@ -521,6 +521,7 @@ private:
 
         return SystemStats::getOperatingSystemType() >= SystemStats::Windows7;
        #elif JUCE_MAC
+        ignoreUnused (libraryToCheck);
         return SystemStats::getOperatingSystemType() >= SystemStats::MacOSX_10_7;
        #else
         ignoreUnused (libraryToCheck);
@@ -533,7 +534,7 @@ private:
         if (! isOk())
             return false;
 
-        //"Open/Close" apply to V1.7.0 and below (note that we only support v1.7.0 and up)
+        // "Open/Close" apply to V1.7.0 and below (note that we only support v1.7.0 and up)
         dllOpen = (dllOpenPtr) rexLibrary->getFunction ("Open");
         dllClose = (dllClosePtr) rexLibrary->getFunction ("Close");
 
@@ -544,12 +545,12 @@ private:
         }
         else
         {
-            //V1.8.0
+            // V1.8.0
             dllOpen = (dllOpenPtr) rexLibrary->getFunction ("REXInitializeDLL");
             dllClose = (dllClosePtr) rexLibrary->getFunction ("REXUninitializeDLL");
         }
 
-        //Mandatory functions:
+        // Mandatory functions:
         createHandle        = (createHandlePtr) rexLibrary->getFunction ("REXCreate");
         deleteHandle        = (deleteHandlePtr) rexLibrary->getFunction ("REXDelete");
         getInformation      = (getInformationPtr) rexLibrary->getFunction ("REXGetInfo");
@@ -601,7 +602,7 @@ void REXAudioFormat::REXSystemDeleter::operator() (REXSystem* rs)
 
 //==============================================================================
 /** Small RAII wrapper around a REXHandle, which automatically deletes the handle when out of scope (if it's valid). */
-class REXAudioFormat::REXHandleInstance
+class REXAudioFormat::REXHandleInstance final
 {
 public:
     /** @warning Use create() unless you know what you're doing! */
@@ -906,4 +907,4 @@ AudioFormatReader* REXAudioFormat::createReaderFor (InputStream* sourceStream, c
     return nullptr;
 }
 
-#endif //SQUAREPINE_USE_REX_AUDIO_FORMAT
+#endif // SQUAREPINE_USE_REX_AUDIO_FORMAT
