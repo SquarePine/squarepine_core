@@ -51,13 +51,8 @@ public:
     /** The type of lock to use for locking. */
     using Lock = std::recursive_mutex;
 
-   #if JUCE_CXX17_IS_AVAILABLE
     /** The type of lock to use for automatically locking and unlocking using RAII. */
     using ScopedLock = std::scoped_lock<Lock>;
-   #else
-    /** The type of lock to use for automatically locking and unlocking using RAII. */
-    using ScopedLock = std::lock_guard<Lock>;
-   #endif
 
     /** @returns the Lock that locks this lockable.
 
