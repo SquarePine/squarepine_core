@@ -64,4 +64,4 @@ public:
     }
 };
 
-#endif //SQUAREPINE_COMPILE_UNIT_TESTS
+#endif // SQUAREPINE_COMPILE_UNIT_TESTS

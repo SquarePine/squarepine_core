@@ -43,4 +43,4 @@ private:
     }
 };
 
-#endif
+#endif // SQUAREPINE_COMPILE_UNIT_TESTS
