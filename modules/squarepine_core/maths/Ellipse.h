@@ -2,7 +2,7 @@
     on the edge of the ellipse and to see if points are inside or outside
 */
 template<typename ValueType>
-class Ellipse
+class Ellipse final
 {
 public:
     //==============================================================================
