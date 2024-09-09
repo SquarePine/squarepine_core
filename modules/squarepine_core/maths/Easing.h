@@ -4,7 +4,7 @@
     The said audio waveform functions are provided with
     a similar API in mind in that the easing functions,
     which are effectively complex interpolation functions,
-    require a weight to be provided instead of a phase.
+    require a weight instead of a phase.
 */
 namespace ease
 {
