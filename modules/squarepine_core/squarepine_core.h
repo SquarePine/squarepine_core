@@ -225,32 +225,7 @@
 
 //==============================================================================
 #include "valuetree/VariantConverters.h"
-
-//==============================================================================
-namespace std
-{
-    /** JUCE doesn't yet provide all possible std::hash overloads, so here's one for Identifier. */
-    template<>
-    struct hash<juce::Identifier>
-    {
-        /** */
-        size_t operator() (const juce::Identifier& key) const noexcept
-        {
-            return std::hash<juce::String>() (key.toString());
-        }
-    };
-
-    /** JUCE doesn't yet provide all possible std::hash overloads, so here's one for File. */
-    template<>
-    struct hash<juce::File>
-    {
-        /** */
-        size_t operator() (const juce::File& key) const noexcept
-        {
-            return std::hash<juce::String>() (key.getFullPathName());
-        }
-    };
-}
+#include "rng/Hashing.h"
 
 //==============================================================================
 namespace sp
