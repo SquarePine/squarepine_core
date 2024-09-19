@@ -103,10 +103,10 @@ private:
     StringArray getAudioDevices (bool giveMeInputDevices) const;
     StringArray getChannelNames (bool giveMeInputDevices) const;
     DeviceInfo getCurrentDeviceInfo (bool giveMeInputDevices) const;
-    
+
     template<typename ArrayType>
     void checkForDeviceChange (const ArrayType& arrayNew, ArrayType& arrayOld);
-    
+
     template<typename ArrayType>
     static bool wasDeviceAdded (const ArrayType& newList, const ArrayType& oldList);
 

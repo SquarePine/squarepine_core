@@ -55,7 +55,7 @@ public:
     /** @returns */
     TimeKeeper& setTimeFormat (TimeFormat);
     /** @returns */
-    TimeFormat getCurrentTimeFormat() const noexcept { return timeFormat; }
+    [[nodiscard]] TimeFormat getTimeFormat() const noexcept { return timeFormat; }
 
     //==============================================================================
     /** @returns */

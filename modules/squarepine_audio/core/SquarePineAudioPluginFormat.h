@@ -7,7 +7,7 @@ class SquarePineAudioPluginFormat final : public AudioPluginFormat
 public:
     /** Default constructor.
 
-        This won't add any processors AudioProcessorGraph related.
+        This won't add any related AudioProcessorGraph processors.
         For that, use the other constructor. 
     */
     SquarePineAudioPluginFormat();

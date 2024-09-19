@@ -1,5 +1,5 @@
 //==============================================================================
-/** */
+/** @returns the title of the given MIDI file or an empty string. */
 [[nodiscard]] inline String getTitle (const MidiFile& midiFile)
 {
     for (int i = 0; i < midiFile.getNumTracks(); ++i)
@@ -17,7 +17,7 @@
     return {};
 }
 
-/** */
+/** @returns the title of the given audio file or an empty string. */
 [[nodiscard]] inline String getTitle (const AudioFormatReader& reader)
 {
     String title;

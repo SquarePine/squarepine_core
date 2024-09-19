@@ -224,7 +224,7 @@ private:
     save/load binary data easily, and not really be part of an audio chain.
 
     As a processor instance, it doesn't actually do anything useful
-    processing-wise, but it behaves like a silent AudioProcessor so it can serve
+    processing-wise; it behaves like a silent AudioProcessor so it can serve
     as a basic stand-in for something better later.
 */
 class DummyProcessor final : public InternalProcessor

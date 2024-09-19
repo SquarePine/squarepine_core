@@ -123,7 +123,7 @@ String TimeKeeper::toString() const
             auto whole = timeSeconds / timeSignature.getNumSecondsPerMeasure (tempo);
             auto beats = std::modf (whole, &whole);
             const auto ticks = std::modf (beats * timeSignature.numerator, &beats)
-                                    * MBTTime::defaultTicksResolution;
+                               * MBTTime::defaultTicksResolution;
 
             auto createString = [] (double val, bool needHundreds = false)
             {

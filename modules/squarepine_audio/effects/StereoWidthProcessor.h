@@ -10,8 +10,6 @@ public:
     /** Changes the stereo width.
 
         @param newWidth New stereo width amount.
-
-        @see getMinimum, getNormal, getMaximum
     */
     void setWidth (float newWidth);
 

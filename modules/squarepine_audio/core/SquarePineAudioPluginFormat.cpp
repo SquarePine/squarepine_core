@@ -239,7 +239,7 @@ void SquarePineAudioPluginFormat::createPluginInstance (const PluginDescription&
 
     if (it != std::cend (pluginCreationMap))
     {
-        //N.B.: We are calling a specialised version of createInstance() here!
+        // N.B.: We are calling a specialised version of createInstance() here!
         if (auto* result = it->second())
         {
             if (auto* ioProc = dynamic_cast<AudioProcessorGraph::AudioGraphIOProcessor*> (result))
