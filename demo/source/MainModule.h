@@ -32,6 +32,7 @@ namespace
 #include "demos/ImageDemo.h"
 #include "demos/MediaDeviceListerDemo.h"
 #include "demos/OpenGLDetailsDemo.h"
+// #include "demos/SystemClipboardDemo.h"
 
 #include "components/SettingsComponent.h"
 #include "main/DemoLookAndFeel.h"

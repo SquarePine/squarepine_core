@@ -1,5 +1,5 @@
 //==============================================================================
-#if ! (JUCE_WINDOWS || JUCE_MAC) || JUCE_MINGW
+#if ! (JUCE_WINDOWS || JUCE_MAC || JUCE_64BIT || JUCE_INTEL)
     #undef SQUAREPINE_USE_CUESDK
 #endif
 
@@ -10,10 +10,7 @@
 
     namespace corsair
     {
-        #undef CORSAIR_LIGHTING_SDK_DISABLE_DEPRECATION_WARNINGS
-        #define CORSAIR_LIGHTING_SDK_DISABLE_DEPRECATION_WARNINGS 1
-        #include "../../../../sdks/CUESDK/include/CUESDK.h"
-        #undef CORSAIR_LIGHTING_SDK_DISABLE_DEPRECATION_WARNINGS
+        #include "iCUESDK/include/iCUESDK/iCUESDK.h"
 
         //==============================================================================
         /** @returns an 'ok' result on sucess and a 'fail' result otherwise. */
@@ -21,13 +18,15 @@
         {
             switch (code)
             {
-                case CE_Success:                    return juce::Result::ok();
-                case CE_ServerNotFound:             return juce::Result::fail ("Server Not Found");
-                case CE_NoControl:                  return juce::Result::fail ("No Control");
-                case CE_ProtocolHandshakeMissing:   return juce::Result::fail ("Protocol Handshake Missing");
-                case CE_IncompatibleProtocol:       return juce::Result::fail ("Incompatible Protocol");
-                case CE_InvalidArguments:           return juce::Result::fail ("Invalid Arguments");
-                default:                            break;
+                case CE_Success:                return juce::Result::ok();
+                case CE_NotConnected:           return juce::Result::fail ("Not connected");
+                case CE_NoControl:              return juce::Result::fail ("No control");
+                case CE_IncompatibleProtocol:   return juce::Result::fail ("Incompatible protocol");
+                case CE_InvalidArguments:       return juce::Result::fail ("Invalid arguments");
+                case CE_InvalidOperation:       return juce::Result::fail ("Invalid operation");
+                case CE_DeviceNotFound:         return juce::Result::fail ("Device not found");
+                case CE_NotAllowed:             return juce::Result::fail ("Not allowed");
+                default:                        break;
             }
 
             return juce::Result::fail ("Unknown Error");
@@ -47,22 +46,34 @@
             return false;
         }
 
+        /** @returns a string version that will look like "major.minor.patch". */
+        inline juce::String toString (CorsairVersion cv)
+        {
+            juce::String s;
+            s << cv.major << "." << cv.minor << "." << cv.patch;
+            return s;
+        }
+
         //==============================================================================
         /** */
         inline void logInfo()
         {
-            const auto details = CorsairPerformProtocolHandshake();
+            CorsairSessionDetails details;
+            zerostruct (details);
+            if (const auto result = toResult (CorsairGetSessionDetails (&details)); result.failed())
+            {
+                juce::Logger::writeToLog ("Could not log CueSDK information: " + result.getErrorMessage());
+                return;
+            }
 
             juce::String info;
             info
             << juce::newLine
             << "--------------------------------------------------" << juce::newLine << juce::newLine
-            << "=== Corsair CUE SDK Information ===" << juce::newLine << juce::newLine
-            << "SDK Version: " << details.sdkVersion << juce::newLine
-            << "Server Version: " << details.serverVersion << juce::newLine
-            << "SDK Protocol Version: " << details.sdkProtocolVersion << juce::newLine
-            << "Server Protocol Version: " << details.serverProtocolVersion << juce::newLine
-            << "Breaking Changes: " << booleanToString (details.breakingChanges, true) << juce::newLine
+            << "=== Corsair iCUE SDK Information ===" << juce::newLine << juce::newLine
+            << "clientVersion: " << toString (details.clientVersion) << juce::newLine
+            << "serverVersion: " << toString (details.serverVersion) << juce::newLine
+            << "serverHostVersion: " << toString (details.serverHostVersion) << juce::newLine
             << juce::newLine
             << "--------------------------------------------------" << juce::newLine;
 
@@ -71,51 +82,86 @@
 
         //==============================================================================
         /** */
-        inline std::vector<CorsairLedColor> getAllAvailableLEDIDs() 
+        inline juce::Array<CorsairDeviceInfo> getAllAvailableDevices() 
         {
-            const auto numDevices = CorsairGetDeviceCount();
-            std::vector<CorsairLedColor> ids;
-            ids.reserve (numDevices);
+            CorsairDeviceFilter filter;
+            zerostruct (filter);
+            filter.deviceTypeMask = CorsairDeviceType::CDT_All;
 
-            for (int deviceIndex = 0; deviceIndex < numDevices; ++deviceIndex)
-                if (const auto* ledPositions = CorsairGetLedPositionsByDeviceIndex (deviceIndex))
-                    if (auto* ledPos = ledPositions->pLedPosition)
-                        for (int i = 0; i < ledPositions->numberOfLed; ++i)
-                            ids.push_back ({ ledPos[i].ledId, 0, 0, 0 });
+            int numDevices = 1024;
+            juce::Array<CorsairDeviceInfo> devices;
+            devices.ensureStorageAllocated (numDevices);
+            if (const auto result = toResult (CorsairGetDevices (&filter, numDevices, devices.getRawDataPointer(), &numDevices)); result.failed())
+            {
+                juce::Logger::writeToLog ("Could not obtain iCUE devices: " + result.getErrorMessage());
+                jassertfalse;
+                return {};
+            }
 
-            return ids;
+            devices.resize (numDevices);
+            return devices;
         }
 
-        inline void fillLED (CorsairLedColor& cLED, juce::Colour colour)
+        /** */
+        inline juce::Array<CorsairLedPosition> getLEDIDs (const CorsairDeviceInfo& device) 
         {
-            cLED.r = (int) colour.getRed();
-            cLED.g = (int) colour.getGreen();
-            cLED.b = (int) colour.getBlue();
+            int numLEDs = 1024;
+            juce::Array<CorsairLedPosition> ledIDs;
+            ledIDs.ensureStorageAllocated (numLEDs);
+            if (const auto result = toResult (CorsairGetLedPositions (device.id, numLEDs, ledIDs.getRawDataPointer(), &numLEDs)); result.failed())
+            {
+                juce::Logger::writeToLog ("Could not obtain LED IDs: " + result.getErrorMessage());
+                jassertfalse;
+                return {};
+            }
+
+            ledIDs.resize (numLEDs);
+            return ledIDs;
         }
 
-        inline void updateLED (CorsairLedColor cLED)
+        /** */
+        inline juce::Colour toColour (const CorsairLedColor& clc)
         {
-            CorsairSetLedsColorsAsync (1, &cLED, nullptr, nullptr);
-            CorsairSetLedsColorsFlushBuffer();
+            return juce::Colour::fromRGBA (clc.r, clc.g, clc.b, clc.a);
         }
 
-        inline void updateLED (CorsairLedColor cLED, juce::Colour colour)
+        /** */
+        inline CorsairLedColor toCorsairLedColor (juce::Colour colour)
         {
-            fillLED (cLED, colour);
-            updateLED (cLED);
+            CorsairLedColor c;
+            zerostruct (c);
+            c.r = colour.getRed();
+            c.g = colour.getGreen();
+            c.b = colour.getBlue();
+            c.a = colour.getAlpha();
+            return c;
         }
 
-        inline void updateLED (int id, juce::Colour colour)
-        {
-            CorsairLedColor cLED;
-            cLED.ledId = static_cast<CorsairLedId> (id);
-            updateLED (cLED, colour);
-        }
-
+        /** */
         inline void updateAllLEDsWithColour (juce::Colour colour)
         {
-            for (auto l : getAllAvailableLEDIDs())
-                updateLED (l, colour);
+            auto clc = toCorsairLedColor (colour);
+
+            for (const auto& device : getAllAvailableDevices())
+            {
+                for (const auto& ledID : getLEDIDs (device))
+                {
+                    clc.id = ledID.id;
+                    CorsairSetLedColors (device.id, 1, &clc);
+                }
+            }
+
+            CorsairSetLedColorsFlushBufferAsync ([] (void*, CorsairError error)
+            {
+               #if JUCE_DEBUG
+                if (! isValid (error))
+                {
+                    juce::Logger::writeToLog ("Failed to set colours: " + toResult (error).getErrorMessage());
+                    jassertfalse;
+                }
+               #endif
+            },
+            nullptr);
         }
     }
 

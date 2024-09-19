@@ -100,6 +100,8 @@ public:
         centreWithSize (getWidth(), getHeight());
        #endif
 
+        corsair::logInfo();
+
         setVisible (true);
     }
 
