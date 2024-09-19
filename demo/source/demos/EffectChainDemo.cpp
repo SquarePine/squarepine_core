@@ -139,18 +139,18 @@ void EffectRowComponent::mouseDown (const MouseEvent& e)
         };
 
         if (numEffects > 0)
-            menu.addItem (selectAllId, TRANS ("Select All"), true, false, Image());
+            menu.addItem (selectAllId, TRANS ("Select All"));
 
         if (index > 0)
         {
-            menu.addItem (moveUpId, TRANS ("Move Up"), true, false, Image());
-            menu.addItem (moveToTopId, TRANS ("Move to Top"), true, false, Image());
+            menu.addItem (moveUpId, TRANS ("Move Up"));
+            menu.addItem (moveToTopId, TRANS ("Move to Top"));
         }
 
         if (index < (numEffects - 1))
         {
-            menu.addItem (moveDownId, TRANS ("Move Down"), true, false, Image());
-            menu.addItem (moveToBottomId, TRANS ("Move to Bottom"), true, false, Image());
+            menu.addItem (moveDownId, TRANS ("Move Down"));
+            menu.addItem (moveToBottomId, TRANS ("Move to Bottom"));
         }
 
         menu.addSeparator();
@@ -160,7 +160,7 @@ void EffectRowComponent::mouseDown (const MouseEvent& e)
         menu.addSubMenu (TRANS ("Replace With..."), replaceMenu);
 
         menu.addSeparator();
-        menu.addItem (deleteId, TRANS ("Delete"), true, false, Image());
+        menu.addItem (deleteId, TRANS ("Delete"));
 
         menu.showMenuAsync ({}, [this, numEffects, types] (int result)
         {
@@ -570,7 +570,7 @@ void EffectChainDemo::reconnect()
     for (const auto& node : graph.getNodes())
         graph.disconnectNode (node->nodeID);
 
-    auto connect = [&] (Node& source, Node& dest, bool isMidi = false)
+    auto connect = [&] (NodePtr& source, NodePtr& dest, bool isMidi = false)
     {
         auto addConnection = [&] (int channelIndex)
         {

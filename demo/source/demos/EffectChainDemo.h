@@ -1,145 +1,4 @@
 /** */
-class DemoEffectFormat final : public AudioPluginFormat
-{
-public:
-    /** */
-    DemoEffectFormat()
-    {
-    }
-
-    //==============================================================================
-    /** */
-    void fill (KnownPluginList& kpl)
-    {
-        addPlugin<BitCrusherProcessor> (kpl);
-        addPlugin<DitherProcessor> (kpl);
-        addPlugin<GainProcessor> (kpl);
-        addPlugin<HissingProcessor> (kpl);
-        addPlugin<LFOProcessor> (kpl);
-        addPlugin<MuteProcessor> (kpl);
-        addPlugin<PanProcessor> (kpl);
-        addPlugin<PolarityInversionProcessor> (kpl);
-        addPlugin<SimpleChorusProcessor> (kpl);
-        addPlugin<SimpleCompressorProcessor> (kpl);
-        addPlugin<SimpleDistortionProcessor> (kpl);
-        addPlugin<SimpleEQProcessor> (kpl);
-        addPlugin<SimpleLimiterProcessor> (kpl);
-        addPlugin<SimpleNoiseGateProcessor> (kpl);
-        addPlugin<SimplePhaserProcessor> (kpl);
-        addPlugin<SimpleReverbProcessor> (kpl);
-        addPlugin<StereoWidthProcessor> (kpl);
-    }
-
-    //==============================================================================
-    /** @internal */
-    String getName() const override                                                             { return "SquarePine"; }
-    /** @internal */
-    bool isTrivialToScan() const override                                                       { return true; }
-    /** @internal */
-    bool canScanForPlugins() const override                                                     { return false; }
-    /** @internal */
-    bool pluginNeedsRescanning (const PluginDescription&) override                              { return false; }
-    /** @internal */
-    bool doesPluginStillExist (const PluginDescription&) override                               { return true; }
-    /** @internal */
-    StringArray searchPathsForPlugins (const FileSearchPath&, bool, bool) override              { return {}; }
-    /** @internal */
-    FileSearchPath getDefaultLocationsToSearch() override                                       { return {}; }
-    /** @internal */
-    bool requiresUnblockedMessageThreadDuringCreation (const PluginDescription&) const override { return false; }
-
-    /** @internal */
-    void findAllTypesForFile (OwnedArray<PluginDescription>& results,
-                              const String& fileOrIdentifier) override
-    {
-        for (const auto& ed : effectDetails)
-            if (ed->description.fileOrIdentifier == fileOrIdentifier)
-                results.add (new PluginDescription (ed->description));
-    }
-
-    /** @internal */
-    bool fileMightContainThisPluginType (const String& fileOrIdentifier) override
-    {
-        for (const auto& ed : effectDetails)
-            if (ed->description.fileOrIdentifier == fileOrIdentifier)
-                return true;
-
-        return false;
-    }
-
-    /** @internal */
-    String getNameOfPluginFromIdentifier (const String& fileOrIdentifier) override
-    {
-        for (const auto& ed : effectDetails)
-            if (ed->description.fileOrIdentifier == fileOrIdentifier)
-                return TRANS (ed->description.name);
-
-        return {};
-    }
-
-    /** @internal */
-    void createPluginInstance (const PluginDescription& description, double initialSampleRate,
-                               int initialBufferSize, PluginCreationCallback callback) override
-    {
-        jassert (callback != nullptr);
-
-        for (const auto& ed : effectDetails)
-        {
-            if (ed->description.fileOrIdentifier == description.fileOrIdentifier)
-            {
-                auto plugin = ed->createInstance();
-                jassert (plugin != nullptr);
-
-                plugin->prepareToPlay (initialSampleRate, initialBufferSize);
-                callback (std::move (plugin), {});
-                return;
-            }
-        }
-
-        callback (nullptr, TRANS ("Failed!"));
-    }
-
-private:
-    //==============================================================================
-    struct EffectDetails final
-    {
-        EffectDetails() = default;
-
-        template<typename PluginClass>
-        void init (StringRef formatName)
-        {
-            static_assert (std::is_base_of_v<InternalProcessor, PluginClass>);
-
-            description = PluginClass().getPluginDescription();
-            description.pluginFormatName = formatName;
-
-            createInstance = []()
-            {
-                return std::make_unique<PluginClass> ();
-            };
-        }
-
-        PluginDescription description;
-        std::function<std::unique_ptr<AudioPluginInstance> ()> createInstance;
-    };
-
-    OwnedArray<EffectDetails> effectDetails;
-
-    //==============================================================================
-    template<typename PluginClass>
-    void addPlugin (KnownPluginList& kpl)
-    {
-        auto* ed = effectDetails.add (new EffectDetails());
-        ed->init<PluginClass> (getName());
-        kpl.addType (ed->description);
-    }
-
-    //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DemoEffectFormat)
-};
-
-//==============================================================================
-/** */
 class DemoEffectFactory final : public EffectProcessorFactory
 {
 public:
@@ -147,8 +6,8 @@ public:
     DemoEffectFactory (KnownPluginList& kpl) :
         EffectProcessorFactory (kpl)
     {
-        auto* effectFormat = new DemoEffectFormat();
-        effectFormat->fill (kpl);
+        auto* effectFormat = new SquarePineAudioPluginFormat();
+        effectFormat->addEffectPluginDescriptionsTo (kpl);
         apfm.addFormat (effectFormat);
     }
 
@@ -293,6 +152,56 @@ private:
 
 //==============================================================================
 /** */
+class TimeDisplayLabel final : public Label
+{
+public:
+    /** */
+    TimeDisplayLabel (TimeKeeper& tk) :
+        timeKeeper (tk)
+    {
+    }
+
+    void mouseUp (const MouseEvent& e) override
+    {
+        if (e.mods.isPopupMenu())
+        {
+            enum
+            {
+                smpteTimeId = 1,
+                decimalTimeId,
+                secondsTimeId,
+                samplesTimeId
+            };
+
+            const auto timeFormat = timeKeeper.getTimeFormat();
+            using TimeFormat = TimeKeeper::TimeFormat;
+
+            PopupMenu menu;
+            menu.addItem (smpteTimeId,      TRANS ("SMPTE"),    true,   timeFormat == TimeFormat::smpteTime);
+            menu.addItem (decimalTimeId,    TRANS ("Decimal"),  true,   timeFormat == TimeFormat::decimalTime);
+            menu.addItem (secondsTimeId,    TRANS ("Seconds"),  true,   timeFormat == TimeFormat::secondsTime);
+            menu.addItem (samplesTimeId,    TRANS ("Samples"),  true,   timeFormat == TimeFormat::samplesTime);
+
+            menu.showMenuAsync ({}, [this] (int result)
+            {
+                if (result > 0 && isPositiveAndBelow (result, samplesTimeId + 1))
+                {
+                    const auto newTF = static_cast<TimeFormat> (result - 1);
+                    timeKeeper.setTimeFormat (newTF);
+                }
+            });
+        }
+        else
+        {
+            Label::mouseUp (e);
+        }
+    }
+
+    TimeKeeper& timeKeeper;
+};
+
+//==============================================================================
+/** */
 class EffectChainDemo final : public DemoBase,
                               public ChangeListener
 {
@@ -322,7 +231,7 @@ private:
     friend EffectRowComponent;
     friend EffectChainComponent;
 
-    using Node = AudioProcessorGraph::Node::Ptr;
+    using NodePtr = AudioProcessorGraph::Node::Ptr;
 
     // Audio bits:
     KnownPluginList knownPluginList;
@@ -334,22 +243,30 @@ private:
     AudioProcessorGraph graph;
     AudioProcessorPlayer audioProcessorPlayer;
 
-    Node audioOut, midiIn;
+    NodePtr audioOut, midiIn;
 
     AudioTransportProcessor* transport { new AudioTransportProcessor() };
-    Node transportNode;
+    NodePtr transportNode;
 
     EffectProcessorChain* effectChain { new EffectProcessorChain (factory) };
-    Node effectChainNode;
+    NodePtr effectChainNode;
 
     // UI bits:
     bool wasPlaying = false,
          isDraggingPlayhead = false;
 
+    TimeKeeper timeKeeper;
+
+    EffectChainComponent effectChainComponent;
+    ToggleButton applyEffects;
+
+    std::unique_ptr<FileChooser> chooser;
+
     File lastLoadedFile;
     std::unique_ptr<AudioThumbnail> audioThumbnail;
 
-    Label filePath, timeDisplay;
+    Label filePath;
+    TimeDisplayLabel timeDisplay { timeKeeper };
     Rectangle<int> audioThumbnailArea;
 
     TextButton play { TRANS ("Play") },
@@ -358,15 +275,8 @@ private:
                load { TRANS ("Load"), TRANS ("Clicking this will load an audio file to process.") },
                addEffect { TRANS ("Add Effect") };
 
-    TimeKeeper timeKeeper;
-
-    EffectChainComponent effectChainComponent;
-    ToggleButton applyEffects;
-
     OffloadedTimer thumbnailRepainter,
                    playbackRepainter;
-
-    std::unique_ptr<FileChooser> chooser;
 
     //==============================================================================
     void updateFromAudioDeviceManager();
