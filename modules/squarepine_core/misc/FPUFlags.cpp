@@ -1,6 +1,6 @@
 uint32 FPUFlags::getFloatingPointStatus()
 {
-   #if JUCE_WINDOWS && ! JUCE_MINGW
+   #if JUCE_WINDOWS
     return (uint32) _statusfp();
    #elif JUCE_MAC && JUCE_INTEL
     uint8 sw = 0;
@@ -13,7 +13,7 @@ uint32 FPUFlags::getFloatingPointStatus()
 
 bool FPUFlags::hasDenormalisationOccurred()
 {
-   #if JUCE_WINDOWS && ! JUCE_MINGW
+   #if JUCE_WINDOWS
     return (getFloatingPointStatus() & _FPE_DENORMAL) != 0;
    #elif JUCE_MAC && JUCE_INTEL
     constexpr uint8 denormalisedOperandBitmask = 1 << 1; //aka DM, or bit 1.
@@ -25,7 +25,7 @@ bool FPUFlags::hasDenormalisationOccurred()
 
 void FPUFlags::clear()
 {
-   #if JUCE_WINDOWS && ! JUCE_MINGW
+   #if JUCE_WINDOWS
     _clearfp();
    #elif JUCE_MAC && JUCE_INTEL
     __asm __volatile ("fclex");
@@ -42,7 +42,7 @@ void FPUFlags::clearIfDenormalised()
 
 void FPUFlags::reset()
 {
-   #if JUCE_WINDOWS && ! JUCE_MINGW
+   #if JUCE_WINDOWS
     _fpreset();
    #else
     using namespace std;

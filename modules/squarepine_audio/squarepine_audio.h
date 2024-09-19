@@ -51,7 +51,7 @@
 
     Enable this to be able to read Propellerheads' REX audio files.
 
-    Only available with MSVC (not MinGW) and macOS (Intel desktop).
+    Only available with MSVC and macOS (Intel desktop).
 */
 #ifndef SQUAREPINE_USE_REX_AUDIO_FORMAT
     #define SQUAREPINE_USE_REX_AUDIO_FORMAT 0

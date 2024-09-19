@@ -41,6 +41,10 @@
 
 #include <juce_core/unit_tests/juce_UnitTestCategories.h>
 
+#if JUCE_MINGW
+    #error "SquarePine: JUCE has officially removed support for MinGW and I don't want to support it myself, either."
+#endif
+
 #if ! JUCE_WINDOWS
    #if JUCE_DEBUG
     #include <cxxabi.h>

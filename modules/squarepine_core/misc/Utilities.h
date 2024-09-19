@@ -348,10 +348,10 @@ JUCE_END_IGNORE_WARNINGS_GCC_LIKE
 template<typename ObjectType>
 inline String getDemangledName (ObjectType& c)
 {
-   #if ! JUCE_DEBUG || JUCE_MINGW
+   #if ! JUCE_DEBUG
     ignoreUnused (c);
     return {};
-   #elif JUCE_WINDOWS && ! JUCE_MINGW
+   #elif JUCE_WINDOWS
     auto res = String (typeid (c).name());
 
     if (res.startsWith ("class "))

@@ -2,7 +2,7 @@
 #define ZPLANE_HELPERS_H
 
 //==============================================================================
-#if ! (JUCE_WINDOWS || JUCE_MAC) || JUCE_MINGW
+#if ! (JUCE_WINDOWS || JUCE_MAC)
     #undef SQUAREPINE_USE_AUFTAKT
     #undef SQUAREPINE_USE_ELASTIQUE
 #endif
@@ -12,7 +12,7 @@
 
     JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Weverything", "-Wall", "-Wpedantic", "-Wno-eof-newline", "-Wnon-virtual-dtor")
 
-    #if JUCE_WINDOWS && ! JUCE_MINGW
+    #if JUCE_WINDOWS
         #if SQUAREPINE_USE_AUFTAKT && ! defined (SQUAREPINE_AUFTAKT_PATH)
             #define SQUAREPINE_AUFTAKT_PATH    ../../../../sdks/auftakt/
         #endif

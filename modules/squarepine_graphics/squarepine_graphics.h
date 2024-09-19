@@ -32,10 +32,10 @@
 
 /** Config: SQUAREPINE_USE_CUESDK
 
-    If you're a fan of controlling RGB peripherals and want to
-    control Corsair's devices, enable this on desktop to play around!
+    If you're a fan of controlling RGB peripherals and want to control
+    Corsair's devices, enable this to play around on mainstream desktops.
 
-	Note: if you're using MinGW, you're SOL.
+    Only available for 64-bit Windows and macOS (Intel only).
 */
 #ifndef SQUAREPINE_USE_CUESDK
     #define SQUAREPINE_USE_CUESDK 0
