@@ -42,10 +42,10 @@ class LockableBase<std::recursive_mutex>
 {
 public:
     /** */
-    LockableBase() noexcept { }
+    LockableBase() noexcept = default;
 
     /** */
-    virtual ~LockableBase() noexcept { }
+    virtual ~LockableBase() noexcept = default;
 
     //==============================================================================
     /** The type of lock to use for locking. */
