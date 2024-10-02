@@ -57,6 +57,9 @@
         /** @returns a string that will look like "keyboard, touchbar". */
         inline juce::String toString (CorsairDeviceType cdt)
         {
+            if (cdt == CDT_Unknown)
+                return TRANS ("Unknown");
+
             const auto cdtbs = std::bitset<32> ((int) cdt);
             size_t bitIndex = 0;
             juce::String s;
@@ -71,9 +74,6 @@
                     s << transString;
                 }
             };
-
-            if (cdt == CDT_Unknown)
-                return TRANS ("Unknown");
 
             testBit (TRANS ("Keyboard"));
             testBit (TRANS ("Mouse"));
