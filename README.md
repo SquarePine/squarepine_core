@@ -20,25 +20,33 @@ This library is an assortment of loosely related or unrelated JUCE-based tools, 
 
 ## `squarepine_core`
 
-* Translation file notification using [`sp::LanguageHandler`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/text/LanguageHandler.h#L164).
-* A highly flexible memory pool allocation system called [`sp::Allocator`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/memory/Allocator.h).
-* [`sp::NetworkConnectivityChecker`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/networking/NetworkConnectivityChecker.h) will help you find out what kind of network you're on, and will give you listener notifications when connectivity changes (connects or disconnects).
-* A wide array of math functions and structures, including [`sp::Vector4D`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/maths/Vector4D.h) and [`sp::Angle`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/maths/Angle.h).
+Some major feature highlights:
+
+* Highly flexible Google Analytics integrations
+  * Pair up the [`sp::GoogleAnalyticsReporter`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/networking/GoogleAnalyticsReporter.h#L280-L384) with the easy to use [`sp::GoogleAnalyticsMetadata`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/networking/GoogleAnalyticsReporter.h#L3-L277).
+* Translation file management with notifications.
+  * [`sp::LanguageHandler`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/text/LanguageHandler.h#L164).
+* A highly flexible memory pool allocation system.
+  * [`sp::Allocator`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/memory/Allocator.h).
+* Find out what kind of network you're on and receive notifications when connectivity changes (connects or disconnects).
+  * [`sp::NetworkConnectivityChecker`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/networking/NetworkConnectivityChecker.h) 
+* A wide array of math functions and structures.
+  * Every standard [easing function](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/maths/Easing.h) for animation purposes.
+  * [`sp::Vector4D`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/maths/Vector4D.h)
+  * [`sp::Angle`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/maths/Angle.h)
 * Many `juce::XYZType` are available wihtin the `juce::ValueTree` ecosystem via the [`VariantConverters`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/valuetree/VariantConverters.h) provided.
 * Plenty [freestanding utilities](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/valuetree/ValueTreeHelpers.h) for the `juce::ValueTree` ecosystem.
-
-### Easing Demo
-
-![image](https://user-images.githubusercontent.com/1908886/174856790-680f1e3f-2c82-470d-a107-a590e6646c54.png)
 
 ## `squarepine_audio`
 
 ### Utilities
 
-1. [`sp::AudioBufferFIFO`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/core/AudioBufferFIFO.h)
-2. [`sp::AudioBufferView`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/core/AudioBufferView.h)
-     * For easy `juce::AudioBuffer` iteration using range-based `for`.
-3. [Wide range of straightforward resamplers based on JUCE's interpolators.](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/resamplers/Resampler.h)
+Some utils to avoid boilerplate and rewriting the same code again:
+
+* [`sp::AudioBufferFIFO`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/core/AudioBufferFIFO.h)
+* [`sp::AudioBufferView`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/core/AudioBufferView.h)
+  * For easy `juce::AudioBuffer` iteration using range-based `for`.
+* [Wide range of straightforward resamplers based on JUCE's interpolators.](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/resamplers/Resampler.h)
 
 ### Metering & Graphics
 
@@ -50,38 +58,41 @@ A vast range of simple renditions of audio effects can be found, including an ec
 
 #### The Effects
 
-1. [`sp::BitCrusherProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/BitCrusherProcessor.h)
-2. [`sp::ChorusProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/ChorusProcessor.h)
-3. [`sp::DitherProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/DitherProcessor.h)
-4. [`sp::GainProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/GainProcessor.h)
-5. [`sp::HissingProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/HissingProcessor.h)
-6. [`sp::JUCEReverbProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/JUCEReverbProcessor.h)
-7. [`sp::LFOProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/LFOProcessor.h)
-8. [`sp::MuteProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/MuteProcessor.h)
-9. [`sp::PanProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/PanProcessor.h)
-10. [`sp::PolarityInversionProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/PolarityInversionProcessor.h)
-11. [`sp::SimpleDistortionProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/SimpleDistortionProcessor.h)
-12. [`sp::SimpleEQProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/SimpleEQProcessor.h)
-13. [`sp::StereoWidthProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/StereoWidthProcessor.h)
+* [`sp::BitCrusherProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/BitCrusherProcessor.h)
+* [`sp::ChorusProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/ChorusProcessor.h)
+* [`sp::DitherProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/DitherProcessor.h)
+* [`sp::GainProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/GainProcessor.h)
+* [`sp::HissingProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/HissingProcessor.h)
+* [`sp::JUCEReverbProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/JUCEReverbProcessor.h)
+* [`sp::LFOProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/LFOProcessor.h)
+* [`sp::MuteProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/MuteProcessor.h)
+* [`sp::PanProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/PanProcessor.h)
+* [`sp::PolarityInversionProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/PolarityInversionProcessor.h)
+* [`sp::SimpleDistortionProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/SimpleDistortionProcessor.h)
+* [`sp::SimpleEQProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/SimpleEQProcessor.h)
+* [`sp::StereoWidthProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/effects/StereoWidthProcessor.h)
 
 ### The Ecosystem
 
-1. [`sp::EffectProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/core/EffectProcessor.h)
-2. [`sp::EffectProcessorFactory`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/core/EffectProcessorFactory.h)
-3. [`sp::EffectProcessorChain`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/core/EffectProcessorChain.h)
-4. [`sp::SquarePineAudioPluginFormat`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/core/SquarePineAudioPluginFormat.h)
+* [`sp::EffectProcessor`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/core/EffectProcessor.h)
+* [`sp::EffectProcessorFactory`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/core/EffectProcessorFactory.h)
+* [`sp::EffectProcessorChain`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/core/EffectProcessorChain.h)
+* [`sp::SquarePineAudioPluginFormat`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_audio/core/SquarePineAudioPluginFormat.h)
 
 ## `squarepine_graphics`
 
-* [CueSDK](https://github.com/CorsairOfficial/cue-sdk) support for controlling your Corsair devices' RGB lights.
-  * You need to install the SDK.
-  * Enable [`SQUAREPINE_USE_CUESDK`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_graphics/squarepine_graphics.h#L33-L42) when integrating the `squarepine_graphics` module.
-  * Use [`sp::corsair::getAllAvailableLEDIDs`](https://github.com/SquarePine/squarepine_core/edit/main/modules/squarepine_graphics/linkers/CueSDKIncluder.h) to find out what's available to control.
-  * Call `sp::corsair::fillLED`, `sp::corsair::updateLED`, `sp::corsair::updateAllLEDsWithColour` to have some fun!
-* Highly flexible Google Analyitcs integrations by pairing the [`sp::GoogleAnalyticsReporter`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/networking/GoogleAnalyticsReporter.h#L280-L384) with an easy to use and feature extensive [`sp::GoogleAnalyticsMetadata`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/networking/GoogleAnalyticsReporter.h#L3-L277).
-* A wide array of [easing functions](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/maths/Easing.h) for animation purposes.
-* Simplifying font support for look and feels using [`sp::FontWeight`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_graphics/utilities/Fonts.h#L5) and [`sp::FontFamily`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_graphics/utilities/Fonts.h#L34).
+* [iCUESDK](https://github.com/CorsairOfficial/cue-sdk) support for controlling your Corsair devices' RGB lights.
+  * You need to have the SDK.
+  * Enable [`SQUAREPINE_USE_ICUESDK`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_graphics/squarepine_graphics.h#L33-L42) when integrating the `squarepine_graphics` module.
+  * Call `sp::corsair::updateAllLEDsWithColour` to have some fun!
 * [`sp::ImageFormatManager`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_graphics/images/ImageFormatManager.h) makes it easier to bring together your favourite image formats, unifying their instances for loading images with your own codecs using JUCE's [`juce::ImageFileFormat`](https://github.com/juce-framework/JUCE/blob/develop/modules/juce_graphics/images/juce_ImageFileFormat.h) ecosystem.
+* Simplifying font support for look and feels using [`sp::FontWeight`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_graphics/utilities/Fonts.h#L5) and [`sp::FontFamily`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_graphics/utilities/Fonts.h#L34).
+
+# Demo Screenshots
+
+## Easing
+
+![image](https://user-images.githubusercontent.com/1908886/174856790-680f1e3f-2c82-470d-a107-a590e6646c54.png)
 
 # License
 
