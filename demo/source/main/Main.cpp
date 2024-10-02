@@ -100,7 +100,9 @@ public:
         centreWithSize (getWidth(), getHeight());
        #endif
 
+       #if SQUAREPINE_USE_ICUESDK
         corsair::globalSession->logInfo();
+       #endif
 
         setVisible (true);
     }

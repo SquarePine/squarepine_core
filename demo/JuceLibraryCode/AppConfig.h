@@ -375,7 +375,7 @@
 #endif
 
 #ifndef    SQUAREPINE_USE_ICUESDK
- #define   SQUAREPINE_USE_ICUESDK 1
+ //#define SQUAREPINE_USE_ICUESDK 0
 #endif
 
 #ifndef    SQUAREPINE_LOG_OPENGL_INFO
