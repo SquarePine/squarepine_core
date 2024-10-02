@@ -94,55 +94,6 @@
 
         //==============================================================================
         /** */
-        struct iCUESDKConnector final
-        {
-            /** */
-            iCUESDKConnector()
-            {
-                isValid (CorsairConnect (sessionStateChangeHandler, this));
-            }
-
-            /** */
-            ~iCUESDKConnector()
-            {
-                isValid (CorsairDisconnect());
-            }
-
-            static void sessionStateChangeHandler (void*, const CorsairSessionStateChanged*)
-            {
-            }
-        };
-
-        static juce::SharedResourcePointer<iCUESDKConnector> connector;
-
-        //==============================================================================
-        /** */
-        inline void logInfo()
-        {
-            CorsairSessionDetails details;
-            juce::zerostruct (details);
-            if (const auto result = toResult (CorsairGetSessionDetails (&details)); result.failed())
-            {
-                juce::Logger::writeToLog ("Could not log iCUE SDK information: " + result.getErrorMessage());
-                return;
-            }
-
-            juce::String info;
-            info
-            << juce::newLine
-            << "--------------------------------------------------" << juce::newLine << juce::newLine
-            << "=== Corsair iCUE SDK Information ===" << juce::newLine << juce::newLine
-            << "clientVersion: " << toString (details.clientVersion) << juce::newLine
-            << "serverVersion: " << toString (details.serverVersion) << juce::newLine
-            << "serverHostVersion: " << toString (details.serverHostVersion) << juce::newLine
-            << juce::newLine
-            << "--------------------------------------------------" << juce::newLine;
-
-            juce::Logger::writeToLog (info);
-        }
-
-        //==============================================================================
-        /** */
         inline bool operator== (const CorsairDeviceInfo& lhs, const CorsairDeviceInfo& rhs)
         {
             return lhs.type == rhs.type
@@ -159,6 +110,7 @@
             return ! operator== (lhs, rhs);
         }
 
+        //==============================================================================
         /** */
         inline juce::Colour toColour (const CorsairLedColor& clc)
         {
@@ -176,6 +128,72 @@
             c.a = colour.getAlpha();
             return c;
         }
+
+        //==============================================================================
+        /** */
+        class iCUESDKSession final
+        {
+        public:
+            /** */
+            iCUESDKSession()
+            {
+                juce::zerostruct (details);
+                isValid (CorsairConnect (sessionStateChangeHandler, this));
+            }
+
+            /** */
+            ~iCUESDKSession()
+            {
+                isValid (CorsairDisconnect());
+            }
+
+            /** */
+            bool isConnected() const { return connected.load (std::memory_order_relaxed); }
+
+            /** */
+            const CorsairSessionDetails& getDetails() const { return details; }
+
+            //==============================================================================
+            /** */
+            void logInfo()
+            {
+                juce::String info;
+                info
+                    << juce::newLine
+                    << "--------------------------------------------------" << juce::newLine << juce::newLine
+                    << "=== Corsair iCUE SDK Information ===" << juce::newLine << juce::newLine
+                    << "clientVersion: " << toString (details.clientVersion) << juce::newLine
+                    << "serverVersion: " << toString (details.serverVersion) << juce::newLine
+                    << "serverHostVersion: " << toString (details.serverHostVersion) << juce::newLine
+                    << juce::newLine
+                    << "--------------------------------------------------" << juce::newLine;
+
+                juce::Logger::writeToLog (info);
+            }
+
+            //==============================================================================
+            /** */
+            static void sessionStateChangeHandler (void* sourcePtr, const CorsairSessionStateChanged* newSession)
+            {
+                if (auto* session = (iCUESDKSession*) sourcePtr)
+                {
+                    session->connected = newSession != nullptr
+                                            ? newSession->state == CSS_Connected
+                                            : false;
+
+                    session->details = session->details;
+                }
+            }
+
+        private:
+            std::atomic<bool> connected { false };
+            CorsairSessionDetails details;
+
+            JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (iCUESDKSession)
+        };
+
+        /** */
+        static juce::SharedResourcePointer<iCUESDKSession> globalSession;
 
         //==============================================================================
         /**
@@ -211,7 +229,7 @@
                 return {};
             }
 
-            int numLEDs = device.ledCount;
+            auto numLEDs = device.ledCount;
             std::vector<CorsairLedPosition> ledIDs ((size_t) numLEDs);
             if (isValid (CorsairGetLedPositions (device.id, numLEDs, ledIDs.data(), &numLEDs)))
                 return { ledIDs.data(), numLEDs };

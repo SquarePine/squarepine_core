@@ -58,6 +58,14 @@ public:
 
     void timerCallback() override
     {
+        if (! corsair::globalSession->isConnected())
+        {
+            devices.clearQuick (true);
+            listbox.updateContent();
+            repaint(); // For the LEDs.
+            return;
+        }
+
         const auto newDevs = corsair::getAllAvailableDevices();
 
         bool changed = false;
@@ -204,8 +212,6 @@ private:
     OwnedArray<LEDData> devices;
     TextButton redButton, greenButton, blueButton;
     ListBox listbox;
-
-    Grid pixelGrid;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CueSDKDemo)
 };
