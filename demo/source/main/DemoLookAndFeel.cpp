@@ -142,7 +142,7 @@ void DemoLookAndFeel::drawMenuBarItem (Graphics& g, int width, int height,
 //==============================================================================
 int DemoLookAndFeel::getTabButtonBestWidth (TabBarButton& button, int tabDepth)
 {
-    auto width = Font (FontOptions ((float) tabDepth)).getStringWidth (button.getButtonText().trim())
+    auto width = roundToIntAccurate (TextLayout::getStringWidth (Font (FontOptions ((float) tabDepth)), button.getButtonText()))
                  + getTabButtonOverlap (tabDepth) * 2;
 
     if (auto* extraComponent = button.getExtraComponent())
@@ -441,7 +441,7 @@ void DemoLookAndFeel::drawToggleButton (Graphics& g, ToggleButton& button,
 
 int DemoLookAndFeel::getTextButtonWidthToFitText (TextButton& b, int buttonHeight)
 {
-    return getTextButtonFont (b, buttonHeight).getStringWidth (b.getButtonText()) + buttonHeight;
+    return buttonHeight + roundToIntAccurate (TextLayout::getStringWidth (getTextButtonFont (b, buttonHeight), b.getButtonText()));
 }
 
 void DemoLookAndFeel::drawDrawableButton (Graphics& g, DrawableButton& button, bool, bool)
@@ -472,7 +472,7 @@ void DemoLookAndFeel::changeToggleButtonWidthToFitText (ToggleButton& button)
     const auto fontSize = defaultFontHeight;
     const auto tickWidth = fontSize * 1.1f;
 
-    button.setSize (roundToIntAccurate (Font (FontOptions (fontSize)).getStringWidthFloat (button.getButtonText()) + tickWidth + defaultFontHeight),
+    button.setSize (roundToIntAccurate (TextLayout::getStringWidth (Font (FontOptions (fontSize)), button.getButtonText()) + tickWidth + fontSize),
                     button.getHeight());
 }
 

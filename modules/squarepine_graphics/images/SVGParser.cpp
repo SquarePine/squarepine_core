@@ -1402,7 +1402,7 @@ Drawable* SVGState::parseText (const XmlPath& xml, bool shouldParseTransform,
                             .withMultipliedAlpha (parseSafeFloat (getStyleAttribute (xml, "fill-opacity", "1"))));
 
             juce::Rectangle<float> bounds (xCoords[0], yCoords[0] - font.getAscent(),
-                                           font.getStringWidthFloat (text), font.getHeight());
+                                           TextLayout::getStringWidth (font, text), font.getHeight());
 
             if (anchorStr == "middle")
                 bounds.setX (bounds.getX() - bounds.getWidth() / 2.0f);

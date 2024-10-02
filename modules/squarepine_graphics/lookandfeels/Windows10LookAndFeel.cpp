@@ -125,9 +125,8 @@ void Windows10LookAndFeel::drawTooltip (Graphics& g, const String& text, int w, 
 //==============================================================================
 int Windows10LookAndFeel::getTabButtonBestWidth (TabBarButton& button, int tabDepth)
 {
-    auto width = Font (FontOptions { (float) tabDepth })
-                 .getStringWidth (button.getButtonText().trim())
-                    + getTabButtonOverlap (tabDepth) * 2;
+    auto width = roundToIntAccurate (TextLayout::getStringWidth (Font (FontOptions ((float) tabDepth)), button.getButtonText()))
+                 + getTabButtonOverlap (tabDepth) * 2;
 
     if (auto* extraComponent = button.getExtraComponent())
         width += button.getTabbedButtonBar().isVertical() ? extraComponent->getHeight()
@@ -405,7 +404,7 @@ void Windows10LookAndFeel::drawToggleButton (Graphics& g, ToggleButton& button,
 
 int Windows10LookAndFeel::getTextButtonWidthToFitText (TextButton& b, int buttonHeight)
 {
-    return getTextButtonFont (b, buttonHeight).getStringWidth (b.getButtonText()) + buttonHeight;
+    return buttonHeight + roundToIntAccurate (TextLayout::getStringWidth (getTextButtonFont (b, buttonHeight), b.getButtonText()));
 }
 
 void Windows10LookAndFeel::drawDrawableButton (Graphics& g, DrawableButton& button, bool, bool)
@@ -433,10 +432,10 @@ void Windows10LookAndFeel::drawDrawableButton (Graphics& g, DrawableButton& butt
 
 void Windows10LookAndFeel::changeToggleButtonWidthToFitText (ToggleButton& button)
 {
-    const auto fontSize = std::min (15.0f, (float) button.getHeight() * 0.75f);
+    const auto fontSize = 16.0f;
     const auto tickWidth = fontSize * 1.1f;
 
-    button.setSize (roundToIntAccurate (Font (FontOptions { fontSize }).getStringWidthFloat (button.getButtonText()) + tickWidth + 14.0f),
+    button.setSize (roundToIntAccurate (TextLayout::getStringWidth (Font (FontOptions (fontSize)), button.getButtonText()) + tickWidth + fontSize),
                     button.getHeight());
 }
 
