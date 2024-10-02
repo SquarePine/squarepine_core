@@ -30,15 +30,15 @@
     #define SQUAREPINE_USE_AVIR_RESIZER JUCE_INTEL
 #endif
 
-/** Config: SQUAREPINE_USE_CUESDK
+/** Config: SQUAREPINE_USE_ICUESDK
 
     If you're a fan of controlling RGB peripherals and want to control
     Corsair's devices, enable this to play around on mainstream desktops.
 
     Only available for 64-bit Windows and macOS (Intel only).
 */
-#ifndef SQUAREPINE_USE_CUESDK
-    #define SQUAREPINE_USE_CUESDK 0
+#ifndef SQUAREPINE_USE_ICUESDK
+    #define SQUAREPINE_USE_ICUESDK 0
 #endif
 
 /** Config: SQUAREPINE_LOG_OPENGL_INFO
@@ -46,6 +46,9 @@
 #ifndef SQUAREPINE_LOG_OPENGL_INFO
     #define SQUAREPINE_LOG_OPENGL_INFO 0
 #endif
+
+//==============================================================================
+#include "linkers/iCUESDKIncluder.h"
 
 //==============================================================================
 namespace sp
@@ -194,7 +197,6 @@ namespace sp
     #include "images/SVGParser.h"
     #include "images/TGAImageFormat.h"
     //#include "images/WebPImageFormat.h"
-    #include "linkers/CueSDKIncluder.h"
     #include "lookandfeels/Windows10LookAndFeel.h"
     //#include "tokenisers/JavascriptCodeTokeniser.h"
     #include "utilities/Fonts.h"

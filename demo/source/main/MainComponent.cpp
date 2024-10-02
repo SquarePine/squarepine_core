@@ -29,7 +29,7 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
     addTab (new CodeEditorDemo (sharedObjs));
     addTab (new MediaDeviceListerDemo (sharedObjs));
 
-   #if SQUAREPINE_USE_CUESDK
+   #if SQUAREPINE_USE_ICUESDK
     addTab (new CueSDKDemo (sharedObjs));
    #endif
 

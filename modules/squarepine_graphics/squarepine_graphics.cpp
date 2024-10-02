@@ -29,7 +29,7 @@ namespace sp
     #include "images/StackBlurEffects.cpp"
     #include "images/SVGParser.cpp"
     #include "images/TGAImageFormat.cpp"
-    #include "linkers/CueSDKLinker.cpp"
+    #include "linkers/iCUESDKLinker.cpp"
     #include "lookandfeels/Windows10LookAndFeel.cpp"
    // #include "tokenisers/JavascriptCodeTokeniser.cpp"
 }

@@ -26,7 +26,7 @@ namespace
 
 #include "demos/DemoBase.h"
 #include "demos/CodeEditorDemo.h"
-#include "demos/CueSDKDemo.h"
+#include "demos/iCUESDKDemo.h"
 #include "demos/EasingsDemo.h"
 #include "demos/EffectChainDemo.h"
 #include "demos/ImageDemo.h"

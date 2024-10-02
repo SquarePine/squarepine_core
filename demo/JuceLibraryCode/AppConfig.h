@@ -20,7 +20,7 @@
 
 // [END_USER_CODE_SECTION]
 
-#define JUCE_PROJUCER_VERSION 0x80001
+#define JUCE_PROJUCER_VERSION 0x80002
 
 //==============================================================================
 #define JUCE_MODULE_AVAILABLE_juce_analytics              1
@@ -325,7 +325,7 @@
 #endif
 
 #ifndef    SQUAREPINE_USE_REX_AUDIO_FORMAT
- //#define SQUAREPINE_USE_REX_AUDIO_FORMAT 0
+ #define   SQUAREPINE_USE_REX_AUDIO_FORMAT 1
 #endif
 
 //==============================================================================
@@ -360,7 +360,7 @@
 #endif
 
 #ifndef    SQUAREPINE_LOG_GOOGLE_ANALYTICS
- //#define SQUAREPINE_LOG_GOOGLE_ANALYTICS 0
+ #define   SQUAREPINE_LOG_GOOGLE_ANALYTICS 1
 #endif
 
 #ifndef    SQUAREPINE_ONLY_LOG_GOOGLE_ANALYTICS
@@ -374,12 +374,12 @@
  //#define SQUAREPINE_USE_AVIR_RESIZER 1
 #endif
 
-#ifndef    SQUAREPINE_USE_CUESDK
- //#define SQUAREPINE_USE_CUESDK 0
+#ifndef    SQUAREPINE_USE_ICUESDK
+ #define   SQUAREPINE_USE_ICUESDK 1
 #endif
 
 #ifndef    SQUAREPINE_LOG_OPENGL_INFO
- //#define SQUAREPINE_LOG_OPENGL_INFO 0
+ #define   SQUAREPINE_LOG_OPENGL_INFO 1
 #endif
 
 //==============================================================================
