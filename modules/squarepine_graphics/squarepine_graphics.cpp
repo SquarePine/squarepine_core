@@ -11,6 +11,8 @@
     #include <android/api-level.h>
 #endif
 
+#include "lighting/iCUESDKLinker.cpp"
+
 namespace sp
 {
     using namespace juce;
@@ -29,7 +31,8 @@ namespace sp
     #include "images/StackBlurEffects.cpp"
     #include "images/SVGParser.cpp"
     #include "images/TGAImageFormat.cpp"
-    #include "linkers/iCUESDKLinker.cpp"
     #include "lookandfeels/Windows10LookAndFeel.cpp"
    // #include "tokenisers/JavascriptCodeTokeniser.cpp"
 }
+
+#include "lighting/WinRTRGB.cpp"

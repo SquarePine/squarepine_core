@@ -47,8 +47,19 @@
     #define SQUAREPINE_LOG_OPENGL_INFO 0
 #endif
 
+/** Config: SQUAREPINE_USE_WINRTRGB
+*/
+#ifndef SQUAREPINE_USE_WINRTRGB
+    #define SQUAREPINE_USE_WINRTRGB 1
+#endif
+
 //==============================================================================
-#include "linkers/iCUESDKIncluder.h"
+#if ! JUCE_WINDOWS
+    #undef SQUAREPINE_USE_WINRTRGB
+#endif
+
+//==============================================================================
+#include "lighting/iCUESDKIncluder.h"
 
 //==============================================================================
 namespace sp
@@ -197,6 +208,7 @@ namespace sp
     #include "images/SVGParser.h"
     #include "images/TGAImageFormat.h"
     //#include "images/WebPImageFormat.h"
+    #include "lighting/WinRTRGB.h"
     #include "lookandfeels/Windows10LookAndFeel.h"
     //#include "tokenisers/JavascriptCodeTokeniser.h"
     #include "utilities/Fonts.h"

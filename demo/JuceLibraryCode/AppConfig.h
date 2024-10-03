@@ -382,6 +382,10 @@
  #define   SQUAREPINE_LOG_OPENGL_INFO 1
 #endif
 
+#ifndef    SQUAREPINE_USE_WINRTRGB
+ //#define SQUAREPINE_USE_WINRTRGB 1
+#endif
+
 //==============================================================================
 #ifndef    JUCE_STANDALONE_APPLICATION
  #if defined(JucePlugin_Name) && defined(JucePlugin_Build_Standalone)

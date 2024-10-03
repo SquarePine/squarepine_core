@@ -1,8 +1,10 @@
-inline Rectangle<int> getBoundsAccountingForKeyboard ()
+#if SQUAREPINE_IS_MOBILE
+
+inline Rectangle<int> getBoundsAccountingForKeyboard()
 {
-    if (auto* display { Desktop::getInstance ().getDisplays ().getPrimaryDisplay () })
+    if (auto* display = Desktop::getInstance().getDisplays().getPrimaryDisplay())
     {
-        auto bounds { display->userArea };
+        auto bounds = display->userArea;
 
         // display->safeAreaInsets.subtractFrom (bounds);
         // display->keyboardInsets.subtractFrom (bounds);
@@ -12,6 +14,8 @@ inline Rectangle<int> getBoundsAccountingForKeyboard ()
 
     return {};
 }
+
+#endif
 
 MainComponent::MainComponent (SharedObjects& sharedObjs) :
     tabbedComponent (TabbedButtonBar::TabsAtTop)
@@ -33,19 +37,29 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
     addTab (new CueSDKDemo (sharedObjs));
    #endif
 
+   #if SQUAREPINE_USE_WINRTRGB
+    addTab (new WinRTRGBDemo (sharedObjs));
+   #endif
+
    #if SP_DEMO_USE_OPENGL
     // Need to call this later on - once JUCE, the GL content, and the OS decide it's cool to talk to each other.
     MessageManager::callAsync ([this, ptr = SafePointer (this)]()
     {
         SQUAREPINE_CRASH_TRACER
         if (ptr != nullptr)
-            rendererConfigurator.configureWithOpenGLIfAvailable (*this, true);
+        {
+            rendererConfigurator.configureWithOpenGLIfAvailable (*this);
+            resized();
+        }
     });
 
     addTab (new OpenGLDetailsDemo (sharedObjs, rendererConfigurator));
    #endif // SP_DEMO_USE_OPENGL
 
     tabbedComponent.addTab (TRANS ("Settings"), Colours::grey, new SettingsComponent (sharedObjs), true);
+
+    tabbedComponent.setOutline (0);
+    tabbedComponent.setIndent (0);
 
     addAndMakeVisible (tabbedComponent);
 
@@ -68,6 +82,8 @@ void MainComponent::paint (Graphics& g)
 
 void MainComponent::resized()
 {
+    SQUAREPINE_CRASH_TRACER
+
     auto b = getLocalBounds();
 
    #if SQUAREPINE_IS_MOBILE
@@ -81,6 +97,8 @@ void MainComponent::resized()
 
 void MainComponent::languageChanged (const IETFLanguageFile&)
 {
+    SQUAREPINE_CRASH_TRACER
+
     for (int i = tabbedComponent.getNumTabs(); --i >= 0;)
         if (auto* demoComp = dynamic_cast<DemoBase*> (tabbedComponent.getTabContentComponent (i)))
             tabbedComponent.setTabName (i, TRANS (demoComp->getUntranslatedName()));

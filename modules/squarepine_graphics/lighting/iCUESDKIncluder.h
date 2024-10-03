@@ -14,7 +14,7 @@
 
         //==============================================================================
         /** @returns an 'ok' result on sucess and a 'fail' result otherwise. */
-        inline juce::Result toResult (CorsairError code)
+        inline [[nodiscard]] juce::Result toResult (CorsairError code)
         {
             switch (code)
             {
@@ -35,7 +35,7 @@
         /** @returns true if the result code is a success/non-error.
             Logs the error code and asserts on failure.
         */
-        inline bool isValid (CorsairError code)
+        inline [[nodiscard]] bool isValid (CorsairError code)
         {
             const auto result = toResult (code);
             if (result.wasOk())
@@ -47,7 +47,7 @@
         }
 
         /** @returns a string version that will look like "major.minor.patch". */
-        inline juce::String toString (const CorsairVersion& cv)
+        inline [[nodiscard]] juce::String toString (const CorsairVersion& cv)
         {
             juce::String s;
             s << cv.major << "." << cv.minor << "." << cv.patch;
@@ -55,7 +55,7 @@
         }
 
         /** @returns a string that will look like "keyboard, touchbar". */
-        inline juce::String toString (CorsairDeviceType cdt)
+        inline [[nodiscard]] juce::String toString (CorsairDeviceType cdt)
         {
             if (cdt == CDT_Unknown)
                 return TRANS ("Unknown");
@@ -112,13 +112,13 @@
 
         //==============================================================================
         /** */
-        inline juce::Colour toColour (const CorsairLedColor& clc)
+        inline [[nodiscard]] juce::Colour toColour (const CorsairLedColor& clc)
         {
             return juce::Colour::fromRGBA (clc.r, clc.g, clc.b, clc.a);
         }
 
         /** */
-        inline CorsairLedColor toCorsairLedColor (juce::Colour colour)
+        inline [[nodiscard]] CorsairLedColor toCorsairLedColor (juce::Colour colour)
         {
             CorsairLedColor c;
             juce::zerostruct (c);
@@ -148,10 +148,10 @@
             }
 
             /** */
-            bool isConnected() const { return connected.load (std::memory_order_relaxed); }
+            [[nodiscard]] bool isConnected() const { return connected.load (std::memory_order_relaxed); }
 
             /** */
-            const CorsairSessionDetails& getDetails() const { return details; }
+            [[nodiscard]] const CorsairSessionDetails& getDetails() const { return details; }
 
             //==============================================================================
             /** */
@@ -198,7 +198,7 @@
         //==============================================================================
         /**
         */
-        inline juce::Array<CorsairDeviceInfo> getAllAvailableDevices() 
+        inline [[nodiscard]] juce::Array<CorsairDeviceInfo> getAllAvailableDevices() 
         {
             CorsairDeviceFilter filter;
             juce::zerostruct (filter);
@@ -215,13 +215,13 @@
 
         /**
         */
-        inline bool isConnected (const CorsairDeviceInfo& deviceInfo) 
+        inline [[nodiscard]] bool isConnected (const CorsairDeviceInfo& deviceInfo) 
         {
             return juce::String (deviceInfo.serial).trim().isNotEmpty();
         }
 
         /** */
-        inline juce::Array<CorsairLedPosition> getLEDIDs (const CorsairDeviceInfo& device) 
+        inline [[nodiscard]] juce::Array<CorsairLedPosition> getLEDIDs (const CorsairDeviceInfo& device) 
         {
             if (! sp::isValueBetween (device.ledCount, 1, (int) CORSAIR_DEVICE_LEDCOUNT_MAX))
             {
@@ -238,8 +238,8 @@
         }
 
         /** */
-        inline juce::Array<CorsairLedColor> getLEDColours (const CorsairDeviceId& deviceId,
-                                                           const juce::Array<CorsairLedPosition>& prefilledLEDIDs) 
+        inline [[nodiscard]] juce::Array<CorsairLedColor> getLEDColours (const CorsairDeviceId& deviceId,
+                                                                         const juce::Array<CorsairLedPosition>& prefilledLEDIDs) 
         {
             const auto numLEDs = prefilledLEDIDs.size();
             std::vector<CorsairLedColor> ledCols ((size_t) numLEDs);
@@ -253,8 +253,8 @@
         }
 
         /** */
-        inline juce::Array<CorsairLedColor> getLEDColours (const CorsairDeviceId& deviceId,
-                                                           int numLEDs = CORSAIR_DEVICE_LEDCOUNT_MAX) 
+        inline [[nodiscard]] juce::Array<CorsairLedColor> getLEDColours (const CorsairDeviceId& deviceId,
+                                                                         int numLEDs = CORSAIR_DEVICE_LEDCOUNT_MAX) 
         {
             if (! sp::isValueBetween (numLEDs, 1, (int) CORSAIR_DEVICE_LEDCOUNT_MAX))
             {
@@ -277,7 +277,7 @@
         }
 
         /** */
-        inline juce::Array<CorsairLedColor> getLEDColours (const CorsairDeviceInfo& device) 
+        inline [[nodiscard]] juce::Array<CorsairLedColor> getLEDColours (const CorsairDeviceInfo& device) 
         {
             return getLEDColours (device.id, device.ledCount);
         }
