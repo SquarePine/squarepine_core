@@ -6,12 +6,12 @@ public:
     //==============================================================================
     /**
 
-        @param inputSample
-        @param amount       Within a normalised range
+        @param inputSample  -1 to 1
+        @param drive        0 to 1
 
         @returns a distorted sample.
     */
-    [[nodiscard]] static FloatType simple (FloatType inputSample, FloatType drive) noexcept
+    [[nodiscard]] static FloatType simple (FloatType inputSample, FloatType drive)
     {
         const auto s = cabs (inputSample);
 
@@ -23,13 +23,21 @@ public:
 
     /**
 
-        @param inputSample
+        @param inputSample  -1 to 1
+        @param drive        0 to 1
+        @param range        0 to 1000
 
         @returns a distorted sample.
     */
-    [[nodiscard]] static FloatType hyperbolicTangentSoftClipping (FloatType inputSample) noexcept
+    [[nodiscard]] static FloatType sigmoid (FloatType inputSample,
+                                            FloatType drive = one,
+                                            FloatType range = static_cast<FloatType> (100))
     {
-        return std::tanh (inputSample * static_cast<FloatType> (5));
+        const auto v = inputSample
+                       * std::clamp (drive, zero, one)
+                       * std::clamp (range, zero, static_cast<FloatType> (1000));
+
+        return (two / MathConstants<FloatType>::pi) * std::atan (v);
     }
 
     /**
@@ -38,168 +46,7 @@ public:
 
         @returns a distorted sample.
     */
-    [[nodiscard]] static FloatType sinusoidalSoftClipping (FloatType inputSample) noexcept
-    {
-        if (cabs (inputSample) > twoThirds)
-            return sgn (inputSample);
-
-        inputSample = three * MathConstants<FloatType>::pi * inputSample;
-        return std::sin (inputSample / four);
-    }
-
-    /**
-
-        @param inputSample
-
-        @returns a distorted sample.
-    */
-    [[nodiscard]] static FloatType exponential2SoftClipping (FloatType inputSample) noexcept
-    {
-        if (cabs (inputSample) > twoThirds)
-            return sgn (inputSample);
-
-        const auto a = three * inputSample / two;
-        const auto v = std::exp2 (cabs (a - sgn (inputSample)));
-        return sgn (one - v);
-    }
-
-    /** TSQ
-
-        @param inputSample
-
-        @returns a distorted sample.
-    */
-    [[nodiscard]] static constexpr FloatType twoStageQuadraticSoftClipping (FloatType inputSample) noexcept
-    {
-        if (cabs (inputSample) > twoThirds)
-            return sgn (inputSample);
-
-        if (cabs (inputSample) < oneThird)
-            return inputSample * two;
-
-        const auto a = three - square (two - cabs (three * inputSample));
-        return sgn (a / three);
-    }
-
-    /**
-
-        @param inputSample
-
-        @returns a distorted sample.
-    */
-    [[nodiscard]] static constexpr FloatType cubicSoftClipping (FloatType inputSample) noexcept
-    {
-        if (cabs (inputSample) > twoThirds)
-            return sgn (inputSample);
-
-        const auto a = static_cast<FloatType> (9) * inputSample / four;
-        const auto b = static_cast<FloatType> (27) * cube (inputSample) / static_cast<FloatType> (16);
-        return a - b;
-    }
-
-    /**
-
-        @param inputSample
-
-        @returns a distorted sample.
-    */
-    [[nodiscard]] static constexpr FloatType reciprocalSoftClipping (FloatType inputSample) noexcept
-    {
-        if (cabs (inputSample) > twoThirds)
-            return sgn (inputSample);
-
-        const auto a = static_cast<FloatType> (30) * cabs (inputSample) + one;
-        return sgn (one - (one / a));
-    }
-
-    /**
-
-        @param inputSample
-        @param threshold    Within a normalised range
-
-        @returns a distorted sample.
-    */
-    [[nodiscard]] static FloatType foldBack (FloatType inputSample, FloatType threshold) noexcept
-    {
-        if (threshold <= zero)
-            return zero;
-
-        if (inputSample > threshold || inputSample < threshold)
-            return cabs (cabs (std::fmod (inputSample - threshold, threshold * four)) - threshold * two) - threshold;
-
-        return inputSample;
-    }
-
-    /**
-
-        @param inputSample
-        @param threshold
-
-        @returns a distorted sample.
-    */
-    [[nodiscard]] static constexpr FloatType hardClipping (FloatType inputSample,
-                                                           FloatType threshold = one) noexcept
-    {
-        return std::clamp (inputSample, -threshold, threshold);
-    }
-
-    /**
-
-        @param inputSample
-        @param lowerThreshold
-        @param upperThreshold
-
-        @returns a distorted sample.
-    */
-    [[nodiscard]] static FloatType softClipping (FloatType inputSample,
-                                                 FloatType lowerThreshold,
-                                                 FloatType upperThreshold) noexcept
-    {
-        const bool isNegativeClipping = inputSample < -lowerThreshold;
-
-        if (isNegativeClipping || inputSample > lowerThreshold)
-        {
-            inputSample = cabs (inputSample);
-
-            if (inputSample > upperThreshold)
-            {
-                inputSample = one;
-            }
-            else
-            {
-                const auto m = inputSample * upperThreshold;
-                inputSample = upperThreshold - std::pow (lowerThreshold - m, two);
-                inputSample /= upperThreshold;
-            }
-
-            if (isNegativeClipping)
-                inputSample *= -one;
-        }
-
-        return inputSample;
-    }
-
-    /**
-
-        @param inputSample
-
-        @returns a distorted sample.
-    */
-    [[nodiscard]] static FloatType softClippingExp (FloatType inputSample) noexcept
-    {
-        if (inputSample > zero)
-            return one - std::exp (-inputSample);
-
-        return -one + std::exp (inputSample);
-    }
-
-    /**
-
-        @param inputSample
-
-        @returns a distorted sample.
-    */
-    [[nodiscard]] static constexpr FloatType halfWaveRectification (FloatType inputSample) noexcept
+    [[nodiscard]] static constexpr FloatType halfWaveRectification (FloatType inputSample)
     {
         return (cabs (inputSample) + inputSample) / two;
     }
@@ -210,54 +57,29 @@ public:
 
         @returns a distorted sample.
     */
-    [[nodiscard]] static constexpr FloatType fullWaveRectification (FloatType inputSample) noexcept
+    [[nodiscard]] static constexpr FloatType fullWaveRectification (FloatType inputSample)
     {
         return cabs (inputSample);
     }
 
     //==============================================================================
+    /** */
+    template <typename... Args>
     static void perform (juce::AudioBuffer<FloatType>& buffer,
-                         std::function<FloatType (FloatType)> function) noexcept
+                         auto function, Args&&... args)
     {
         jassert (function != nullptr);
 
         for (auto channel : AudioBufferView (buffer))
             for (auto& sample : channel)
-                sample = function (sample);
-    }
-
-    static void perform (juce::AudioBuffer<FloatType>& buffer,
-                         FloatType value,
-                         std::function<FloatType (FloatType, FloatType)> function) noexcept
-    {
-        jassert (function != nullptr);
-
-        for (auto channel : AudioBufferView (buffer))
-            for (auto& sample : channel)
-                sample = function (sample, value);
-    }
-
-    static void perform (juce::AudioBuffer<FloatType>& buffer,
-                         FloatType valueA, FloatType valueB,
-                         std::function<FloatType (FloatType, FloatType, FloatType)> function) noexcept
-    {
-        jassert (function != nullptr);
-
-        for (auto channel : AudioBufferView (buffer))
-            for (auto& sample : channel)
-                sample = function (sample, valueA, valueB);
+                sample = function (sample, std::forward<Args> (args)...);
     }
 
 private:
     //==============================================================================
-    static inline constexpr auto zero       = static_cast<FloatType> (0);
-    static inline constexpr auto one        = static_cast<FloatType> (1);
-    static inline constexpr auto two        = static_cast<FloatType> (2);
-    static inline constexpr auto three      = static_cast<FloatType> (3);
-    static inline constexpr auto four       = static_cast<FloatType> (4);
-
-    static inline constexpr auto oneThird   = static_cast<FloatType> (1.0 / 3.0);
-    static inline constexpr auto twoThirds  = static_cast<FloatType> (2.0 / 3.0);
+    static inline constexpr auto zero   = static_cast<FloatType> (0);
+    static inline constexpr auto one    = static_cast<FloatType> (1);
+    static inline constexpr auto two    = static_cast<FloatType> (2);
 
     //==============================================================================
     SQUAREPINE_DECLARE_TOOL_CLASS (DistortionFunctions)

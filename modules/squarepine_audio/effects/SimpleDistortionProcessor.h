@@ -1,4 +1,4 @@
-/** */
+/** A simplistic distortion effect that applies a sigmoid distortion. */
 class SimpleDistortionProcessor final : public InternalProcessor
 {
 public:
@@ -24,28 +24,9 @@ private:
     class AmountParameter;
     AmountParameter* amountParam = nullptr;
 
-    template<typename FloatType>
-    class BufferPackage
-    {
-    public:
-        BufferPackage() = default;
-
-        void prepare (const dsp::ProcessSpec& spec)
-        {
-            wet.setSize ((int) spec.numChannels, (int) spec.maximumBlockSize, false, true, true);
-            mixer.prepare (spec);
-        }
-
-        juce::AudioBuffer<FloatType> wet;
-        dsp::DryWetMixer<FloatType> mixer;
-    };
-
-    BufferPackage<float> floatPackage;
-    BufferPackage<double> doublePackage;
-
     //==============================================================================
     template<typename FloatType>
-    void process (juce::AudioBuffer<FloatType>&, BufferPackage<FloatType>&);
+    void process (juce::AudioBuffer<FloatType>&);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleDistortionProcessor)

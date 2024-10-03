@@ -30,38 +30,18 @@ SimpleDistortionProcessor::SimpleDistortionProcessor() :
 void SimpleDistortionProcessor::prepareToPlay (double newSampleRate, int samplesPerBlock)
 {
     setRateAndBufferSizeDetails (newSampleRate, samplesPerBlock);
-
-    const dsp::ProcessSpec spec =
-    {
-        newSampleRate,
-        (uint32) samplesPerBlock,
-        (uint32) std::max (getTotalNumInputChannels(), getTotalNumOutputChannels())
-    };
-
-    floatPackage.prepare (spec);
-    doublePackage.prepare (spec);
 }
 
 template<typename FloatType>
-void SimpleDistortionProcessor::process (juce::AudioBuffer<FloatType>& buffer, BufferPackage<FloatType>& package)
+void SimpleDistortionProcessor::process (juce::AudioBuffer<FloatType>& buffer)
 {
     if (isBypassed())
         return;
- 
-    {
-        const dsp::AudioBlock<const FloatType> dry (buffer);
-        package.mixer.pushDrySamples (dry);
-    }
-
-    package.wet = buffer;
-    package.mixer.setWetMixProportion (static_cast<FloatType> (amountParam->get()));
 
     using DistFuncs = DistortionFunctions<FloatType>;
-    DistFuncs::perform (package.wet, static_cast<FloatType> (1), DistFuncs::simple);
-    dsp::AudioBlock<FloatType> wet (package.wet);
-    package.mixer.mixWetSamples (wet);
-    wet.copyTo (buffer);
+    const auto d = static_cast<FloatType> (amountParam->get());
+    DistFuncs::perform (buffer, DistFuncs::sigmoid, d, static_cast<FloatType> (100));
 }
 
-void SimpleDistortionProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)    { process (buffer, floatPackage); }
-void SimpleDistortionProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer&)   { process (buffer, doublePackage); }
+void SimpleDistortionProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)    { process (buffer); }
+void SimpleDistortionProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer&)   { process (buffer); }
