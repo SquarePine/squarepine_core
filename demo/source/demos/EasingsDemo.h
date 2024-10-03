@@ -106,8 +106,7 @@ public:
     /** @internal */
     void resized() override
     {
-        scalablePlot.clear();
-        scalablePlot = Path (plot);
+        scalablePlot = plot;
 
         auto b = getLocalBounds().reduced (margin);
 
@@ -351,10 +350,9 @@ public:
         std::unique_ptr<CurveDisplayComponent> cdc (static_cast<CurveDisplayComponent*> (comp));
         comp = nullptr;
 
-        if (! isPositiveAndBelow (row, getNumRows()))
-            return nullptr;
-
         auto* gen = generators[row];
+        if (gen == nullptr)
+            return nullptr;
 
         if (cdc == nullptr)
             cdc.reset (new CurveDisplayComponent());
@@ -369,9 +367,17 @@ private:
     //==============================================================================
     enum { margin = 4 };
 
+    using GenFunc = std::function<double (double)>;
+
     struct Generator final
     {
-        std::function<double (double)> generator;
+        Generator (GenFunc g, const String& n) :
+            generator (g),
+            name (n)
+        {
+        }
+
+        GenFunc generator;
         String name;
     };
 
@@ -382,11 +388,9 @@ private:
     OwnedArray<Generator> generators;
 
     //==============================================================================
-    void addGenerator (std::function<double (double)> generator, const String& name)
+    void addGenerator (GenFunc generator, const String& name)
     {
-        auto* gen = generators.add (new Generator());
-        gen->generator = generator;
-        gen->name = name;
+        generators.add (new Generator (generator, name));
     }
 
     //==============================================================================
