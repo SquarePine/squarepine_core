@@ -11,8 +11,6 @@ public:
     TrayIconComponent (ApplicationCommandManager& cm) :
         commandManager (cm)
     {
-        setAccessible (false);
-
         const auto image = SharedObjects::getWindowIcon();
         setIconImage (image, image);
     }
@@ -81,7 +79,6 @@ public:
 
         googleAnalyticsReporter->startSession();
 
-        setAccessible (false);
         setUsingNativeTitleBar (true);
         setOpaque (true);
 
