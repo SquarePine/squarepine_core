@@ -1,4 +1,8 @@
-/** */
+/** An effective analog to AudioFormatManager except for image codecs.
+
+    Simply call registerBasicFormats() in order to be able to read
+    all sorts of image formats; some from JUCE itself and some from SquarePine.
+*/
 class ImageFormatManager final
 {
 public:
@@ -8,7 +12,7 @@ public:
     //==============================================================================
     /** Adds a format to the manager's list of available file types.
 
-        The object passed-in will be deleted by this object, so don't keep a pointer to it!
+        The object passed-in will be owned by this object, so don't keep a pointer to it!
     */
     void registerFormat (std::unique_ptr<ImageFileFormat> newFormat);
 
