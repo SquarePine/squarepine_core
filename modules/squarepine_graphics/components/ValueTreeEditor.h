@@ -262,7 +262,7 @@ private:
                 if (pp->canUnderstand (sourceTree, name, prop))
                     return pp->toString (name, prop);
 
-            if (prop.isBool())          return booleanToString (static_cast<bool> (prop)).toLowerCase();
+            if (prop.isBool())          return toLowerCase (booleanToString (static_cast<bool> (prop)));
             if (prop.isString())        return prop.toString();
             if (prop.isVoid())          return "(void)";
             if (prop.isMethod())        return "(method)";

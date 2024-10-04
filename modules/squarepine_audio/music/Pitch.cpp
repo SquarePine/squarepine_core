@@ -5,7 +5,7 @@ Pitch::Pitch (double frequencyHz) noexcept :
 
 Pitch Pitch::fromNoteName (const String& noteName)
 {
-    const auto pitchClassName = noteName.toLowerCase().retainCharacters (getValidPitchClassLetters());
+    const auto pitchClassName = toLowerCase (noteName).retainCharacters (getValidPitchClassLetters());
     const auto pitchClass = getPitchClass (pitchClassName);
 
     if (pitchClass > 0)
@@ -47,7 +47,7 @@ int Pitch::getPitchClass (const String& pitchClassName)
 
     if (numChars > 0)
     {
-        switch (pitchClassName.toLowerCase()[0])
+        switch (toLowerCase (pitchClassName)[0])
         {
             case 'c': pitchClass = 0; break;
             case 'd': pitchClass = 2; break;

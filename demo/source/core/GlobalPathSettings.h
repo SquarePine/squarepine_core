@@ -48,7 +48,7 @@ namespace GlobalPaths
     inline File createAppStorageSubPath (const String& subfolderName)
     {
         const auto file = getAppStorageFolderPath()
-                            .getChildFile (subfolderName.toLowerCase());
+                            .getChildFile (toLowerCase (subfolderName));
 
         if (! file.exists())
         {

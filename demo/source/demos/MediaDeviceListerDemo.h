@@ -62,16 +62,16 @@ private:
     {
         {
             StringArray details;
-            details.add (TRANS ("Input Devices").toUpperCase() + newLine);
+            details.add (toUpperCase (TRANS ("Input Devices")) + newLine);
             details.addArray (devicePoller.getAudioInputDevices());
             details.add (separator);
-            details.add (TRANS ("Output Devices").toUpperCase() + newLine);
+            details.add (toUpperCase (TRANS ("Output Devices")) + newLine);
             details.addArray (devicePoller.getAudioOutputDevices());
             details.add (separator);
-            details.add (TRANS ("Input Channel Names").toUpperCase() + newLine);
+            details.add (toUpperCase (TRANS ("Input Channel Names")) + newLine);
             details.addArray (devicePoller.getInputChannelNames());
             details.add (separator);
-            details.add (TRANS ("Output Channel Names").toUpperCase() + newLine);
+            details.add (toUpperCase (TRANS ("Output Channel Names")) + newLine);
             details.addArray (devicePoller.getOutputChannelNames());
 
             audioDeviceInfo.setText (details.joinIntoString (newLine));

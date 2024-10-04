@@ -621,7 +621,7 @@ void EffectProcessorChain::setStateInformation (const void* const data, const in
         return false;
     }();
 
-    Logger::writeToLog ("EffectProcessorChain: setting state bypassing to \"" + booleanToString (shouldBypass).toLowerCase() + "\".");
+    Logger::writeToLog ("EffectProcessorChain: setting state bypassing to \"" + toLowerCase (booleanToString (shouldBypass)) + "\".");
     setBypassed (shouldBypass);
 
     if (stateVar.hasProperty (chainIds::effectsId))

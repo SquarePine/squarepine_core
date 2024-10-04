@@ -247,8 +247,8 @@ String Scale::getIntervalName (IntervalType interval) const
 
     switch (triads[(int) interval].getType())
     {
-        case Chord::Type::majorTriad:        return name.toUpperCase();
-        case Chord::Type::augmentedTriad:    return name.toUpperCase() + "+";
+        case Chord::Type::majorTriad:        return toUpperCase (name);
+        case Chord::Type::augmentedTriad:    return toUpperCase (name) + "+";
         case Chord::Type::diminishedTriad:   return name + String::charToString (176);
         case Chord::Type::minorTriad:        break;
         default: jassertfalse; break;
