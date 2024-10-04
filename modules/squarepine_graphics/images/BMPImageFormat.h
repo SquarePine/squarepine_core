@@ -2,8 +2,6 @@
 
     Supports uncompressed 8, 24 and 32 bit images. Always writes 32 bit images.
     That should be enough to cover 99.9% of BMP files.
-
-    @warning Does not support 1, 4, 16 bit colour images or images with RLE compression.
 */
 class BMPImageFormat final : public ImageFileFormat
 {
@@ -13,7 +11,7 @@ public:
 
     //==============================================================================
     /** @internal */
-    String getFormatName() override;
+    String getFormatName() override { return "BMP"; }
     /** @internal */
     bool canUnderstand (InputStream&) override;
     /** @internal */
@@ -27,4 +25,3 @@ private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BMPImageFormat)
 };
-
