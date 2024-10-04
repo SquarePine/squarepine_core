@@ -62,7 +62,7 @@ public:
         auto newDevices = sp::WinRTRGB().getConnectedDevices();
         // if (connectedDevices != newDevices)
         {
-            connectedDevices.swapWithArray (newDevices);
+            connectedDevices.swapWith (newDevices);
             changed = true;
         }
 
