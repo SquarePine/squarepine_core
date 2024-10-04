@@ -197,4 +197,3 @@ std::unique_ptr<AccessibilityHandler> HighQualityImageComponent::createAccessibi
 
     return std::make_unique<ImageComponentAccessibilityHandler> (*this);
 }
-

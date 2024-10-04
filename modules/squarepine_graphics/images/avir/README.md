@@ -1,17 +1,15 @@
-# AVIR #
+# AVIR - Image Resizing Algorithm (in C++) #
 
 ## Introduction ##
-
-Keywords: image resize, image resizer, image resizing, image scaling,
-image scaler, image resize c++, image resizer c++
 
 Me, Aleksey Vaneev, is happy to offer you an open source image resizing /
 scaling library which has reached a production level of quality, and is
 ready to be incorporated into any project. This library features routines
 for both down- and upsizing of 8- and 16-bit, 1 to 4-channel images. Image
-resizing routines were implemented in multi-platform C++ code, and have a
-high level of optimality. Beside resizing, this library offers a sub-pixel
-shift operation. Built-in sRGB gamma correction is available.
+resizing routines were implemented in a portable, cross-platform, header-only
+C++ code, and have a high level of optimality. Beside resizing, this library
+offers a sub-pixel shift operation. Built-in sRGB gamma correction is
+available.
 
 The resizing algorithm at first produces 2X upsized image (relative to the
 source image size, or relative to the destination image size if downsizing is
@@ -40,9 +38,16 @@ filtering techniques. EWA-like technique is not implemented in AVIR, because
 it requires considerably more computing resources and may produce a blurred
 image.
 
-As a bonus, a faster `LANCIR` image resizing algorithm is also offered as a
-part of this library. But the main focus of this documentation is the original
-AVIR image resizing algorithm.
+As a bonus, a much faster `LANCIR` image resizing algorithm is also offered as
+a part of this library. But the main focus of this documentation is the
+original AVIR image resizing algorithm.
+
+*AVIR is dedicated to women. Your digital photos can look good at any size!*
+
+P.S. Please credit the author of this library in your documentation in the
+following way: "AVIR image resizing algorithm designed by Aleksey Vaneev".
+
+## Affine and Non-Linear Transformations ##
 
 AVIR does not offer affine and non-linear image transformations "out of the
 box". Since upsizing is a relatively fast operation in AVIR (required time
@@ -59,27 +64,20 @@ serious drawback is the increased memory requirement). Note that affine
 transformations that change image proportions should first apply proportion
 change during upsizing.
 
-*AVIR is devoted to women. Your digital photos can look good at any size!*
-
-P.S. Please credit the author of this library in your documentation in the
-following way: "AVIR image resizing algorithm designed by Aleksey Vaneev".
-
 ## Requirements ##
 
-C++ compiler and system with efficient "float" floating point (24-bit
+C++ compiler and system with efficient "float" floating-point (24-bit
 mantissa) type support. This library can also internally use the "double" and
-SIMD floating point types during resizing if needed. This library does not
+SIMD floating-point types during resizing if needed. This library does not
 have dependencies beside the standard C library.
-
-## Links ##
-
-* [Documentation](https://www.voxengo.com/public/avir/Documentation/)
 
 ## Usage Information ##
 
 The image resizer is represented by the `avir::CImageResizer<>` class, which
 is a single front-end class for the whole library. Basically, you do not need
 to use nor understand any other classes beside this class.
+
+* [Documentation](https://www.voxengo.com/public/avir/Documentation/)
 
 The code of the library resides in the "avir" C++ namespace, effectively
 isolating it from all other code. The code is thread-safe. You need just
@@ -90,26 +88,36 @@ To resize images in your application, simply add 3 lines of code (note that
 you may need to change `ImageResizer( 8 )` here, to specify your image's true
 bit resolution, which may be 10 or even 16):
 
-    #include "avir.h"
-    avir :: CImageResizer<> ImageResizer( 8 );
-    ImageResizer.resizeImage( InBuf, 640, 480, 0, OutBuf, 1024, 768, 3, 0 );
-    (multi-threaded operation requires additional coding, see the documentation)
+```c++
+#include "avir.h"
+avir :: CImageResizer<> ImageResizer( 8 );
+ImageResizer.resizeImage( InBuf, 640, 480, 0, OutBuf, 1024, 768, 3, 0 );
+(multi-threaded operation requires additional coding, see the documentation)
+```
 
-If you are not too familiar with the low-level "packed interleaved" image
-storage format, the `InBuf` is expected to be `w*h*c` elements in size, where
-`w` and `h` is the width and the height of the image in pixels, respectively,
-and `c` is the number of color channels in the image. In the example above,
-the size of the `InBuf` is `640*480*3=921600` elements. If you are working
-with 8-bit images, the buffer and the elements should have the `uint8_t*`
-type; if you are working with 16-bit images, they should have the `uint16_t*`
-type. Note that when processing 16-bit images, the value of `16` should be
-used in resizer's constructor. AVIR's algorithm does not discern between
-channel packing order (`RGBA`, `ARGB`, `BGRA`, etc.), so if the `BGRA`
-ordered elements were passed to it, the result will be also `BGRA`.
+AVIR works with header-less "raw" image buffers. If you are not too familiar
+with the low-level "packed interleaved" image storage format, the `InBuf` is
+expected to be `w*h*c` elements in size, where `w` and `h` is the width and
+the height of the image in pixels, respectively, and `c` is the number of
+color channels in the image. In the example above, the size of the `InBuf` is
+`640*480*3=921600` elements. If you are working with 8-bit images, the buffer
+and the elements should have the `uint8_t*` type; if you are working with
+16-bit images, they should have the `uint16_t*` type. Note that when
+processing 16-bit images, the value of `16` should be used in resizer's
+constructor. AVIR's algorithm does not discern between channel packing order
+(`RGBA`, `ARGB`, `BGRA`, etc.), so if the `BGRA` ordered elements were passed
+to it, the result will be also `BGRA`.
+
+If the graphics library you are using returns a `uint32_t*` pointer to a raw
+4-channel packed pixel data, you will need to cast both the input and output
+pointers to the `uint8_t*` type when supplying them to the resizing function,
+and set the ElCount to 4.
 
 For low-ringing performance:
 
-    avir :: CImageResizer<> ImageResizer( 8, 0, avir :: CImageResizerParamsLR() );
+```c++
+avir :: CImageResizer<> ImageResizer( 8, 0, avir :: CImageResizerParamsLR() );
+```
 
 To use the built-in gamma correction, which is disabled by default, an object
 of the `avir::CImageResizerVars` class with its variable `UseSRGBGamma` set to
@@ -117,21 +125,25 @@ of the `avir::CImageResizerVars` class with its variable `UseSRGBGamma` set to
 enabled, the gamma correction is applied to all channels (e.g. alpha-channel)
 in the current implementation.
 
-    avir :: CImageResizerVars Vars;
-    Vars.UseSRGBGamma = true;
+```c++
+avir :: CImageResizerVars Vars;
+Vars.UseSRGBGamma = true;
+```
 
 Dithering (error-diffusion dither which is perceptually good) can be enabled
 this way:
 
-    typedef avir :: fpclass_def< float, float,
-        avir :: CImageResizerDithererErrdINL< float > > fpclass_dith;
-    avir :: CImageResizer< fpclass_dith > ImageResizer( 8 );
+```c++
+typedef avir :: fpclass_def< float, float,
+    avir :: CImageResizerDithererErrdINL< float > > fpclass_dith;
+avir :: CImageResizer< fpclass_dith > ImageResizer( 8 );
+```
 
 The library is able to process images of any bit depth: this includes 8-bit,
 16-bit, float and double types. Larger integer and signed integer types are
 not supported. Supported source and destination image sizes are only limited
 by the available system memory. Note that the resizing function applies
-clipping to integer output only, floating point output will not be clipped to
+clipping to integer output only; floating-point output will not be clipped to
 [0; 1] range.
 
 The code of this library was commented in the [Doxygen](http://www.doxygen.org/)
@@ -153,14 +165,16 @@ requires additional system-specific interfacing code for engagement.
 
 ## SIMD Usage Information ##
 
-This library is capable of using SIMD floating point types for internal
+This library is capable of using SIMD floating-point types for internal
 variables. This means that up to 4 color channels can be processed in
 parallel. Since the default interleaved processing algorithm itself remains
 non-SIMD, the use of SIMD internal types is not practical for 1- and 2-channel
 image resizing (due to overhead). SIMD internal type can be used this way:
 
-    #include "avir_float4_sse.h"
-    avir :: CImageResizer< avir :: fpclass_float4 > ImageResizer( 8 );
+```c++
+#include "avir_float4_sse.h"
+avir :: CImageResizer< avir :: fpclass_float4 > ImageResizer( 8 );
+```
 
 For 1-channel and 2-channel image resizing when AVX instructions are allowed
 it may be reasonable to utilize de-interleaved SIMD processing algorithm.
@@ -171,8 +185,10 @@ the dithering stage since recursive dithering cannot be parallelized). The
 internal type remains non-SIMD "float". De-interleaved algorithm can be used
 this way:
 
-    #include "avir_float8_avx.h"
-    avir :: CImageResizer< avir :: fpclass_float8_dil > ImageResizer( 8 );
+```c++
+#include "avir_float8_avx.h"
+avir :: CImageResizer< avir :: fpclass_float8_dil > ImageResizer( 8 );
+```
 
 It's important to note that on the latest Intel processors (i7-7700K and
 probably later) the use of the aforementioned SIMD-specific resizing code may
@@ -187,11 +203,11 @@ SSE-specific resizing code may still be a little bit more efficient for
 ## Notes ##
 
 This library was tested for compatibility with [GNU C++](http://gcc.gnu.org/),
-[Microsoft Visual C++](http://www.microsoft.com/visualstudio/eng/products/visual-studio-express-products)
-and [Intel C++](http://software.intel.com/en-us/c-compilers) compilers, on 32-
-and 64-bit Windows, macOS and CentOS Linux. The code was also tested with
-Dr.Memory/Win32 for the absence of uninitialized or unaddressable memory
-accesses.
+[Microsoft Visual C++](http://www.microsoft.com/visualstudio/eng/products/visual-studio-express-products),
+[LLVM](https://llvm.org/), and [Intel C++](http://software.intel.com/en-us/c-compilers)
+compilers, on 32- and 64-bit Windows, macOS, and CentOS Linux. The code was
+also tested with Dr.Memory/Win32 for the absence of uninitialized or
+unaddressable memory accesses.
 
 All code is fully "inline", without the need to compile any source files. The
 memory footprint of the library itself is very modest, except that the size of
@@ -217,7 +233,8 @@ desktop platforms. This tool was designed to be used as a demonstration of
 library's performance, and as a reference, it is multi-threaded (the `-t`
 switch can be used to control the number of threads utilized). This tool uses
 plain "float" processing (no explicit SIMD) and relies on automatic compiler
-optimization. This tool uses the following libraries:
+optimizations. This tool uses the following libraries:
+
 * turbojpeg Copyright (c) 2009-2013 D. R. Commander
 * libpng Copyright (c) 1998-2013 Glenn Randers-Pehrson
 * zlib Copyright (c) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -326,22 +343,62 @@ being the "golden standard" for filter length per decibel of stop-band
 attenuation). This is a price that should be paid for stable spectral
 characteristics.
 
+This waterfall graph depicts the windowing function, at varying Alpha values.
+
+<img src="other/_peaked_cosine.png" width="550">
+
+Note that since mathematical formulas cannot be patented nor copyrighted, you
+are free to adopt this windowing function in your applications and research.
+Just consider giving it a proper credit.
+
 ## LANCIR ##
 
 As a part of AVIR library, the `CLancIR` class is also offered which is an
-optimal implementation of *Lanczos* image resizing filter. This class has a
-similar programmatic interface to AVIR, but it is not thread-safe: each
-executing thread should have its own `CLancIR` object. This class was designed
-for cases of batch processing of same-sized frames like in video encoding.
+optimal implementation of [Lanczos](https://en.wikipedia.org/wiki/Lanczos_resampling)
+image resizing filter. This class has a similar programmatic interface to
+AVIR, but it is not thread-safe: each executing thread should have its own
+`CLancIR` object. This class was designed for cases of batch processing of
+same-sized frames like in video encoding, or for just-in-time resizing of
+an application's assets. This Lanczos implementation is likely one of the
+fastest available for CPUs; it features radical AVX, SSE2, and NEON
+optimizations.
 
-LANCIR offers up to 200% faster image resizing in comparison to AVIR. The
-quality difference is, however, debatable. Note that while LANCIR can take
-8- and 16-bit and float image buffers, its precision is limited to 8-bit
-resizing.
+LANCIR offers up to three times faster image resizing in comparison to AVIR.
+The quality difference is, however, debatable. Note that while LANCIR can
+take 8- and 16-bit and float image buffers, its precision is limited to
+8-bit resizing.
 
-LANCIR should be seen as a bonus and as some kind of quality comparison.
-LANCIR uses Lanczos filter "a" parameter equal to 3 which is similar to AVIR's
-default setting.
+LANCIR should be seen as a bonus and as an "industrial standard" reference
+for comparison. By default, LANCIR uses Lanczos filter's `a` parameter equal
+to 3 which is similar to AVIR's default setting.
+
+## Comparison ##
+
+This graph displays a comparison of AVIR 2.9 (default parameters) and
+Lanczos-3 image resizing algorithm in the area of frequency response.
+The methodology can be seen in the `other/frtest.cpp` file. This graph
+displays an average frequency response over a set of resizing factors.
+It is similar but not equal to Fourier analysis as any errors and aliasing
+artifacts are integrated into the response. As you can see, AVIR offers a
+visibly better frequency response linearity. The horizontal scale displays a
+normalized frequency scale, where 0 is DC frequency and 1 is Nyquist
+frequency. In common terms, 1 corresponds to 1-pixel image features, 0.5
+corresponds to 2-pixel features while 0.25 corresponds to 4-pixel features,
+etc. The vertical scale is in decibel.
+
+![FR plot](https://github.com/avaneev/avir/blob/master/other/_fr_up.png)
+
+The following graph displays a comparison of an average dynamic range over a
+set of resizing factors. The dynamic range is estimated by performing
+two-way resizing, followed by deviation/error estimation relative to the
+original image. As you can see here, aliasing artifacts visibly reduce dynamic
+range above 0.5\*Nyquist. An interesting aspect of this measurement method is
+that it reflects modes of visual ringing very well: they correspond to the
+points on frequency response where differential approaches zero.
+
+![DR plot](https://github.com/avaneev/avir/blob/master/other/_dr_up.png)
+
+Note that on downsizing the response graphs look similar to these.
 
 ## Users ##
 
@@ -354,14 +411,21 @@ This library is used by:
   * [MLV App](https://mlv.app/)
 
 [This video](https://www.youtube.com/watch?v=oNF-c6YX7-8) was "unsqueezed"
-with AVIR by a factor of 3 from ML RAW video, and at a final stage downsampled
-to 4K resolution.
+with AVIR by a factor of 3 from ML RAW video, and at the final stage was
+downsampled to 4K resolution.
 
 Please drop me a note at aleksey.vaneev@gmail.com and I will include a link to
 your software product to the list of users. This list is important at
 maintaining confidence in this library among the interested parties.
 
-## Change log ##
+## Change Log ##
+
+Version 3.0:
+
+* Improved speed by 10-25% on upsizing by utilizing a special resizing
+function together with filter-less 2X upsizing. Does not apply to the
+de-interleaved (AVX) resizing.
+* Minor LANCIR optimization.
 
 Version 2.9:
 
