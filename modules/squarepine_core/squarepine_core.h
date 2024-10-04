@@ -10,7 +10,7 @@
     description:        A decent backbone for any project.
     website:            https://www.squarepine.io
     license:            Beerware
-    minimumCppStandard: 17
+    minimumCppStandard: 20
     dependencies:       juce_audio_utils juce_cryptography juce_opengl
     OSXFrameworks:      SystemConfiguration
     iOSFrameworks:      SystemConfiguration
@@ -30,6 +30,7 @@
 #include <random>
 #include <regex>
 #include <stack>
+#include <type_traits>
 
 //==============================================================================
 #undef JUCE_CORE_INCLUDE_JNI_HELPERS
@@ -164,17 +165,19 @@
 #endif
 
 //==============================================================================
-#if JUCE_MSVC && (__cplusplus == 199711L)
-   #ifdef _MSVC_LANG
-    #ifndef JUCE_CXX20_IS_AVAILABLE
-        #define JUCE_CXX20_IS_AVAILABLE (_MSVC_LANG >= 202000L)
-    #endif
-   #else
-    #error "We need to find another method to determine the C++ version at compile time!"
+#if JUCE_MSVC
+    // JUCE's test for C++20 availability in MSVC is wrong. Till then...
+   #undef JUCE_CXX20_IS_AVAILABLE
+   #ifndef JUCE_CXX20_IS_AVAILABLE
+    #define JUCE_CXX20_IS_AVAILABLE (_HAS_CXX20)
+   #endif
+
+   #ifndef JUCE_CXX23_IS_AVAILABLE
+    #define JUCE_CXX23_IS_AVAILABLE (_HAS_CXX23)
    #endif
 #else
-   #ifndef JUCE_CXX20_IS_AVAILABLE
-    #define JUCE_CXX20_IS_AVAILABLE (__cplusplus >= 202000L)
+   #ifndef JUCE_CXX23_IS_AVAILABLE
+    #define JUCE_CXX23_IS_AVAILABLE (__cplusplus >= 202300L)
    #endif
 #endif
 

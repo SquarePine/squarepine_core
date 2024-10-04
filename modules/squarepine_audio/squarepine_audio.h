@@ -10,7 +10,7 @@
     description:        A great backbone for any typical audio project.
     website:            https://www.squarepine.io
     license:            Beerware
-    minimumCppStandard: 17
+    minimumCppStandard: 20
     dependencies:       squarepine_core juce_dsp
 
     END_JUCE_MODULE_DECLARATION
