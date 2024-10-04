@@ -1,5 +1,13 @@
-/** A simple application wrapping the general set of functionality
+/** A simple application class wrapping the general set of functionality
     satisfying most applications' needs.
+
+    I found it tiring to set up the various odds and ends within
+    an app when starting a new project, from setting up a decent file logger
+    to having a window title that makes sense and differentiates between release and debug.
+
+    This will log any function you haven't filled in yourself, like unhandledException(),
+    suspended() and resumed(), etc So at least you're aware that these functions are
+    getting called. This is especially useful on mobile where debugging can be a pain in the neck.
 */
 class SimpleApplication : public JUCEApplication
 {
