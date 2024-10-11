@@ -22,10 +22,10 @@ public:
     /** Obtain the most current list of audio output devices. */
     StringArray getAudioOutputDevices() const;
 
-    /** */
+    /** @returns the list of names of the audio driver's input channels. */
     StringArray getInputChannelNames() const;
 
-    /** */
+    /** @returns the list of names of the audio driver's output channels. */
     StringArray getOutputChannelNames() const;
 
     /** Obtain the most current list of MIDI input devices. */
@@ -35,7 +35,7 @@ public:
     Array<MidiDeviceInfo> getMIDIOutputDevices() const;
 
     /** */
-    struct DeviceInfo
+    struct DeviceInfo final
     {
         /** */
         String deviceName;
@@ -57,7 +57,7 @@ public:
     {
     public:
         /** */
-        virtual ~Listener() { }
+        virtual ~Listener() = default;
 
         /** */
         virtual void driverChanged (const String& driverName) = 0;

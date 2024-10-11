@@ -43,8 +43,8 @@ MediaDevicePoller::DeviceInfo MediaDevicePoller::getCurrentDeviceInfo (bool give
             deviceInfo.channelInfo  = giveMeInputDevices ? device->getInputChannelNames() : device->getOutputChannelNames();
             const auto channels     = giveMeInputDevices ? device->getActiveInputChannels() : device->getActiveOutputChannels();
 
-            //Mark the channels which are non-active and remove them from the list
-            //so that we display only active channels.
+            // Mark the channels which are non-active and remove them from the list
+            // so that we display only active channels.
             Array<int> deviceIndexesToBeRemoved;
             for (int i = 0; i < channels.getHighestBit(); ++i)
                 if (! channels[i])
@@ -192,7 +192,7 @@ void MediaDevicePoller::timerCallback()
 
     changeType = ChangeType::noChange;
 
-    //N.B.: These checks are done in order of importance.
+    // N.B.: These checks are done in order of importance.
     checkForDeviceChange (audioInputDevices, currentAudioInputDevices);
     checkForDeviceChange (audioOutputDevices, currentAudioOutputDevices);
     checkForDeviceChange (midiInputDevices, currentMidiInputDevices);

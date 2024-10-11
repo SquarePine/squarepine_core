@@ -144,7 +144,7 @@ public:
     class Listener
     {
     public:
-        virtual ~Listener() noexcept = default;
+        virtual ~Listener() = default;
 
         /** */
         virtual void languageChanged (const IETFLanguageFile&) = 0;

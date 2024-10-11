@@ -4,9 +4,6 @@ class TimelinePoint final : public Identifiable
 {
 public:
     /** */
-    TimelinePoint() = default;
-
-    /** */
     TimelinePoint (const Identifier& id) noexcept :
         Identifiable (id)
     {
@@ -144,12 +141,16 @@ public:
 
 private:
     //==============================================================================
+    CREATE_INLINE_CLASS_IDENTIFIER (timelinePointStart)
+    CREATE_INLINE_CLASS_IDENTIFIER (timelinePointEnd)
+
     const double timeInterval = 0.0001;
     Value time { 0.0 },
           length { 1.0 },
           speed { 1.0 },
           framerate { var ((int) 0) };
-    TimelinePoint start, end;
+    TimelinePoint start { timelinePointStartId },
+                  end { timelinePointEndId };
     // std::function<double () const> generator;
     OffloadedTimer timer;
 
