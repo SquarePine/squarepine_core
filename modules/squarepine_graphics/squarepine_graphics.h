@@ -212,7 +212,6 @@ namespace sp
     #include "lookandfeels/Windows10LookAndFeel.h"
     //#include "tokenisers/JavascriptCodeTokeniser.h"
     #include "utilities/Fonts.h"
-    #include "utilities/Particles.h"
     #include "utilities/Resolution.h"
 }
 

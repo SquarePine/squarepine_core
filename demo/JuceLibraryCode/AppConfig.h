@@ -24,6 +24,7 @@
 
 //==============================================================================
 #define JUCE_MODULE_AVAILABLE_juce_analytics              1
+#define JUCE_MODULE_AVAILABLE_juce_animation              1
 #define JUCE_MODULE_AVAILABLE_juce_audio_basics           1
 #define JUCE_MODULE_AVAILABLE_juce_audio_devices          1
 #define JUCE_MODULE_AVAILABLE_juce_audio_formats          1
@@ -42,6 +43,7 @@
 #define JUCE_MODULE_AVAILABLE_juce_osc                    1
 #define JUCE_MODULE_AVAILABLE_juce_product_unlocking      1
 #define JUCE_MODULE_AVAILABLE_juce_video                  1
+#define JUCE_MODULE_AVAILABLE_squarepine_animation        1
 #define JUCE_MODULE_AVAILABLE_squarepine_audio            1
 #define JUCE_MODULE_AVAILABLE_squarepine_core             1
 #define JUCE_MODULE_AVAILABLE_squarepine_graphics         1

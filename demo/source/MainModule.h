@@ -15,16 +15,13 @@
     #define SP_DEMO_USE_OPENGL JUCE_MODULE_AVAILABLE_juce_opengl
 #endif // SP_DEMO_USE_OPENGL
 
-namespace
-{
-    static const char* const trackingId = "UA-000000-0";
-}
-
+//==============================================================================
 #include "core/GlobalIDs.h"
 #include "core/GlobalPathSettings.h"
 #include "core/SharedObjects.h"
 
 #include "demos/DemoBase.h"
+#include "demos/AnimationDemo.h"
 #include "demos/CodeEditorDemo.h"
 #include "demos/iCUESDKDemo.h"
 #include "demos/EasingsDemo.h"
@@ -32,8 +29,8 @@ namespace
 #include "demos/ImageDemo.h"
 #include "demos/MediaDeviceListerDemo.h"
 #include "demos/OpenGLDetailsDemo.h"
+#include "demos/ParticleSystemDemo.h"
 #include "demos/WinRTRGBDemo.h"
-// #include "demos/SystemClipboardDemo.h"
 
 #include "components/SettingsComponent.h"
 #include "main/DemoLookAndFeel.h"

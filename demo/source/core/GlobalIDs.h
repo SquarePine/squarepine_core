@@ -73,3 +73,9 @@ namespace CommandCategories
     static const char* const windows    = NEEDS_TRANS ("Windows");
 }
 
+//============================================================================
+namespace
+{
+    /** For Google Analytics purposes (demo purposes only: nothing is being recorded). */
+    static const char* const trackingId = "UA-000000-0";
+}

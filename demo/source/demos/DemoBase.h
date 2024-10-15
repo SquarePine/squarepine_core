@@ -12,6 +12,13 @@ public:
         SQUAREPINE_CRASH_TRACER
 
         sharedObjects.languageHandler->addListener (this);
+
+        SafePointer ptr (this);
+        MessageManager::callAsync ([ptr]()
+        {
+            if (ptr != nullptr)
+                ptr->updateWithNewTranslations();
+        });
     }
 
     /** */
@@ -27,22 +34,27 @@ public:
     const String& getUntranslatedName() const noexcept { return untranslatedName; }
 
     /** */
-    virtual void updateWithNewTranslations()
-    {
-        setName (TRANS (untranslatedName));
-    }
+    virtual void updateWithNewTranslations() {}
 
     //==============================================================================
     /** */
     void languageChanged (const IETFLanguageFile&) override
     {
         SQUAREPINE_CRASH_TRACER
+        setName (TRANS (untranslatedName));
         updateWithNewTranslations();
     }
 
 protected:
     //==============================================================================
     SharedObjects& sharedObjects;
+
+    //==============================================================================
+    enum
+    {
+        marginPx    = 4,
+        barSizePx   = marginPx * 12
+    };
 
 private:
     //==============================================================================

@@ -24,7 +24,9 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
 
     auto addTab = [&] (DemoBase* comp)
     {
-        tabbedComponent.addTab (TRANS (comp->getName()), Colours::grey, comp, true);
+        // tabbedComponent.addTab (TRANS (comp->getName()), Colours::grey, comp, true);
+
+        demos.add (comp);
     };
 
     addTab (new EaseListComponent (sharedObjs));
@@ -32,9 +34,11 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
     addTab (new ImageDemo (sharedObjs));
     addTab (new CodeEditorDemo (sharedObjs));
     addTab (new MediaDeviceListerDemo (sharedObjs));
+    addTab (new AnimationDemo (sharedObjs));
+    addTab (new ParticleSystemDemo (sharedObjs));
 
    #if SQUAREPINE_USE_ICUESDK
-    addTab (new CueSDKDemo (sharedObjs));
+    addTab (new iCUESDKDemo (sharedObjs));
    #endif
 
    #if SQUAREPINE_USE_WINRTRGB
@@ -56,12 +60,14 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
     addTab (new OpenGLDetailsDemo (sharedObjs, rendererConfigurator));
    #endif // SP_DEMO_USE_OPENGL
 
-    tabbedComponent.addTab (TRANS ("Settings"), Colours::grey, new SettingsComponent (sharedObjs), true);
+    addTab (new SettingsComponent (sharedObjs));
 
     tabbedComponent.setOutline (0);
     tabbedComponent.setIndent (0);
 
-    addAndMakeVisible (tabbedComponent);
+    burgerMenu.setModel (this);
+    menuItemSelected (1, 0);
+    addAndMakeVisible (burgerMenu);
 
    #if SQUAREPINE_IS_DESKTOP
     setSize (1024, 768);
@@ -71,6 +77,46 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
 }
 
 MainComponent::~MainComponent()
+{
+}
+
+//==============================================================================
+StringArray MainComponent::getMenuBarNames()
+{
+    return { TRANS ("SquarePine Demo"), TRANS ("Demos") };
+}
+
+PopupMenu MainComponent::getMenuForIndex (int topLevelMenuIndex, const String& menuName)
+{
+    if (topLevelMenuIndex != 1)
+        return {};
+
+    PopupMenu pm;
+
+    int index = 1;
+
+    for (auto* demo : demos)
+        pm.addItem (index++, TRANS (demo->getName()), true, demo == activeDemo);
+
+    return pm;
+}
+
+void MainComponent::menuItemSelected (int menuItemId, int topLevelMenuIndex)
+{
+    --menuItemId;
+
+    if (auto* demoToSelect = demos[menuItemId])
+    {
+        removeChildComponent (activeDemo);
+
+        activeDemo = demoToSelect;
+
+        addAndMakeVisible (activeDemo);
+        resized();
+    }
+}
+
+void MainComponent::menuBarActivated (bool isActive)
 {
 }
 
@@ -92,14 +138,18 @@ void MainComponent::resized()
         b = getLocalBounds();
    #endif
 
-    tabbedComponent.setBounds (b.reduced (4));
+    b = b.reduced (4);
+
+    burgerMenu.setBounds (b);
+
+    if (activeDemo != nullptr)
+        activeDemo->setBounds (b);
 }
 
 void MainComponent::languageChanged (const IETFLanguageFile&)
 {
     SQUAREPINE_CRASH_TRACER
 
-    for (int i = tabbedComponent.getNumTabs(); --i >= 0;)
-        if (auto* demoComp = dynamic_cast<DemoBase*> (tabbedComponent.getTabContentComponent (i)))
-            tabbedComponent.setTabName (i, TRANS (demoComp->getUntranslatedName()));
+    for (int i = demos.size(); --i >= 0;)
+        tabbedComponent.setTabName (i, TRANS (demos.getUnchecked (i)->getUntranslatedName()));
 }

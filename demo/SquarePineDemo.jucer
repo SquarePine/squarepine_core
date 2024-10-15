@@ -48,6 +48,9 @@
         <FILE id="L8YGDM" name="SharedObjects.h" compile="0" resource="0" file="source/core/SharedObjects.h"/>
       </GROUP>
       <GROUP id="{775B98BE-1BF2-5AF2-2E31-B17D3A9219DD}" name="demos">
+        <FILE id="R6fnWY" name="AnimationDemo.cpp" compile="0" resource="0"
+              file="source/demos/AnimationDemo.cpp"/>
+        <FILE id="CfsYbc" name="AnimationDemo.h" compile="0" resource="0" file="source/demos/AnimationDemo.h"/>
         <FILE id="o8ngkO" name="CodeEditorDemo.h" compile="0" resource="0"
               file="source/demos/CodeEditorDemo.h"/>
         <FILE id="mUqbF6" name="DemoBase.h" compile="0" resource="0" file="source/demos/DemoBase.h"/>
@@ -62,6 +65,10 @@
               file="source/demos/MediaDeviceListerDemo.h"/>
         <FILE id="hoUe5P" name="OpenGLDetailsDemo.h" compile="0" resource="0"
               file="source/demos/OpenGLDetailsDemo.h"/>
+        <FILE id="mInTnJ" name="ParticleSystemDemo.cpp" compile="0" resource="0"
+              file="source/demos/ParticleSystemDemo.cpp"/>
+        <FILE id="kOAePN" name="ParticleSystemDemo.h" compile="0" resource="0"
+              file="source/demos/ParticleSystemDemo.h"/>
         <FILE id="SVoVfA" name="WinRTRGBDemo.h" compile="0" resource="0" file="source/demos/WinRTRGBDemo.h"/>
       </GROUP>
       <GROUP id="{B136827C-443D-9F46-D62C-F9F22179369A}" name="main">
@@ -118,6 +125,8 @@
         <MODULEPATH id="squarepine_graphics" path="../modules/"/>
         <MODULEPATH id="squarepine_core" path="../modules/"/>
         <MODULEPATH id="squarepine_audio" path="../modules/"/>
+        <MODULEPATH id="juce_animation" path="../../JUCE/modules"/>
+        <MODULEPATH id="squarepine_animation" path="../modules"/>
       </MODULEPATHS>
     </ANDROIDSTUDIO>
     <LINUX_MAKE targetFolder="builds/linux" smallIcon="jqPxuh" bigIcon="jqPxuh">
@@ -158,6 +167,8 @@
         <MODULEPATH id="squarepine_graphics" path="../modules/"/>
         <MODULEPATH id="squarepine_core" path="../modules/"/>
         <MODULEPATH id="squarepine_audio" path="../modules/"/>
+        <MODULEPATH id="juce_animation" path="../../JUCE/modules"/>
+        <MODULEPATH id="squarepine_animation" path="../modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <VS2022 targetFolder="builds/vs2022" smallIcon="jqPxuh" bigIcon="jqPxuh">
@@ -200,6 +211,8 @@
         <MODULEPATH id="squarepine_graphics" path="../modules/"/>
         <MODULEPATH id="squarepine_core" path="../modules/"/>
         <MODULEPATH id="squarepine_audio" path="../modules/"/>
+        <MODULEPATH id="juce_animation" path="../../JUCE/modules"/>
+        <MODULEPATH id="squarepine_animation" path="../modules"/>
       </MODULEPATHS>
     </VS2022>
     <VS2022 targetFolder="builds/vs2022_clangcl" toolset="ClangCL">
@@ -236,6 +249,8 @@
         <MODULEPATH id="squarepine_audio" path="../modules/"/>
         <MODULEPATH id="squarepine_core" path="../modules/"/>
         <MODULEPATH id="squarepine_graphics" path="../modules/"/>
+        <MODULEPATH id="juce_animation" path="../../JUCE/modules"/>
+        <MODULEPATH id="squarepine_animation" path="../modules"/>
       </MODULEPATHS>
     </VS2022>
     <XCODE_IPHONE targetFolder="builds/ios" iosScreenOrientation="UIInterfaceOrientationLandscapeLeft,UIInterfaceOrientationLandscapeRight,UIInterfaceOrientationPortrait,UIInterfaceOrientationPortraitUpsideDown"
@@ -272,6 +287,8 @@
         <MODULEPATH id="squarepine_graphics" path="../modules/"/>
         <MODULEPATH id="squarepine_core" path="../modules/"/>
         <MODULEPATH id="squarepine_audio" path="../modules/"/>
+        <MODULEPATH id="juce_animation" path="../../JUCE/modules"/>
+        <MODULEPATH id="squarepine_animation" path="../modules"/>
       </MODULEPATHS>
     </XCODE_IPHONE>
     <XCODE_MAC targetFolder="builds/macos" xcodeValidArchs="arm64,x86_64" applicationCategory="public.app-category.utilities"
@@ -306,11 +323,14 @@
         <MODULEPATH id="squarepine_graphics" path="../modules/"/>
         <MODULEPATH id="squarepine_core" path="../modules/"/>
         <MODULEPATH id="squarepine_audio" path="../modules/"/>
+        <MODULEPATH id="juce_animation" path="../../JUCE/modules"/>
+        <MODULEPATH id="squarepine_animation" path="../modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="juce_analytics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_animation" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
@@ -330,6 +350,7 @@
     <MODULE id="juce_product_unlocking" showAllCode="1" useLocalCopy="0"
             useGlobalPath="0"/>
     <MODULE id="juce_video" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="squarepine_animation" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="squarepine_audio" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="squarepine_core" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="squarepine_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>

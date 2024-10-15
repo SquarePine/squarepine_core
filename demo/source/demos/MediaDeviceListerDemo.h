@@ -26,7 +26,7 @@ public:
     }
 
     //==============================================================================
-    /** */
+    /** @internal */
     void resized() override
     {
         constexpr auto margin = 4;
@@ -40,16 +40,18 @@ public:
         midiDeviceInfo.setBounds (b);
     }
 
-    /** */
+    /** @internal */
     void driverChanged (const String&) override { update(); }
-    /** */
+    /** @internal */
     void numInputsChanged (int, bool) override  { update(); }
-    /** */
+    /** @internal */
     void numOutputsChanged (int, bool) override { update(); }
-    /** */
+    /** @internal */
     void deviceAdded (const String&) override   { update(); }
-    /** */
+    /** @internal */
     void deviceRemoved (const String&) override { update(); }
+    /** @internal */
+    void updateWithNewTranslations() override   { update(); }
 
 private:
     //==============================================================================

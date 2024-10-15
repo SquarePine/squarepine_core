@@ -8,7 +8,7 @@ class WinRTRGBDemo final : public DemoBase,
 public:
     /** */
     WinRTRGBDemo (SharedObjects& sharedObjs) :
-        DemoBase (sharedObjs, NEEDS_TRANS ("WinRT RGB Demo"))
+        DemoBase (sharedObjs, NEEDS_TRANS ("WinRT RGB"))
     {
         auto setupButton = [&] (TextButton& tb, StringRef text, Colour c)
         {
@@ -34,6 +34,7 @@ public:
         startTimerHz (60);
     }
 
+    //==============================================================================
     void resized() override
     {
         auto b = getLocalBounds().reduced (marginPx);
@@ -55,42 +56,46 @@ public:
         listbox.setBounds (b);
     }
 
+    //==============================================================================
     void timerCallback() override
     {
-        bool changed = false;
-
         auto newDevices = sp::WinRTRGB().getConnectedDevices();
-        // if (connectedDevices != newDevices)
+        bool changed = connectedDevices.size() != newDevices.size();
+        if (! changed)
         {
-            connectedDevices.swapWith (newDevices);
-            changed = true;
+            
         }
 
         if (changed)
+        {
+            connectedDevices.swapWith (newDevices);
             listbox.updateContent();
+        }
 
         repaint(); // For the LEDs.
     }
 
+    //==============================================================================
     int getNumRows() override { return 0; }
 
-    void paintListBoxItem (int rowIndex, Graphics& g, int width, int height, bool) override
+    void paintListBoxItem (int rowIndex, Graphics& g, int, int, bool) override
     {
     }
 
 private:
+    //==============================================================================
     enum
     {
-        pxW         = 2,
-        pxH         = 2,
-        marginPx    = 4,
-        barSizePx   = marginPx * 12
+        pxW = 2,
+        pxH = 2
     };
 
+    //==============================================================================
     TextButton redButton, greenButton, blueButton;
     ListBox listbox;
     Array<WinRTRGB::Device> connectedDevices;
 
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WinRTRGBDemo)
 };
 

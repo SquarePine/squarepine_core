@@ -17,7 +17,6 @@ public:
         };
 
         searchBox.setJustification (Justification::centredLeft);
-        searchBox.setTextToShowWhenEmpty (TRANS ("(Type here to search)"), Colours::grey);
 
         addAndMakeVisible (searchBox);
 
@@ -51,6 +50,7 @@ public:
         });
     }
 
+    //==============================================================================
     void resized() override
     {
         auto b = getLocalBounds().reduced (4);
@@ -85,12 +85,19 @@ public:
         g.drawFittedText (text, { w, h }, Justification::centredLeft, 1, 1.0f);
     }
 
+    void updateWithNewTranslations() override
+    {
+        searchBox.setTextToShowWhenEmpty (TRANS ("(Type here to search)"), Colours::grey);
+    }
+
 private:
+    //==============================================================================
     HighPerformanceRendererConfigurator& rendererConfigurator;
     StringPairArray systemDetails, displayDetails;
     TextEditor searchBox;
     ListBox listbox;
 
+    //==============================================================================
     void refresh()
     {
         const auto searchText = searchBox.getText();
@@ -152,15 +159,15 @@ private:
         addStringResult ("GL_MINOR_VERSION", String (minor));
         addStringResult ("GL_NUM_EXTENSIONS", String (numExtensions));
 
-        const auto extensions = sp::getOpenGLExtensions (getPeer());
         int index = 1;
-        for (const auto& ext : extensions)
+        for (const auto& ext : sp::getOpenGLExtensions (getPeer()))
             addStringResult ("Extension " + String (index++), ext);
 
         result.minimiseStorageOverheads();
         return result;
     }
 
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OpenGLDetailsDemo)
 };
 

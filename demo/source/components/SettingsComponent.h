@@ -1,10 +1,10 @@
 /** */
-class SettingsComponent final : public Component
+class SettingsComponent final : public DemoBase
 {
 public:
     /** */
     SettingsComponent (SharedObjects& sharedObjs) :
-        sharedObjects (sharedObjs)
+        DemoBase (sharedObjs, NEEDS_TRANS ("Settings"))
     {
         auto* audioDevSel = new AudioDeviceSelectorComponent (sharedObjects.audioDeviceManager,
                                                               0, 2, 0, 2,
@@ -38,8 +38,6 @@ public:
 private:
     //==============================================================================
     enum { margin = 4 };
-
-    SharedObjects& sharedObjects;
 
     OwnedArray<Component> comps;
     Component contents;

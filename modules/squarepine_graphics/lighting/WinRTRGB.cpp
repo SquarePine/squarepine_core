@@ -32,7 +32,7 @@ namespace sp
     using namespace juce;
 
     //==============================================================================
-    class WinRTRGB::Pimpl
+    class WinRTRGB::Pimpl final
     {
     public:
         Pimpl()
@@ -47,6 +47,10 @@ namespace sp
         }
 
         //==============================================================================
+        Array<Device> getConnectedDevices() const
+        {
+            return {};
+        }
 
     private:
         //==============================================================================
@@ -56,9 +60,7 @@ namespace sp
 
         //==============================================================================
         /** Have to set up this circus of a function to gather the various classes
-            in order to fetch even the most basic details.
-
-            WTF MSFT.
+            in order to fetch even the most basic details...
         */
         template<class ClassName>
         bool findWinRTClass (const WCHAR* className, ComPtr<ClassName>& ptrOut)
@@ -79,11 +81,7 @@ namespace sp
     //==============================================================================
     WinRTRGB::WinRTRGB() : pimpl (new Pimpl()) {}
     WinRTRGB::~WinRTRGB() {}
-
-    Array<WinRTRGB::Device> WinRTRGB::getConnectedDevices() const
-    {
-        return {};
-    }
+    Array<WinRTRGB::Device> WinRTRGB::getConnectedDevices() const { return pimpl->getConnectedDevices(); }
 
 } // namespace sp
 

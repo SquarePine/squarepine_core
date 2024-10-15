@@ -1,32 +1,27 @@
 #if SQUAREPINE_USE_ICUESDK
 
 /** */
-class CueSDKDemo final : public DemoBase,
-                         public ListBoxModel,
-                         private Timer
+class iCUESDKDemo final : public DemoBase,
+                          public ListBoxModel,
+                          private Timer
 {
 public:
     /** */
-    CueSDKDemo (SharedObjects& sharedObjs) :
-        DemoBase (sharedObjs, NEEDS_TRANS ("iCUESDK Demo"))
+    iCUESDKDemo (SharedObjects& sharedObjs) :
+        DemoBase (sharedObjs, NEEDS_TRANS ("iCUESDK"))
     {
-        auto setupButton = [&] (TextButton& tb, StringRef text, Colour c)
+        auto setupButton = [&] (TextButton& tb, Colour c)
         {
             constexpr auto id = TextButton::ColourIds::buttonColourId;
 
-            tb.setButtonText (text);
             tb.setColour (id, c);
-            tb.onClick = [c]()
-            {
-                corsair::updateAllLEDsWithColour (c);
-            };
-
+            tb.onClick = [c]() { corsair::updateAllLEDsWithColour (c); };
             addAndMakeVisible (tb);
         };
 
-        setupButton (redButton, TRANS ("Red"), Colours::red);
-        setupButton (greenButton, TRANS ("Green"), Colours::green);
-        setupButton (blueButton, TRANS ("Blue"), Colours::blue);
+        setupButton (redButton, Colours::red);
+        setupButton (greenButton, Colours::green);
+        setupButton (blueButton, Colours::blue);
 
         listbox.setRowHeight (barSizePx);
         listbox.setModel (this);
@@ -35,6 +30,7 @@ public:
         startTimerHz (60);
     }
 
+    //==============================================================================
     void resized() override
     {
         auto b = getLocalBounds().reduced (marginPx);
@@ -183,15 +179,22 @@ public:
         }
     }
 
+    void updateWithNewTranslations() override
+    {
+        redButton.setButtonText (TRANS ("Red"));
+        greenButton.setButtonText (TRANS ("Green"));
+        blueButton.setButtonText (TRANS ("Blue"));
+    }
+
 private:
+    //==============================================================================
     enum
     {
-        pxW         = 2,
-        pxH         = 2,
-        marginPx    = 4,
-        barSizePx   = marginPx * 12
+        pxW = 2,
+        pxH = 2
     };
 
+    //==============================================================================
     struct LEDData final
     {
         bool isConnected() const
@@ -209,11 +212,13 @@ private:
         Array<corsair::CorsairLedColor> ledColours;
     };
 
+    //==============================================================================
     OwnedArray<LEDData> devices;
     TextButton redButton, greenButton, blueButton;
     ListBox listbox;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CueSDKDemo)
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (iCUESDKDemo)
 };
 
 #endif // SQUAREPINE_USE_ICUESDK

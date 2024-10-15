@@ -25,6 +25,7 @@ namespace sp
 
     #include "controllers/Timeline.h"
     #include "controllers/TimelineGroup.h"
+    #include "particles/ParticleSystem.h"
 }
 
 #endif //SQUAREPINE_ANIMATION_H

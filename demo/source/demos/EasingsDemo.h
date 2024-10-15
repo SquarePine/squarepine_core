@@ -164,6 +164,7 @@ private:
     Point<float> lineFollowPos, verticalBallBouncePos;
     Rectangle<float> ballArea;
 
+    //==============================================================================
     static Point<double> createPoint (double x, double y, const AffineTransform& at = {})
     {
         return Point<double> (x, y)
@@ -244,7 +245,7 @@ class EaseListComponent final : public DemoBase,
 {
 public:
     EaseListComponent (SharedObjects& sharedObjs) :
-        DemoBase (sharedObjs, NEEDS_TRANS ("Ease List Demo"))
+        DemoBase (sharedObjs, NEEDS_TRANS ("Easings"))
     {
         generators.ensureStorageAllocated (64);
 
@@ -318,10 +319,10 @@ public:
     {
         SQUAREPINE_CRASH_TRACER
 
-        DemoBase::updateWithNewTranslations();
-
         showDashedLines.setName (TRANS ("Show Dashed Lines"));
         showDashedLines.setButtonText (showDashedLines.getName());
+        listbox.updateContent();
+        repaint();
     }
 
     int getNumRows() override                                       { return generators.size(); }
@@ -357,7 +358,7 @@ public:
         if (cdc == nullptr)
             cdc.reset (new CurveDisplayComponent());
 
-        cdc->setName (gen->name);
+        cdc->setName (TRANS (gen->untranslatedName));
         cdc->setGenerator (gen->generator);
         cdc->setUsingStroke (showDashedLines.getToggleState());
         return cdc.release();
@@ -373,12 +374,12 @@ private:
     {
         Generator (GenFunc g, const String& n) :
             generator (g),
-            name (n)
+            untranslatedName (n)
         {
         }
 
         GenFunc generator;
-        String name;
+        String untranslatedName;
     };
 
     TextButton showDashedLines;
