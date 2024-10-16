@@ -15,7 +15,7 @@ public:
     /** @internal */
     void resized() override;
     /** @internal */
-    void languageChanged (const IETFLanguageFile&) override;
+    void languageChanged (const IETFLanguageFile&) override { updateTranslations(); }
     /** @internal */
     StringArray getMenuBarNames() override;
     /** @internal */
@@ -23,19 +23,23 @@ public:
     /** @internal */
     void menuItemSelected (int, int) override;
     /** @internal */
-    void menuBarActivated (bool) override;
+    void menuBarActivated (bool) override {}
 
 private:
     //==============================================================================
     HighPerformanceRendererConfigurator rendererConfigurator;
     OwnedArray<DemoBase> demos;
     DemoBase* activeDemo = nullptr;
-    TabbedComponent tabbedComponent;
-    BurgerMenuComponent burgerMenu;
+
+    juce::Rectangle<int> barArea;
+    TextButton popupButton;
 
     AnimatorSetBuilder animatorSetBuilder { 0.0 };
     VBlankAnimatorUpdater animatorUpdater { this };
     OffloadedTimer animationUpdater;
+
+    //==============================================================================
+    void updateTranslations();
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)

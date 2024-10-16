@@ -1,10 +1,3 @@
-// Constants
-const int NUM_RAIN_PARTICLES = 1000;
-const int NUM_SNOW_PARTICLES = 500;
-const float GRAVITY_RAIN = 9.8f;
-const float GRAVITY_SNOW = 3.0f;
-const int GROUND_LEVEL = 500;
-
 // Random utility function
 inline float getRandomFloat (float min, float max)
 {
@@ -17,19 +10,20 @@ class Particle
 {
 public:
     /** */
-    Particle (juce::Rectangle<float> bounds_,
+    Particle (juce::Rectangle<float> bounds,
               float velocityX, float velocityY,
-              juce::Colour c) :
-        bounds (bounds_),
-        velocity (velocityX, velocityY),
-        colour (c)
+              Colour colour)
     {
+        consts.bounds = bounds;
+        consts.velocity = { velocityX, velocityY };
+        consts.colour = colour;
+        changeable = consts;
     }
 
     /** */
     Particle (float x, float y, float size,
               float velocityX, float velocityY,
-              juce::Colour c) :
+              Colour c) :
         Particle ({ x, y, size, size }, velocityX, velocityY, c)
     {
     }
@@ -37,32 +31,68 @@ public:
     /** */
     virtual ~Particle() = default;
 
+    /** @returns the gravity in m/s². */
+    virtual float getGravity() const { return 9.80665f; }
+
     /** Virtual method for updating the particle's position. */
-    virtual void update (float gravity)
+    virtual void update()
     {
-        velocity.y += gravity;
-        bounds += velocity;
+        changeable.velocity.y += getGravity();
+        changeable.bounds += changeable.velocity;
     }
 
     /** */
-    virtual bool isOutOfBounds (juce::Rectangle<float> area)
+    enum class EndingMethod
     {
-        return ! area.contains (bounds);
+        reset,
+        remove
+    };
+
+    /** */
+    virtual std::optional<EndingMethod> shouldEnd (juce::Rectangle<float> area) const
+    {
+        if (area.contains (changeable.bounds))
+            return {};
+
+        return { EndingMethod::reset };
     }
 
     /** Method to draw the particle. */
-    virtual void paint (Graphics& g) = 0;
+    virtual void paint (Graphics&) = 0;
+
+    /** */
+    virtual void reset() { changeable = consts; }
+
+    /** */
+    juce::Rectangle<float> getSourceBounds() const noexcept { return consts.bounds; }
+    /** */
+    juce::Point<float> getSourceVelocity() const noexcept { return consts.velocity; }
+    /** */
+    Colour getSourceColour() const noexcept { return consts.colour; }
+
+    /** */
+    juce::Rectangle<float> getActiveBounds() const noexcept { return changeable.bounds; }
+    /** */
+    juce::Point<float> getActiveVelocity() const noexcept { return changeable.velocity; }
+    /** */
+    Colour getActiveColour() const noexcept { return changeable.colour; }
 
 protected:
-    juce::Rectangle<float> bounds;
-    juce::Point<float> velocity;
-    juce::Colour colour;
+    struct Details final
+    {
+        juce::Rectangle<float> bounds;
+        juce::Point<float> velocity;
+        Colour colour;
+    };
+
+    Details changeable;
 
 private:
+    Details consts;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Particle)
 };
 
-// RainParticle Class
 class RainParticle final : public Particle
 {
 public:
@@ -75,9 +105,12 @@ public:
 
     void paint (Graphics& g) override
     {
-        g.setColour (colour);
-        g.fillRect (bounds);
+        g.setColour (getActiveColour());
+        g.fillRect (getActiveBounds());
     }
+
+private:
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RainParticle)
 };
 
 // SnowParticle Class
@@ -91,17 +124,22 @@ public:
     {
     }
 
-    void update (float gravity) override
+    float getGravity() const override { return MathConstants<float>::pi; }
+
+    void update() override
     {
-        velocity.x += getRandomFloat (-0.5f, 0.5f);
-        Particle::update (gravity);
+        changeable.velocity.x += getRandomFloat (-0.5f, 0.5f);
+        Particle::update();
     }
 
     void paint (Graphics& g) override
     {
-        g.setColour (colour);
-        g.fillEllipse (bounds);
+        g.setColour (getActiveColour());
+        g.fillEllipse (getActiveBounds());
     }
+
+private:
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SnowParticle)
 };
 
 class ParticleSystemComponent : public Component,
@@ -110,11 +148,11 @@ class ParticleSystemComponent : public Component,
 public:
     ParticleSystemComponent()
     {
-        for (int i = 0; i < NUM_RAIN_PARTICLES; ++i)
-            add (new RainParticle (getRandomFloat (0, 800), getRandomFloat (0, 600)));
+        for (int i = 0; i < 1000; ++i)
+            add (new RainParticle (getRandomFloat (0.0f, 800.0f), getRandomFloat (0.0f, 600.0f)));
 
-        for (int i = 0; i < NUM_SNOW_PARTICLES; ++i)
-            add (new SnowParticle (getRandomFloat (0, 800), getRandomFloat (0, 600)));
+        for (int i = 0; i < 500; ++i)
+            add (new SnowParticle (getRandomFloat (0.0f, 800.0f), getRandomFloat (0.0f, 600.0f)));
 
         startTimerHz (60);
     }
@@ -146,34 +184,31 @@ private:
     {
         const auto b = getLocalBounds().toFloat();
 
+        Array<Particle*> toRemove, toReset;
+
         for (auto& particle : particles)
         {
-            if (auto* snowParticle = dynamic_cast<SnowParticle*> (particle))
-                particle->update (GRAVITY_SNOW);
+            particle->update();
 
-            if (auto* rainParticle = dynamic_cast<RainParticle*> (particle))
-                particle->update (GRAVITY_RAIN);
-
-            if (particle->isOutOfBounds (b))
+            if (const auto result = particle->shouldEnd (b); result.has_value())
             {
+                switch (*result)
+                {
+                    case Particle::EndingMethod::reset:     toReset.add (particle); break;
+                    case Particle::EndingMethod::remove:    toRemove.add (particle); break;
+                    default: jassertfalse; break;
+                };
             }
         }
 
+        for (auto& particle : toRemove)
+            particles.removeObject (particle);
+
+        for (auto& particle : toReset)
+            particle->reset();
+
         repaint();
     }
-
-/*
-    void resetParticle (Particle* particle, bool isRain)
-    {
-        float x = getRandomFloat(0, 800);
-        float y = 0;
-
-        if (isRain)
-            particle.reset (new RainParticle (x, y));
-        else
-            particle.reset (new SnowParticle (x, y));
-    }
-*/
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParticleSystemComponent)
 };

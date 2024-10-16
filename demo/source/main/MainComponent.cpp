@@ -17,57 +17,70 @@ inline Rectangle<int> getBoundsAccountingForKeyboard()
 
 #endif
 
-MainComponent::MainComponent (SharedObjects& sharedObjs) :
-    tabbedComponent (TabbedButtonBar::TabsAtTop)
+MainComponent::MainComponent (SharedObjects& sharedObjs)
 {
+    SQUAREPINE_CRASH_TRACER
+
     setOpaque (true);
 
-    auto addTab = [&] (DemoBase* comp)
-    {
-        // tabbedComponent.addTab (TRANS (comp->getName()), Colours::grey, comp, true);
-
-        demos.add (comp);
-    };
-
-    addTab (new EaseListComponent (sharedObjs));
-    addTab (new EffectChainDemo (sharedObjs));
-    addTab (new ImageDemo (sharedObjs));
-    addTab (new CodeEditorDemo (sharedObjs));
-    addTab (new MediaDeviceListerDemo (sharedObjs));
-    addTab (new AnimationDemo (sharedObjs));
-    addTab (new ParticleSystemDemo (sharedObjs));
-
-   #if SQUAREPINE_USE_ICUESDK
-    addTab (new iCUESDKDemo (sharedObjs));
-   #endif
-
-   #if SQUAREPINE_USE_WINRTRGB
-    addTab (new WinRTRGBDemo (sharedObjs));
-   #endif
-
-   #if SP_DEMO_USE_OPENGL
-    // Need to call this later on - once JUCE, the GL content, and the OS decide it's cool to talk to each other.
     MessageManager::callAsync ([this, ptr = SafePointer (this)]()
     {
         SQUAREPINE_CRASH_TRACER
         if (ptr != nullptr)
         {
+           #if SP_DEMO_USE_OPENGL
+            // Need to call this later on - once JUCE, the GL content, and the OS decide it's cool to talk to each other.
             rendererConfigurator.configureWithOpenGLIfAvailable (*this);
+           #endif
+
+            updateTranslations();
             resized();
         }
     });
 
-    addTab (new OpenGLDetailsDemo (sharedObjs, rendererConfigurator));
-   #endif // SP_DEMO_USE_OPENGL
+    auto addDemo = [&] (DemoBase* comp)
+    {
+        demos.add (comp);
+    };
 
-    addTab (new SettingsComponent (sharedObjs));
+    addDemo (new EaseListComponent (sharedObjs));
+    addDemo (new EffectChainDemo (sharedObjs));
+    addDemo (new ImageDemo (sharedObjs));
+    addDemo (new CodeEditorDemo (sharedObjs));
+    addDemo (new MediaDeviceListerDemo (sharedObjs));
+    addDemo (new AnimationDemo (sharedObjs));
+    addDemo (new ParticleSystemDemo (sharedObjs));
 
-    tabbedComponent.setOutline (0);
-    tabbedComponent.setIndent (0);
+   #if SQUAREPINE_USE_ICUESDK
+    addDemo (new iCUESDKDemo (sharedObjs));
+   #endif
 
-    burgerMenu.setModel (this);
-    menuItemSelected (1, 0);
-    addAndMakeVisible (burgerMenu);
+   #if SQUAREPINE_USE_WINRTRGB
+    addDemo (new WinRTRGBDemo (sharedObjs));
+   #endif
+
+   #if SP_DEMO_USE_OPENGL
+    addDemo (new OpenGLDetailsDemo (sharedObjs, rendererConfigurator));
+   #endif
+
+    addDemo (new SettingsComponent (sharedObjs));
+
+    popupButton.onClick = [this, ptr = SafePointer (this)]()
+    {
+        if (ptr == nullptr)
+            return;
+
+        auto menu = getMenuForIndex (0, {});
+        menu.showMenuAsync (PopupMenu::Options(),
+        [this, ptr] (int index)
+        {
+            if (ptr != nullptr)
+                menuItemSelected (index, 0);
+        });
+    };
+
+    addAndMakeVisible (popupButton);
+    menuItemSelected (7, 0);
 
    #if SQUAREPINE_IS_DESKTOP
     setSize (1024, 768);
@@ -83,12 +96,14 @@ MainComponent::~MainComponent()
 //==============================================================================
 StringArray MainComponent::getMenuBarNames()
 {
-    return { TRANS ("SquarePine Demo"), TRANS ("Demos") };
+    return { TRANS ("Demos") };
 }
 
-PopupMenu MainComponent::getMenuForIndex (int topLevelMenuIndex, const String& menuName)
+PopupMenu MainComponent::getMenuForIndex (int topLevelMenuIndex, const String&)
 {
-    if (topLevelMenuIndex != 1)
+    SQUAREPINE_CRASH_TRACER
+
+    if (topLevelMenuIndex != 0)
         return {};
 
     PopupMenu pm;
@@ -103,6 +118,11 @@ PopupMenu MainComponent::getMenuForIndex (int topLevelMenuIndex, const String& m
 
 void MainComponent::menuItemSelected (int menuItemId, int topLevelMenuIndex)
 {
+    SQUAREPINE_CRASH_TRACER
+
+    if (topLevelMenuIndex != 0)
+        return;
+
     --menuItemId;
 
     if (auto* demoToSelect = demos[menuItemId])
@@ -116,14 +136,14 @@ void MainComponent::menuItemSelected (int menuItemId, int topLevelMenuIndex)
     }
 }
 
-void MainComponent::menuBarActivated (bool isActive)
-{
-}
-
 //==============================================================================
 void MainComponent::paint (Graphics& g)
 {
-    g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
+    const auto background = getLookAndFeel().findColour (ResizableWindow::backgroundColourId);
+    g.fillAll (background);
+
+    g.setColour (background.darker());
+    g.fillRect (barArea);
 }
 
 void MainComponent::resized()
@@ -138,18 +158,23 @@ void MainComponent::resized()
         b = getLocalBounds();
    #endif
 
-    b = b.reduced (4);
+    b = b.reduced (DemoBase::marginPx);
 
-    burgerMenu.setBounds (b);
+    {
+        barArea = b.removeFromLeft (DemoBase::barSizePx * 2)
+                   .reduced (DemoBase::marginPx);
+
+        auto tempBar = barArea;
+        popupButton.setBounds (tempBar.removeFromTop (tempBar.getWidth()));
+    }
 
     if (activeDemo != nullptr)
         activeDemo->setBounds (b);
 }
 
-void MainComponent::languageChanged (const IETFLanguageFile&)
+void MainComponent::updateTranslations()
 {
     SQUAREPINE_CRASH_TRACER
 
-    for (int i = demos.size(); --i >= 0;)
-        tabbedComponent.setTabName (i, TRANS (demos.getUnchecked (i)->getUntranslatedName()));
+    popupButton.setButtonText (TRANS ("Select Demo"));
 }

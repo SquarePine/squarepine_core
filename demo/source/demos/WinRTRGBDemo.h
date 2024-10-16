@@ -78,7 +78,7 @@ public:
     //==============================================================================
     int getNumRows() override { return 0; }
 
-    void paintListBoxItem (int rowIndex, Graphics& g, int, int, bool) override
+    void paintListBoxItem (int, Graphics&, int, int, bool) override
     {
     }
 

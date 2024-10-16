@@ -6,11 +6,17 @@ public:
     SettingsComponent (SharedObjects& sharedObjs) :
         DemoBase (sharedObjs, NEEDS_TRANS ("Settings"))
     {
+        auto addComp = [&] (Component* c)
+        {
+            contents.addAndMakeVisible (comps.add (c));
+        };
+
         auto* audioDevSel = new AudioDeviceSelectorComponent (sharedObjects.audioDeviceManager,
                                                               0, 2, 0, 2,
                                                               true, true, true, false);
         audioDevSel->setSize (128, 256);
-        contents.addAndMakeVisible (comps.add (audioDevSel));
+
+        addComp (audioDevSel);
 
         viewport.setViewedComponent (&contents, false);
         addAndMakeVisible (viewport);
@@ -20,7 +26,7 @@ public:
     /** */
     void resized() override
     {
-        const auto b = getLocalBounds().reduced (margin);
+        const auto b = getLocalBounds().reduced (marginPx);
 
         const auto compW = b.getWidth() - 1;
         int totalH = 0;
@@ -28,7 +34,7 @@ public:
         {
             const auto h = c->getHeight();
             c->setBounds (0, totalH, compW, h);
-            totalH += h + margin;
+            totalH += h + marginPx;
         }
 
         contents.setSize (compW, totalH);
@@ -37,8 +43,6 @@ public:
 
 private:
     //==============================================================================
-    enum { margin = 4 };
-
     OwnedArray<Component> comps;
     Component contents;
     Viewport viewport;
