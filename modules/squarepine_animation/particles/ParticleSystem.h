@@ -1,3 +1,7 @@
+#if JUCE_MSVC
+ #pragma pack (push, 1)
+#endif
+
 /** Base Particle Class. */
 class Particle
 {
@@ -27,31 +31,47 @@ public:
     }
 
     /** */
+    Particle (float size,
+              float velocityX, float velocityY,
+              Colour colour,
+              std::optional<double> lifetimeSeconds) :
+        Particle (0.0f, 0.0f, size,
+                  velocityX, velocityY,
+                  colour, lifetimeSeconds)
+    {
+    }
+
+    /** */
     virtual ~Particle() = default;
 
     //==============================================================================
-    /** @returns the gravity in pixels per update. */
-    virtual float getGravity() const { return 1.0f; }
-
     /** Updates the particle's position and velocity as per the provided gravity (in px/update).
 
         @see getGravity
     */
-    virtual void update (const Time& currentTime)
+    virtual void update (const Time& currentTime,
+                         double deltaTimeMs,
+                         float gravityPxPerUpdate)
     {
+        ignoreUnused (deltaTimeMs);
+
         if (! started && lifetime.has_value())
             startTime = currentTime;
 
         started = true;
-        changeable.velocity.y += getGravity();
+        changeable.velocity.y += gravityPxPerUpdate;
         changeable.bounds += changeable.velocity;
     }
 
-    /** */
-    virtual bool shouldEnd (const Time& currentTime, const juce::Rectangle<float>& area) const
+    /**
+
+        @returns true
+    */
+    virtual bool shouldEnd (const Time& currentTime,
+                            double deltaTimeMs,
+                            const juce::Rectangle<float>& paintingArea) const
     {
-        if (area.contains (changeable.bounds))
-            return false;
+        ignoreUnused (deltaTimeMs);
 
         if (started
             && lifetime.has_value()
@@ -60,7 +80,7 @@ public:
             return false;
         }
 
-        return true;
+        return ! paintingArea.contains (changeable.bounds);
     }
 
     /** Resets the particle's bounds, velocity, and colour to
@@ -87,6 +107,31 @@ public:
     /** @returns the original colour as set in the constructor. */
     [[nodiscard]] Colour getSourceColour() const noexcept { return consts.colour; }
 
+    /** */
+    void setX (float x)
+    {
+        consts.bounds.setX (x);
+    }
+
+    /** */
+    void setY (float y)
+    {
+        consts.bounds.setX (y);
+    }
+
+    /** */
+    void setPosition (juce::Point<float> newPosition)
+    {
+        consts.bounds.setPosition (newPosition);
+    }
+
+    /** */
+    void setPosition (float x, float y)
+    {
+        consts.bounds.setPosition (x, y);
+    }
+
+    //==============================================================================
     /** @returns the current bounds, which may differ from the one set in the constructor.
 
         This would occur if the particle had its bounds overridden in the update() call.
@@ -134,10 +179,6 @@ public:
 
 protected:
     //==============================================================================
-   #if JUCE_MSVC
-    #pragma pack (push, 1)
-   #endif
-
     /** */
     struct Details final
     {
@@ -145,10 +186,6 @@ protected:
         juce::Point<float> velocity;
         Colour colour;
     } JUCE_PACKED;
-
-   #if JUCE_MSVC
-    #pragma pack (pop)
-   #endif
 
     Details changeable;
 
@@ -161,16 +198,16 @@ private:
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Particle)
-};
+} JUCE_PACKED;
 
 //==============================================================================
 class RainParticle final : public Particle
 {
 public:
-    RainParticle (float x, float y, std::optional<double> lifetimeSeconds = {}) :
-        Particle (createRectangleWithRandomHeight (5.0f, 10.0f, 1.0f).withPosition (x, y),
+    RainParticle (std::optional<double> lifetimeSeconds = {}) :
+        Particle (createRectangleWithRandomHeight (5.0f, 10.0f, 1.0f),
                   0.0f, getRandomFloat (5.0f, 15.0f),
-                  juce::Colours::blue.withAlpha (0.5f),
+                  juce::Colours::blue,
                   lifetimeSeconds)
     {
     }
@@ -183,25 +220,25 @@ public:
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RainParticle)
-};
+} JUCE_PACKED;
 
 //==============================================================================
+/**
+*/
 class SnowParticle final : public Particle
 {
 public:
-    SnowParticle (float x, float y, std::optional<double> lifetimeSeconds = {}) :
-        Particle (createRectangleWithRandomSize (3.0f, 5.0f).withPosition (x, y),
+    SnowParticle (std::optional<double> lifetimeSeconds = {}) :
+        Particle (createRectangleWithRandomSize (3.0f, 5.0f),
                   getRandomFloat (-2.0f, 2.0f), getRandomFloat (1.0f, 3.0f),
-                  juce::Colours::white.withAlpha (0.5f), lifetimeSeconds)
+                  juce::Colours::white, lifetimeSeconds)
     {
     }
 
-    float getGravity() const override { return 0.03f; }
-
-    void update (const Time& currentTime) override
+    void update (const Time& currentTime, double deltaTimeMs, float gravityPxPerUpdate) override
     {
         changeable.velocity.x += getRandomFloat (-0.5f, 0.5f);
-        Particle::update (currentTime);
+        Particle::update (currentTime, deltaTimeMs, gravityPxPerUpdate);
     }
 
     void paint (Graphics& g) override
@@ -212,7 +249,11 @@ public:
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SnowParticle)
-};
+} JUCE_PACKED;
+
+#if JUCE_MSVC
+ #pragma pack (pop)
+#endif
 
 //==============================================================================
 /**
@@ -224,14 +265,29 @@ public:
 
         @param shouldRemoveParticlesOnEnd
     */
-    ParticleEmitter (bool shouldRemoveParticlesOnEnd = false) :
+    ParticleEmitter (float gravityInPxPerUpdate = 1.0f,
+                     bool shouldRemoveParticlesOnEnd = false) :
+        gravityPxPerUpdate (gravityInPxPerUpdate),
         shouldRemoveOnEnd (shouldRemoveParticlesOnEnd)
     {
+        jassert (std::isnormal (gravityPxPerUpdate));
     }
 
     //==============================================================================
     /** @returns */
     [[nodiscard]] bool removesParticlesOnEnd() const noexcept { return shouldRemoveOnEnd; }
+
+    /**
+    */
+    void setGravity (float newGravityInPxPerUpdate)
+    {
+        jassert (std::isnormal (newGravityInPxPerUpdate));
+
+        gravityPxPerUpdate = newGravityInPxPerUpdate;
+    }
+
+    /** @returns the gravity in pixels per update. */
+    [[nodiscard]] float getGravity() const noexcept { return gravityPxPerUpdate; }
 
     //==============================================================================
     /** Appends a new particle to the list of particles.
@@ -245,7 +301,11 @@ public:
         @param newObject    The new object to add to the array.
         @returns            The new object that was added.
     */
-    Particle* add (Particle* particle) { return particles.add (particle); }
+    Particle* add (Particle* particle)
+    {
+        jassert (particle != nullptr);
+        return particles.add (particle);
+    }
 
     /** Appends a new particle to the list of particles.
 
@@ -275,6 +335,32 @@ public:
     /** @returns the number of particles currently stored in this particle emitter. */
     [[nodiscard]] int getNumParticles() const noexcept { return particles.size(); }
 
+    /** @returns a pointer to the particle at this index in the array.
+
+        If the index is out-of-range, this will return a null pointer.
+    */
+    Particle* operator[] (int index) const noexcept { return particles[index]; }
+
+    /** @returns a pointer to the first particle in the array.
+        This method is provided for compatibility with standard C++ iteration mechanisms.
+    */
+    Particle** begin() noexcept { return particles.begin(); }
+
+    /** @returns a pointer to the first element in the array.
+        This method is provided for compatibility with standard C++ iteration mechanisms.
+    */
+    Particle* const* begin() const noexcept { return particles.begin(); }
+
+    /** @returns a pointer to the element which follows the last element in the array.
+        This method is provided for compatibility with standard C++ iteration mechanisms.
+    */
+    Particle** end() noexcept { return particles.end(); }
+
+    /** @returns a pointer to the element which follows the last element in the array.
+        This method is provided for compatibility with standard C++ iteration mechanisms.
+    */
+    Particle* const* end() const noexcept { return particles.end(); }
+
     /** Reduces the amount of storage being used by the array of particles.
 
         Arrays typically allocate slightly more storage than they need, and after
@@ -285,15 +371,17 @@ public:
 
     //==============================================================================
     /** */
-    void update (const Time& currentTime, juce::Rectangle<float> paintingArea)
+    void update (const Time& currentTime,
+                 double deltaTimeMs,
+                 const juce::Rectangle<float>& paintingArea)
     {
         Array<Particle*> toResetOrRemove;
 
         for (auto& particle : particles)
         {
-            particle->update (currentTime);
+            particle->update (currentTime, deltaTimeMs, gravityPxPerUpdate);
 
-            if (particle->shouldEnd (currentTime, paintingArea))
+            if (particle->shouldEnd (currentTime, deltaTimeMs, paintingArea))
                 toResetOrRemove.add (particle);
         }
 
@@ -315,6 +403,7 @@ public:
 private:
     //==============================================================================
     const bool shouldRemoveOnEnd = false;
+    float gravityPxPerUpdate = 1.0f;
     OwnedArray<Particle> particles;
 
     //==============================================================================
@@ -322,156 +411,72 @@ private:
 };
 
 //==============================================================================
+/**
+*/
 class ParticleSystemComponent : public Component,
                                 private Timer
 {
 public:
+    /**
+    */
     ParticleSystemComponent()
     {
+        snowEmitter.setGravity (0.03f);
+
         for (int i = 0; i < 1000; ++i)
-            snowEmitter.add (new RainParticle (Particle::getRandomFloat (0.0f, 800.0f),
-                                               Particle::getRandomFloat (0.0f, 600.0f)));
+            rainEmitter.add (new RainParticle());
 
         for (int i = 0; i < 500; ++i)
-            rainEmitter.add (new SnowParticle (Particle::getRandomFloat (0.0f, 800.0f),
-                                               Particle::getRandomFloat (0.0f, 600.0f)));
+            snowEmitter.add (new SnowParticle());
 
-        startTimerHz (60);
+        rainEmitter.minimiseStorageOverheads();
+        snowEmitter.minimiseStorageOverheads();
+
+        startTimerHz (frameRate);
     }
 
+    /**
+    */
+    void resized() override
+    {
+        const auto w = (float) getWidth();
+        const auto h = (float) getHeight();
+
+        for (auto& particle : rainEmitter)
+            particle->setPosition (Particle::getRandomFloat (0.0f, w),
+                                   Particle::getRandomFloat (0.0f, h));
+
+        for (auto& particle : snowEmitter)
+            particle->setPosition (Particle::getRandomFloat (0.0f, w),
+                                   Particle::getRandomFloat (0.0f, h));
+    }
+
+    /**
+    */
     void paint (Graphics& g) override
     {
-        snowEmitter.paint (g);
+        g.fillAll (Colours::black);
+
         rainEmitter.paint (g);
+        snowEmitter.paint (g);
     }
 
 private:
-    ParticleEmitter snowEmitter, rainEmitter;
+    static inline constexpr int frameRate = 60;
+    static inline constexpr double deltaTimeMs = 1000.0 / (double) frameRate;
+
+    ParticleEmitter rainEmitter, snowEmitter;
 
     void timerCallback() override
     {
         const auto b = getLocalBounds().toFloat();
         const auto ct = Time::getCurrentTime();
 
-        snowEmitter.update (ct, b);
-        rainEmitter.update (ct, b);
+        rainEmitter.update (ct, deltaTimeMs, b);
+        snowEmitter.update (ct, deltaTimeMs, b);
 
         repaint();
     }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParticleSystemComponent)
 };
-
-
-#if 0
-struct Particle
-{
-    Particle() = default;
-    virtual ~Particle() = default;
-
-    virtual void update() = 0;
-    virtual void paint (Graphics& g) = 0;
-
-    juce::Rectangle<float> bounds;
-    float opacity = 1.0f;
-    float rotationDegrees = 0.0f;
-    Point<float> velocity, scale { 1.0f, 1.0f };
-
-    RelativeTime currenTime;
-    double durationSeconds = 0.0;
-};
-
-struct DrawableParticle final : public Particle
-{
-    DrawableParticle()
-    {
-        durationSeconds = 3.0 * Random::getSystemRandom().nextDouble();
-    }
-
-    void update() override
-    {
-        transform = AffineTransform().followedBy (AffineTransform::scale (scale.x, scale.y))
-                                     .followedBy (AffineTransform::rotation (degreesToRadians (rotationDegrees)))
-                                     .followedBy (AffineTransform::translation (bounds.getPosition()));
-
-        if (drawable != nullptr)
-            drawable->setTransform (transform);
-    }
-
-    void paint (Graphics& g) override
-    {
-        if (drawable != nullptr)
-        {
-            drawable->draw (g, opacity);
-        }
-        else
-        {
-            g.setColour (Colours::red.withAlpha (1.0f - opacity));
-            g.fillRect (bounds);
-        }
-    }
-
-    AffineTransform transform;
-    std::unique_ptr<Drawable> drawable;
-};
-
-struct Emitter
-{
-    Emitter()
-    {
-        particles.ensureStorageAllocated (maxNumParticles);
-    }
-
-    virtual ~Emitter()
-    {
-    }
-
-    void update()
-    {
-        for (int i = particles.size(); --i >= 0;)
-        {
-        }
-    }
-
-    void paint (Graphics& g)
-    {
-        for (auto& p : particles)
-            p->paint (g);
-    }
-
-    bool active = true;
-    juce::Rectangle<float> bounds;
-    int maxNumParticles = 500;
-    OwnedArray<Particle> particles;
-};
-
-class ParticleEngine : public Component
-{
-public:
-    ParticleEngine()
-    {
-        animationTimer.callback = [&]() { repaint(); };
-    }
-
-    void update()
-    {
-        for (auto* e : emitters)
-            if (e->active)
-                e->update();
-    }
-
-    void paint (Graphics& g) override
-    {
-        for (auto* e : emitters)
-            if (e->active)
-                e->paint (g);
-    }
-
-private:
-    OwnedArray<Emitter> emitters;
-    OffloadedTimer animationTimer;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParticleEngine)
-};
-
-#endif
