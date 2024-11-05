@@ -53,7 +53,7 @@ ISAAC::ISAAC (bool preseedResults) :
         }
     }
 
-    next(); // Fill in the first set of results
+    next(); // Fill in the first set of results.
 }
 
 uint32 ISAAC::generate()

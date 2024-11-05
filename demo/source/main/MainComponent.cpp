@@ -23,6 +23,13 @@ MainComponent::MainComponent (SharedObjects& sharedObjs)
 
     setOpaque (true);
 
+    std::bitset<8> test (0b10000011);
+    test = reflect (test);
+    DBG (test.to_string());
+
+    // DBG (SHA1 (CharPointer_UTF8 ("test")).toHexString());
+    // a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
+
     MessageManager::callAsync ([this, ptr = SafePointer (this)]()
     {
         SQUAREPINE_CRASH_TRACER

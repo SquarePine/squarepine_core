@@ -1,4 +1,4 @@
-/** Use this to populate a fixed set of details that represent an AudioProcessor's set of details.
+/** Use this to populate a fixed set of information representing an AudioProcessor's set of details.
 
     This can help properly configure a processor during prepareToPlay, or avoid doing so redundantly.
 */

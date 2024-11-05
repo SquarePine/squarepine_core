@@ -1,42 +1,4 @@
 //==============================================================================
-template<typename Type>
-inline Type rotl (Type v, uint32 b)
-{
-    using PromotedType          = typename std::common_type<int, Type>::type;
-    using UnsignedPromotedType  = typename std::make_unsigned<PromotedType>::type;
-    constexpr auto numBits      = std::numeric_limits<Type>::digits;
-
-    static_assert (std::is_integral<Type>::value,   "Rotation of non-integral type!");
-    static_assert (! std::is_signed<Type>::value,   "Rotation of signed type!");
-    static_assert ((numBits & (numBits - 1)) == 0,  "Rotation value bit length not power of two!");
-
-    constexpr auto countMask = numBits - 1;
-    const auto mb = b & countMask;
-
-    return (UnsignedPromotedType { v } << mb) | (UnsignedPromotedType { v } >> (-mb & countMask));
-}
-
-template<typename Type>
-inline Type rotr (Type v, uint32 b)
-{
-    using PromotedType          = typename std::common_type<int, Type>::type;
-    using UnsignedPromotedType  = typename std::make_unsigned<PromotedType>::type;
-    constexpr auto numBits      = std::numeric_limits<Type>::digits;
-
-    static_assert (std::is_integral<Type>::value,   "Rotation of non-integral type!");
-    static_assert (! std::is_signed<Type>::value,   "Rotation of signed type!");
-    static_assert ((numBits & (numBits - 1)) == 0,  "Rotation value bit length not power of two!");
-
-    constexpr auto countMask = numBits - 1;
-    const auto mb = static_cast<int64> (b & countMask);
-
-    const auto rv = (UnsignedPromotedType (v) >> mb)
-                  | (UnsignedPromotedType (v) << (Type) (-mb & countMask));
-
-    return static_cast<Type> (rv);
-}
-
-//==============================================================================
 /** */
 template<typename Type>
 inline constexpr Type cryptographicMaj (Type x, Type y, Type z) noexcept

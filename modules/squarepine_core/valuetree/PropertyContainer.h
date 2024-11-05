@@ -1,4 +1,6 @@
-/**
+/** A container of properties for a ValueTree.
+
+    @see ValueTree
 */
 class PropertyContainer : public ReferenceCountedObject
 {
@@ -7,7 +9,7 @@ public:
     explicit PropertyContainer (const Identifier& dataId) : data (dataId) { }
 
     /** */
-    virtual ~PropertyContainer() { }
+    virtual ~PropertyContainer() = default;
 
     /** */
     ValueTree get() const noexcept { return data; }

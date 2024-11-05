@@ -5,7 +5,7 @@
 
     ID:                 squarepine_graphics
     vendor:             SquarePine
-    version:            0.0.1
+    version:            2.0.0
     name:               SquarePine Graphics
     description:        A grouping of reusable graphics classes, image formats, and other utilities.
     website:            https://www.squarepine.io
@@ -215,4 +215,4 @@ namespace sp
     #include "utilities/Resolution.h"
 }
 
-#endif //SQUAREPINE_GRAPHICS_H
+#endif // SQUAREPINE_GRAPHICS_H

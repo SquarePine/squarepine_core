@@ -175,6 +175,16 @@ public:
         return GlobalPaths::getLogFile().getParentDirectory().getFullPathName();
     }
 
+    OwnedArray<UnitTest> generateUnitTests() const override
+    {
+        OwnedArray<UnitTest> tests;
+
+        SquarePineCoreUnitTestGatherer().appendUnitTests (tests);
+        SquarePineCryptographyUnitTestGatherer().appendUnitTests (tests);
+
+        return tests;
+    }
+
 private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SquarePineDemoApplication)

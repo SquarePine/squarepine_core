@@ -84,6 +84,9 @@ protected:
     /** */
     virtual String getLoggerFilePath() const;
 
+    /** */
+    virtual OwnedArray<UnitTest> generateUnitTests() const { return {}; }
+
     //==============================================================================
     /** @returns true if anything unit test related has been performed. */
     virtual bool handleUnitTests (const String& commandLine);

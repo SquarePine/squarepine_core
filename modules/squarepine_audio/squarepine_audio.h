@@ -5,7 +5,7 @@
 
     ID:                 squarepine_audio
     vendor:             SquarePine
-    version:            0.0.1
+    version:            2.0.0
     name:               SquarePine Audio
     description:        A great backbone for any typical audio project.
     website:            https://www.squarepine.io
@@ -312,4 +312,4 @@ namespace juce
     };
 }
 
-#endif //SQUAREPINE_AUDIO_H
+#endif // SQUAREPINE_AUDIO_H

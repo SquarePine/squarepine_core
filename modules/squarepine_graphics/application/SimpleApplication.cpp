@@ -231,6 +231,11 @@ bool SimpleApplication::handleUnitTests (const String& args)
 {
     if (args.contains ("--unit-tests"))
     {
+        // Any unit test objects returned here will be automatically added under the hood.
+        // Have a look at the constructor of juce::UnitTest for details.
+        volatile auto tests = generateUnitTests();
+        ignoreUnused (tests);
+
         unitTestRunner.setAbortingTests (false);
         unitTestRunner.runAllTests();
 

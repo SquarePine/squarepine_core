@@ -52,8 +52,9 @@ private:
     /** Generates a series of random values and tests to see if the generated values are zeros. */
     bool testForZeros()
     {
+        constexpr auto zero = static_cast<Type> (0);
         for (int i = 0; i < globalRNGSampleSize; ++i)
-            if (generateNext() == Type())
+            if (generateNext() == zero)
                 return false;
 
         return true;
@@ -78,7 +79,8 @@ private:
                     return false;
             }
 
-            //Note: Inserting the value in a sorted manner to reduce search time
+            // Note: Inserting the value in a sorted manner to reduce search time,
+            //       and to be compatible with the binary search.
             generatedValues.addUsingDefaultSort (generatedValue);
         }
 
@@ -102,20 +104,6 @@ private:
 };
 
 //==============================================================================
-class RandomUnitTests final : public RNGUnitTestBase<int64>
-{
-public:
-    RandomUnitTests() : RNGUnitTestBase ("JUCE Random (int64)") { }
-    int64 generateNext() override { return r.nextInt64(); }
-    bool isPossiblySecure() const override { return false; }
-
-private:
-    Random r;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RandomUnitTests)
-};
-
-//==============================================================================
 class BlumBlumShubUnitTests final : public RNGUnitTestBase<uint64>
 {
 public:
@@ -130,17 +118,35 @@ private:
 };
 
 //==============================================================================
-class XorshiftUnitTests final : public RNGUnitTestBase<uint32>
+class Xorshift32UnitTests final : public RNGUnitTestBase<uint32>
 {
 public:
-    XorshiftUnitTests() : RNGUnitTestBase ("Xorshift") { }
+    Xorshift32UnitTests() : RNGUnitTestBase ("Xorshift32") { }
     uint32 generateNext() override { return xorshift.generate(); }
     bool isPossiblySecure() const override { return false; }
 
 private:
-    Xorshift xorshift;
+    Xorshift32 xorshift;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (XorshiftUnitTests)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Xorshift32UnitTests)
+};
+
+class Xorshift64UnitTests final : public RNGUnitTestBase<uint64>
+{
+public:
+    Xorshift64UnitTests (const String& name, Xorshift64::Algorithm algo) :
+        RNGUnitTestBase ("Xorshift64 (" + name + ")"),
+        xorshift (algo)
+    {
+    }
+
+    uint64 generateNext() override { return xorshift.generate(); }
+    bool isPossiblySecure() const override { return false; }
+
+private:
+    Xorshift64 xorshift;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Xorshift64UnitTests)
 };
 
 //==============================================================================

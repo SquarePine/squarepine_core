@@ -74,4 +74,4 @@ namespace sqlite
     #undef SWAP
 }
 
-#endif //SQUAREPINE_SQLITE_H
+#endif // SQUAREPINE_SQLITE_H

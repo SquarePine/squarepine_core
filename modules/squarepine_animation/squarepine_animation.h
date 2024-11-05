@@ -5,17 +5,18 @@
 
     ID:                 squarepine_animation
     vendor:             SquarePine
-    version:            0.0.1
+    version:            2.0.0
     name:               SquarePine Animation
     description:        A grouping of reusable classes for controlling and managing animations.
     website:            https://www.squarepine.io
     license:            Beerware
     minimumCppStandard: 17
-    dependencies:       squarepine_graphics
+    dependencies:       squarepine_cryptography squarepine_graphics
 
     END_JUCE_MODULE_DECLARATION
 */
 //==============================================================================
+#include <squarepine_cryptography/squarepine_cryptography.h>
 #include <squarepine_graphics/squarepine_graphics.h>
 
 //==============================================================================
@@ -28,4 +29,4 @@ namespace sp
     #include "particles/ParticleSystem.h"
 }
 
-#endif //SQUAREPINE_ANIMATION_H
+#endif // SQUAREPINE_ANIMATION_H

@@ -127,6 +127,7 @@
         <MODULEPATH id="squarepine_audio" path="../modules/"/>
         <MODULEPATH id="juce_animation" path="../../JUCE/modules"/>
         <MODULEPATH id="squarepine_animation" path="../modules"/>
+        <MODULEPATH id="squarepine_cryptography" path="../modules"/>
       </MODULEPATHS>
     </ANDROIDSTUDIO>
     <LINUX_MAKE targetFolder="builds/linux" smallIcon="jqPxuh" bigIcon="jqPxuh">
@@ -169,6 +170,7 @@
         <MODULEPATH id="squarepine_audio" path="../modules/"/>
         <MODULEPATH id="juce_animation" path="../../JUCE/modules"/>
         <MODULEPATH id="squarepine_animation" path="../modules"/>
+        <MODULEPATH id="squarepine_cryptography" path="../modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <VS2022 targetFolder="builds/vs2022" smallIcon="jqPxuh" bigIcon="jqPxuh">
@@ -213,6 +215,7 @@
         <MODULEPATH id="squarepine_audio" path="../modules/"/>
         <MODULEPATH id="juce_animation" path="../../JUCE/modules"/>
         <MODULEPATH id="squarepine_animation" path="../modules"/>
+        <MODULEPATH id="squarepine_cryptography" path="../modules"/>
       </MODULEPATHS>
     </VS2022>
     <VS2022 targetFolder="builds/vs2022_clangcl" toolset="ClangCL">
@@ -251,6 +254,7 @@
         <MODULEPATH id="squarepine_graphics" path="../modules/"/>
         <MODULEPATH id="juce_animation" path="../../JUCE/modules"/>
         <MODULEPATH id="squarepine_animation" path="../modules"/>
+        <MODULEPATH id="squarepine_cryptography" path="../modules"/>
       </MODULEPATHS>
     </VS2022>
     <XCODE_IPHONE targetFolder="builds/ios" iosScreenOrientation="UIInterfaceOrientationLandscapeLeft,UIInterfaceOrientationLandscapeRight,UIInterfaceOrientationPortrait,UIInterfaceOrientationPortraitUpsideDown"
@@ -289,6 +293,7 @@
         <MODULEPATH id="squarepine_audio" path="../modules/"/>
         <MODULEPATH id="juce_animation" path="../../JUCE/modules"/>
         <MODULEPATH id="squarepine_animation" path="../modules"/>
+        <MODULEPATH id="squarepine_cryptography" path="../modules"/>
       </MODULEPATHS>
     </XCODE_IPHONE>
     <XCODE_MAC targetFolder="builds/macos" xcodeValidArchs="arm64,x86_64" applicationCategory="public.app-category.utilities"
@@ -325,6 +330,7 @@
         <MODULEPATH id="squarepine_audio" path="../modules/"/>
         <MODULEPATH id="juce_animation" path="../../JUCE/modules"/>
         <MODULEPATH id="squarepine_animation" path="../modules"/>
+        <MODULEPATH id="squarepine_cryptography" path="../modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
@@ -353,6 +359,8 @@
     <MODULE id="squarepine_animation" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="squarepine_audio" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="squarepine_core" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="squarepine_cryptography" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="0"/>
     <MODULE id="squarepine_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
   </MODULES>
 </JUCERPROJECT>

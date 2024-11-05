@@ -108,25 +108,25 @@ public:
     [[nodiscard]] Colour getSourceColour() const noexcept { return consts.colour; }
 
     /** */
-    void setX (float x)
+    void setStartX (float x)
     {
         consts.bounds.setX (x);
     }
 
     /** */
-    void setY (float y)
+    void setStartY (float y)
     {
         consts.bounds.setX (y);
     }
 
     /** */
-    void setPosition (juce::Point<float> newPosition)
+    void setStartPosition (juce::Point<float> newPosition)
     {
         consts.bounds.setPosition (newPosition);
     }
 
     /** */
-    void setPosition (float x, float y)
+    void setStartPosition (float x, float y)
     {
         consts.bounds.setPosition (x, y);
     }
@@ -154,8 +154,8 @@ public:
     /** @returns a random float between the given values. */
     static float getRandomFloat (float min, float max)
     {
-        const auto n = Random::getSystemRandom().nextFloat();
-        return lerp (min, max, n);
+        static Xorshift64 rng;
+        return lerp (min, max, (float) rng.generateNormalised());
     }
 
     /** */
@@ -272,6 +272,9 @@ public:
     {
         jassert (std::isnormal (gravityPxPerUpdate));
     }
+
+    /** */
+    ~ParticleEmitter() = default;
 
     //==============================================================================
     /** @returns */
@@ -413,6 +416,55 @@ private:
 //==============================================================================
 /**
 */
+class ParticleEmitterAggregator : private Timer
+{
+public:
+    /**
+    */
+    ParticleEmitterAggregator()
+    {
+        startTimerHz (frameRate);
+    }
+
+    /**
+    */
+    void setTargetBounds (juce::Rectangle<float> target)
+    {
+        jassert (target.isFinite() && ! target.isEmpty());
+
+        bounds = target;
+    }
+
+    /**
+    */
+    void paint (Graphics& g)
+    {
+        for (auto& emitter : emitters)
+            emitter->paint (g);
+    }
+
+private:
+    static inline constexpr int frameRate = 60;
+    static inline constexpr double deltaTimeMs = 1000.0 / (double) frameRate;
+
+    OwnedArray<ParticleEmitter> emitters;
+    juce::Rectangle<float> bounds;
+
+    void timerCallback() override
+    {
+        const auto b = bounds.expanded (1).toFloat();
+        const auto ct = Time::getCurrentTime();
+
+        for (auto& emitter : emitters)
+            emitter->update (ct, deltaTimeMs, b);
+    }
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParticleEmitterAggregator)
+};
+
+//==============================================================================
+/**
+*/
 class ParticleSystemComponent : public Component,
                                 private Timer
 {
@@ -443,12 +495,14 @@ public:
         const auto h = (float) getHeight();
 
         for (auto& particle : rainEmitter)
-            particle->setPosition (Particle::getRandomFloat (0.0f, w),
-                                   Particle::getRandomFloat (0.0f, h));
+            particle->setStartPosition (Particle::getRandomFloat (0.0f, w),
+                                        Particle::getRandomFloat (0.0f, h));
 
         for (auto& particle : snowEmitter)
-            particle->setPosition (Particle::getRandomFloat (0.0f, w),
-                                   Particle::getRandomFloat (0.0f, h));
+            particle->setStartPosition (Particle::getRandomFloat (0.0f, w),
+                                        Particle::getRandomFloat (0.0f, h));
+
+        aggregator.setTargetBounds (getLocalBounds().toFloat());
     }
 
     /**
@@ -459,17 +513,21 @@ public:
 
         rainEmitter.paint (g);
         snowEmitter.paint (g);
+
+        aggregator.paint (g);
     }
 
 private:
     static inline constexpr int frameRate = 60;
     static inline constexpr double deltaTimeMs = 1000.0 / (double) frameRate;
 
+    ParticleEmitterAggregator aggregator;
+
     ParticleEmitter rainEmitter, snowEmitter;
 
     void timerCallback() override
     {
-        const auto b = getLocalBounds().toFloat();
+        const auto b = getLocalBounds().expanded (1).toFloat();
         const auto ct = Time::getCurrentTime();
 
         rainEmitter.update (ct, deltaTimeMs, b);
