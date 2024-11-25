@@ -1,6 +1,10 @@
-# SquarePine JUCE Modules
+# SquarePine Modules
 
-An assortment of modules that make a great addition to your JUCE app and plugin development tool belt.
+The SquarePine Modules provide a vast array of tools in the [format of JUCE/C++ modules](https://github.com/juce-framework/JUCE/blob/develop/docs/JUCE%20Module%20Format.md). From animation and easing, cryptopgraphy,  networking, and  codecs and audio effects, hopefully you will find something of use!
+
+Everything should _"Just Work™"_ within your JUCE project, and assumes you're using [the latest `develop` branch of JUCE](https://github.com/juce-framework/JUCE/tree/develop).
+
+## Philosophy
 
 The philosophy here is multi-part:
 
@@ -9,8 +13,6 @@ The philosophy here is multi-part:
 * Make the code as generic and flexible as possible.
 * Make the code as consistent in design, architecture, and style, as much as possible.
   * Have a look at our coding standards!
-
-This library is an assortment of loosely related or unrelated JUCE-based tools, audio or GUI or otherwise, all of which you can pull up at any given time and with limited hassle. Everything should _"Just Work™"_ with your JUCE project (assuming you're using the latest `develop` branch of JUCE).
 
 ## Shields
 
