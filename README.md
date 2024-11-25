@@ -2,7 +2,11 @@
 
 The SquarePine Modules provide a vast array of tools in the [format of JUCE/C++ modules](https://github.com/juce-framework/JUCE/blob/develop/docs/JUCE%20Module%20Format.md). From animation and easing, cryptopgraphy,  networking, and  codecs and audio effects, hopefully you will find something of use!
 
-Everything should _"Just Work™"_ within your JUCE project, and assumes you're using [the latest `develop` branch of JUCE](https://github.com/juce-framework/JUCE/tree/develop).
+Everything should _"Just Work™"_ within your JUCE project. If this isn't the case, please see the 
+
+## Requirements
+
+The C++ modules contained assume you're using [the latest `develop` branch of JUCE](https://github.com/juce-framework/JUCE/tree/develop) and a C++20/modern toolchain.
 
 ## Philosophy
 
