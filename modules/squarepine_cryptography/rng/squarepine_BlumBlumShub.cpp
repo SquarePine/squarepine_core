@@ -3,18 +3,18 @@ namespace bbs
     constexpr std::optional<int> getMSB (const BlumBlumShub::BigM& set)
     {
         for (int i = (int) set.size(); --i >= 0;)
-            if (set.test (i))
+            if (set.test ((size_t) i))
                 return { i };
 
         return std::nullopt;
     }
 
-    BlumBlumShub::BigM toBitset (uint64 value) noexcept
+    inline BlumBlumShub::BigM toBitset (uint64 value) noexcept
     {
         return BlumBlumShub::BigM (static_cast<unsigned long long> (value));
     }
 
-    uint64 fromBitset (const BlumBlumShub::BigM& biggy) noexcept
+    inline uint64 fromBitset (const BlumBlumShub::BigM& biggy) noexcept
     {
         return static_cast<uint64> (biggy.to_ullong());
     }
@@ -39,7 +39,7 @@ namespace bbs
         return gcd (a, b) == 1;
     }
 
-    uint64 createProbablePrime()
+    inline uint64 createProbablePrime()
     {
         const auto biggy = Primes::createProbablePrime (32, 30);
         const auto hsb = biggy.getHighestBit();

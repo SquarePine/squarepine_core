@@ -69,9 +69,6 @@ class Timeline final : public Identifiable
 {
 public:
     /** */
-    Timeline() = default;
-
-    /** */
     Timeline (const Identifier& id) noexcept :
         Identifiable (id)
     {

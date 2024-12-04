@@ -12,7 +12,7 @@ inline FloatType crushSample (FloatType sample, int targetBits)
     const auto x        = std::pow (two, static_cast<FloatType> (targetBits) / dig);
     const auto quant    = x / two;
     const auto dequant  = static_cast<FloatType> (1) / quant;
-    return static_cast<FloatType> (dequant * (int)(sample * quant));
+    return dequant * static_cast<FloatType> (sample * quant);
 }
 
 /** Use this processor to dynamically crush the audio's bits. */

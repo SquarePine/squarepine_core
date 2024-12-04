@@ -263,12 +263,13 @@ class ParticleEmitter final
 public:
     /** Constructor.
 
+        @param gravityInPxPerUpdate
         @param shouldRemoveParticlesOnEnd
     */
     ParticleEmitter (float gravityInPxPerUpdate = 1.0f,
                      bool shouldRemoveParticlesOnEnd = false) :
-        gravityPxPerUpdate (gravityInPxPerUpdate),
-        shouldRemoveOnEnd (shouldRemoveParticlesOnEnd)
+        shouldRemoveOnEnd (shouldRemoveParticlesOnEnd),
+        gravityPxPerUpdate (gravityInPxPerUpdate)
     {
         jassert (std::isnormal (gravityPxPerUpdate));
     }
@@ -538,3 +539,4 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParticleSystemComponent)
 };
+
