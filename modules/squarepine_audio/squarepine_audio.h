@@ -11,12 +11,12 @@
     website:            https://www.squarepine.io
     license:            Beerware
     minimumCppStandard: 20
-    dependencies:       squarepine_core juce_dsp
+    dependencies:       squarepine_cryptography juce_dsp
 
     END_JUCE_MODULE_DECLARATION
 */
 //==============================================================================
-#include <squarepine_core/squarepine_core.h>
+#include <squarepine_cryptography/squarepine_cryptography.h>
 #include <juce_dsp/juce_dsp.h>
 
 //==============================================================================
@@ -26,25 +26,6 @@
 */
 #ifndef SQUAREPINE_USE_R8BRAIN
     #define SQUAREPINE_USE_R8BRAIN 0
-#endif
-
-/** Config: SQUAREPINE_USE_ELASTIQUE
-
-    Enable this to use zplane's Elastique.
-
-    Only available with MSVC and macOS.
-*/
-#ifndef SQUAREPINE_USE_ELASTIQUE
-    #define SQUAREPINE_USE_ELASTIQUE 0
-#endif
-
-/** Config: SQUAREPINE_USE_AUFTAKT
-    Enable this to help you use zplane's Auftakt.
-
-    Only available with MSVC and macOS.
-*/
-#ifndef SQUAREPINE_USE_AUFTAKT
-    #define SQUAREPINE_USE_AUFTAKT 0
 #endif
 
 /** Config: SQUAREPINE_USE_REX_AUDIO_FORMAT
@@ -77,8 +58,6 @@
 #endif
 
 //==============================================================================
-#include "linkers/ZplaneHelpers.h"
-
 namespace juce
 {
     /** @returns true if the lhs is a duplicate of the rhs.

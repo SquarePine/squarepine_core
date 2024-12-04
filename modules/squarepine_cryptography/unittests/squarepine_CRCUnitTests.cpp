@@ -1,10 +1,10 @@
 //==============================================================================
 #if SQUAREPINE_COMPILE_UNIT_TESTS
 
-class CRCTests final : public UnitTest
+class CRCUnitTests final : public UnitTest
 {
 public:
-    CRCTests() :
+    CRCUnitTests() :
         UnitTest ("CRC", UnitTestCategories::cryptography)
     {
     }

@@ -23,9 +23,6 @@
     #include <r8brain/r8bbase.cpp>
 #endif
 
-#include "linkers/AuftaktLinker.cpp"
-#include "linkers/ElastiqueLinker.cpp"
-
 namespace sp
 {
     using namespace juce;
@@ -72,7 +69,6 @@ namespace sp
     #include "music/Chord.cpp"
     #include "music/Pitch.cpp"
     #include "music/Scale.cpp"
-    // #include "resamplers/ElastiqueStretcher.cpp"
     #include "resamplers/Resampler.cpp"
     #include "resamplers/ResamplingAudioFormatReader.cpp"
     #include "resamplers/ResamplingProcessor.cpp"

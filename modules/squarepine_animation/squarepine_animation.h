@@ -24,9 +24,9 @@ namespace sp
 {
     using namespace juce;
 
-    #include "controllers/Timeline.h"
-    #include "controllers/TimelineGroup.h"
-    #include "particles/ParticleSystem.h"
+    #include "controllers/squarepine_Timeline.h"
+    #include "controllers/squarepine_TimelineGroup.h"
+    #include "particles/squarepine_ParticleSystem.h"
 }
 
 #endif // SQUAREPINE_ANIMATION_H

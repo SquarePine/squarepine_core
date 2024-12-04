@@ -190,7 +190,7 @@ Result SharedObjects::reloadAudioDeviceManagerFromSettings()
 {
     SQUAREPINE_CRASH_TRACER
 
-    if (RuntimePermissions::isGranted (RuntimePermissions::recordAudio))
+    if (sp::RuntimePermissions::isGranted ("android.permission.RECORD_AUDIO"))
     {
 #if 0
         if (auto* us = applicationProperties.getUserSettings())
@@ -232,7 +232,7 @@ Result SharedObjects::reloadAudioDeviceManagerFromSettings()
         return Result::fail (result);
     }
 
-    RuntimePermissions::request (RuntimePermissions::recordAudio, [this] (bool wasGranted)
+    sp::RuntimePermissions::request ("android.permission.RECORD_AUDIO", [this] (bool wasGranted)
     {
         if (wasGranted)
             MessageManager::callAsync ([this]() { reloadAudioDeviceManagerFromSettings(); });

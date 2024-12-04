@@ -27,16 +27,21 @@ namespace sp
     using namespace juce;
 
     //==============================================================================
-    #include "hashing/CRC.h"
-    #include "hashing/SHA1.h"
-    // #include "hashing/SHA2.h"
-    #include "rng/BlumBlumShub.h"
-    #include "rng/ISAAC.h"
-    #include "rng/Xorshift.h"
-    #include "unittests/SquarePineCryptographyUnitTestGatherer.h"
+    #include "hashing/squarepine_AES.h"
+    #include "hashing/squarepine_CRC.h"
+    #include "hashing/squarepine_SHA1.h"
+    // #include "hashing/squarepine_SHA2.h"
+    #include "hashing/squarepine_Skein.h"
+    #include "hashing/squarepine_Twofish.h"
+    #include "hashing/squarepine_Threefish.h"
+    #include "rng/squarepine_BlumBlumShub.h"
+    #include "rng/squarepine_ISAAC.h"
+    #include "rng/squarepine_Fortuna.h"
+    #include "rng/squarepine_Xorshift.h"
+    #include "unittests/squarepine_CryptographyUnitTestGatherer.h"
 }
 
 //==============================================================================
-#include "rng/Hashing.h"
+#include "rng/squarepine_Hashing.h"
 
 #endif // SQUAREPINE_CRYPTOGRAPHY_H

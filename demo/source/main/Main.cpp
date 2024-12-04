@@ -28,7 +28,8 @@ public:
         for (int i = desktop.getNumComponents(); --i >= 0;)
             desktop.getComponent (i)->toFront (true);
 
-        // NB: by this point, the mouse buttons are... well, up/inactive.
+        // NB: by this point, the mouse buttons are... well, up/inactive,
+        // hence why we store the event mods on mouse down to know what we started with.
         if (lastEventMods.isPopupMenu()
             && commandManager.getNumCommands() > 0)
         {
@@ -47,7 +48,7 @@ public:
 private:
     //==============================================================================
     ApplicationCommandManager& commandManager;
-    ModifierKeys lastEventMods;
+    ModifierKeys lastEventMods; // Stored on mouse down, cleared on mouse up.
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrayIconComponent)
@@ -64,6 +65,7 @@ public:
         customLookAndFeel (sharedObjects),
         mainComponent (sharedObjects)
     {
+/*
         RuntimePermissions::request (RuntimePermissions::recordAudio, [this] (bool)
         {
             audioWaiter.signal();
@@ -76,7 +78,7 @@ public:
             closeButtonPressed();
             return;
         }
-
+*/
         googleAnalyticsReporter->startSession();
 
         setUsingNativeTitleBar (true);

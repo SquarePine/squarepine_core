@@ -3,9 +3,14 @@ OwnedArray<UnitTest> SquarePineCryptographyUnitTestGatherer::createTests()
     OwnedArray<UnitTest> tests;
 
    #if SQUAREPINE_COMPILE_UNIT_TESTS
-    tests.add (new CRCTests());
-    tests.add (new SHA1Tests());
+    tests.add (new CRCUnitTests());
+    tests.add (new SHA1UnitTests());
+    // tests.add (new SkeinUnitTests());
+    // tests.add (new TwofishUnitTests());
+    // tests.add (new ThreefishUnitTests());
+    // tests.add (new SHA2UnitTests());
     tests.add (new BlumBlumShubUnitTests());
+    // tests.add (new FortunaUnitTests());
     tests.add (new ISAACUnitTests());
     tests.add (new Xorshift32UnitTests());
     tests.add (new Xorshift64UnitTests ("Standard", Xorshift64::Algorithm::standard));

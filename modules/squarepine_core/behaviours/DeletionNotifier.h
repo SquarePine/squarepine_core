@@ -6,7 +6,7 @@ public:
     DeletionNotifier() noexcept = default;
 
     /** */
-    virtual ~DeletionNotifier() noexcept { notifyDeletionListeners(); }
+    virtual ~DeletionNotifier() { notifyDeletionListeners(); }
 
     //==============================================================================
     /** */

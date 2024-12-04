@@ -20,7 +20,7 @@
 
 // [END_USER_CODE_SECTION]
 
-#define JUCE_PROJUCER_VERSION 0x80003
+#define JUCE_PROJUCER_VERSION 0x80004
 
 //==============================================================================
 #define JUCE_MODULE_AVAILABLE_juce_analytics               1
@@ -317,14 +317,6 @@
 
 #ifndef    SQUAREPINE_USE_R8BRAIN
  //#define SQUAREPINE_USE_R8BRAIN 0
-#endif
-
-#ifndef    SQUAREPINE_USE_ELASTIQUE
- //#define SQUAREPINE_USE_ELASTIQUE 0
-#endif
-
-#ifndef    SQUAREPINE_USE_AUFTAKT
- //#define SQUAREPINE_USE_AUFTAKT 0
 #endif
 
 #ifndef    SQUAREPINE_USE_REX_AUDIO_FORMAT

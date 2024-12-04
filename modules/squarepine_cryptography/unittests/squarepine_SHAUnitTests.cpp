@@ -1,10 +1,10 @@
 //==============================================================================
 #if SQUAREPINE_COMPILE_UNIT_TESTS
 
-class SHA1Tests final : public UnitTest
+class SHA1UnitTests final : public UnitTest
 {
 public:
-    SHA1Tests() :
+    SHA1UnitTests() :
         UnitTest ("SHA-1", UnitTestCategories::cryptography)
     {
     }
@@ -26,8 +26,6 @@ public:
 
     void runTest() override
     {
-        return; // TODO
-
         beginTest ("Hash Comparisons");
 
         test ("",                                               "da39a3ee5e6b4b0d3255bfef95601890afd80709");

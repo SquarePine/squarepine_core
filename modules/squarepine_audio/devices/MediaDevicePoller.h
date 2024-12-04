@@ -17,22 +17,22 @@ public:
 
     //==============================================================================
     /** Obtain the most current list of audio input devices. */
-    StringArray getAudioInputDevices() const;
+    [[nodiscard]] StringArray getAudioInputDevices() const;
 
     /** Obtain the most current list of audio output devices. */
-    StringArray getAudioOutputDevices() const;
+    [[nodiscard]] StringArray getAudioOutputDevices() const;
 
     /** @returns the list of names of the audio driver's input channels. */
-    StringArray getInputChannelNames() const;
+    [[nodiscard]] StringArray getInputChannelNames() const;
 
     /** @returns the list of names of the audio driver's output channels. */
-    StringArray getOutputChannelNames() const;
+    [[nodiscard]] StringArray getOutputChannelNames() const;
 
     /** Obtain the most current list of MIDI input devices. */
-    Array<MidiDeviceInfo> getMIDIInputDevices() const;
+    [[nodiscard]] Array<MidiDeviceInfo> getMIDIInputDevices() const;
 
     /** Obtain the most current list of MIDI output devices. */
-    Array<MidiDeviceInfo> getMIDIOutputDevices() const;
+    [[nodiscard]] Array<MidiDeviceInfo> getMIDIOutputDevices() const;
 
     /** */
     struct DeviceInfo final
@@ -44,9 +44,9 @@ public:
     };
 
     /** */
-    DeviceInfo getCurrentInputDeviceInfo() const;
+    [[nodiscard]] DeviceInfo getCurrentInputDeviceInfo() const;
     /** */
-    DeviceInfo getCurrentOutputDeviceInfo() const;
+    [[nodiscard]] DeviceInfo getCurrentOutputDeviceInfo() const;
 
     //==============================================================================
     /** Inherit from this Listener to check for MIDI or audio devices being added or removed!
@@ -100,9 +100,9 @@ private:
     ChangeType changeType = ChangeType::noChange;
 
     //==============================================================================
-    StringArray getAudioDevices (bool giveMeInputDevices) const;
-    StringArray getChannelNames (bool giveMeInputDevices) const;
-    DeviceInfo getCurrentDeviceInfo (bool giveMeInputDevices) const;
+    [[nodiscard]] StringArray getAudioDevices (bool giveMeInputDevices) const;
+    [[nodiscard]] StringArray getChannelNames (bool giveMeInputDevices) const;
+    [[nodiscard]] DeviceInfo getCurrentDeviceInfo (bool giveMeInputDevices) const;
 
     template<typename ArrayType>
     void checkForDeviceChange (const ArrayType& arrayNew, ArrayType& arrayOld);

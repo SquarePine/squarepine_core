@@ -3,8 +3,6 @@
 
 #include <JuceHeader.h>
 
-#include <type_traits>
-
 /** Config: SP_DEMO_USE_OPENGL
 
     Enables or disables setting the application up for OpenGL.
@@ -19,8 +17,8 @@
 #include "core/GlobalIDs.h"
 #include "core/GlobalPathSettings.h"
 #include "core/SharedObjects.h"
-
 #include "demos/DemoBase.h"
+//#include "demos/AndroidPermissionsDemo.h"
 #include "demos/AnimationDemo.h"
 #include "demos/CodeEditorDemo.h"
 #include "demos/iCUESDKDemo.h"

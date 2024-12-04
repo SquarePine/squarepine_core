@@ -282,6 +282,7 @@ namespace sp
     #include "misc/FPUFlags.h"
     #include "misc/Threading.h"
     #include "misc/Utilities.h"
+    #include "native/squarepine_RuntimePermissions_generic.h"
     #include "networking/GoogleAnalyticsReporter.h"
     #include "networking/NetworkCache.h"
     #include "networking/NetworkConnectivityChecker.h"

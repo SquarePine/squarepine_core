@@ -4,5 +4,5 @@ namespace sp
 {
     using namespace juce;
 
-    #include "particles/ParticleSystem.cpp"
+    #include "particles/squarepine_ParticleSystem.cpp"
 }

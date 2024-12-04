@@ -56,6 +56,7 @@ ISAAC::ISAAC (bool preseedResults) :
     next(); // Fill in the first set of results.
 }
 
+//==============================================================================
 uint32 ISAAC::generate()
 {
     if (--count == 0)
@@ -67,6 +68,13 @@ uint32 ISAAC::generate()
     return results[count];
 }
 
+double ISAAC::generateNormalised() noexcept
+{
+    const auto nextValue = generate();
+    return lerp ((double) 0.0, (double) (ULONG_MAX - 1ULL), (double) nextValue);
+}
+
+//==============================================================================
 void ISAAC::shuffle (uint32& a, uint32& b, uint32& c, uint32& d,
                      uint32& e, uint32& f, uint32& g, uint32& h) noexcept
 {

@@ -59,6 +59,12 @@ namespace sp
     #include "networking/NetworkConnectivityChecker.cpp"
 
     //==============================================================================
+   #if JUCE_ANDROID
+    #include "native/squarepine_RuntimePermissions_Android.cpp"
+   #else
+    #include "native/squarepine_RuntimePermissions_generic.cpp"
+   #endif
+
     #include "networking/OAuth2.cpp"
     #include "networking/Product.cpp"
     #include "networking/User.cpp"

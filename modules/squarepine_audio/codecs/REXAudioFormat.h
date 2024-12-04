@@ -18,7 +18,7 @@ public:
 
     //==============================================================================
     /** @returns Empty if all is fine! */
-    String getErrorMessage() const;
+    [[nodiscard]] String getErrorMessage() const;
 
     //==============================================================================
     /** Represents the file extension for the current platform, without the prefixed period.

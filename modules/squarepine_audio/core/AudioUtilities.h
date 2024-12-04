@@ -15,7 +15,7 @@ inline void resetBuses (AudioProcessor& processor,
 //==============================================================================
 /** @returns true if a buffer is actually cleared; not just by its clear flag. */
 template<typename FloatType>
-inline bool isCleared (const juce::AudioBuffer<FloatType>& buffer)
+[[nodiscard]] inline bool isCleared (const juce::AudioBuffer<FloatType>& buffer)
 {
     if (buffer.hasBeenCleared())
         return true;
