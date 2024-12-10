@@ -17,7 +17,7 @@ Help us help you! Spend time framing questions and add links and resources.
 Here are some tips:
 
 * [Talk to a duck](https://rubberduckdebugging.com)!
-* Don't fall for the [XY problem][https://meta.stackexchange.com/questions/66377/what-is-the-xy-problem/66378#66378].
+* Don't fall for the [XY problem](https://meta.stackexchange.com/questions/66377/what-is-the-xy-problem/66378#66378).
 * Search to find out if a similar question has been asked.
 * Try to define what you need help with:
   * Is there something in particular you want to do?
@@ -26,7 +26,3 @@ Here are some tips:
 * Provide sample code or video, if possible.
 * Screenshots can help, but if there's important text such as code or error messages in them, please also provide those as text.
 * The more time you put into asking your question, the better we can help you.
-
-## Contributions
-
-See [`CONTRIBUTING.md`][contributing] on how to contribute.
