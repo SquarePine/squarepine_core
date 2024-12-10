@@ -99,13 +99,3 @@ A vast range of simple renditions of audio effects can be found, including an ec
 ## Easing
 
 ![image](https://user-images.githubusercontent.com/1908886/174856790-680f1e3f-2c82-470d-a107-a590e6646c54.png)
-
-# License
-
-[The current license is Beerware](https://github.com/SquarePine/squarepine_core/blob/main/LICENSE.md).
-
-# Contributing
-
-If you get snagged by anything or if you have suggestions -- let's have a look!
-
-Simply make a GitHub Issue or a Pull Request, whatever's easier for you.
