@@ -1,5 +1,5 @@
 /** */
-struct DecibelHelpers
+struct DecibelHelpers final
 {
     enum
     {
@@ -98,66 +98,114 @@ private:
 
 //==============================================================================
 /** */
+class MeterModel
+{
+public:
+    /** */
+    MeterModel() noexcept = default;
+
+    /** */
+    virtual ~MeterModel() noexcept = default;
+
+    //==============================================================================
+    /** @returns the expiration time of the maximum meter level, after which it decays. */
+    virtual int64 getExpiryTimeMs() const noexcept { return 3000; }
+
+    /** @returns */
+    virtual bool needsMaxLevel() const noexcept { return false; }
+
+    /** @returns */
+    virtual bool isHorizontal() const noexcept { return false; }
+
+    //==============================================================================
+    /** @returns an array where each index corresponds to a channel's peak
+        (or whatever you've calculated).
+
+        In other words, the first index should be the left channel's peak,
+        the next value should be for the right channel, and so on (as needed).
+    */
+    virtual Array<float> getChannelLevels() const = 0;
+
+    //==============================================================================
+    /** */
+    struct ColourPosition final
+    {
+        ColourPosition() = default;
+        ColourPosition (const ColourPosition&) = default;
+        ColourPosition (ColourPosition&&) = default;
+        ~ColourPosition() = default;
+        ColourPosition& operator= (const ColourPosition&) = default;
+        ColourPosition& operator= (ColourPosition&&) = default;
+
+        ColourPosition (Colour c, double db) :
+            colour (c),
+            decibels (db)
+        {
+        }
+
+        void addToGradient (ColourGradient& destination,
+                            bool isHorizontal)
+        {
+            const auto v = DecibelHelpers::decibelsToMeterProportion (decibels);
+
+            if (isHorizontal)
+                destination.addColour (v, colour);
+            else
+                destination.addColour (1.0 - v, colour);
+        }
+
+        Colour colour = Colours::black;
+        double decibels = 0.0;
+    };
+
+    /** @returns */
+    virtual std::vector<ColourPosition> getColourPositions() const
+    {
+        return
+        {
+            { Colours::red, 0.0 },
+            { Colours::yellow, -9.0 },
+            { Colours::green, -18.0 }
+        };
+    }
+
+private:
+   #if ! JUCE_DISABLE_ASSERTIONS
+    friend class Meter;
+    struct Empty {};
+    std::shared_ptr<Empty> sharedState = std::make_shared<Empty>();
+   #endif
+};
+
+//==============================================================================
+/** */
 class Meter final : public Component
 {
 public:
+
     //==============================================================================
     /** */
-    class Model
+    Meter (MeterModel* meterModel = nullptr);
+
+    //==============================================================================
+    /** Changes the current data model to display.
+
+        The MeterModel instance must stay alive for as long as the Meter
+        holds a pointer to it. Be careful to destroy the Meter before the
+        MeterModel, or to call Meter::setMeterModel (nullptr) before destroying
+        the MeterModel.
+    */
+    void setMeterModel (MeterModel*);
+
+    /** Returns the current list model. */
+    MeterModel* getMeterModel() const noexcept
     {
-    public:
-        /** */
-        virtual ~Model() noexcept = default;
+       #if ! JUCE_DISABLE_ASSERTIONS
+        checkModelPtrIsValid();
+       #endif
 
-        /** @returns the expiration time of the maximum meter level, after which it decays. */
-        virtual int64 getExpiryTimeMs() const noexcept { return 3000; }
-
-        /** @returns */
-        virtual bool needsMaxLevel() const noexcept { return false; }
-
-        /** @returns */
-        virtual bool isHorizontal() const noexcept { return false; }
-
-        /** @returns */
-        virtual Array<float> getChannelLevels() const = 0;
-
-        /** */
-        struct ColourPosition final
-        {
-            ColourPosition() noexcept = default;
-
-            ColourPosition (Colour c, double d) noexcept :
-                colour (c),
-                decibels (d)
-            {
-            }
-
-            Colour colour;
-            double decibels = 0.0;
-        };
-
-        /** @returns */
-        virtual std::array<ColourPosition, 3> getColourPositions() const
-        {
-            return
-            {
-                ColourPosition (Colours::red, 0.0),
-                ColourPosition (Colours::yellow, -9.0),
-                ColourPosition (Colours::green, -18.0)
-            };
-        }
-    };
-
-    //==============================================================================
-    /** */
-    Meter (Model* model_ = nullptr);
-
-    //==============================================================================
-    /** */
-    void setModel (Model*);
-
-    /** */
-    Model* getModel() const noexcept { return model; }
+        return model;
+    }
 
     //==============================================================================
     /** @returns true if the levels have changed. */
@@ -193,10 +241,10 @@ public:
         const Rectangle<int>& getMeterArea() const noexcept { return meterArea; }
 
     private:
-        float level = 0.0f;         // The last measured audio absolute volume level.
-        float lastLevel = 0.0f;     // The volume level of the last update, used to check if levels have changed for repainting.
-        float maxLevel = 0.0f;      // The maximum audio levels of the trailing 3 seconds.
-        float lastMaxLevel = 0.0f;  // The max volume level of the last update.
+        float level = 0.0f,         // The last measured audio absolute volume level.
+              lastLevel = 0.0f,     // The volume level of the last update, used to check if levels have changed for repainting.
+              maxLevel = 0.0f,      // The maximum audio levels of the trailing 3 seconds.
+              lastMaxLevel = 0.0f;  // The max volume level of the last update.
         int64 timeOfMaximumMs = 0;  // The time of the last maximum audio level.
         Rectangle<int> meterArea;   // The left/right drawable regions for the meter.
 
@@ -236,10 +284,18 @@ public:
 
 private:
     //==============================================================================
-    Model* model = nullptr;
+    MeterModel* model = nullptr;
     Array<ChannelContext> channels;
     Array<float> levels;
     ClippingLevel clippingLevel = ClippingLevel::none;
+    ColourGradient gradient;
+
+    void assignModelPtr (MeterModel*);
+
+   #if ! JUCE_DISABLE_ASSERTIONS
+    std::weak_ptr<MeterModel::Empty> weakModelPtr;
+    void checkModelPtrIsValid() const;
+   #endif
 
     //==============================================================================
     void updateClippingLevel (bool timeToUpdate);
