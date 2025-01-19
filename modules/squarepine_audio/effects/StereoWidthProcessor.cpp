@@ -3,7 +3,7 @@ StereoWidthProcessor::StereoWidthProcessor() :
 {
     auto layout = createDefaultParameterLayout();
 
-    auto vp = std::make_unique<AudioParameterFloat> (getIdentifier().toString(), getName(),
+    auto vp = std::make_unique<AudioParameterFloat> (ParameterID (getIdentifier().toString(), 1), getName(),
                                                      NormalisableRange<float> (minimumValue, maximumValue),
                                                      defaultValue,
                                                      AudioParameterFloatAttributes ().withLabel (getName()));

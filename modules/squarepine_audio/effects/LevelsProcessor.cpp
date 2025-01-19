@@ -3,7 +3,8 @@ class LevelsProcessor::MeteringModeParameter final : public AudioParameterChoice
 {
 public:
     MeteringModeParameter() :
-        AudioParameterChoice ("meteringModeId", NEEDS_TRANS ("Metering Mode"),
+        AudioParameterChoice (ParameterID ("meteringModeId", 1),
+                              NEEDS_TRANS ("Metering Mode"),
                               getChoices(), static_cast<int> (MeteringMode::peak))
     {
     }

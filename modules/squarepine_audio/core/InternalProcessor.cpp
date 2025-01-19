@@ -3,7 +3,8 @@ class InternalProcessor::BypassParameter final : public AudioParameterBool
 {
 public:
     BypassParameter() :
-        AudioParameterBool (InternalProcessor::bypassId.toString(), NEEDS_TRANS ("Bypass"), false)
+        AudioParameterBool (ParameterID (InternalProcessor::bypassId.toString(), 1),
+                            NEEDS_TRANS ("Bypass"), false)
     {
     }
 

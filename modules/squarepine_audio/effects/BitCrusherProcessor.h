@@ -26,7 +26,7 @@ public:
 
 private:
     //==============================================================================
-    AudioParameterInt* bitDepth = new AudioParameterInt ("bitDepth", "Bit-Depth", 1, 16, 8);
+    AudioParameterInt* bitDepth = new AudioParameterInt (ParameterID ("bitDepth", 1), "Bit-Depth", 1, 16, 8);
 
     //==============================================================================
     template<typename FloatType>

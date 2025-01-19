@@ -3,7 +3,7 @@ MuteProcessor::MuteProcessor (bool startMuted) :
 {
     auto layout = createDefaultParameterLayout();
 
-    auto vp = std::make_unique<AudioParameterBool> (getIdentifier().toString(), getName(), false);
+    auto vp = std::make_unique<AudioParameterBool> (ParameterID (getIdentifier().toString(), 1), getName(), false);
     muteParameter = vp.get();
     setMuted (startMuted);
 
