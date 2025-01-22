@@ -31,15 +31,32 @@ namespace oscillatorFunctions
     }
 }
 
-/** */
+/** A processor that can act as an LFO or a function generator.
+
+    This acts as an LFO by default. You may want to use its
+    identical functionality and properties for generator purposes;
+    to do so, change the values in the constructor to something suitable
+    for your needs.
+*/
 class LFOProcessor final : public InternalProcessor
 {
 public:
-    /** Constructor. */
-    LFOProcessor();
+    /** Constructor.
+
+        @param minFreqHz        The minimum frequency, in Hz.
+        @param maxFreqHz        The maximum frequency, in Hz.
+        @param defaultFreqHz    The default frequency, in Hz.
+        @param isLFO            Whether this processor is constructed
+                                to act as an LFO. Flip this to 'off'
+                                if you require a function generator instead.
+    */
+    LFOProcessor (double minFreqHz = 0.1f,
+                  double maxFreqHz = 10.0f,
+                  double defaultFreqHz = 0.5f,
+                  bool isLFO = true);
 
     //==============================================================================
-    /** */
+    /** The type of wave generator function you want to use. */
     enum class LFOType
     {
         sine,
@@ -80,6 +97,7 @@ public:
 
 private:
     //==============================================================================
+    const bool isMultiplying = true;
     bool isFirstRun = true;
 
     juce::AudioBuffer<float> floatMulter;

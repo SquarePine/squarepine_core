@@ -3,7 +3,7 @@ class LFOProcessor::TypeParameter final : public AudioParameterChoice
 {
 public:
     TypeParameter() :
-        AudioParameterChoice ("type", TRANS ("Type"), getChoices(),
+        AudioParameterChoice (ParameterID ("type", 1), TRANS ("Type"), getChoices(),
                               static_cast<int> (LFOProcessor::LFOType::sine))
     {
     }
@@ -26,8 +26,10 @@ private:
 };
 
 //==============================================================================
-LFOProcessor::LFOProcessor() :
-    InternalProcessor (false)
+LFOProcessor::LFOProcessor (double minFreqHz, double maxFreqHz,
+                            double defaultFreqHz, bool isMult) :
+    InternalProcessor (false),
+    isMultiplying (isMult)
 {
     auto layout = createDefaultParameterLayout();
 
@@ -35,11 +37,13 @@ LFOProcessor::LFOProcessor() :
     type = tp.get();
     layout.add (std::move (tp));
 
-    auto pf = std::make_unique<AudioParameterFloat> ("frequency", "Frequency", 0.1f, 10.0f, 0.5f);
+    auto pf = std::make_unique<AudioParameterFloat> (ParameterID ("frequency", 1), "Frequency", minFreqHz, maxFreqHz, defaultFreqHz);
     frequency = pf.get();
     layout.add (std::move (pf));
 
     resetAPVTSWithLayout (std::move (layout));
+
+    setLFOType (LFOType::sine);
 }
 
 //==============================================================================
@@ -84,9 +88,6 @@ void LFOProcessor::setLFOType (LFOType lfoType)
 void LFOProcessor::setFrequencyHz (const double newFrequency)
 {
     *frequency = (float) newFrequency;
-
-    floatOsc.setFrequency ((float) newFrequency);
-    doubleOsc.setFrequency (newFrequency);
 }
 
 void LFOProcessor::setFrequencyFromMidiNote (const int midiNote)
@@ -119,10 +120,8 @@ void LFOProcessor::prepareToPlay (const double newSampleRate, const int samplesP
 
     if (isFirstRun)
     {
-        isFirstRun = false;
-
-        setFrequencyHz (*frequency);
         setLFOType (static_cast<LFOType> (type->getIndex()), true);
+        isFirstRun = false;
     }
 }
 
@@ -132,23 +131,35 @@ void LFOProcessor::process (dsp::Oscillator<FloatType>& osc,
                             juce::AudioBuffer<FloatType>& multer,
                             juce::AudioBuffer<FloatType>& buffer)
 {
-    if (isBypassed())
-        return;
-
-    setFrequencyHz (getFrequency());
-
-    multer.setSize (buffer.getNumChannels(), buffer.getNumSamples(), false, true, true);
-    multer.clear();
-
-    dsp::AudioBlock<FloatType> abMulter (multer);
-
     {
-        dsp::ProcessContextReplacing<FloatType> context (abMulter);
-        osc.process (context);
+        auto v = getFrequency();
+        floatOsc.setFrequency ((float) v);
+        doubleOsc.setFrequency (v);
     }
 
-    dsp::AudioBlock<FloatType> (buffer)
-        .multiplyBy (abMulter);
+    if (isMultiplying)
+    {
+        multer.setSize (buffer.getNumChannels(), buffer.getNumSamples(), false, true, true);
+        multer.clear();
+
+        dsp::AudioBlock<FloatType> abMulter (multer);
+
+        {
+            dsp::ProcessContextReplacing<FloatType> context (abMulter);
+            context.isBypassed = isBypassed();
+            osc.process (context);
+        }
+
+        dsp::AudioBlock<FloatType> (buffer)
+            .multiplyBy (abMulter);
+    }
+    else
+    {
+        dsp::AudioBlock<FloatType> audioBlock (buffer);
+        dsp::ProcessContextReplacing<FloatType> context (audioBlock);
+        context.isBypassed = isBypassed();
+        osc.process (context);
+    }
 }
 
 void LFOProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)     { process (floatOsc, floatMulter, buffer); }
