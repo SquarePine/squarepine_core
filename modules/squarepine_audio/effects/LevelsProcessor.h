@@ -59,7 +59,7 @@ private:
             for (auto& a : { &channels, &tempBuffer })
             {
                 a->resize (numChannels);
-                a->clearQuick();
+                a->fill (static_cast<FloatType> (0));
             }
         }
 
@@ -68,7 +68,7 @@ private:
                       MeteringMode meteringMode,
                       bool possiblyBypassed)
         {
-            tempBuffer.clearQuick();
+            tempBuffer.fill (static_cast<FloatType> (0));
 
             if (! possiblyBypassed)
             {
@@ -78,19 +78,19 @@ private:
                 {
                     case MeteringMode::peak:
                         for (int i = 0; i < numChannels; ++i)
-                            tempBuffer.add ((FloatType) buffer.getMagnitude (i, 0, buffer.getNumSamples()));
+                            tempBuffer.set (i, (FloatType) buffer.getMagnitude (i, 0, buffer.getNumSamples()));
                     break;
 
                     case MeteringMode::rms:
                         for (int i = 0; i < numChannels; ++i)
-                            tempBuffer.add ((FloatType) buffer.getRMSLevel (i, 0, buffer.getNumSamples()));
+                            tempBuffer.set (i, (FloatType) buffer.getRMSLevel (i, 0, buffer.getNumSamples()));
                     break;
 
                     case MeteringMode::midSide:
                         for (int i = 0; i < numChannels; ++i)
                         {
                             const auto v = buffer.getMagnitude (i, 0, buffer.getNumSamples());
-                            tempBuffer.add ((FloatType) square (v));
+                            tempBuffer.set (i, (FloatType) square (v));
                         }
                     break;
 

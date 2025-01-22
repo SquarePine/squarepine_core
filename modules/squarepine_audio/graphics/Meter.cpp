@@ -87,38 +87,60 @@ void Meter::checkModelPtrIsValid() const
 void Meter::resized()
 {
     gradient = {};
+    imageSource = {};
+    imageClipped = {};
 
     if (model == nullptr)
         return;
 
     auto positions = model->getColourPositions();
-    if (positions.size() < 2)
-    {
-        jassertfalse;
-        return;
-    }
+
+    // Must have at least 1 colour!
+    jassert (! positions.empty());
+
+    const auto b = getLocalBounds();
 
     std::sort (std::begin (positions), std::end (positions),
                [] (const auto& lhs, const auto& rhs) { return lhs.decibels < rhs.decibels; });
 
-    const auto b = getLocalBounds();
     const bool isHorizontal = model->isHorizontal();
     if (isHorizontal)
         gradient = ColourGradient::horizontal (positions.front().colour, positions.back().colour, b);
     else
         gradient = ColourGradient::vertical (positions.front().colour, positions.back().colour, b);
 
-    for (size_t i = 1; i < (positions.size() - 1); ++i)
-        positions[i].addToGradient (gradient, isHorizontal);
+    if (const auto numPos = (int64) positions.size(); numPos > 1)
+        for (int64 i = 1; i < (numPos - 1); ++i)
+            positions[(size_t) i].addToGradient (gradient, isHorizontal);
+
+    {
+        imageSource = { Image::RGB, getWidth(), getHeight(), false };
+        Graphics ig (imageSource);
+        ig.setGradientFill (gradient);
+        ig.fillAll();
+    }
+
+    imageClipped = imageSource;
+    // TODO force refresh async + repaint
 }
 
 void Meter::paint (Graphics& g)
 {
-    if (gradient.getNumColours() <= 0)
+    //auto b = getLocalBounds();
+    //DBG (b.toString());
+
+    if (imageSource.isNull())
         return; // Nothing to draw.
 
-    g.setGradientFill (gradient);
-    g.fillAll();
+    g.setColour (Colours::red);
+
+    for (const auto& c : channels)
+    {
+        // imageClipped = imageSource.getClippedImage (c.meterArea);
+        // g.drawImage (imageClipped, c.meterArea.toFloat(), RectanglePlacement::doNotResize);
+
+        g.fillRect (c.meterArea);
+    }
 }
 
 bool Meter::refresh()
@@ -135,37 +157,51 @@ bool Meter::refresh()
         needsMaxLevel = model->needsMaxLevel();
     }
 
-    bool areLevelsDifferent = false;
-    bool isMaxLevelDelayExpired = false;
     const auto numChans = std::min (levels.size(), channels.size());
+    const auto chanWidthPx = [&]()
+    {
+        auto v = roundToIntAccurate ((double) getWidth() / (double) numChans);
+        v -= 2;
+        jassert (v > 2);
+        return v;
+    }();
+
+    const auto hPx = getHeight();
+
+    bool areLevelsDifferent = channels.getFirst().meterArea.getWidth() != chanWidthPx;
+    bool isMaxLevelDelayExpired = false;
 
     for (int i = 0; i < numChans; ++i)
     {
         auto& channel = channels.getReference (i);
-        auto level = lerp (channel.getLevel(), levels[i], 0.9f);
-        dsp::util::snapToZero (level);
-        channel.setLevel (level);
+        const auto lastLevel = channel.level;
+        const auto lastMaxLevel = channel.maxLevel;
+
+        channel.level = lerp (lastLevel, levels[i], 0.9f);
 
         if (needsMaxLevel)
         {
-            if (channel.getLevel() > channel.getMaxLevel())
+            if (channel.level > lastMaxLevel)
             {
-                channel.setLastMaxAudioLevelTime (Time::currentTimeMillis());
-                channel.setMaxLevel (channel.getLevel());
+                channel.timeOfMaximumMs = Time::currentTimeMillis();
+                channel.maxLevel = lastLevel;
             }
-            else if (Time::currentTimeMillis() - channel.getLastMaxAudioLevelTime() > maxLevelExpiryMs)
+            else if (Time::currentTimeMillis() - channel.timeOfMaximumMs > maxLevelExpiryMs)
             {
-                channel.setMaxLevel (channel.getMaxLevel() * decayRate);
+                channel.maxLevel = lastMaxLevel * decayRate;
                 isMaxLevelDelayExpired = true;
             }
 
-            areLevelsDifferent |= ! approximatelyEqual (channel.getMaxLevel(), channel.getLastMaxLevel());
+            areLevelsDifferent |= ! approximatelyEqual (channel.maxLevel, lastMaxLevel);
         }
 
-        areLevelsDifferent |= ! approximatelyEqual (channel.getLevel(), channel.getLastLevel());
+        areLevelsDifferent |= ! approximatelyEqual (channel.level, lastLevel);
 
-        channel.setLastLevel (channel.getLevel());
-        channel.setLastMaxLevel (channel.getMaxLevel());
+        const auto h = (double) hPx * (double) DecibelHelpers::gainToMeterProportion ((double) channel.level);
+
+        channel.meterArea = channel.meterArea
+                                   .withWidth (chanWidthPx)
+                                   .withHeight (roundToIntAccurate (h));
     }
 
     if (areLevelsDifferent)
@@ -174,11 +210,11 @@ bool Meter::refresh()
     return areLevelsDifferent;
 }
 
-void Meter::updateClippingLevel (bool timeToUpdate)
+void Meter::updateClippingLevel (bool forceUpdate)
 {
     auto maxLevel = 0.0f;
     for (const auto& channel : channels)
-        maxLevel = std::max (channel.getLevel(), maxLevel);
+        maxLevel = std::max (channel.level, maxLevel);
 
     maxLevel = Decibels::gainToDecibels (maxLevel);
 
@@ -190,6 +226,6 @@ void Meter::updateClippingLevel (bool timeToUpdate)
         currClippingLevel = ClippingLevel::warning;
 
     // Only update if higher, or if the time delay has expired.
-    if (clippingLevel < currClippingLevel || timeToUpdate)
+    if (clippingLevel < currClippingLevel || forceUpdate)
         clippingLevel = currClippingLevel;
 }

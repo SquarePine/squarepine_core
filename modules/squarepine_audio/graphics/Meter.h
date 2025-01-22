@@ -3,11 +3,8 @@ struct DecibelHelpers final
 {
     enum
     {
-        // The maximum gain value of the slider in decibels.
-        maxSliderLevelDb = 12,
-
-        // The minimum decibel level of the slider.
-        minSliderLevelDb = -100,
+        maxSliderLevelDb = 12,      // The maximum gain value of the slider in decibels.
+        minSliderLevelDb = -100,    // The minimum decibel level of the slider.
 
         // The magnitude of spatial compression of lower decibel values versus higher values.
         // Ranges from 0 (linear) to infinity (hard knee).
@@ -41,7 +38,7 @@ struct DecibelHelpers final
                                          int maximumDecibels = maxSliderLevelDb) noexcept;
 
     /** @returns the proportion of the meter length for the decibel value.
-* 
+
         @param meterProportion The proportion of the meter length.
         @param minimumDecibels The minimum level of the meter in decibels.
         @param maximumDecibels The maximum level of the meter in decibels.
@@ -51,7 +48,7 @@ struct DecibelHelpers final
                                              int maximumDecibels = maxSliderLevelDb) noexcept;
 
     /** @returns the proportion of the meter height for the decibel value.
-* 
+
         @param decibels        The volume value in decibels.
         @param minimumDecibels The minimum level of the meter in decibels
         @param maximumDecibels The maximum level of the meter in decibels
@@ -213,53 +210,19 @@ public:
 
     //==============================================================================
     /** */
-    struct ChannelContext
+    struct ChannelContext final
     {
-        ChannelContext() = default;
-        ChannelContext (const ChannelContext&) = default;
-        ChannelContext (ChannelContext&&) = default;
-        ~ChannelContext() = default;
-        ChannelContext& operator= (const ChannelContext&) = default;
-        ChannelContext& operator= (ChannelContext&&) = default;
-
-        void setLevel (float newLevel) { set (level, newLevel); }
-        float getLevel() const noexcept { return level; }
-
-        void setLastLevel (float newLastLevel) { set (lastLevel, newLastLevel); }
-        float getLastLevel() const noexcept { return lastLevel; }
-
-        void setMaxLevel (float newMaxLevel) { set (maxLevel, newMaxLevel); }
-        float getMaxLevel() const noexcept { return maxLevel; }
-
-        void setLastMaxLevel (float newLastMaxLevel) { set (lastMaxLevel, newLastMaxLevel); }
-        float getLastMaxLevel() const noexcept { return lastMaxLevel; }
-
-        void setLastMaxAudioLevelTime (int64 t) { timeOfMaximumMs = t; }
-        int64 getLastMaxAudioLevelTime() const noexcept { return timeOfMaximumMs; }
-
-        void setMeterArea (const Rectangle<int>& area) { meterArea = area; }
-        const Rectangle<int>& getMeterArea() const noexcept { return meterArea; }
-
-    private:
         float level = 0.0f,         // The last measured audio absolute volume level.
-              lastLevel = 0.0f,     // The volume level of the last update, used to check if levels have changed for repainting.
-              maxLevel = 0.0f,      // The maximum audio levels of the trailing 3 seconds.
-              lastMaxLevel = 0.0f;  // The max volume level of the last update.
+              maxLevel = 0.0f;      // The maximum audio levels of the trailing level (by default this is 3 seconds).
         int64 timeOfMaximumMs = 0;  // The time of the last maximum audio level.
-        Rectangle<int> meterArea;   // The left/right drawable regions for the meter.
-
-        void set (float& value, float newValue)
-        {
-            dsp::util::snapToZero (newValue);
-            value = newValue;
-        }
+        Rectangle<int> meterArea;   // The drawable regions for the meter's channels (eg: left, right).
     };
 
     /** */
     const ChannelContext& getChannel (int channel) const noexcept { return channels.getReference (channel); }
 
     /** */
-    float getChannelLevel (int channel) const noexcept { return getChannel (channel).getLevel(); }
+    float getChannelLevel (int channel) const noexcept { return getChannel (channel).level; }
 
     //==============================================================================
     /** */
@@ -288,7 +251,9 @@ private:
     Array<ChannelContext> channels;
     Array<float> levels;
     ClippingLevel clippingLevel = ClippingLevel::none;
+
     ColourGradient gradient;
+    Image imageSource, imageClipped;
 
     void assignModelPtr (MeterModel*);
 
@@ -298,7 +263,7 @@ private:
    #endif
 
     //==============================================================================
-    void updateClippingLevel (bool timeToUpdate);
+    void updateClippingLevel (bool forceUpdate);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Meter)

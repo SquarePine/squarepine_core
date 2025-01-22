@@ -73,6 +73,9 @@ void LevelsProcessor::processBlock (juce::AudioBuffer<double>& b, MidiBuffer&)  
 template<typename FloatType>
 void LevelsProcessor::process (juce::AudioBuffer<FloatType>& buffer)
 {
+    volatile ScopedNoDenormals noDenormals;
+    ignoreUnused (noDenormals);
+
     const auto mode = getMeteringMode();
     const auto b = isBypassed();
 
