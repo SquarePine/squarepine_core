@@ -5,7 +5,7 @@
 
     ID:                 squarepine_graphics
     vendor:             SquarePine
-    version:            1.5.0
+    version:            1.6.0
     name:               SquarePine Graphics
     description:        A group of reusable graphics classes, image formats, Components, and related utilities.
     website:            https://www.squarepine.io

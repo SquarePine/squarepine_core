@@ -5,7 +5,7 @@
 
     ID:                 squarepine_core
     vendor:             SquarePine
-    version:            1.5.0
+    version:            1.6.0
     name:               SquarePine Core
     description:        A decent backbone for any project.
     website:            https://www.squarepine.io

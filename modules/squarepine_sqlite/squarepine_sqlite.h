@@ -5,7 +5,7 @@
 
     ID:                 squarepine_sqlite
     vendor:             SquarePine
-    version:            1.5.0
+    version:            1.6.0
     name:               SquarePine SQLite
     description:        A JUCE module for SQLite.
     website:            https://www.squarepine.io
