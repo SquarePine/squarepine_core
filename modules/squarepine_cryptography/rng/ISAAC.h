@@ -37,6 +37,11 @@ public:
     /** Generates a random 32-bit unsigned integral. */
     uint32 generate();
 
+    /** @returns a new random value, where 0 < value <= ULONG_MAX,
+        albeit normalised between 0 < value <= 1.0.
+    */
+    double generateNormalised() noexcept;
+
 private:
     //==============================================================================
     enum

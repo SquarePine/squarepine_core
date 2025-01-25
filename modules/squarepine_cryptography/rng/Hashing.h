@@ -65,4 +65,48 @@ namespace std
             return std::hash<juce::String>() (key.toString());
         }
     };
+
+    //============================================================================
+    /** Here's an std::hash overload for SHA1. */
+    template<>
+    struct hash<sp::SHA1>
+    {
+        /** */
+        size_t operator() (const sp::SHA1& key) const
+        {
+            return std::hash<juce::String>() (key.toHexString());
+        }
+    };
+}
+
+//============================================================================
+/** Creates a unique hash based on the contents of the provided source file.
+
+    @param source   The source file to hash.
+    @param hash     The destination hash, which will be empty if anything failed.
+
+    @returns a non-empty string if the file could be hashed.
+*/
+template<typename HasherType = juce::SHA256>
+[[nodiscard]] inline juce::String createUniqueFileHash (const juce::File& source)
+{
+    if (! source.existsAsFile())
+    {
+        jassertfalse;
+        return {};
+    }
+
+    juce::FileInputStream fis (source);
+    if (fis.failedToOpen())
+    {
+        jassertfalse;
+        return {};
+    }
+
+    constexpr auto oneMiB = 1 << 20;
+    if (fis.getTotalLength() < (oneMiB * 2))
+        return HasherType (fis).toHexString();
+
+    juce::BufferedInputStream bis (&fis, oneMiB, false);
+    return HasherType (bis).toHexString();
 }

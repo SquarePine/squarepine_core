@@ -10,123 +10,39 @@
 class BlumBlumShub final
 {
 public:
-    /** Constructor */
-    BlumBlumShub()
-    {
-        reseed();
-    }
+    /** Constructor. */
+    BlumBlumShub();
 
     /** Constructor where you can specify some initial seeds.
 
         Only plant seeds manually if you know what you're doing!
+        Note that these will get blasted away if the internal RNG
+        value hits 0 for whatever reason; the value will be reseeded
+        at random.
     */
-    BlumBlumShub (uint64 customP, uint64 customQ)
-    {
-        reseed (customP, customQ);
-    }
+    BlumBlumShub (uint64 customP, uint64 customQ);
 
     //==============================================================================
-    /** @returns a new random value. */
-    uint64 generate() noexcept
-    {
-        const auto biggy = square (createBigIntegerFromUint64 (x)) % bigM;
+    /** @returns a new random value, between 1 all the way to ULLONG_MAX, in theory. */
+    uint64 generate() noexcept;
 
-        // uint64 overflow:
-        if (biggy.getHighestBit() >= 64)
-        {
-            /** If you hit this, the `m` was simply too large,
-                or you ran this for way too long.
-                You'll need to tune your `p` and `q` values to
-                fit within the uint64 bit range.
-            */
-            jassertfalse;
-            reseed();
-        }
-        else
-        {
-            x = static_cast<uint64> (biggy.toInt64());
-        }
+    /** @returns a new random value, where 0 < value <= ULLONG_MAX,
+        albeit normalised between 0 < value <= 1.0.
+    */
+    double generateNormalised() noexcept;
 
-        return x;
-    }
+    //==============================================================================
+    /** Not really for public use. */
+    using BigM = std::bitset<64>;
 
 private:
     //==============================================================================
-    uint64 p = 0, q = 0, m = 0, x = 0;
-    BigInteger bigM;
+    uint64 p = 11, q = 19, m = p * q, x = 4;
+    BigM bigM;
 
     //==============================================================================
-    void reseed (uint64 customP = toUint64 (Primes::createProbablePrime (16, 24)),
-                 uint64 customQ = toUint64 (Primes::createProbablePrime (16, 26)))
-    {
-        p = customP;
-        q = customQ;
-        m = p * q;
-        bigM = createBigIntegerFromUint64 (m);
-        x = preseed();
-
-        while (! areCoprimes (x, m))
-            ++x;
-    }
-
-    //==============================================================================
-    static uint64 preseed()
-    {
-        std::random_device device;
-        std::mt19937 engine (device());
-        std::uniform_int_distribution<uint32> dist (1, std::numeric_limits<uint32>::max() - (uint32) 1);
-        return static_cast<uint64> (dist (engine));
-    }
-
-    static BigInteger createBigIntegerFromUint64 (uint64 value)
-    {
-        BigInteger biggy;
-
-        for (uint64 i = 0; i < static_cast<uint64> (64); ++i)
-        {
-            constexpr auto zero = (uint64) 0;
-            constexpr auto one = (uint64) 1;
-
-            biggy.setBit ((int) i, (value & (one << i)) != zero);
-        }
-
-        return biggy;
-    }
-
-    static uint64 toUint64 (const BigInteger& biggy)
-    {
-        uint64 r = 0;
-
-        for (int i = biggy.getHighestBit(); --i >= 0;)
-        {
-            constexpr auto zero = (uint64) 0;
-            constexpr auto one = (uint64) 1;
-
-            r |= static_cast<uint64> (one << i) | (biggy[i] ? one : zero);
-        }
-
-        return r;
-    }
-
-    static uint64 gcd (uint64 a, uint64 b)
-    {
-        while (b != 0)
-        {
-            const auto t = b;
-            b = a % b;
-            a = t;
-        }
-
-        return a;
-    }
-
-    static bool areCoprimes (uint64 a, uint64 b)
-    {
-        if (isEven (a) && isEven (b))
-            return false;
-
-        return gcd (a, b) == 1;
-    }
+    void reseed (uint64 customP, uint64 customQ);
+    void reseed();
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BlumBlumShub)

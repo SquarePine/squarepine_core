@@ -33,6 +33,7 @@ namespace sp
     #include "rng/BlumBlumShub.h"
     #include "rng/ISAAC.h"
     #include "rng/Xorshift.h"
+    #include "unittests/SquarePineCryptographyUnitTestGatherer.h"
 }
 
 #endif // SQUAREPINE_CRYPTOGRAPHY_H
