@@ -5,13 +5,13 @@
 
     ID:                 squarepine_audio
     vendor:             SquarePine
-    version:            0.0.1
+    version:            1.5.0
     name:               SquarePine Audio
     description:        A great backbone for any typical audio project.
     website:            https://www.squarepine.io
-    license:            Beerware
+    license:            GPLv3
     minimumCppStandard: 20
-    dependencies:       squarepine_core juce_dsp
+    dependencies:       squarepine_cryptography juce_dsp
 
     END_JUCE_MODULE_DECLARATION
 */

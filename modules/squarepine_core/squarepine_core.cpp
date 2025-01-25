@@ -41,8 +41,6 @@ namespace sp
        #endif
     }
 
-    #include "cryptography/CRC.cpp"
-    //#include "cryptography/SHA1.cpp"
     #include "debugging/CrashStackTracer.cpp"
     #include "misc/ArrayIterationUnroller.cpp"
     #include "misc/CodeBeautifiers.cpp"
@@ -66,8 +64,6 @@ namespace sp
     #include "networking/User.cpp"
     #include "networking/WebServiceUtilities.cpp"
     #include "networking/WooCommerce.cpp"
-    #include "rng/ISAAC.cpp"
-    #include "rng/Xorshift.cpp"
     #include "text/LanguageCodes.cpp"
     #include "text/CountryCodes.cpp"
     #include "text/LanguageHandler.cpp"

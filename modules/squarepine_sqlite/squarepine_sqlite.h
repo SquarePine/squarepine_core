@@ -5,11 +5,11 @@
 
     ID:                 squarepine_sqlite
     vendor:             SquarePine
-    version:            0.0.1
+    version:            1.5.0
     name:               SquarePine SQLite
     description:        A JUCE module for SQLite.
     website:            https://www.squarepine.io
-    license:            Beerware
+    license:            GPLv3
     minimumCppStandard: 11
     dependencies:       juce_core
 

@@ -5,11 +5,11 @@
 
     ID:                 squarepine_core
     vendor:             SquarePine
-    version:            0.1.0
+    version:            1.5.0
     name:               SquarePine Core
     description:        A decent backbone for any project.
     website:            https://www.squarepine.io
-    license:            Beerware
+    license:            GPLv3
     minimumCppStandard: 20
     dependencies:       juce_audio_utils juce_cryptography juce_opengl
     OSXFrameworks:      SystemConfiguration
@@ -232,7 +232,6 @@
 
 //==============================================================================
 #include "valuetree/VariantConverters.h"
-#include "rng/Hashing.h"
 
 //==============================================================================
 namespace sp
@@ -259,9 +258,6 @@ namespace sp
     #include "behaviours/DeletionNotifier.h"
     #include "behaviours/Identifiable.h"
     #include "behaviours/Lockable.h"
-    #include "cryptography/CRC.h"
-    //#include "cryptography/SHA1.h"
-    //#include "cryptography/SHA2.h"
     #include "debugging/CrashStackTracer.h"
     #include "maths/Algebra.h"
     #include "maths/Interpolation.h"
@@ -295,9 +291,6 @@ namespace sp
     #include "networking/Utilities.h"
     #include "networking/WebServiceUtilities.h"
     #include "networking/WooCommerce.h"
-    #include "rng/BlumBlumShub.h"
-    #include "rng/ISAAC.h"
-    #include "rng/Xorshift.h"
     #include "text/LanguageCodes.h"
     #include "text/CountryCodes.h"
     #include "text/LanguageHandler.h"

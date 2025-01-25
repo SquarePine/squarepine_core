@@ -5,11 +5,11 @@
 
     ID:                 squarepine_animation
     vendor:             SquarePine
-    version:            0.0.1
+    version:            1.5.0
     name:               SquarePine Animation
     description:        A grouping of reusable classes for controlling and managing animations.
     website:            https://www.squarepine.io
-    license:            Beerware
+    license:            GPLv3
     minimumCppStandard: 17
     dependencies:       squarepine_graphics
 

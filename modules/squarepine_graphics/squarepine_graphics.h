@@ -5,13 +5,13 @@
 
     ID:                 squarepine_graphics
     vendor:             SquarePine
-    version:            0.0.1
+    version:            1.5.0
     name:               SquarePine Graphics
-    description:        A grouping of reusable graphics classes, image formats, and other utilities.
+    description:        A group of reusable graphics classes, image formats, Components, and related utilities.
     website:            https://www.squarepine.io
-    license:            Beerware
+    license:            GPLv3
     minimumCppStandard: 20
-    dependencies:       squarepine_core juce_gui_extra
+    dependencies:       squarepine_cryptography juce_gui_extra
 
     END_JUCE_MODULE_DECLARATION
 */
@@ -91,14 +91,14 @@ namespace sp
     namespace helpers
     {
         /** */
-        inline void addAndMakeVisible (Component& parent, const Array<Component*>& children)
+        inline void addAndMakeVisible (Component& parent, const std::vector<Component*>& children)
         {
             for (auto* c : children)
                 parent.addAndMakeVisible (c);
         }
 
         /** */
-        inline void addChildComponents (Component& parent, const Array<Component*>& children)
+        inline void addChildComponents (Component& parent, const std::vector<Component*>& children)
         {
             for (auto* c : children)
                 parent.addChildComponent (c);

@@ -1,13 +1,14 @@
 /** A simple application class wrapping the general set of functionality
     satisfying most applications' needs.
 
-    I found it tiring to set up the various odds and ends within
+    I found it unusually tiring to repeatedly set up the same various odds and ends within
     an app when starting a new project, from setting up a decent file logger
     to having a window title that makes sense and differentiates between release and debug.
 
-    This will log any function you haven't filled in yourself, like unhandledException(),
-    suspended() and resumed(), etc So at least you're aware that these functions are
-    getting called. This is especially useful on mobile where debugging can be a pain in the neck.
+    Another main benefit to this super class is that this will log any function
+    you haven't filled in yourself, like unhandledException(), suspended() and resumed(), etc.
+    This way you're aware that these functions are getting called.
+    This is especially useful on mobile where debugging can be frustrating.
 */
 class SimpleApplication : public JUCEApplication
 {
@@ -21,13 +22,13 @@ public:
     //==============================================================================
     /** @returns the application's name.
         Unlike JUCEApplication's idiotic getApplicationName which isn't method-const,
-        this method allows you to be correct.
+        this method allows you to be correct-er.
     */
     virtual String getAppName() const = 0;
 
     /** @returns the application's version number.
         Unlike JUCEApplication's idiotic getApplicationVersion which isn't method-const,
-        this method allows you to be correct.
+        this method allows you to be correct-er.
     */
     virtual String getAppVersion() const = 0;
 
@@ -36,10 +37,10 @@ public:
         If another instance was started (assuming that was allowed),
         these arguments will be overridden by that.
 
-        @see juce::ApplicaationBase::getCommandLineParameterArray,
-             juce::ApplicaationBase::getCommandLineParameters,
+        @see juce::ApplicationBase::getCommandLineParameterArray,
+             juce::ApplicationBase::getCommandLineParameters,
     */
-    const String& getCommandLineArguments() const noexcept { return commandLineArguments; }
+    const String& getRawCommandLineArguments() const noexcept { return commandLineArguments; }
 
     /** When returning from some modal components this will become the command target:
         this doesn't handle any commands so ensure the command chain is correctly passed on
