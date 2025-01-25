@@ -28,7 +28,7 @@ public:
 
     //==============================================================================
     /** Creates a pitch from a given MIDI note number e.g. 69. */
-    static Pitch fromMIDINote (int midiNote) noexcept { return midiNoteToFrequency (midiNote); }
+    static Pitch fromMIDINote (int midiNote) noexcept       { return midiNoteToFrequency (midiNote); }
 
     /** Creates a pitch from a given note name e.g. A#3.
 
@@ -45,10 +45,10 @@ public:
 
     //==============================================================================
     /** @returns the frequency of the pitch in Hz. */
-    [[nodiscard]] double getFrequencyHz() const noexcept { return frequency; }
+    [[nodiscard]] double getFrequencyHz() const noexcept    { return frequency; }
 
     /** @returns the MIDI note of the pitch. e.g. 440 = 69. */
-    [[nodiscard]] int getMIDINote() const { return frequencyToMIDINote (frequency); }
+    [[nodiscard]] int getMIDINote() const noexcept          { return frequencyToMIDINote (frequency); }
 
     /** @returns the note name of the pitch. e.g. 440 = A4. */
     [[nodiscard]] String getMIDINoteName() const;

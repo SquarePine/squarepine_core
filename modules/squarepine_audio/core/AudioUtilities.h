@@ -15,7 +15,7 @@ inline void resetBuses (AudioProcessor& processor,
 //==============================================================================
 /** @returns true if a buffer is actually cleared; not just by its clear flag. */
 template<typename FloatType>
-inline bool isCleared (const juce::AudioBuffer<FloatType>& buffer)
+[[nodiscard]] inline bool isCleared (const juce::AudioBuffer<FloatType>& buffer)
 {
     if (buffer.hasBeenCleared())
         return true;
@@ -231,3 +231,114 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ScopedSuspend)
 };
+
+//==============================================================================
+/** @returns the RMS for a set of raw values.
+    @warning This does very little validation so be careful!
+*/
+template<typename Type, typename SizeType = int>
+[[nodiscard]] inline Type findRMS (Type* rawValues, SizeType numValues)
+{
+    constexpr auto zero = static_cast<Type> (0);
+    if (rawValues == nullptr || numValues <= 0)
+        return zero;
+
+    auto sum = zero;
+    for (SizeType i = 0; i < numValues; ++i)
+        sum += square (rawValues[i]);
+
+    return std::sqrt (sum / static_cast<Type> (numValues));
+}
+
+/** @returns the RMS for a set of values. */
+template<typename Iterator>
+[[nodiscard]] inline typename std::iterator_traits<Iterator>::value_type findRMS (Iterator beginIter, Iterator endIter)
+{
+    auto sum = static_cast<typename std::iterator_traits<Iterator>::value_type> (0);
+
+    for (auto iter = beginIter; iter != endIter; ++iter)
+        sum += square (*iter);
+
+    return std::sqrt (sum / std::distance (beginIter, endIter));
+}
+
+/** @returns the RMS for a set of values. */
+template<typename Type, typename TypeOfCriticalSectionToUse>
+[[nodiscard]] inline Type findRMS (const juce::Array<Type, TypeOfCriticalSectionToUse>& values)
+{
+    return findRMS (std::cbegin (values), std::cend (values));
+}
+
+/** @returns the RMS for a set of values. */
+template<typename Type, typename TypeOfCriticalSectionToUse>
+[[nodiscard]] inline Type findRMS (const juce::OwnedArray<Type, TypeOfCriticalSectionToUse>& values)
+{
+    return findRMS (std::cbegin (values), std::cend (values));
+}
+
+/** @returns the RMS for a set of values. */
+template<typename Type, typename AllocatorType>
+[[nodiscard]] inline Type findRMS (const std::vector<Type, AllocatorType>& values)
+{
+    return findRMS (values.cbegin(), values.cend());
+}
+
+/** @returns the RMS for a set of values. */
+template<typename Type, typename AllocatorType>
+[[nodiscard]] inline Type findRMS (const std::list<Type, AllocatorType>& values)
+{
+    return findRMS (values.cbegin(), values.cend());
+}
+
+/** @returns the RMS for a set of values. */
+template<typename Type, typename AllocatorType>
+inline Type findRMS (const std::forward_list<Type, AllocatorType>& values)
+{
+    return findRMS (values.cbegin(), values.cend());
+}
+
+/** @returns the RMS for a set of values. */
+template<typename Type, size_t arraySize>
+[[nodiscard]] inline Type findRMS (const std::array<Type, arraySize>& values)
+{
+    return findRMS (values.cbegin(), values.cend());
+}
+
+/** @returns the RMS for a set of values. */
+template<typename Type, size_t arraySize>
+[[nodiscard]] inline Type findRMS (const Type (&values)[arraySize])
+{
+    return findRMS (std::cbegin (values), std::cend (values));
+}
+
+//============================================================================
+/** @returns a pitch ratio converted from a number of semitones. */
+[[nodiscard]] inline float semitonesToPitchRatio (float numSemitones) noexcept    { return std::pow (2.0f, numSemitones / 12.0f); }
+/** @returns a pitch ratio converted from a number of semitones. */
+[[nodiscard]] inline double semitonesToPitchRatio (double numSemitones) noexcept  { return std::pow (2.0, numSemitones / 12.0); }
+/** @returns a pitch ratio converted from a number of semitones. */
+template<typename Type>
+[[nodiscard]] inline double semitonesToPitchRatio (Type numSemitones) noexcept    { return semitonesToPitchRatio (static_cast<double> (numSemitones)); }
+
+/** @returns a number semitones converted from a pitch ratio. */
+[[nodiscard]] inline float pitchRatioToSemitones (float pitchRatio) noexcept      { return 12.0f * std::log2 (pitchRatio); }
+/** @returns a number semitones converted from a pitch ratio. */
+[[nodiscard]] inline double pitchRatioToSemitones (double pitchRatio) noexcept    { return 12.0 * std::log2 (pitchRatio); }
+/** @returns a number semitones converted from a pitch ratio. */
+template<typename Type>
+[[nodiscard]] inline double pitchRatioToSemitones (Type pitchRatio) noexcept      { return pitchRatioToSemitones (static_cast<double> (pitchRatio)); }
+
+//============================================================================
+/** @returns a MIDI note converted from a frequency. */
+[[nodiscard]] inline int frequencyToMIDINote (double frequency) noexcept
+{
+    const auto pitchRatio = std::max (0.0, frequency / 440.0);
+    return roundToInt (69.0 + pitchRatioToSemitones (pitchRatio));
+}
+
+/** @returns a frequency converted from a MIDI note. */
+[[nodiscard]] inline double midiNoteToFrequency (int midiNoteNumber) noexcept
+{
+    const auto semitones = std::max (0, midiNoteNumber);
+    return 440.0 * semitonesToPitchRatio (static_cast<double> (semitones) - 69.0);
+}
