@@ -1,6 +1,6 @@
 namespace xorshiftFuncs
 {
-    constexpr uint64 preseed (uint64& seed) noexcept
+    inline constexpr uint64 preseed (uint64& seed) noexcept
     {
         seed += 0x9e3779b97f4a7c15ULL;
         seed = (seed ^ (seed >> 30)) * 0xbf58476d1ce4e5b9ULL;
@@ -9,12 +9,12 @@ namespace xorshiftFuncs
     }
 
     template<typename ValueType>
-    constexpr ValueType rol64 (ValueType x, ValueType k) noexcept
+    inline constexpr ValueType rol64 (ValueType x, ValueType k) noexcept
     {
         return (x << k) | (x >> (64 - k));
     }
 
-    uint64 xorshift64 (std::array<uint64, 1>& state) noexcept
+    inline uint64 xorshift64 (std::array<uint64, 1>& state) noexcept
     {
         auto& value = state[0];
         value ^= value << 13;
@@ -23,7 +23,7 @@ namespace xorshiftFuncs
         return value;
     }
 
-    uint64 xorshift64Star (std::array<uint64, 1>& state) noexcept
+    inline uint64 xorshift64Star (std::array<uint64, 1>& state) noexcept
     {
         auto& value = state[0];
         value ^= value >> 12;
@@ -32,7 +32,7 @@ namespace xorshiftFuncs
         return value * 0x2545f4914f6cdd1dULL;
     }
 
-    uint64 xorshift128p (std::array<uint64, 2>& state) noexcept
+    inline uint64 xorshift128p (std::array<uint64, 2>& state) noexcept
     {
         auto t = state[0];
         const auto s = state[1];
@@ -44,7 +44,7 @@ namespace xorshiftFuncs
         return t + s;
     }
 
-    uint64 xoshiro256pp (std::array<uint64, 4>& state) noexcept
+    inline uint64 xoshiro256pp (std::array<uint64, 4>& state) noexcept
     {
         const auto result = rol64 (state[0] + state[3], 23ULL) + state[0];
         const auto t = state[1] << 17;
@@ -59,7 +59,7 @@ namespace xorshiftFuncs
         return result;
     }
 
-    uint64 xoshiro256ss (std::array<uint64, 4>& state) noexcept
+    inline uint64 xoshiro256ss (std::array<uint64, 4>& state) noexcept
     {
         const auto result = rol64 (state[1] * 5ULL, 7ULL) * 9;
         const auto t = state[1] << 17;
@@ -74,7 +74,7 @@ namespace xorshiftFuncs
         return result;
     }
 
-    uint64 xoshiro256p (std::array<uint64, 4>& state) noexcept
+    inline uint64 xoshiro256p (std::array<uint64, 4>& state) noexcept
     {
         const auto result = state[0] + state[3];
         const auto t = state[1] << 17;
@@ -89,7 +89,7 @@ namespace xorshiftFuncs
         return result;
     }
 
-    uint64 xorshift1024s (std::array<uint64, 16>& state, int& index) noexcept
+    inline uint64 xorshift1024s (std::array<uint64, 16>& state, int& index) noexcept
     {
         auto i = (size_t) index;
 
@@ -189,9 +189,9 @@ private:
  #pragma pack (pop)
 #endif
 
-void Xorshift64::PimplDeleter::operator() (Xorshift64::Pimpl* pimpl)
+void Xorshift64::PimplDeleter::operator() (Xorshift64::Pimpl* pimplToDelete)
 {
-    deleteAndZero (pimpl);
+    deleteAndZero (pimplToDelete);
 }
 
 //==============================================================================

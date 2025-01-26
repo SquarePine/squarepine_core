@@ -73,6 +73,5 @@ namespace sp
     #include "unittests/AllocatorUnitTests.cpp"
     #include "unittests/AngleUnitTests.cpp"
     #include "unittests/MathsUnitTests.cpp"
-    #include "unittests/RNGUnitTests.cpp"
     #include "unittests/SquarePineCoreUnitTestGatherer.cpp"
 }

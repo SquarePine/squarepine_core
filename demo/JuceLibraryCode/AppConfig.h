@@ -20,33 +20,34 @@
 
 // [END_USER_CODE_SECTION]
 
-#define JUCE_PROJUCER_VERSION 0x80003
+#define JUCE_PROJUCER_VERSION 0x80006
 
 //==============================================================================
-#define JUCE_MODULE_AVAILABLE_juce_analytics              1
-#define JUCE_MODULE_AVAILABLE_juce_animation              1
-#define JUCE_MODULE_AVAILABLE_juce_audio_basics           1
-#define JUCE_MODULE_AVAILABLE_juce_audio_devices          1
-#define JUCE_MODULE_AVAILABLE_juce_audio_formats          1
-#define JUCE_MODULE_AVAILABLE_juce_audio_processors       1
-#define JUCE_MODULE_AVAILABLE_juce_audio_utils            1
-#define JUCE_MODULE_AVAILABLE_juce_box2d                  1
-#define JUCE_MODULE_AVAILABLE_juce_core                   1
-#define JUCE_MODULE_AVAILABLE_juce_cryptography           1
-#define JUCE_MODULE_AVAILABLE_juce_data_structures        1
-#define JUCE_MODULE_AVAILABLE_juce_dsp                    1
-#define JUCE_MODULE_AVAILABLE_juce_events                 1
-#define JUCE_MODULE_AVAILABLE_juce_graphics               1
-#define JUCE_MODULE_AVAILABLE_juce_gui_basics             1
-#define JUCE_MODULE_AVAILABLE_juce_gui_extra              1
-#define JUCE_MODULE_AVAILABLE_juce_opengl                 1
-#define JUCE_MODULE_AVAILABLE_juce_osc                    1
-#define JUCE_MODULE_AVAILABLE_juce_product_unlocking      1
-#define JUCE_MODULE_AVAILABLE_juce_video                  1
-#define JUCE_MODULE_AVAILABLE_squarepine_animation        1
-#define JUCE_MODULE_AVAILABLE_squarepine_audio            1
-#define JUCE_MODULE_AVAILABLE_squarepine_core             1
-#define JUCE_MODULE_AVAILABLE_squarepine_graphics         1
+#define JUCE_MODULE_AVAILABLE_juce_analytics               1
+#define JUCE_MODULE_AVAILABLE_juce_animation               1
+#define JUCE_MODULE_AVAILABLE_juce_audio_basics            1
+#define JUCE_MODULE_AVAILABLE_juce_audio_devices           1
+#define JUCE_MODULE_AVAILABLE_juce_audio_formats           1
+#define JUCE_MODULE_AVAILABLE_juce_audio_processors        1
+#define JUCE_MODULE_AVAILABLE_juce_audio_utils             1
+#define JUCE_MODULE_AVAILABLE_juce_box2d                   1
+#define JUCE_MODULE_AVAILABLE_juce_core                    1
+#define JUCE_MODULE_AVAILABLE_juce_cryptography            1
+#define JUCE_MODULE_AVAILABLE_juce_data_structures         1
+#define JUCE_MODULE_AVAILABLE_juce_dsp                     1
+#define JUCE_MODULE_AVAILABLE_juce_events                  1
+#define JUCE_MODULE_AVAILABLE_juce_graphics                1
+#define JUCE_MODULE_AVAILABLE_juce_gui_basics              1
+#define JUCE_MODULE_AVAILABLE_juce_gui_extra               1
+#define JUCE_MODULE_AVAILABLE_juce_opengl                  1
+#define JUCE_MODULE_AVAILABLE_juce_osc                     1
+#define JUCE_MODULE_AVAILABLE_juce_product_unlocking       1
+#define JUCE_MODULE_AVAILABLE_juce_video                   1
+#define JUCE_MODULE_AVAILABLE_squarepine_animation         1
+#define JUCE_MODULE_AVAILABLE_squarepine_audio             1
+#define JUCE_MODULE_AVAILABLE_squarepine_core              1
+#define JUCE_MODULE_AVAILABLE_squarepine_cryptography      1
+#define JUCE_MODULE_AVAILABLE_squarepine_graphics          1
 
 #define JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED 1
 

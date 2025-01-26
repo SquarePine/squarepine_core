@@ -67,6 +67,7 @@ namespace std
     };
 
     //============================================================================
+   #if 0 // TODO
     /** Here's an std::hash overload for SHA1. */
     template<>
     struct hash<sp::SHA1>
@@ -77,6 +78,7 @@ namespace std
             return std::hash<juce::String>() (key.toHexString());
         }
     };
+   #endif
 }
 
 //============================================================================

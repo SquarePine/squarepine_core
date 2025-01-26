@@ -267,8 +267,8 @@ public:
     */
     ParticleEmitter (float gravityInPxPerUpdate = 1.0f,
                      bool shouldRemoveParticlesOnEnd = false) :
-        gravityPxPerUpdate (gravityInPxPerUpdate),
-        shouldRemoveOnEnd (shouldRemoveParticlesOnEnd)
+        shouldRemoveOnEnd (shouldRemoveParticlesOnEnd),
+        gravityPxPerUpdate (gravityInPxPerUpdate)
     {
         jassert (std::isnormal (gravityPxPerUpdate));
     }
