@@ -106,15 +106,50 @@ inline bool containsSubstring (const StringArray& source, const String& substrin
 }
 
 //==============================================================================
-/** @returns */
+/** @returns an upper-case version of the given character.
+
+    JUCE's juce::String doesn't properly convert casing,
+    what with it not supporting extended Latin codepoints
+    and other languages, hence the need for this function.
+*/
 juce_wchar toUpperCase (juce_wchar character) noexcept;
-/** @returns */
+
+/** @returns a lower-case version of the given character.
+
+    JUCE's juce::String doesn't properly convert casing,
+    what with it not supporting extended Latin codepoints
+    and other languages, hence the need for this function.
+*/
 juce_wchar toLowerCase (juce_wchar character) noexcept;
-/** @returns */
+
+/** @returns true if the given character is upper-case.
+
+    JUCE's juce::String doesn't properly convert casing,
+    what with it not supporting extended Latin codepoints
+    and other languages, hence the need for this function.
+*/
 bool isUpperCase (juce_wchar character) noexcept;
-/** @returns */
+
+/** @returns true if the given character is lower-case.
+
+    JUCE's juce::String doesn't properly convert casing,
+    what with it not supporting extended Latin codepoints
+    and other languages, hence the need for this function.
+*/
 bool isLowerCase (juce_wchar character) noexcept;
-/** @returns */
+
+/** @returns an upper-case version of the given juce::String.
+
+    JUCE's juce::String doesn't properly convert casing,
+    what with it not supporting extended Latin codepoints
+    and other languages, hence the need for this function.
+*/
 String toUpperCase (const String& source);
-/** @returns */
+
+/** @returns a lower-case version of the given juce::String.
+
+    JUCE's juce::String doesn't properly convert casing,
+    what with it not supporting extended Latin codepoints
+    and other languages, hence the need for this function.
+*/
 String toLowerCase (const String& source);

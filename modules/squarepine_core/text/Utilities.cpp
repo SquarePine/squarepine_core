@@ -5,7 +5,8 @@ namespace details
 
         There isn't a straightforward function to do this programmatically.
 
-        The 'first' (left column) is comprised of the lowercase versions of characters, and the other is uppercase.
+        The 'first' (left column) is comprised of the lower-case versions of characters,
+        and you've probably figured out already that the other is the upper-case equivalent.
     */
     const std::unordered_map<juce_wchar, juce_wchar> caseConversionMap =
     {
