@@ -11,18 +11,22 @@
     website:            https://www.squarepine.io
     license:            GPLv3
     minimumCppStandard: 17
-    dependencies:       squarepine_graphics
+    dependencies:       juce_animation squarepine_graphics
 
     END_JUCE_MODULE_DECLARATION
 */
 //==============================================================================
 #include <squarepine_graphics/squarepine_graphics.h>
+#include <juce_animation/juce_animation.h>
 
 //==============================================================================
 namespace sp
 {
     using namespace juce;
 
+    #include "maths/CubicBezier.h"
+    #include "maths/Easing.h"
+    #include "maths/Spline.h"
     #include "controllers/Timeline.h"
     #include "controllers/TimelineGroup.h"
     #include "particles/ParticleSystem.h"

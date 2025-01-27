@@ -5,14 +5,16 @@
     a similar API in mind in that the easing functions,
     which are effectively complex interpolation functions,
     require a weight instead of a phase.
+
+    The purpose of all of these functions is to act as a normalised function.
 */
 namespace ease
 {
     #undef ease_constexpr
-    #define ease_constexpr [[nodiscard]] inline constexpr double
-
     #undef ease_inline
-    #define ease_inline [[nodiscard]] inline double
+
+    #define ease_constexpr  [[nodiscard]] inline constexpr double
+    #define ease_inline     [[nodiscard]] inline double
 
     /** This namespace provides an assortment of the standard CSS easing functions.
 
@@ -199,7 +201,7 @@ namespace ease
     namespace audio
     {
         /** @returns */
-        ease_constexpr convertWeightToRads (double weight, double frequencyHz = 1.0)
+        ease_constexpr convertWeightToRads (double weight, double frequencyHz = 1.0) noexcept
         {
             return weight * frequencyHz * MathConstants<double>::twoPi;
         }
