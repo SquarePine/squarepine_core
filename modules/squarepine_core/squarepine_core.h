@@ -33,6 +33,18 @@
 #include <type_traits>
 
 //==============================================================================
+/** Current SquarePine major version number. */
+#define SQUAREPINE_MAJOR_VERSION        1
+/** Current SquarePine minor version number. */
+#define SQUAREPINE_MINOR_VERSION        6
+/** Current SquarePine build version number. */
+#define SQUAREPINE_BUILDNUMBER          0
+/** Current SquarePine version number as a string. */
+#define SQUAREPINE_VERSION_STRING       "1.6.0"
+/** Current SquarePine version number as a string. */
+#define SQUAREPINE_FULL_VERSION_STRING  "SquarePine v1.6.0"
+
+//==============================================================================
 #undef JUCE_CORE_INCLUDE_JNI_HELPERS
 #define JUCE_CORE_INCLUDE_JNI_HELPERS 1
 

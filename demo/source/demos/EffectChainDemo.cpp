@@ -440,9 +440,9 @@ EffectChainDemo::EffectChainDemo (SharedObjects& sharedObjs) :
 
 EffectChainDemo::~EffectChainDemo()
 {
+    audioProcessorPlayer.setProcessor (nullptr);
     sharedObjects.audioDeviceManager.removeChangeListener (this);
     sharedObjects.audioDeviceManager.removeAudioCallback (&audioProcessorPlayer);
-    audioProcessorPlayer.setProcessor (nullptr);
 }
 
 void EffectChainDemo::changeListenerCallback (ChangeBroadcaster*)
@@ -546,6 +546,8 @@ void EffectChainDemo::paint (Graphics& g)
 
 void EffectChainDemo::updateFromAudioDeviceManager()
 {
+    rewindAndStop();
+
     timeKeeper.setSamplingRate (sharedObjects.audioDeviceManager);
 }
 

@@ -151,7 +151,7 @@ public:
     /** @internal */
     String getAppName() const override      { return ProjectInfo::projectName; }
     /** @internal */
-    String getAppVersion() const override   { return ProjectInfo::versionString; }
+    String getAppVersion() const override   { return SQUAREPINE_VERSION_STRING; }
 
     //==============================================================================
     /** @internal */
@@ -160,8 +160,8 @@ public:
         String windowName;
         windowName
             << ProjectInfo::companyName
-            << " - " << ProjectInfo::projectName
-            << " - v" << ProjectInfo::versionString;
+            << " - " << getAppName()
+            << " - v" << getAppVersion();
 
        #if JUCE_DEBUG
         windowName << " [DEBUG]";

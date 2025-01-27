@@ -3,7 +3,8 @@
 <JUCERPROJECT id="jumC7J" name="SquarePine Demo" projectType="guiapp" jucerFormatVersion="1"
               companyName="SquarePine" companyCopyright="SquarePine (C)" companyWebsite="squarepine.io"
               companyEmail="joel.r.langlois@gmail.com" useAppConfig="1" addUsingNamespaceToJuceHeader="1"
-              maxBinaryFileSize="20971520" cppLanguageStandard="latest" defines="_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING=1">
+              maxBinaryFileSize="20971520" cppLanguageStandard="latest" defines="_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING=1"
+              version="1.6.0">
   <MAINGROUP id="m6sryU" name="SquarePine Demo">
     <GROUP id="{A87106D4-97C8-8B6E-ABEF-2127F24885D5}" name="assets">
       <GROUP id="{AA4AFFDE-833A-2EE9-7061-76FBD8E33B4A}" name="Android">
@@ -252,9 +253,7 @@
     </VS2022>
     <XCODE_IPHONE targetFolder="builds/ios" iosScreenOrientation="UIInterfaceOrientationLandscapeLeft,UIInterfaceOrientationLandscapeRight,UIInterfaceOrientationPortrait,UIInterfaceOrientationPortraitUpsideDown"
                   iPadScreenOrientation="UIInterfaceOrientationLandscapeLeft,UIInterfaceOrientationLandscapeRight,UIInterfaceOrientationPortrait,UIInterfaceOrientationPortraitUpsideDown"
-                  UIFileSharingEnabled="1" UISupportsDocumentBrowser="1" microphonePermissionNeeded="1"
-                  cameraPermissionNeeded="1" iosBluetoothPermissionNeeded="1" iosContentSharing="1"
-                  iosBackgroundAudio="1" iosBackgroundBle="1" smallIcon="jqPxuh"
+                  UIFileSharingEnabled="1" UISupportsDocumentBrowser="1" smallIcon="jqPxuh"
                   bigIcon="jqPxuh">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"/>
@@ -289,8 +288,7 @@
         <MODULEPATH id="squarepine_cryptography" path="../modules"/>
       </MODULEPATHS>
     </XCODE_IPHONE>
-    <XCODE_MAC targetFolder="builds/macos" xcodeValidArchs="arm64,x86_64" applicationCategory="public.app-category.utilities"
-               microphonePermissionNeeded="1" cameraPermissionNeeded="1" iosBluetoothPermissionNeeded="1"
+    <XCODE_MAC targetFolder="builds/macos" xcodeValidArchs="arm64,x86_64" applicationCategory="public.app-category.games"
                smallIcon="jqPxuh" bigIcon="jqPxuh">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"
