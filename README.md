@@ -16,7 +16,7 @@ The philosophy here is multi-part:
 * Open up as much code as possible.
 * Make the code as generic and flexible as possible.
 * Make the code as consistent in design, architecture, and style, as much as possible.
-  * Have a look at our coding standards!
+  * Have a look at [our coding standards](https://github.com/SquarePine/SquarePineCodingStandards/wiki)!
 
 ## Shields
 
