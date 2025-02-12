@@ -7,11 +7,11 @@
     vendor:             SquarePine
     version:            1.6.0
     name:               SquarePine Core
-    description:        A decent backbone for any project.
+    description:        A solid backbone for every JUCE project.
     website:            https://www.squarepine.io
     license:            GPLv3
     minimumCppStandard: 20
-    dependencies:       juce_audio_utils juce_cryptography juce_opengl
+    dependencies:       juce_opengl juce_cryptography juce_audio_utils
     OSXFrameworks:      SystemConfiguration
     iOSFrameworks:      SystemConfiguration
 
@@ -49,16 +49,12 @@
 #define JUCE_CORE_INCLUDE_JNI_HELPERS 1
 
 #include <juce_opengl/juce_opengl.h>
-#include <juce_audio_utils/juce_audio_utils.h>
 #include <juce_cryptography/juce_cryptography.h>
+#include <juce_audio_utils/juce_audio_utils.h>
 
 #include <juce_core/unit_tests/juce_UnitTestCategories.h>
 
-#if JUCE_MINGW
-    #error "SquarePine: JUCE has officially removed support for MinGW and I don't want to support it myself, either."
-#endif
-
-#if ! JUCE_WINDOWS
+#if ! JUCE_MSVC
    #if JUCE_DEBUG
     #include <cxxabi.h>
    #endif
@@ -70,7 +66,7 @@
 //==============================================================================
 /** Config: SQUAREPINE_COMPILE_UNIT_TESTS
 
-    Enable or disable compiling unit tests into an application.
+    Enable or disable compiling SquarePine's unit tests into an application.
 
     By default this is off.
 */

@@ -80,7 +80,7 @@ MainComponent::MainComponent (SharedObjects& sharedObjs)
     };
 
     addAndMakeVisible (popupButton);
-    menuItemSelected (7, 0);
+    menuItemSelected (1, 0);
 
    #if SQUAREPINE_IS_DESKTOP
     setSize (1024, 768);

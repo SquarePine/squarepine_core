@@ -3,8 +3,6 @@
 
 #include <JuceHeader.h>
 
-#include <type_traits>
-
 /** Config: SP_DEMO_USE_OPENGL
 
     Enables or disables setting the application up for OpenGL.
