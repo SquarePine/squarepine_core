@@ -94,10 +94,16 @@ public:
         {
             scalablePlot = *plot;
 
+            const auto bf = b.toFloat();
+
             // The 'ease' type graph on the right side:
-            plotTransform = AffineTransform::scale (1.0f, 0.75f)
-                            .followedBy (AffineTransform::translation (0.0f, 0.2f))
-                            .followedBy (plot->getTransformToScaleToFit (b.toFloat(), true));
+            // NB: JUCE's drawing system is upside down/backwards, so we have to correct for that.
+            plotTransform = AffineTransform()
+                            .followedBy (plot->getTransformToScaleToFit (bf, true))
+                            .followedBy (AffineTransform::scale (1.0f, 0.75f))
+                            .followedBy (AffineTransform::verticalFlip (bf.getHeight() * 0.75f))
+                            .followedBy (AffineTransform::translation (0.0f, bf.getHeight() / 2.0f));
+
             scalablePlot.applyTransform (plotTransform);
         }
         else

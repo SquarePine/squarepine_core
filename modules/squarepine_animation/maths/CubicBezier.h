@@ -90,9 +90,6 @@ public:
                       getP3().toFloat());
         // plot.closeSubPath(); // NB: Deliberately not closing for the sake of a singular line.
 
-        // JUCE's drawing system is upside down/backwards, so we have to correct for that.
-        path.applyTransform (AffineTransform::verticalFlip (path.getBounds().getHeight()));
-
         return path;
     }
 
