@@ -390,7 +390,6 @@ EffectChainDemo::EffectChainDemo (SharedObjects& sharedObjs) :
     {
         label.setJustificationType (Justification::centredLeft);
         label.setColour (Label::backgroundColourId, Colours::transparentBlack);
-        label.setColour (Label::textColourId, Colours::black);
         addAndMakeVisible (label);
     };
 
@@ -514,7 +513,7 @@ void EffectChainDemo::resized()
     b.removeFromTop (margin);
 
     {
-        auto row = b.removeFromTop (32);
+        auto row = b.removeFromTop (64);
         filePath.setBounds (row.removeFromLeft (row.getWidth() / 2));
         timeDisplay.setBounds (row);
     }
@@ -531,7 +530,7 @@ void EffectChainDemo::paint (Graphics& g)
     const auto lengthSeconds = audioThumbnail->getTotalLength();
     const auto timeSeconds = transport->getCurrentTimeSeconds();
 
-    g.setColour (Colours::darkgrey);
+    g.setColour (filePath.findColour (Label::textColourId));
     audioThumbnail->drawChannels (g, audioThumbnailArea, 0.0, lengthSeconds, 0.9f);
 
     g.setColour (Colours::dodgerblue);

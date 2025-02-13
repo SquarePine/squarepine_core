@@ -1,3 +1,4 @@
+//==============================================================================
 namespace oscillatorFunctions
 {
     /** */
@@ -29,8 +30,77 @@ namespace oscillatorFunctions
         constexpr auto one = static_cast<FloatType> (1);
         return phase > static_cast<FloatType> (0) ? one : -one;
     }
+
+    //==============================================================================
+    /** */
+    struct NoiseFunctionGenerator
+    {
+        NoiseFunctionGenerator() noexcept = default;
+        virtual ~NoiseFunctionGenerator() noexcept = default;
+    };
+
+    /** White noise generator using Gaussian distribution. */
+    struct WhiteNoiseGenerator final : NoiseFunctionGenerator
+    {
+        WhiteNoiseGenerator() noexcept = default;
+
+        template<typename FloatType>
+        FloatType process (FloatType) noexcept { return static_cast<FloatType> (dist (generator)); }
+
+    private:
+        std::default_random_engine generator;
+        std::normal_distribution<double> dist;
+
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WhiteNoiseGenerator)
+    };
+
+    /** Pink noise generator. */
+    struct PinkNoiseGenerator final : NoiseFunctionGenerator
+    {
+        PinkNoiseGenerator() noexcept = default;
+
+        template<typename FloatType>
+        FloatType process (FloatType) noexcept { return static_cast<FloatType> (dist (generator)); }
+
+    private:
+        std::default_random_engine generator;
+        std::normal_distribution<double> dist;
+
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PinkNoiseGenerator)
+    };
+
+    /** Blue noise generator. */
+    struct BlueNoiseGenerator final : NoiseFunctionGenerator
+    {
+        BlueNoiseGenerator() noexcept = default;
+
+        template<typename FloatType>
+        FloatType process (FloatType) noexcept { return static_cast<FloatType> (dist (generator)); }
+
+    private:
+        std::default_random_engine generator;
+        std::normal_distribution<double> dist;
+
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BlueNoiseGenerator)
+    };
+
+    /** Brownian noise generator. */
+    struct BrownianNoiseGenerator final : NoiseFunctionGenerator
+    {
+        BrownianNoiseGenerator() noexcept = default;
+
+        template<typename FloatType>
+        FloatType process (FloatType) noexcept { return static_cast<FloatType> (dist (generator)); }
+
+    private:
+        std::default_random_engine generator;
+        std::normal_distribution<double> dist;
+
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BrownianNoiseGenerator)
+    };
 }
 
+//==============================================================================
 /** A processor that can act as an LFO or a function generator.
 
     This acts as an LFO by default. You may want to use its
@@ -65,23 +135,32 @@ public:
         triangle,
         ramp,
         sawtooth,
-        square
+        square,
+        whiteNoise,
+        pinkNoise,
+        blueNoise,
+        brownianNoise
     };
 
-    /** */
+    /** Changes the current LFO function. */
     void setLFOType (LFOType);
 
-    /** */
+    /** @returns the currently used LFO function. s*/
     LFOType getLFOType() const;
 
-    /** */
+    /** Changes the frequency of the LFO in Hz. */
     void setFrequencyHz (double);
 
-    /** */
+    /** Changes the frequency of the LFO using a MIDI note pitch. */
     void setFrequencyFromMidiNote (int);
 
-    /** */
-    double getFrequency() const;
+    /** Changes the frequency of the LFO using a simple pitch. */
+    void setFrequency (const Pitch&);
+
+    /** @returns the currently set frequency in Hz. */
+    double getFrequencyHz() const;
+    /** @returns the currently set frequency as a Pitch object. */
+    Pitch getFrequencyPitch() const;
 
     //==============================================================================
     /** @internal */
@@ -99,6 +178,11 @@ private:
     //==============================================================================
     const bool isMultiplying = true;
     bool isFirstRun = true;
+
+    oscillatorFunctions::WhiteNoiseGenerator whiteNoiseGenerator;
+    oscillatorFunctions::PinkNoiseGenerator pinkNoiseGenerator;
+    oscillatorFunctions::BlueNoiseGenerator blueNoiseGenerator;
+    oscillatorFunctions::BrownianNoiseGenerator brownianNoiseGenerator;
 
     juce::AudioBuffer<float> floatMulter;
     juce::AudioBuffer<double> doubleMulter;

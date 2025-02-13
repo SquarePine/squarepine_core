@@ -31,6 +31,9 @@ LFOProcessor::LFOProcessor (double minFreqHz, double maxFreqHz,
     InternalProcessor (false),
     isMultiplying (isMult)
 {
+    jassert (minFreqHz > 0.0f);
+    jassert (maxFreqHz > minFreqHz);
+
     auto layout = createDefaultParameterLayout();
 
     auto tp = std::make_unique<TypeParameter>();
@@ -54,13 +57,17 @@ void LFOProcessor::setLFOType (dsp::Oscillator<FloatType>& osc, LFOType lfoType)
 
     switch (lfoType)
     {
-        case LFOType::sine:     func = (FloatType (*) (FloatType)) &std::sin; break;
-        case LFOType::cosine:   func = (FloatType (*) (FloatType)) &std::cos; break;
-        case LFOType::tangent:  func = (FloatType (*) (FloatType)) &std::tan; break;
-        case LFOType::triangle: func = oscillatorFunctions::triangle<FloatType>; break;
-        case LFOType::ramp:     func = oscillatorFunctions::ramp<FloatType>; break;
-        case LFOType::sawtooth: func = oscillatorFunctions::saw<FloatType>; break;
-        case LFOType::square:   func = oscillatorFunctions::square<FloatType>; break;
+        case LFOType::sine:             func = (FloatType (*) (FloatType)) &std::sin; break;
+        case LFOType::cosine:           func = (FloatType (*) (FloatType)) &std::cos; break;
+        case LFOType::tangent:          func = (FloatType (*) (FloatType)) &std::tan; break;
+        case LFOType::triangle:         func = oscillatorFunctions::triangle<FloatType>; break;
+        case LFOType::ramp:             func = oscillatorFunctions::ramp<FloatType>; break;
+        case LFOType::sawtooth:         func = oscillatorFunctions::saw<FloatType>; break;
+        case LFOType::square:           func = oscillatorFunctions::square<FloatType>; break;
+        case LFOType::whiteNoise:       func = [this] (FloatType v) { return whiteNoiseGenerator.process (v); }; break;
+        case LFOType::pinkNoise:        func = [this] (FloatType v) { return pinkNoiseGenerator.process (v); }; break;
+        case LFOType::blueNoise:        func = [this] (FloatType v) { return blueNoiseGenerator.process (v); }; break;
+        case LFOType::brownianNoise:    func = [this] (FloatType v) { return brownianNoiseGenerator.process (v); }; break;
 
         default:
             jassertfalse;
@@ -80,23 +87,13 @@ void LFOProcessor::setLFOType (LFOType lfoType, bool force)
     setLFOType (doubleOsc, lfoType);
 }
 
-void LFOProcessor::setLFOType (LFOType lfoType)
-{
-    setLFOType (lfoType, true);
-}
-
-void LFOProcessor::setFrequencyHz (const double newFrequency)
-{
-    *frequency = (float) newFrequency;
-}
-
-void LFOProcessor::setFrequencyFromMidiNote (const int midiNote)
-{
-    setFrequencyHz (MidiMessage::getMidiNoteInHertz (midiNote));
-}
-
-double LFOProcessor::getFrequency() const               { return frequency->get(); }
-LFOProcessor::LFOType LFOProcessor::getLFOType() const  { return (LFOType) type->getIndex(); }
+void LFOProcessor::setLFOType (LFOType lfoType)             { setLFOType (lfoType, true); }
+void LFOProcessor::setFrequencyHz (double newFrequency)     { *frequency = (float) newFrequency; }
+void LFOProcessor::setFrequency (const Pitch& pitch)        { setFrequencyHz (pitch.getFrequencyHz()); }
+void LFOProcessor::setFrequencyFromMidiNote (int midiNote)  { setFrequencyHz (MidiMessage::getMidiNoteInHertz (midiNote)); }
+double LFOProcessor::getFrequencyHz() const                 { return frequency->get(); }
+Pitch LFOProcessor::getFrequencyPitch() const               { return getFrequencyHz(); }
+LFOProcessor::LFOType LFOProcessor::getLFOType() const      { return (LFOType) type->getIndex(); }
 
 //==============================================================================
 void LFOProcessor::prepareToPlay (const double newSampleRate, const int samplesPerBlock)
@@ -132,7 +129,7 @@ void LFOProcessor::process (dsp::Oscillator<FloatType>& osc,
                             juce::AudioBuffer<FloatType>& buffer)
 {
     {
-        auto v = getFrequency();
+        const auto v = getFrequencyHz();
         floatOsc.setFrequency ((float) v);
         doubleOsc.setFrequency (v);
     }
