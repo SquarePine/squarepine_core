@@ -18,7 +18,10 @@ private:
         choices.add (NEEDS_TRANS ("Triangle"));
         choices.add (NEEDS_TRANS ("Ramp"));
         choices.add (NEEDS_TRANS ("Sawtooth"));
-        choices.add (NEEDS_TRANS ("Square"));
+        choices.add (NEEDS_TRANS ("White Noise"));
+        choices.add (NEEDS_TRANS ("Pink Noise"));
+        choices.add (NEEDS_TRANS ("Blue Noise"));
+        choices.add (NEEDS_TRANS ("Brownian Noise"));
         return choices;
     }
 
