@@ -149,7 +149,15 @@ void SharedObjects::restoreWindowDimensions (DocumentWindow& dw)
 
 Image SharedObjects::getWindowIcon()
 {
-    return ImageCache::getFromMemory (BinaryData::SquarePine_Logo_png, BinaryData::SquarePine_Logo_pngSize);
+    static Image windowIcon;
+
+    if (windowIcon.isNull())
+    {
+        windowIcon = ImageCache::getFromMemory (BinaryData::SquarePine_Logo_png, BinaryData::SquarePine_Logo_pngSize);
+        windowIcon.setBackupEnabled (false);
+    }
+
+    return windowIcon;
 }
 
 //==============================================================================
