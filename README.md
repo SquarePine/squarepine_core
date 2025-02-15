@@ -37,7 +37,6 @@ Some major feature highlights:
 * Find out what kind of network you're on and receive notifications when connectivity changes (connects or disconnects).
   * [`sp::NetworkConnectivityChecker`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/networking/NetworkConnectivityChecker.h) 
 * A wide array of math functions and structures.
-  * Every standard [easing function](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/maths/Easing.h) for animation purposes.
   * [`sp::Vector4D`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/maths/Vector4D.h)
   * [`sp::Angle`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/maths/Angle.h)
 * Many `juce::XYZType` are available within the `juce::ValueTree` ecosystem via the [`VariantConverters`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_core/valuetree/VariantConverters.h) provided.
@@ -93,6 +92,8 @@ A vast range of simple renditions of audio effects can be found, including an ec
   * Call `sp::corsair::updateAllLEDsWithColour` to have some fun!
 * [`sp::ImageFormatManager`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_graphics/images/ImageFormatManager.h) makes it easier to bring together your favourite image formats, unifying their instances for loading images with your own codecs using JUCE's [`juce::ImageFileFormat`](https://github.com/juce-framework/JUCE/blob/develop/modules/juce_graphics/images/juce_ImageFileFormat.h) ecosystem.
 * Simplifying font support for look and feels using [`sp::FontWeight`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_graphics/utilities/Fonts.h#L5) and [`sp::FontFamily`](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_graphics/utilities/Fonts.h#L34).
+* Every standard [easing function](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_animation/maths/Easing.h) for animation purposes.
+  * Including a [CubicBezier](https://github.com/SquarePine/squarepine_core/blob/main/modules/squarepine_animation/maths/CubicBezier.h) implementation with its own easing variants.
 
 # Demo Screenshots
 
