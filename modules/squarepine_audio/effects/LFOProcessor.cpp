@@ -34,7 +34,7 @@ LFOProcessor::LFOProcessor (double minFreqHz, double maxFreqHz,
     InternalProcessor (false),
     isMultiplying (isMult)
 {
-    jassert (minFreqHz > 0.0f);
+    jassert (minFreqHz > 0.0);
     jassert (maxFreqHz > minFreqHz);
 
     auto layout = createDefaultParameterLayout();
@@ -43,7 +43,8 @@ LFOProcessor::LFOProcessor (double minFreqHz, double maxFreqHz,
     type = tp.get();
     layout.add (std::move (tp));
 
-    auto pf = std::make_unique<AudioParameterFloat> (ParameterID ("frequency", 1), "Frequency", minFreqHz, maxFreqHz, defaultFreqHz);
+    auto pf = std::make_unique<AudioParameterFloat> (ParameterID ("frequency", 1), "Frequency",
+                                                     (float) minFreqHz, (float) maxFreqHz, (float) defaultFreqHz);
     frequency = pf.get();
     layout.add (std::move (pf));
 
