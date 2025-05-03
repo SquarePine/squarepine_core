@@ -171,26 +171,26 @@ inline void addFrom (juce::AudioBuffer<FloatType>& destination,
 
 //==============================================================================
 /** */
-class ParameterGesturer final
+class ScopedParameterGesturer final
 {
 public:
     /** */
-    ParameterGesturer (AudioProcessorParameter& p) :
+    ScopedParameterGesturer (AudioProcessorParameter& p) :
         parameter (p)
     {
         parameter.beginChangeGesture();
     }
 
     /** */
-    ~ParameterGesturer()
+    ~ScopedParameterGesturer()
     {
         parameter.endChangeGesture();
     }
 
+private:
     AudioProcessorParameter& parameter;
 
-private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParameterGesturer)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ScopedParameterGesturer)
 };
 
 //==============================================================================
@@ -329,14 +329,14 @@ template<typename Type>
 [[nodiscard]] inline double pitchRatioToSemitones (Type pitchRatio) noexcept      { return pitchRatioToSemitones (static_cast<double> (pitchRatio)); }
 
 //============================================================================
-/** @returns a MIDI note converted from a frequency. */
-[[nodiscard]] inline int frequencyToMIDINote (double frequency) noexcept
+/** @returns a MIDI note converted from a frequency (in Hz). */
+[[nodiscard]] inline int frequencyToMIDINote (double frequencyHz) noexcept
 {
-    const auto pitchRatio = std::max (0.0, frequency / 440.0);
+    const auto pitchRatio = std::max (0.0, frequencyHz / 440.0);
     return roundToInt (69.0 + pitchRatioToSemitones (pitchRatio));
 }
 
-/** @returns a frequency converted from a MIDI note. */
+/** @returns a frequency (in Hz) converted from a MIDI note. */
 [[nodiscard]] inline double midiNoteToFrequency (int midiNoteNumber) noexcept
 {
     const auto semitones = std::max (0, midiNoteNumber);
