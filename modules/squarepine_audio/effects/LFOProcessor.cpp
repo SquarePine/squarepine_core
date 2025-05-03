@@ -2,13 +2,21 @@
 class LFOProcessor::TypeParameter final : public AudioParameterChoice
 {
 public:
-    TypeParameter() :
+    TypeParameter (LFOProcessor& p) :
         AudioParameterChoice (ParameterID ("type", 1), TRANS ("Type"), getChoices(),
-                              static_cast<int> (LFOProcessor::LFOType::sine))
+                              static_cast<int> (LFOProcessor::LFOType::sine)),
+        parentProc (p)
     {
     }
 
+    void valueChanged (int) override
+    {
+        parentProc.setLFOType (parentProc.getLFOType(), true);
+    }
+
 private:
+    LFOProcessor& parentProc;
+
     static StringArray getChoices()
     {
         StringArray choices;
@@ -18,6 +26,7 @@ private:
         choices.add (NEEDS_TRANS ("Triangle"));
         choices.add (NEEDS_TRANS ("Ramp"));
         choices.add (NEEDS_TRANS ("Sawtooth"));
+        choices.add (NEEDS_TRANS ("Square"));
         choices.add (NEEDS_TRANS ("White Noise"));
         choices.add (NEEDS_TRANS ("Pink Noise"));
         choices.add (NEEDS_TRANS ("Blue Noise"));
@@ -39,7 +48,7 @@ LFOProcessor::LFOProcessor (double minFreqHz, double maxFreqHz,
 
     auto layout = createDefaultParameterLayout();
 
-    auto tp = std::make_unique<TypeParameter>();
+    auto tp = std::make_unique<TypeParameter> (*this);
     type = tp.get();
     layout.add (std::move (tp));
 
@@ -121,7 +130,7 @@ void LFOProcessor::prepareToPlay (const double newSampleRate, const int samplesP
 
     if (isFirstRun)
     {
-        setLFOType (static_cast<LFOType> (type->getIndex()), true);
+        setLFOType (getLFOType(), true);
         isFirstRun = false;
     }
 }
@@ -138,6 +147,9 @@ void LFOProcessor::process (dsp::Oscillator<FloatType>& osc,
         doubleOsc.setFrequency (v);
     }
 
+    if (isBypassed())
+        return;
+
     if (isMultiplying)
     {
         multer.setSize (buffer.getNumChannels(), buffer.getNumSamples(), false, true, true);
@@ -147,7 +159,6 @@ void LFOProcessor::process (dsp::Oscillator<FloatType>& osc,
 
         {
             dsp::ProcessContextReplacing<FloatType> context (abMulter);
-            context.isBypassed = isBypassed();
             osc.process (context);
         }
 
@@ -158,7 +169,6 @@ void LFOProcessor::process (dsp::Oscillator<FloatType>& osc,
     {
         dsp::AudioBlock<FloatType> audioBlock (buffer);
         dsp::ProcessContextReplacing<FloatType> context (audioBlock);
-        context.isBypassed = isBypassed();
         osc.process (context);
     }
 }
