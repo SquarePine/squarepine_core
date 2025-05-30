@@ -26,6 +26,7 @@ namespace sp
 {
     using namespace juce;
 
+    #include "hash/CityHash.h"
     #include "hash/CRC.h"
     //#include "hash/SHA1.h"
     //#include "hash/SHA2.h"

@@ -3,6 +3,7 @@ OwnedArray<UnitTest> SquarePineCryptographyUnitTestGatherer::createTests()
     OwnedArray<UnitTest> tests;
 
    #if SQUAREPINE_COMPILE_UNIT_TESTS
+    tests.add (new CityHashUnitTests());
     tests.add (new CRCTests());
     // tests.add (new SHA1Tests());
     tests.add (new BlumBlumShubUnitTests());
