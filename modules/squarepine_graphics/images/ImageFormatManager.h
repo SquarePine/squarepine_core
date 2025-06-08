@@ -14,7 +14,8 @@ public:
 
         The object passed-in will be owned by this object, so don't keep a pointer to it!
     */
-    void registerFormat (std::unique_ptr<ImageFileFormat> newFormat);
+    void registerFormat (std::unique_ptr<ImageFileFormat> newFormat,
+                         const String& extensionWildcards);
 
     /** Handy method to make it easy to register the formats that come with JUCE and this module.
 
@@ -66,12 +67,19 @@ public:
     ImageFileFormat* findFormatForFile (const File&) const;
 
     //==============================================================================
+    /** @returns a set of wildcards for file-matching that contains
+        the extensions for all known formats.
+
+        Example: it might return ".png;.tga" if it just knows about PNGs and Targas.
+    */
+    String getWildcardForAllFormats (bool sorted = true) const;
+
     /** Tries to load an image from a stream.
 
         This will use the findImageFormatForStream() method to locate a suitable
         codec, and use that to load the image.
 
-        @returns The image that was decoded, or an invalid image if it fails.
+        @returns the image that was decoded, or an invalid image if it fails.
     */
     Image loadFrom (InputStream&);
 
@@ -80,16 +88,28 @@ public:
         This will use the findImageFormatForStream() method to locate a suitable
         codec, and use that to load the image.
 
-        @returns The image that was decoded, or an invalid image if it fails.
+        @returns the image that was decoded, or an invalid image if it fails.
     */
     Image loadFrom (const File&);
+
+    /** Tries to load an image from a URL.
+
+        @returns the image that was decoded, or an invalid image if it fails.
+    */
+    Image loadFrom (const URL&);
+
+    /** Tries to load an image from an AndroidDocument.
+
+        @returns the image that was decoded, or an invalid image if it fails.
+    */
+    Image loadFrom (const AndroidDocument&);
 
     /** Tries to load an image from a block of raw image data.
 
         This will use the findImageFormatForStream() method to locate a suitable
         codec, and use that to load the image.
 
-        @returns The image that was decoded, or an invalid image if it fails.
+        @returns the image that was decoded, or an invalid image if it fails.
     */
     Image loadFrom (const void* rawData, size_t numBytesOfData);
 
@@ -103,6 +123,7 @@ public:
 private:
     //==============================================================================
     OwnedArray<ImageFileFormat> knownFormats;
+    StringArray wildcards;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ImageFormatManager)

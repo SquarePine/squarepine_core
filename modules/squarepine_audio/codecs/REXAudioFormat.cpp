@@ -178,25 +178,26 @@ namespace REXError
     #pragma pack (push, 8)
 #endif
 
-struct REXInfo
+struct REXInfo final
 {
-    REXInfo() noexcept { zerostruct (*this); }
+    int numChannels = 0, 
+        sampleRate = 0,
+        numSlices = 0,
+        tempo = 0,                      // Tempo set when exported from ReCycle, 123.456 BPM stored as 123456L etc.
+        originalTempo = 0,              // Original tempo of loop, as calculated by ReCycle from the locator positions and bars/beats/sign settings.
+        ppqLength = 0,
+        timeSignatureNumerator = 0,
+        timeSignatureDenominator = 0,
+        bitDepth = 0;
+};
 
-    int numChannels, sampleRate, numSlices;
-    int tempo;            // Tempo set when exported from ReCycle, 123.456 BPM stored as 123456L etc.
-    int originalTempo;    // Original tempo of loop, as calculated by ReCycle from the locator positions and bars/beats/sign settings.
-    int ppqLength, timeSignatureNumerator, timeSignatureDenominator, bitDepth;
-} JUCE_PACKED;
-
-struct REXSliceInfo
+struct REXSliceInfo final
 {
-    REXSliceInfo() noexcept { zerostruct (*this); }
+    int ppqPos = 0,         // Position of slice in loop
+        sampleLength = 0;   // Length of rendered slice, at its original sample rate.
+};
 
-    int ppqPos;         // Position of slice in loop
-    int sampleLength;   // Length of rendered slice, at its original sample rate.
-} JUCE_PACKED;
-
-struct REXCreatorInfo
+struct REXCreatorInfo final
 {
     REXCreatorInfo() noexcept { zerostruct (*this); }
 
@@ -207,7 +208,7 @@ struct REXCreatorInfo
     char url[kREXStringSize];
     char email[kREXStringSize];
     char freeText[kREXStringSize];
-} JUCE_PACKED;
+};
 
 #if JUCE_MSVC
     #pragma pack (pop)

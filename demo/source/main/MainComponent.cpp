@@ -44,12 +44,11 @@ MainComponent::MainComponent (SharedObjects& sharedObjs)
     };
 
     addDemo (new EaseListComponent (sharedObjs));
-    addDemo (new EffectChainDemo (sharedObjs));
     addDemo (new ImageDemo (sharedObjs));
-    addDemo (new CodeEditorDemo (sharedObjs));
-    addDemo (new MediaDeviceListerDemo (sharedObjs));
     addDemo (new AnimationDemo (sharedObjs));
     addDemo (new ParticleSystemDemo (sharedObjs));
+    addDemo (new EffectChainDemo (sharedObjs));
+    addDemo (new MediaDeviceListerDemo (sharedObjs));
 
    #if SQUAREPINE_USE_ICUESDK
     addDemo (new iCUESDKDemo (sharedObjs));
@@ -63,6 +62,7 @@ MainComponent::MainComponent (SharedObjects& sharedObjs)
     addDemo (new OpenGLDetailsDemo (sharedObjs, rendererConfigurator));
    #endif
 
+    addDemo (new CodeEditorDemo (sharedObjs));
     addDemo (new SettingsComponent (sharedObjs));
 
     popupButton.onClick = [this, ptr = SafePointer (this)]()

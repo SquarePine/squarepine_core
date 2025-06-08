@@ -1,18 +1,16 @@
 /** This section removes stupid min/max macros to avoid clashing
-    with STL min/max implementations.
+    with STL min/max implementations, avoiding clashing of any kind,
+    and clearing up the already zany global namespace.
 
     Too many idiot coders enjoy redefining the min/max macros in their libraries...
     And someone behind the STL implementation at MSFT decided it was a good idea
-    to provide inane (and ugly) versions of them too! (hashtag YOLO and IHEARTRECREATINGMINMAXBRO)
+    to provide inane (and ugly) versions of them too! (#YOLO #IHEARTRECREATINGMINMAXBRO)
 
-    This section of code should help avoid clashing of sorts,
-    and clearing up the already zany global namespace.
-
-    Give me a break - use std::min() and std::max() instead!
-    JUCE is equally at fault here, with its std::min() and std::max() functions.
+    And give me a break - use std::min() and std::max() instead!
+    JUCE is equally at fault here with its jmin() and jmax() functions.
 */
 
-#undef NOMINMAX // Avoids additional clashing
+#undef NOMINMAX
 #define NOMINMAX 1
 
 #undef min
@@ -30,9 +28,11 @@
 
 //==============================================================================
 #if DOXYGEN || JUCE_WINDOWS || JUCE_LINUX || JUCE_MAC || JUCE_BSD || JUCE_WASM
-    #define SQUAREPINE_IS_DESKTOP      1 // Currently running on a desktop.
+    /** You're currently running on a desktop. */
+    #define SQUAREPINE_IS_DESKTOP      1
 #elif JUCE_ANDROID || JUCE_IPHONE || JUCE_IOS
-    #define SQUAREPINE_IS_MOBILE       1 // Currently running on a mobile device.
+    /** You're currently running on a mobile device. */
+    #define SQUAREPINE_IS_MOBILE       1
 #else
     #error "What kind of operating system is this? Please fix the project platform format macro!"
 #endif

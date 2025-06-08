@@ -185,7 +185,7 @@ protected:
         juce::Rectangle<float> bounds;
         juce::Point<float> velocity;
         Colour colour;
-    } JUCE_PACKED;
+    };
 
     Details changeable;
 
@@ -198,7 +198,7 @@ private:
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Particle)
-} JUCE_PACKED;
+};
 
 //==============================================================================
 class RainParticle final : public Particle
@@ -220,7 +220,7 @@ public:
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RainParticle)
-} JUCE_PACKED;
+};
 
 //==============================================================================
 /**
@@ -249,7 +249,7 @@ public:
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SnowParticle)
-} JUCE_PACKED;
+};
 
 #if JUCE_MSVC
  #pragma pack (pop)

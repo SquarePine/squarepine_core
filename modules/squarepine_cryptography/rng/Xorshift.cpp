@@ -134,7 +134,7 @@ protected:
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (XorshiftForwarder)
-} JUCE_PACKED;
+};
 
 template<auto func, size_t numElements>
 class Xorshift64Base : public XorshiftForwarder
@@ -147,7 +147,7 @@ public:
 
 private:
     std::array<uint64, numElements> data;
-} JUCE_PACKED;
+};
 
 class Xorshift1024s final : public XorshiftForwarder
 {
@@ -160,7 +160,7 @@ public:
 private:
     std::array<uint64, 16> data;
     int index = 0;
-} JUCE_PACKED;
+};
 
 struct Xorshift64::Pimpl final
 {
@@ -183,7 +183,7 @@ struct Xorshift64::Pimpl final
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Pimpl)
-} JUCE_PACKED;
+};
 
 #if JUCE_MSVC
  #pragma pack (pop)

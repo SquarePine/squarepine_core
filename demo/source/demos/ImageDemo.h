@@ -10,8 +10,60 @@ public:
     {
         imageFormatManager.registerBasicFormats();
 
+        SafePointer sp (this);
+
+        open.onClick = [this, sp]()
+        {
+            if (sp == nullptr)
+                return;
+
+            if (fileChooser != nullptr)
+            {
+                return;
+            }
+
+            fileChooser = std::make_unique<FileChooser> (TRANS ("Find an image to load."),
+                                                         File::getSpecialLocation (File::userPicturesDirectory),
+                                                         imageFormatManager.getWildcardForAllFormats());
+
+            fileChooser->launchAsync (FileBrowserComponent::openMode, [sp] (const FileChooser& chooser)
+            {
+                if (sp == nullptr)
+                    return;
+
+                sp->setImage (chooser.getURLResult());
+                sp->fileChooser.reset();
+            });
+        };
+
         addAndMakeVisible (imageComponent);
         addAndMakeVisible (open);
+    }
+
+    //==============================================================================
+    /** Changes the currently displayed with the given one.
+        If the given image is null, the underlying image component will be cleared.
+    */
+    void setImage (const Image& image)
+    {
+        imageComponent.setImage (image);
+        repaint();
+    }
+
+    /** Changes the currently displayed with one from the given file.
+        If the given image fails to load, the underlying image component will be cleared.
+    */
+    void setImage (const File& file)
+    {
+        setImage (imageFormatManager.loadFrom (file));
+    }
+
+    /** Changes the currently displayed with one from the given URL.
+        If the given image fails to load, the underlying image component will be cleared.
+    */
+    void setImage (const URL& url)
+    {
+        setImage (imageFormatManager.loadFrom (url));
     }
 
     //==============================================================================
@@ -37,7 +89,7 @@ public:
     }
 
     /** @internal */
-    bool isInterestedInTextDrag (const String& text) override { return isBase64 (text); }
+    bool isInterestedInTextDrag (const String& text) override { return isPossiblyBase64 (text); }
 
     /** @internal */
     bool isInterestedInFileDrag (const StringArray& files) override
@@ -58,7 +110,7 @@ public:
             const File file (path);
             if (file.existsAsFile() && imageFormatManager.findFormatForFile (file) != nullptr)
             {
-                setImage (imageFormatManager.loadFrom (file));
+                setImage (file);
                 return;
             }
         }
@@ -67,7 +119,7 @@ public:
     /** @internal */
     void textDropped (const String& text, int, int) override
     {
-        if (isBase64 (text))
+        if (isPossiblyBase64 (text))
             setImage (imageFormatManager.fromBase64 (text));
     }
 
@@ -82,15 +134,10 @@ private:
     ImageFormatManager imageFormatManager;
     HighQualityImageComponent imageComponent;
     TextButton open;
+    std::unique_ptr<FileChooser> fileChooser;
 
     //==============================================================================
-    void setImage (const Image& image)
-    {
-        imageComponent.setImage (image);
-        repaint();
-    }
-
-    static bool isBase64 (const String& text)
+    static bool isPossiblyBase64 (const String& text)
     {
         const String b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 

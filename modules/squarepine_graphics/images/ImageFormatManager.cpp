@@ -1,6 +1,12 @@
-void ImageFormatManager::registerFormat (std::unique_ptr<ImageFileFormat> newFormat)
+void ImageFormatManager::registerFormat (std::unique_ptr<ImageFileFormat> newFormat,
+                                         const String& extensionWildcard)
 {
-    if (newFormat == nullptr || knownFormats.contains (newFormat.get()))
+    const auto newWildcard = extensionWildcard.trim();
+
+    if (newFormat == nullptr
+        || newWildcard.isEmpty()
+        || wildcards.contains (newWildcard)
+        || knownFormats.contains (newFormat.get()))
     {
         jassertfalse;
         return;
@@ -16,18 +22,19 @@ void ImageFormatManager::registerFormat (std::unique_ptr<ImageFileFormat> newFor
     }
 
     knownFormats.add (newFormat.release());
+    wildcards.add (extensionWildcard);
 }
 
 void ImageFormatManager::registerBasicFormats()
 {
-    registerFormat (std::make_unique<JPEGImageFormat>());
-    registerFormat (std::make_unique<PNGImageFormat>());
-    registerFormat (std::make_unique<GIFImageFormat>());
-    registerFormat (std::make_unique<BMPImageFormat>());
-    registerFormat (std::make_unique<TGAImageFormat>());
+    registerFormat (std::make_unique<JPEGImageFormat>(), "jpeg;jpg");
+    registerFormat (std::make_unique<PNGImageFormat>(), "png");
+    registerFormat (std::make_unique<GIFImageFormat>(), "gif");
+    registerFormat (std::make_unique<BMPImageFormat>(), "bmp;dib");
+    registerFormat (std::make_unique<TGAImageFormat>(), "tga");
 
    #if JUCE_MODULE_AVAILABLE_squarepine_images
-    registerFormat (std::make_unique<WebPImageFormat>());
+    registerFormat (std::make_unique<WebPImageFormat>(), "webp");
    #endif
 }
 
@@ -65,6 +72,45 @@ ImageFileFormat* ImageFormatManager::findFormatForFile (const File& file) const
 }
 
 //==============================================================================
+String ImageFormatManager::getWildcardForAllFormats (bool sorted) const
+{
+    StringArray extensions;
+
+/*
+    for (const auto& wc : wildcards)
+    {
+        if (wc.contains (";"))
+        {
+            for (const auto& tok : StringArray::fromTokens (wc, ";", ""))
+            {
+            }
+        }
+
+        String c = wc;
+        if (! e.startsWithChar ('.') && ! e.startsWithChar ('.'))
+            c = "";
+
+        
+    }
+*/
+    for (auto& e : extensions)
+        if (! e.startsWithChar ('.') && ! e.startsWithChar ('.'))
+            e = "." + e;
+
+    extensions.trim();
+    extensions.removeEmptyStrings();
+
+    for (auto& e : extensions)
+        e = (e.startsWithChar ('.') ? "*" : "*.") + e;
+
+    extensions.removeDuplicates (true);
+
+    if (sorted)
+        extensions.sortNatural();
+
+    return extensions.joinIntoString (";");
+}
+
 Image ImageFormatManager::loadFrom (InputStream& input)
 {
     if (auto* const format = findFormatForStream (input))
@@ -83,6 +129,28 @@ Image ImageFormatManager::loadFrom (const File& file)
         return loadFrom (stream);
     }
 
+    return {};
+}
+
+Image ImageFormatManager::loadFrom (const URL& url)
+{
+    return loadFrom (url.getLocalFile());
+}
+
+Image ImageFormatManager::loadFrom (const AndroidDocument& androidDocument)
+{
+    const auto info = androidDocument.getInfo();
+    if (info.isFile() && info.canRead())
+    {
+        const auto mimeType = info.getType();
+        if (mimeType.isNotEmpty())
+            if (! mimeType.containsIgnoreCase ("image"))
+                return {};
+
+        return loadFrom (androidDocument.getUrl());
+    }
+
+    jassertfalse;
     return {};
 }
 

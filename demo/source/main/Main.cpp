@@ -64,19 +64,6 @@ public:
         customLookAndFeel (sharedObjects),
         mainComponent (sharedObjects)
     {
-        RuntimePermissions::request (RuntimePermissions::recordAudio, [this] (bool)
-        {
-            audioWaiter.signal();
-        });
-
-        audioWaiter.wait();
-
-        if (! RuntimePermissions::isGranted (RuntimePermissions::recordAudio))
-        {
-            closeButtonPressed();
-            return;
-        }
-
         googleAnalyticsReporter->startSession();
 
         setUsingNativeTitleBar (true);
@@ -125,7 +112,6 @@ public:
 
 private:
     //==============================================================================
-    WaitableEvent audioWaiter;
     SharedObjects sharedObjects;
     SharedResourcePointer<sp::GoogleAnalyticsReporter> googleAnalyticsReporter;
     DemoLookAndFeel customLookAndFeel;
