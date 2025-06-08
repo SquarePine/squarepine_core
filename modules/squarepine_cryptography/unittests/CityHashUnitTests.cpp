@@ -11,7 +11,7 @@ public:
 
     void test (const char* input, const String& expected)
     {
-/*
+#if 0
         expectEquals (CityHash (input, strlen (input)).toHexString(), expected);
 
         {
@@ -23,20 +23,22 @@ public:
             MemoryInputStream m (input, strlen (input), false);
             expectEquals (CityHash (m).toHexString(), expected);
         }
-*/
+#else
+        ignoreUnused (input, expected);
+#endif
     }
 
     void runTest() override
     {
-        return; // TODO
-
         beginTest ("Hash Comparisons");
 
+#if 0
         test ("",                                               "da39a3ee5e6b4b0d3255bfef95601890afd80709");
         test (" ",                                              "b858cb282617fb0956d960215c8e84d1ccf909c6");
         test ("-",                                              "3bc15c8aae3e4124dd409035f32ea2fd6835efc9");
         test ("The quick brown fox jumps over the lazy dog",    "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12");
         test ("The quick brown fox jumps over the lazy dog.",   "408d94384216f890ff7a0c3528e8bed1e0b01621");
+#endif
     }
 };
 
