@@ -74,7 +74,7 @@ public:
     /** @internal */
     AudioFormatReader* createReaderFor (InputStream*, bool) override;
     /** @internal */
-    AudioFormatWriter* createWriterFor (OutputStream*, double, unsigned int, int, const StringPairArray&, int) override { return nullptr; }
+    std::unique_ptr<AudioFormatWriter> createWriterFor (std::unique_ptr<OutputStream>&, const AudioFormatWriterOptions&) override { return {}; }
 
 private:
     //==============================================================================

@@ -204,10 +204,11 @@ class ALACAudioFormatWriter final : public AudioFormatWriter
 {
 public:
     ALACAudioFormatWriter (OutputStream* out, double rate,
-                           unsigned int numChans, unsigned int bits,
-                           const StringPairArray&) :
-        AudioFormatWriter (out, TRANS (alac::formatName), rate, numChans, bits)
+                           int numChans, int bits,
+                           const std::unordered_map<String, String>& metadataMap) :
+        AudioFormatWriter (out, TRANS (alac::formatName), rate, (uint32) numChans, (uint32) bits)
     {
+        ignoreUnused (metadataMap); // TODO
     }
 
     ~ALACAudioFormatWriter() override
@@ -260,20 +261,19 @@ AudioFormatReader* ALACAudioFormat::createReaderFor (InputStream* sourceStream, 
     return nullptr;
 }
 
-AudioFormatWriter* ALACAudioFormat::createWriterFor (OutputStream* out,
-                                                     double sampleRate,
-                                                     unsigned int numberOfChannels,
-                                                     int bitsPerSample,
-                                                     const StringPairArray& metadataValues,
-                                                     int)
+std::unique_ptr<AudioFormatWriter> ALACAudioFormat::createWriterFor (std::unique_ptr<OutputStream>& out,
+                                                                     const AudioFormatWriterOptions& options)
+
 {
     if (out != nullptr
-        && getPossibleSampleRates().contains ((int) sampleRate)
-        && getPossibleBitDepths().contains (bitsPerSample)
-        && numberOfChannels > 0
-        && isPositiveAndBelow ((int) numberOfChannels, (int) alac::maxChannels))
-        return new ALACAudioFormatWriter (out, sampleRate, numberOfChannels,
-                                          (unsigned int) bitsPerSample, metadataValues);
+        && getPossibleSampleRates().contains ((int) options.getSampleRate())
+        && getPossibleBitDepths().contains (options.getBitsPerSample())
+        && options.getNumChannels() > 0
+        && isPositiveAndBelow (options.getNumChannels(), (int) alac::maxChannels))
+    {
+        return std::make_unique<ALACAudioFormatWriter> (out.release(), options.getSampleRate(), options.getNumChannels(),
+                                                        options.getBitsPerSample(), options.getMetadataValues());
+    }
 
     return nullptr;
 }
