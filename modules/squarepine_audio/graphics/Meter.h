@@ -194,7 +194,7 @@ public:
     */
     void setMeterModel (MeterModel*);
 
-    /** Returns the current list model. */
+    /** @returns the current meter model. */
     MeterModel* getMeterModel() const noexcept
     {
        #if ! JUCE_DISABLE_ASSERTIONS
