@@ -6,9 +6,13 @@
                                      4457 4459 6297 6011 6001 6308 6255 6386
                                      6385 6246 6387 6263 6262 28182)
 
-    JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Wconversion",
+    JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Wall",
+                                         "-Wextra-semi",
+                                         "-Wconversion",
                                          "-Wshadow",
+                                         "-Wunused-parameter",
                                          "-Wfloat-conversion",
+                                         "-Wfloat-equal",
                                          "-Wdeprecated-register",
                                          "-Wdeprecated-declarations",
                                          "-Wswitch-enum",

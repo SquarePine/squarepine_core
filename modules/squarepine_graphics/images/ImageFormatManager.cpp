@@ -134,7 +134,10 @@ Image ImageFormatManager::loadFrom (const File& file)
 
 Image ImageFormatManager::loadFrom (const URL& url)
 {
-    return loadFrom (url.getLocalFile());
+    if (url.isLocalFile())
+        return loadFrom (url.getLocalFile());
+
+    return {};
 }
 
 Image ImageFormatManager::loadFrom (const AndroidDocument& androidDocument)
@@ -150,7 +153,6 @@ Image ImageFormatManager::loadFrom (const AndroidDocument& androidDocument)
         return loadFrom (androidDocument.getUrl());
     }
 
-    jassertfalse;
     return {};
 }
 

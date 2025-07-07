@@ -260,7 +260,7 @@ private:
     EffectChainComponent effectChainComponent;
     ToggleButton applyEffects;
 
-    std::unique_ptr<FileChooser> chooser;
+    std::unique_ptr<FileChooser> fileChooser;
 
     File lastLoadedFile;
     std::unique_ptr<AudioThumbnail> audioThumbnail;
@@ -287,7 +287,7 @@ private:
     void clear();
     void movePlayhead (const MouseEvent& e);
     void setFile (const File&, AudioFormatManager* afm = nullptr);
-    void loadAudioFile();
+    void loadAudioFile(bool checkPermissions);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EffectChainDemo)

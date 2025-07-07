@@ -1,22 +1,3 @@
-#if SQUAREPINE_IS_MOBILE
-
-inline Rectangle<int> getBoundsAccountingForKeyboard()
-{
-    if (auto* display = Desktop::getInstance().getDisplays().getPrimaryDisplay())
-    {
-        auto bounds = display->userArea;
-
-        // display->safeAreaInsets.subtractFrom (bounds);
-        // display->keyboardInsets.subtractFrom (bounds);
-
-        return bounds;
-    }
-
-    return {};
-}
-
-#endif
-
 MainComponent::MainComponent (SharedObjects& sharedObjs)
 {
     SQUAREPINE_CRASH_TRACER
@@ -82,11 +63,7 @@ MainComponent::MainComponent (SharedObjects& sharedObjs)
     addAndMakeVisible (popupButton);
     menuItemSelected (1, 0);
 
-   #if SQUAREPINE_IS_DESKTOP
     setSize (1024, 768);
-   #else
-    setBounds (getBoundsAccountingForKeyboard());
-   #endif
 }
 
 MainComponent::~MainComponent()
@@ -150,13 +127,17 @@ void MainComponent::resized()
 {
     SQUAREPINE_CRASH_TRACER
 
-    auto b = getLocalBounds();
+    auto b = [this]()
+    {
+        auto bounds = getLocalBounds();
 
-   #if SQUAREPINE_IS_MOBILE
-    b = getBoundsAccountingForKeyboard();
-    if (b.isEmpty())
-        b = getLocalBounds();
-   #endif
+       #if SQUAREPINE_IS_MOBILE
+        if (auto* display = Desktop::getInstance().getDisplays().getDisplayForRect (getScreenBounds()))
+            return display->safeAreaInsets.subtractedFrom (display->keyboardInsets.subtractedFrom (bounds));
+       #endif
+
+        return bounds;
+    }();
 
     b = b.reduced (DemoBase::marginPx);
 

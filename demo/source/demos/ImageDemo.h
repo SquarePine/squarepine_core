@@ -14,26 +14,35 @@ public:
 
         open.onClick = [this, sp]()
         {
-            if (sp == nullptr)
+            if (sp == nullptr || fileChooser != nullptr)
                 return;
 
-            if (fileChooser != nullptr)
-            {
-                return;
-            }
+            RuntimePermissions::request (RuntimePermissions::readMediaImages,
+                [this, sp] (bool wasGranted)
+                {
+                    if (! wasGranted)
+                        return;
 
-            fileChooser = std::make_unique<FileChooser> (TRANS ("Find an image to load."),
-                                                         File::getSpecialLocation (File::userPicturesDirectory),
-                                                         imageFormatManager.getWildcardForAllFormats());
+                    fileChooser = std::make_unique<FileChooser> (TRANS ("Find an image to load."),
+                                                                 File::getSpecialLocation (File::userPicturesDirectory),
+                                                                 imageFormatManager.getWildcardForAllFormats());
 
-            fileChooser->launchAsync (FileBrowserComponent::openMode, [sp] (const FileChooser& chooser)
-            {
-                if (sp == nullptr)
-                    return;
+                    fileChooser->launchAsync (FileBrowserComponent::openMode | FileBrowserComponent::canSelectFiles,
+                                              [sp] (const FileChooser& chooser)
+                    {
+                        auto c = std::move (sp->fileChooser);
+                        ignoreUnused (c);
 
-                sp->setImage (chooser.getURLResult());
-                sp->fileChooser.reset();
-            });
+                        const auto newFileURL = chooser.getURLResult();
+                        if (sp == nullptr || newFileURL.isEmpty())
+                            return; // User cancelled.
+
+                        jassert (newFileURL.isLocalFile());
+
+                        sp->setImage (newFileURL);
+                    });
+                }
+            );
         };
 
         addAndMakeVisible (imageComponent);

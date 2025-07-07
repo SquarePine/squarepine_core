@@ -371,7 +371,7 @@ EffectChainDemo::EffectChainDemo (SharedObjects& sharedObjs) :
     applyEffects.setToggleState (! effectChain->isBypassed(), sendNotificationSync);
 
     loop.onClick        = [this]() { updateLoopState(); };
-    load.onClick        = [this]() { loadAudioFile(); };
+    load.onClick        = [this]() { loadAudioFile (true); };
     goToStart.onClick   = [this]() { rewindAndStop(); };
 
     loop.setClickingTogglesState (true);
@@ -660,21 +660,36 @@ void EffectChainDemo::setFile (const File& file, AudioFormatManager* audioFormat
     }
 }
 
-void EffectChainDemo::loadAudioFile()
+void EffectChainDemo::loadAudioFile (bool checkPermissions)
 {
-    if (chooser != nullptr)
+    if (fileChooser != nullptr)
         return;
 
     stop();
 
-    chooser.reset (new FileChooser (TRANS ("Load an audio file to process."), {},
-                                    sharedObjects.audioFormatManager.getWildcardForAllFormats()));
-
-    const auto folderChooserFlags = FileBrowserComponent::openMode | FileBrowserComponent::canSelectFiles;
-
-    chooser->launchAsync (folderChooserFlags, [this] (const FileChooser& fc)
+    if (checkPermissions)
     {
-        auto c = std::move (chooser);
+        SafePointer sp (this);
+
+        RuntimePermissions::request (RuntimePermissions::readMediaAudio,
+            [this, sp] (bool wasGranted)
+            {
+                if (sp != nullptr && wasGranted)
+                    loadAudioFile (false);
+            }
+        );
+
+        return;
+    }
+
+    fileChooser = std::make_unique<FileChooser> (TRANS ("Find an audio file to load."),
+                                                 File::getSpecialLocation (File::userMusicDirectory),
+                                                 sharedObjects.audioFormatManager.getWildcardForAllFormats());
+
+    fileChooser->launchAsync (FileBrowserComponent::openMode | FileBrowserComponent::canSelectFiles,
+                              [this] (const FileChooser& fc)
+    {
+        auto c = std::move (fileChooser);
         ignoreUnused (c);
 
         const auto newFileURL = fc.getURLResult();

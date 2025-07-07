@@ -94,14 +94,12 @@
   <EXPORTFORMATS>
     <ANDROIDSTUDIO targetFolder="builds/android" smallIcon="jqPxuh" bigIcon="jqPxuh"
                    androidAdditionalResourceFolders="assets/Android/res" androidTheme="@style/ActivityTheme"
-                   microphonePermissionNeeded="1" cameraPermissionNeeded="1" androidInAppBilling="1"
-                   androidVibratePermissionNeeded="1" androidEnableContentSharing="1"
+                   cameraPermissionNeeded="1" androidVibratePermissionNeeded="1"
                    androidCustomAppBuildGradleContent="    buildTypes&#10;    {&#10;        release&#10;        {&#10;            minifyEnabled true&#10;            shrinkResources true&#10;            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'&#10;        }&#10;    }"
-                   androidMinimumSDK="24">
+                   androidMinimumSDK="24" microphonePermissionNeeded="1" androidTargetSDK="36">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"
-                       linkTimeOptimisation="1"/>
+        <CONFIGURATION isDebug="1" name="Debug" recommendedWarnings="LLVM"/>
+        <CONFIGURATION isDebug="0" name="Release" recommendedWarnings="LLVM" linkTimeOptimisation="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_analytics" path="../../JUCE/modules"/>

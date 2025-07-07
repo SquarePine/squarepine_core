@@ -25,7 +25,15 @@ void configureContextWithModernGL (OpenGLContext& context, bool shouldEnableMult
     gl::loadExtensions();
 
     // NB: On failure, JUCE will backtrack to an earlier version of OpenGL.
-    context.setOpenGLVersionRequired (OpenGLContext::OpenGLVersion::openGL4_3);
+    const auto openGLVersion =
+   #if JUCE_ANDROID
+        OpenGLContext::OpenGLVersion::defaultGLVersion;
+        shouldEnableMultisampling = false; // Android's OpenGL ES struggles with configuring multisampling.
+   #else
+        OpenGLContext::OpenGLVersion::openGL4_3;
+   #endif
+
+    context.setOpenGLVersionRequired (openGLVersion);
     context.setTextureMagnificationFilter (OpenGLContext::linear);
 
     if (shouldEnableMultisampling)
