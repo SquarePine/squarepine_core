@@ -63,6 +63,9 @@ private:
     juce::Rectangle<int> lastKnownBounds;
 
     //==============================================================================
+    void resizeInternal (bool forceUpdate);
+
+    //==============================================================================
     std::unique_ptr<AccessibilityHandler> createAccessibilityHandler() override;
 
     //==============================================================================

@@ -131,7 +131,7 @@ void HighQualityImageComponent::setImage (const Image& newImage)
     if (image != newImage)
     {
         image = newImage;
-        resized();
+        resizeInternal (true);
     }
 }
 
@@ -141,7 +141,7 @@ void HighQualityImageComponent::setImage (const Image& newImage, RectanglePlacem
     {
         image = newImage;
         placement = rp;
-        resized();
+        resizeInternal (true);
     }
 }
 
@@ -150,22 +150,30 @@ void HighQualityImageComponent::setImagePlacement (RectanglePlacement np)
     if (placement != np)
     {
         placement = np;
-        resized();
+        resizeInternal (true);
     }
 }
 
-void HighQualityImageComponent::resized()
+void HighQualityImageComponent::resizeInternal (bool forceUpdate)
 {
     const auto b = getLocalBounds();
     if (b.isEmpty() || image.isNull())
         return;
 
-    if (lastKnownBounds != b)
+    if (lastKnownBounds != b || forceUpdate)
     {
         // NB: Must scale uniformly and let the placement drive the rest:
         resizedImage = applyResize (image, (float) b.getHeight() / (float) image.getHeight());
         lastKnownBounds = b;
     }
+
+    if (forceUpdate)
+        repaint();
+}
+
+void HighQualityImageComponent::resized()
+{
+    resizeInternal (false);
 }
 
 void HighQualityImageComponent::paint (Graphics& g)
