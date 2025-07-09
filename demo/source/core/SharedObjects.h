@@ -92,8 +92,10 @@ public:
 
     Value fullscreen;
 
-    std::unique_ptr<FontFamily> lato;
-    FontFamily* defaultFamily = nullptr;
+    std::shared_ptr<FontFamily> lato, defaultFamily;
+
+    std::shared_ptr<ThreadPool> threadPool;
+    std::shared_ptr<ImageFormatManager> imageFormatManager;
 
 private:
     //==============================================================================

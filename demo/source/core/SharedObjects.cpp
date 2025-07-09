@@ -16,20 +16,23 @@ SharedObjects::SharedObjects() :
     fullscreen.setValue (false);
 
     using namespace BinaryData;
-    lato = std::make_unique<FontFamily> ("Lato", LatoRegular_ttf, LatoRegular_ttfSize);
+    lato = std::make_shared<FontFamily> ("Lato", LatoRegular_ttf, LatoRegular_ttfSize);
     jassert (lato != nullptr && lato->isValid());
 
-    lato->regular.thin         = Typeface::createSystemTypefaceFor (LatoThin_ttf,                LatoThin_ttfSize);
-    lato->regular.light        = Typeface::createSystemTypefaceFor (LatoLight_ttf,               LatoLight_ttfSize);
-    lato->regular.bold         = Typeface::createSystemTypefaceFor (LatoBold_ttf,                LatoBold_ttfSize);
-    lato->regular.black        = Typeface::createSystemTypefaceFor (LatoBlack_ttf,               LatoBlack_ttfSize);
-    lato->italic.thin          = Typeface::createSystemTypefaceFor (LatoThinItalic_ttf,          LatoThin_ttfSize);
-    lato->italic.light         = Typeface::createSystemTypefaceFor (LatoLightItalic_ttf,         LatoLightItalic_ttfSize);
-    lato->italic.normal        = Typeface::createSystemTypefaceFor (LatoItalic_ttf,              LatoItalic_ttfSize);
-    lato->italic.bold          = Typeface::createSystemTypefaceFor (LatoBoldItalic_ttf,          LatoBoldItalic_ttfSize);
-    lato->italic.black         = Typeface::createSystemTypefaceFor (LatoBlackItalic_ttf,         LatoBlackItalic_ttfSize);
+    lato->regular.thin      = Typeface::createSystemTypefaceFor (LatoThin_ttf,                LatoThin_ttfSize);
+    lato->regular.light     = Typeface::createSystemTypefaceFor (LatoLight_ttf,               LatoLight_ttfSize);
+    lato->regular.bold      = Typeface::createSystemTypefaceFor (LatoBold_ttf,                LatoBold_ttfSize);
+    lato->regular.black     = Typeface::createSystemTypefaceFor (LatoBlack_ttf,               LatoBlack_ttfSize);
+    lato->italic.thin       = Typeface::createSystemTypefaceFor (LatoThinItalic_ttf,          LatoThin_ttfSize);
+    lato->italic.light      = Typeface::createSystemTypefaceFor (LatoLightItalic_ttf,         LatoLightItalic_ttfSize);
+    lato->italic.normal     = Typeface::createSystemTypefaceFor (LatoItalic_ttf,              LatoItalic_ttfSize);
+    lato->italic.bold       = Typeface::createSystemTypefaceFor (LatoBoldItalic_ttf,          LatoBoldItalic_ttfSize);
+    lato->italic.black      = Typeface::createSystemTypefaceFor (LatoBlackItalic_ttf,         LatoBlackItalic_ttfSize);
+    defaultFamily           = lato;
 
-    defaultFamily = lato.get();
+    threadPool = std::make_shared<ThreadPool>();
+    imageFormatManager = std::make_shared<ImageFormatManager> (threadPool);
+    imageFormatManager->registerBasicFormats();
 }
 
 SharedObjects::~SharedObjects()

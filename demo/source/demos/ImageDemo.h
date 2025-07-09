@@ -6,10 +6,9 @@ class ImageDemo final : public DemoBase,
 public:
     /** */
     ImageDemo (SharedObjects& sharedObjs) :
-        DemoBase (sharedObjs, NEEDS_TRANS ("Image Formats"))
+        DemoBase (sharedObjs, NEEDS_TRANS ("Image Formats")),
+        imageFormatManager (sharedObjs.imageFormatManager)
     {
-        imageFormatManager.registerBasicFormats();
-
         SafePointer sp (this);
 
         open.onClick = [this, sp]()
@@ -25,7 +24,7 @@ public:
 
                     fileChooser = std::make_unique<FileChooser> (TRANS ("Find an image to load."),
                                                                  File::getSpecialLocation (File::userPicturesDirectory),
-                                                                 imageFormatManager.getWildcardForAllFormats());
+                                                                 imageFormatManager->getWildcardForAllFormats());
 
                     fileChooser->launchAsync (FileBrowserComponent::openMode | FileBrowserComponent::canSelectFiles,
                                               [sp] (const FileChooser& chooser)
@@ -64,7 +63,7 @@ public:
     */
     void setImage (const File& file)
     {
-        setImage (imageFormatManager.loadFrom (file));
+        setImage (imageFormatManager->loadFrom (file));
     }
 
     /** Changes the currently displayed with one from the given URL.
@@ -72,7 +71,7 @@ public:
     */
     void setImage (const URL& url)
     {
-        setImage (imageFormatManager.loadFrom (url));
+        setImage (imageFormatManager->loadFrom (url));
     }
 
     //==============================================================================
@@ -105,7 +104,7 @@ public:
     {
         for (const auto& path : files)
             if (const File file (path); file.existsAsFile())
-                if (imageFormatManager.findFormatForFile (File (path)) != nullptr)
+                if (imageFormatManager->findFormatForFile (File (path)) != nullptr)
                     return true;
 
         return false;
@@ -117,7 +116,7 @@ public:
         for (const auto& path : files)
         {
             const File file (path);
-            if (file.existsAsFile() && imageFormatManager.findFormatForFile (file) != nullptr)
+            if (file.existsAsFile() && imageFormatManager->findFormatForFile (file) != nullptr)
             {
                 setImage (file);
                 return;
@@ -129,7 +128,7 @@ public:
     void textDropped (const String& text, int, int) override
     {
         if (isPossiblyBase64 (text))
-            setImage (imageFormatManager.fromBase64 (text));
+            setImage (imageFormatManager->fromBase64 (text));
     }
 
     void updateWithNewTranslations() override
@@ -140,7 +139,7 @@ public:
 
 private:
     //==============================================================================
-    ImageFormatManager imageFormatManager;
+    std::shared_ptr<ImageFormatManager> imageFormatManager;
     HighQualityImageComponent imageComponent;
     TextButton open;
     std::unique_ptr<FileChooser> fileChooser;
