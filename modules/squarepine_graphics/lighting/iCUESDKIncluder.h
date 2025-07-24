@@ -177,11 +177,16 @@
             {
                 if (auto* session = (iCUESDKSession*) sourcePtr)
                 {
-                    session->connected = newSession != nullptr
-                                            ? newSession->state == CSS_Connected
-                                            : false;
-
-                    session->details = session->details;
+                    if (newSession != nullptr)
+                    {
+                        session->connected = newSession->state == CSS_Connected;
+                        session->details = newSession->details;
+                    }
+                    else
+                    {
+                        session->connected = false;
+                        session->details = CorsairSessionDetails();
+                    }
                 }
             }
 

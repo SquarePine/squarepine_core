@@ -43,14 +43,13 @@ public:
     void restoreWindowDimensions (DocumentWindow&);
 
     /** */
+    static std::unique_ptr<Drawable> getMainLogoSVG();
+    /** */
+    static Image getMainLogoPNG();
+    /** */
     static Image getWindowIcon();
-
-    //==============================================================================
     /** */
-    void saveRecentFiles (const RecentlyOpenedFilesList&);
-
-    /** */
-    void restoreRecentFiles (RecentlyOpenedFilesList&);
+    static Image getTaskbarIcon();
 
     //==============================================================================
     /** */
@@ -71,35 +70,43 @@ public:
     void valueChanged (Value&) override;
 
     //==============================================================================
-    CREATE_INLINE_CLASS_IDENTIFIER (windowSettings)
-    CREATE_INLINE_CLASS_IDENTIFIER (bounds)
+    CREATE_INLINE_CLASS_IDENTIFIER (appSettings)
+    CREATE_INLINE_CLASS_IDENTIFIER (appTheme)
+    CREATE_INLINE_CLASS_IDENTIFIER (windowBounds)
     CREATE_INLINE_CLASS_IDENTIFIER (maximised)
     CREATE_INLINE_CLASS_IDENTIFIER (audioDeviceSettings)
-    CREATE_INLINE_CLASS_IDENTIFIER (recentFiles)
 
     //==============================================================================
+    const File appSettingsFile;
     const File logFile;
+
+    ValueTree appSettings = ValueTree (appSettingsId);
+    Value appTheme, windowBounds, maximised,
+          audioDeviceSettings;
+
     std::unique_ptr<FileLogger> logger;
-    mutable ApplicationProperties applicationProperties;
     std::unique_ptr<LanguageHandler> languageHandler;
     ApplicationCommandManager commandManager;
     KeyPressMappingSet keyPressMappingSet;
     UndoManager undoManager;
-
     AudioFormatManager audioFormatManager;
     AudioThumbnailCache audioThumbnailCache { 2048 };
     AudioDeviceManager audioDeviceManager;
-
-    Value fullscreen;
-
     std::shared_ptr<FontFamily> lato, defaultFamily;
-
-    std::shared_ptr<ThreadPool> threadPool;
     std::shared_ptr<ImageFormatManager> imageFormatManager;
+    std::shared_ptr<ThreadPool> threadPool;
 
 private:
     //==============================================================================
     void snapRectToCurrentDisplayConfiguration (Rectangle<int>&);
+
+    Value initProperty (const Identifier& id, const var& defaultValue)
+    {
+        if (! appSettings.hasProperty (id))
+            appSettings.setProperty (id, defaultValue, nullptr);
+
+        return appSettings.getPropertyAsValue (id, &undoManager);
+    }
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SharedObjects)

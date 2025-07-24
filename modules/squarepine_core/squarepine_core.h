@@ -5,7 +5,7 @@
 
     ID:                 squarepine_core
     vendor:             SquarePine
-    version:            1.6.0
+    version:            1.7.0
     name:               SquarePine Core
     description:        A solid backbone for every JUCE project.
     website:            https://www.squarepine.io
@@ -54,7 +54,9 @@
 
 #include <juce_core/unit_tests/juce_UnitTestCategories.h>
 
-#if ! JUCE_MSVC
+// NB: Must check for JUCE_WINDOWS because we can't use JUCE_MSVC:
+//     when you use Visual Studio and ClangCL, JUCE_MSVC is not defined.
+#if ! JUCE_WINDOWS
    #if JUCE_DEBUG
     #include <cxxabi.h>
    #endif
@@ -239,6 +241,7 @@
 #undef TRACE
 
 //==============================================================================
+#include "maths/STLHelpers.h"
 #include "valuetree/VariantConverters.h"
 
 //==============================================================================

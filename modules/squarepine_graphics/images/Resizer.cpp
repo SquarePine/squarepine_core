@@ -22,6 +22,7 @@
                                          "-Wredundant-decls",
                                          "-Wmisleading-indentation",
                                          "-Wmissing-prototypes",
+                                         "-Wnontrivial-memcall",
                                          "-Wcast-align")
 
     #include "avir/avir.h"

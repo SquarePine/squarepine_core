@@ -26,7 +26,7 @@ public:
     /** */
     void resized() override
     {
-        const auto b = getLocalBounds().reduced (marginPx);
+        const auto b = getLocalBounds().reduced (dims::marginPx);
 
         const auto compW = b.getWidth() - 1;
         int totalH = 0;
@@ -34,7 +34,7 @@ public:
         {
             const auto h = c->getHeight();
             c->setBounds (0, totalH, compW, h);
-            totalH += h + marginPx;
+            totalH += h + dims::marginPx;
         }
 
         contents.setSize (compW, totalH);

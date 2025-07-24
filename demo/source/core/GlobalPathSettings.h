@@ -5,7 +5,7 @@ namespace GlobalPaths
     {
         PropertiesFile::Options options;
         options.applicationName = ProjectInfo::projectName;
-        options.filenameSuffix = ".txt";
+        options.filenameSuffix = ".xml";
         options.folderName = ProjectInfo::companyName;
         options.osxLibrarySubFolder = "Application Support";
         options.doNotSave = false;

@@ -17,6 +17,7 @@
 #include "core/GlobalIDs.h"
 #include "core/GlobalPathSettings.h"
 #include "core/SharedObjects.h"
+#include "core/ColourSchemes.h"
 
 #include "demos/DemoBase.h"
 #include "demos/AnimationDemo.h"
@@ -30,7 +31,28 @@
 #include "demos/ParticleSystemDemo.h"
 #include "demos/WinRTRGBDemo.h"
 
+inline String makeMainWindowTitle (StringRef name, StringRef version)
+{
+    String title;
+    title
+        << ProjectInfo::companyName
+        << " - " << name
+        << " - v" << version;
+
+   #if SQUAREPINE_USE_ICUESDK
+    title << " [+ iCUESDK]";
+   #endif
+
+   #if JUCE_DEBUG
+    title << " [DEBUG]";
+   #endif
+
+    return title;
+}
+
 #include "components/SettingsComponent.h"
+#include "components/SquarePineDemoSplashScreen.h"
+#include "components/TrayIconComponent.h"
 #include "main/DemoLookAndFeel.h"
 #include "main/MainComponent.h"
 

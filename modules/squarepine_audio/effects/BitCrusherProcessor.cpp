@@ -61,7 +61,7 @@ inline double crushToNBit (double sample, int bitDepth)
 inline double crushBit (double sample, int bitDepth)
 {
 /*
-    auto mixAmount = lerp (1.0, 32.0, static_cast<double> (bitDepth) / 32.0) / 32.0;
+    auto mixAmount = std::lerp (1.0, 32.0, static_cast<double> (bitDepth) / 32.0) / 32.0;
 
     mixAmount *= 0.08;
 

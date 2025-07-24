@@ -1,10 +1,30 @@
 SharedObjects::SharedObjects() :
+    appSettingsFile (GlobalPaths::getStorageOptions().getDefaultFile()),
     logFile (GlobalPaths::getLogFile()),
     keyPressMappingSet (commandManager)
 {
     SQUAREPINE_CRASH_TRACER
 
-    applicationProperties.setStorageParameters (GlobalPaths::getStorageOptions());
+    if (appSettingsFile.existsAsFile())
+    {
+        FileInputStream fis (appSettingsFile);
+        appSettings = createValueTreeFromJSON (fis.readEntireStreamAsString(), appSettingsId);
+        if (! appSettings.isValid())
+            appSettings = ValueTree (appSettingsId);
+    }
+    else
+    {
+        const auto r = appSettingsFile.create();
+        if (r.failed())
+        {
+            jassertfalse;
+        }
+    }
+
+    appTheme                = initProperty (appThemeId, VariantConverter<AppTheme>::toVar (AppTheme::darkTheme));
+    windowBounds            = initProperty (windowBoundsId, VariantConverter<Rectangle<int>>::toVar ({}));
+    maximised               = initProperty (maximisedId, false);
+    audioDeviceSettings     = initProperty (audioDeviceSettingsId, String());
 
     logger = std::make_unique<FileLogger> (logFile, String());
     Logger::setCurrentLogger (logger.get());
@@ -13,7 +33,6 @@ SharedObjects::SharedObjects() :
 
     reloadAudioDeviceManagerFromSettings();
     languageHandler = std::make_unique<LanguageHandler> (GlobalPaths::getLanguagesFolder());
-    fullscreen.setValue (false);
 
     using namespace BinaryData;
     lato = std::make_shared<FontFamily> ("Lato", LatoRegular_ttf, LatoRegular_ttfSize);
@@ -31,7 +50,7 @@ SharedObjects::SharedObjects() :
     defaultFamily           = lato;
 
     threadPool = std::make_shared<ThreadPool>();
-    imageFormatManager = std::make_shared<ImageFormatManager> (threadPool);
+    imageFormatManager = std::make_shared<ImageFormatManager>();
     imageFormatManager->registerBasicFormats();
 }
 
@@ -39,7 +58,7 @@ SharedObjects::~SharedObjects()
 {
     SQUAREPINE_CRASH_TRACER
 
-    applicationProperties.saveIfNeeded();
+    appSettingsFile.replaceWithText (toJSONString (appSettings));
 
     Logger::setCurrentLogger (nullptr);
 }
@@ -60,17 +79,21 @@ void SharedObjects::clear (bool notifyCommandStatus)
 void SharedObjects::populate (AudioFormatManager& afm)
 {
     afm.registerBasicFormats();
+
+   #if SQUAREPINE_USE_REX_AUDIO_FORMAT
+    // afm.registerFormat (new REXAudioFormat(), false); // TODO
+   #endif
 }
 
 //==============================================================================
 bool SharedObjects::isFullscreen() const
 {
-    return static_cast<bool> (fullscreen.getValue());
+    return static_cast<bool> (maximised.getValue());
 }
 
 void SharedObjects::toggleFullscreen()
 {
-    fullscreen.setValue (! isFullscreen());
+    maximised.setValue (! isFullscreen());
 }
 
 //==============================================================================
@@ -78,14 +101,8 @@ void SharedObjects::saveWindowDimensions (const DocumentWindow& dw)
 {
     SQUAREPINE_CRASH_TRACER
 
-    if (auto* us = applicationProperties.getUserSettings())
-    {
-        auto* settingsObject = new DynamicObject();
-        settingsObject->setProperty (boundsId, dw.getBounds().toString());
-        settingsObject->setProperty (maximisedId, dw.isFullScreen());
-
-        us->setValue (windowSettingsId, JSON::toString (settingsObject, true));
-    }
+    windowBounds = VariantConverter<Rectangle<int>>::toVar (dw.getBounds());
+    maximised = dw.isFullScreen();
 }
 
 void SharedObjects::snapRectToCurrentDisplayConfiguration (Rectangle<int>& b)
@@ -127,47 +144,37 @@ void SharedObjects::restoreWindowDimensions (DocumentWindow& dw)
         dw.setBounds (b);
     };
 
-    auto* us = applicationProperties.getUserSettings();
-    if (us == nullptr)
+    auto rect = VariantConverter<Rectangle<int>>::fromVar (windowBounds);
+
+    if (rect.isEmpty())
     {
         setupWithDefaults();
         return;
     }
 
-    auto settings = us->getValue (windowSettingsId).trim();
-    if (settings.isEmpty())
-    {
-        setupWithDefaults();
-        return;
-    }
+    snapRectToCurrentDisplayConfiguration (rect);
+    dw.setBounds (rect);
+    dw.setFullScreen (static_cast<bool> (maximised.getValue()));
+}
 
-    const auto v = JSON::fromString (settings);
+std::unique_ptr<Drawable> SharedObjects::getMainLogoSVG()
+{
+    return svg::Parse::parse (BinaryData::squarepine_logo_colour_svg, BinaryData::squarepine_logo_colour_svgSize);
+}
 
-    auto b = Rectangle<int>::fromString (v.getProperty (boundsId, "").toString());
-    snapRectToCurrentDisplayConfiguration (b);
-
-    dw.setBounds (b);
-    dw.setFullScreen (static_cast<bool> (v.getProperty (maximisedId, false)));
+Image SharedObjects::getMainLogoPNG()
+{
+    return ImageCache::getFromMemory (BinaryData::squarepine_logo_colour_png, BinaryData::squarepine_logo_colour_pngSize);
 }
 
 Image SharedObjects::getWindowIcon()
 {
-    return ImageCache::getFromMemory (BinaryData::SquarePine_Logo_png, BinaryData::SquarePine_Logo_pngSize);
+    return ImageCache::getFromMemory (BinaryData::squarepine_icon_32_png, BinaryData::squarepine_icon_32_pngSize);
 }
 
-//==============================================================================
-void SharedObjects::saveRecentFiles (const RecentlyOpenedFilesList& rofl)
+Image SharedObjects::getTaskbarIcon()
 {
-    SQUAREPINE_CRASH_TRACER
-
-    if (auto* us = applicationProperties.getUserSettings())
-        us->setValue (recentFilesId, rofl.toString());
-}
-
-void SharedObjects::restoreRecentFiles (RecentlyOpenedFilesList& rofl)
-{
-    if (auto* us = applicationProperties.getUserSettings())
-        rofl.restoreFromString (us->getValue (recentFilesId));
+    return ImageCache::getFromMemory (BinaryData::squarepine_trees_icon_24_png, BinaryData::squarepine_trees_icon_24_pngSize);
 }
 
 //==============================================================================
@@ -175,15 +182,11 @@ Result SharedObjects::saveAudioDeviceSetup()
 {
     SQUAREPINE_CRASH_TRACER
 
-    if (auto* us = applicationProperties.getUserSettings())
+    if (auto xml = audioDeviceManager.createStateXml())
     {
-        if (auto xml = audioDeviceManager.createStateXml())
-        {
-            const auto format = XmlElement::TextFormat().singleLine();
-            const auto s = Base64::toBase64 (xml->toString (format).trim());
-            us->setValue (audioDeviceSettingsId, s);
-            return Result::ok();
-        }
+        const auto format = XmlElement::TextFormat().singleLine();
+        audioDeviceSettings = Base64::toBase64 (xml->toString (format).trim());
+        return Result::ok();
     }
 
     return Result::fail ("");
@@ -195,41 +198,34 @@ Result SharedObjects::reloadAudioDeviceManagerFromSettings()
 
     if (RuntimePermissions::isGranted (RuntimePermissions::recordAudio))
     {
-#if 0
-        if (auto* us = applicationProperties.getUserSettings())
         {
-            if (us->containsKey (audioDeviceSettingsId))
+            MemoryOutputStream out;
+            const auto v = audioDeviceSettings.getValue().toString();
+            if (v.isNotEmpty() && Base64::convertFromBase64 (out, v))
             {
-                auto s = us->getValue (audioDeviceSettingsId);
-
-                MemoryOutputStream out;
-                if (Base64::convertFromBase64 (out, s))
+                if (auto xml = parseXML (out.toString()))
                 {
-                    if (auto xml = parseXML (out.toString()))
-                    {
-                        AudioDeviceManager::AudioDeviceSetup setup;
-                        setup.sampleRate = 48000.0;
-                        setup.bufferSize = 1024;
+                    AudioDeviceManager::AudioDeviceSetup setup;
+                    setup.sampleRate = 48000.0;
+                    setup.bufferSize = 1024;
 
-                        const auto result = audioDeviceManager.initialise (2, 2, xml.get(), true, {}, &setup).trim();
-                        if (result.isEmpty())
-                            return Result::ok();
+                    const auto result = audioDeviceManager.initialise (2, 2, xml.get(), true, {}, &setup).trim();
+                    if (result.isEmpty())
+                        return Result::ok();
 
-                        Logger::writeToLog (result);
-                        jassertfalse;
-                    }
+                    Logger::writeToLog (result);
+                    jassertfalse;
                 }
             }
         }
-    #endif
 
-        const auto result = audioDeviceManager.initialiseWithDefaultDevices (128, 128);
+        const auto result = audioDeviceManager.initialiseWithDefaultDevices (2, 2);
         audioDeviceManager.addAudioDeviceType (std::make_unique<DummyAudioIODeviceType>());
 
         if (result.isEmpty())
             return Result::ok();
 
-        // No soundcard, driver shit the bed, or something?
+        // No soundcard, driver failed, or something?
         Logger::writeToLog (result);
         jassertfalse;
         return Result::fail (result);

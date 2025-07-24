@@ -5,7 +5,7 @@
 
     ID:                 squarepine_cryptography
     vendor:             SquarePine
-    version:            1.6.0
+    version:            1.7.0
     name:               SquarePine Cryptography
     description:        A set of various hash, CRC, and other relevant cryptography functions and classes.
     website:            https://www.squarepine.io

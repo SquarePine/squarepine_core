@@ -68,7 +68,7 @@ uint64 BlumBlumShub::generate() noexcept
 double BlumBlumShub::generateNormalised() noexcept
 {
     const auto nextValue = generate();
-    return lerp ((double) 0.0, (double) (ULLONG_MAX - 1ULL), (double) nextValue);
+    return std::lerp ((double) 0.0, (double) (ULLONG_MAX - 1ULL), (double) nextValue);
 }
 
 void BlumBlumShub::reseed()

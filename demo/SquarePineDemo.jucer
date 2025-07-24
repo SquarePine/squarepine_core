@@ -3,8 +3,7 @@
 <JUCERPROJECT id="jumC7J" name="SquarePine Demo" projectType="guiapp" jucerFormatVersion="1"
               companyName="SquarePine" companyCopyright="SquarePine (C)" companyWebsite="squarepine.io"
               companyEmail="joel.r.langlois@gmail.com" useAppConfig="1" addUsingNamespaceToJuceHeader="1"
-              maxBinaryFileSize="20971520" cppLanguageStandard="latest" defines="_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING=1"
-              version="1.6.0">
+              maxBinaryFileSize="20971520" cppLanguageStandard="20" version="1.7.0">
   <MAINGROUP id="m6sryU" name="SquarePine Demo">
     <GROUP id="{A87106D4-97C8-8B6E-ABEF-2127F24885D5}" name="assets">
       <GROUP id="{AA4AFFDE-833A-2EE9-7061-76FBD8E33B4A}" name="Android">
@@ -13,6 +12,11 @@
             <FILE id="MfV8cO" name="styles.xml" compile="0" resource="1" file="assets/Android/res/values/styles.xml"/>
           </GROUP>
         </GROUP>
+      </GROUP>
+      <GROUP id="{3FC63D80-0BE9-CC43-D871-DB0B8FA6CB8E}" name="icons">
+        <FILE id="HlAunQ" name="adjustments.svg" compile="0" resource="1" file="assets/icons/adjustments.svg"/>
+        <FILE id="rdOvpx" name="burger.svg" compile="0" resource="1" file="assets/icons/burger.svg"/>
+        <FILE id="yCjtVm" name="cog.svg" compile="0" resource="1" file="assets/icons/cog.svg"/>
       </GROUP>
       <GROUP id="{E6B2F7BB-8254-BBB3-F4B4-B22FD6192B21}" name="Lato">
         <FILE id="Emw2Nv" name="Lato-Black.ttf" compile="0" resource="1" file="assets/Lato/Lato-Black.ttf"/>
@@ -32,15 +36,44 @@
               file="assets/Lato/Lato-ThinItalic.ttf"/>
         <FILE id="gBkAeX" name="OFL.txt" compile="0" resource="1" file="assets/Lato/OFL.txt"/>
       </GROUP>
-      <FILE id="jqPxuh" name="SquarePine Logo.png" compile="0" resource="1"
-            file="assets/SquarePine Logo.png"/>
+      <GROUP id="{5B7ABD59-F624-B590-B45D-0093EFE2B851}" name="logos">
+        <FILE id="xhIAyB" name="SquarePine_font_colour_guide.pdf" compile="0"
+              resource="1" file="assets/logos/SquarePine_font_colour_guide.pdf"/>
+        <FILE id="Shhj0E" name="squarepine_icon_32.png" compile="0" resource="1"
+              file="assets/logos/squarepine_icon_32.png"/>
+        <FILE id="pOMCZp" name="squarepine_icon_48.png" compile="0" resource="1"
+              file="assets/logos/squarepine_icon_48.png"/>
+        <FILE id="Cl57AN" name="squarepine_icon_64.png" compile="0" resource="1"
+              file="assets/logos/squarepine_icon_64.png"/>
+        <FILE id="cZEM4h" name="squarepine_icon_128.png" compile="0" resource="1"
+              file="assets/logos/squarepine_icon_128.png"/>
+        <FILE id="qamACY" name="squarepine_icon_256.png" compile="0" resource="1"
+              file="assets/logos/squarepine_icon_256.png"/>
+        <FILE id="oHMYig" name="squarepine_logo_colour.png" compile="0" resource="1"
+              file="assets/logos/squarepine_logo_colour.png"/>
+        <FILE id="FCwyCs" name="squarepine_logo_colour.svg" compile="0" resource="1"
+              file="assets/logos/squarepine_logo_colour.svg"/>
+        <FILE id="Jqtiml" name="squarepine_logo_colour_white_bg.svg" compile="0"
+              resource="1" file="assets/logos/squarepine_logo_colour_white_bg.svg"/>
+        <FILE id="dYdT3w" name="squarepine_trees_icon_16.png" compile="0" resource="1"
+              file="assets/logos/squarepine_trees_icon_16.png"/>
+        <FILE id="ybrL21" name="squarepine_trees_icon_24.png" compile="0" resource="1"
+              file="assets/logos/squarepine_trees_icon_24.png"/>
+        <FILE id="BuhTGV" name="squarepine_trees_only.svg" compile="0" resource="1"
+              file="assets/logos/squarepine_trees_only.svg"/>
+      </GROUP>
     </GROUP>
     <GROUP id="{BFD2FED6-75BB-68EF-1B5D-4B4C12B634B0}" name="source">
       <GROUP id="{0B6A7C2E-BC29-FD32-2469-457B7C6ACC16}" name="components">
         <FILE id="vH8A86" name="SettingsComponent.h" compile="0" resource="0"
               file="source/components/SettingsComponent.h"/>
+        <FILE id="ACfpmj" name="SquarePineDemoSplashScreen.h" compile="0" resource="0"
+              file="source/components/SquarePineDemoSplashScreen.h"/>
+        <FILE id="TjWT5F" name="TrayIconComponent.h" compile="0" resource="0"
+              file="source/components/TrayIconComponent.h"/>
       </GROUP>
       <GROUP id="{C323CE9A-5CBA-AC76-F470-68E2316979B2}" name="core">
+        <FILE id="yc0nex" name="ColourSchemes.h" compile="0" resource="0" file="source/core/ColourSchemes.h"/>
         <FILE id="Gju4Mx" name="GlobalIDs.h" compile="0" resource="0" file="source/core/GlobalIDs.h"/>
         <FILE id="cggFea" name="GlobalPathSettings.h" compile="0" resource="0"
               file="source/core/GlobalPathSettings.h"/>
@@ -92,11 +125,12 @@
                SQUAREPINE_LOG_GOOGLE_ANALYTICS="1" SQUAREPINE_USE_REX_AUDIO_FORMAT="1"
                SQUAREPINE_LOG_OPENGL_INFO="1"/>
   <EXPORTFORMATS>
-    <ANDROIDSTUDIO targetFolder="builds/android" smallIcon="jqPxuh" bigIcon="jqPxuh"
+    <ANDROIDSTUDIO targetFolder="builds/android" smallIcon="Shhj0E" bigIcon="qamACY"
                    androidAdditionalResourceFolders="assets/Android/res" androidTheme="@style/ActivityTheme"
                    cameraPermissionNeeded="1" androidVibratePermissionNeeded="1"
                    androidCustomAppBuildGradleContent="    buildTypes&#10;    {&#10;        release&#10;        {&#10;            minifyEnabled true&#10;            shrinkResources true&#10;            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'&#10;        }&#10;    }"
-                   androidMinimumSDK="24" microphonePermissionNeeded="1" androidTargetSDK="36">
+                   androidMinimumSDK="24" microphonePermissionNeeded="1" androidTargetSDK="36"
+                   androidManifestCustomXmlElements="&lt;manifest&gt;&#10;&lt;uses-permission android:name=&quot;android.permission.BATTERY_STATS&quot;/&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.audio.low_latency&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.accelerometer&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.ambient_temperature&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.barometer&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.compass&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.relative_humidity&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.gyroscope&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;/manifest&gt;">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" recommendedWarnings="LLVM"/>
         <CONFIGURATION isDebug="0" name="Release" recommendedWarnings="LLVM" linkTimeOptimisation="1"/>
@@ -129,23 +163,14 @@
         <MODULEPATH id="squarepine_cryptography" path="../modules"/>
       </MODULEPATHS>
     </ANDROIDSTUDIO>
-    <LINUX_MAKE targetFolder="builds/linux" smallIcon="jqPxuh" bigIcon="jqPxuh">
+    <LINUX_MAKE targetFolder="builds/linux" smallIcon="Shhj0E" bigIcon="qamACY">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"
-                       linuxArchitecture="-m32"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"
-                       linuxArchitecture="-m32" linkTimeOptimisation="1"/>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"
-                       linuxArchitecture="-m64"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"
-                       linuxArchitecture="-m64" linkTimeOptimisation="1"/>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"
-                       linuxArchitecture="-march=armv8-a"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"
-                       linuxArchitecture="-march=armv8-a" linkTimeOptimisation="1"/>
+        <CONFIGURATION isDebug="1" name="Debug" recommendedWarnings="LLVM"/>
+        <CONFIGURATION isDebug="0" name="Release" recommendedWarnings="LLVM" linkTimeOptimisation="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_analytics" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_animation" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_audio_basics" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_audio_formats" path="../../JUCE/modules"/>
@@ -164,25 +189,25 @@
         <MODULEPATH id="juce_osc" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_product_unlocking" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_video" path="../../JUCE/modules"/>
-        <MODULEPATH id="squarepine_graphics" path="../modules/"/>
-        <MODULEPATH id="squarepine_core" path="../modules/"/>
-        <MODULEPATH id="squarepine_audio" path="../modules/"/>
-        <MODULEPATH id="juce_animation" path="../../JUCE/modules"/>
         <MODULEPATH id="squarepine_animation" path="../modules"/>
+        <MODULEPATH id="squarepine_audio" path="../modules/"/>
+        <MODULEPATH id="squarepine_core" path="../modules/"/>
         <MODULEPATH id="squarepine_cryptography" path="../modules"/>
+        <MODULEPATH id="squarepine_graphics" path="../modules/"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <VS2022 targetFolder="builds/vs2022" smallIcon="jqPxuh" bigIcon="jqPxuh">
+    <VS2022 targetFolder="builds/vs2022" smallIcon="Shhj0E" bigIcon="qamACY"
+            extraDefs="_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING=1">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" characterSet="Unicode"
-                       useRuntimeLibDLL="0" linkTimeOptimisation="1"/>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" winArchitecture="ARM64"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" characterSet="Unicode"
-                       useRuntimeLibDLL="0" winArchitecture="ARM64" linkTimeOptimisation="1"/>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" winArchitecture="Win32"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" characterSet="Unicode"
-                       useRuntimeLibDLL="0" winArchitecture="Win32" linkTimeOptimisation="1"/>
+        <CONFIGURATION isDebug="1" name="Debug" characterSet="MultiByte"/>
+        <CONFIGURATION isDebug="0" name="Release" characterSet="Unicode" useRuntimeLibDLL="0"
+                       linkTimeOptimisation="1"/>
+        <CONFIGURATION isDebug="1" name="Debug" winArchitecture="ARM64" characterSet="Unicode"/>
+        <CONFIGURATION isDebug="0" name="Release" characterSet="Unicode" useRuntimeLibDLL="0"
+                       winArchitecture="ARM64" linkTimeOptimisation="1"/>
+        <CONFIGURATION isDebug="1" name="Debug" winArchitecture="Win32" characterSet="Unicode"/>
+        <CONFIGURATION isDebug="0" name="Release" characterSet="Unicode" useRuntimeLibDLL="0"
+                       winArchitecture="Win32" linkTimeOptimisation="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_analytics" path="../../JUCE/modules"/>
@@ -212,7 +237,8 @@
         <MODULEPATH id="squarepine_cryptography" path="../modules"/>
       </MODULEPATHS>
     </VS2022>
-    <VS2022 targetFolder="builds/vs2022_clangcl" toolset="ClangCL">
+    <VS2022 targetFolder="builds/vs2022_clangcl" toolset="ClangCL" smallIcon="Shhj0E"
+            bigIcon="qamACY">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" winArchitecture="Win32"/>
         <CONFIGURATION isDebug="0" name="Release" winArchitecture="Win32" linkTimeOptimisation="1"/>
@@ -249,14 +275,50 @@
         <MODULEPATH id="squarepine_cryptography" path="../modules"/>
       </MODULEPATHS>
     </VS2022>
+    <VS2022 targetFolder="builds/vs2022_icuesdk" extraDefs="_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING=1&#10;SQUAREPINE_USE_ICUESDK=1"
+            smallIcon="Shhj0E" bigIcon="qamACY">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" headerPath="$(ICUESDK_PATH)" libraryPath="$(ICUESDK_PATH)"
+                       postbuildCommand="echo &quot;%ICUESDK_PATH%&quot;&#10;&#10;xcopy &quot;%ICUESDK_PATH%\iCUESDK\redist\x64\iCUESDK.x64_2019.dll&quot; &quot;$(OutDir)&quot; /S /C /Y"/>
+        <CONFIGURATION isDebug="0" name="Release" headerPath="$(ICUESDK_PATH)" libraryPath="$(ICUESDK_PATH)"
+                       postbuildCommand="echo &quot;%ICUESDK_PATH%&quot;&#10;&#10;xcopy &quot;%ICUESDK_PATH%\iCUESDK\redist\x64\iCUESDK.x64_2019.dll&quot; &quot;$(OutDir)&quot; /S /C /Y"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_analytics" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_animation" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_box2d" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_osc" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_product_unlocking" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_video" path="../../JUCE/modules"/>
+        <MODULEPATH id="squarepine_animation" path="../modules"/>
+        <MODULEPATH id="squarepine_audio" path="../modules/"/>
+        <MODULEPATH id="squarepine_core" path="../modules/"/>
+        <MODULEPATH id="squarepine_cryptography" path="../modules"/>
+        <MODULEPATH id="squarepine_graphics" path="../modules/"/>
+      </MODULEPATHS>
+    </VS2022>
     <XCODE_IPHONE targetFolder="builds/ios" iosScreenOrientation="UIInterfaceOrientationLandscapeLeft,UIInterfaceOrientationLandscapeRight,UIInterfaceOrientationPortrait,UIInterfaceOrientationPortraitUpsideDown"
                   iPadScreenOrientation="UIInterfaceOrientationLandscapeLeft,UIInterfaceOrientationLandscapeRight,UIInterfaceOrientationPortrait,UIInterfaceOrientationPortraitUpsideDown"
-                  UIFileSharingEnabled="1" UISupportsDocumentBrowser="1" smallIcon="jqPxuh"
-                  bigIcon="jqPxuh">
+                  UIFileSharingEnabled="1" UISupportsDocumentBrowser="1" smallIcon="Shhj0E"
+                  bigIcon="qamACY">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"
-                       stripLocalSymbols="1" linkTimeOptimisation="1"/>
+        <CONFIGURATION isDebug="1" name="Debug" recommendedWarnings="LLVM"/>
+        <CONFIGURATION isDebug="0" name="Release" recommendedWarnings="LLVM" stripLocalSymbols="1"
+                       linkTimeOptimisation="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_analytics" path="../../JUCE/modules"/>
@@ -287,12 +349,10 @@
       </MODULEPATHS>
     </XCODE_IPHONE>
     <XCODE_MAC targetFolder="builds/macos" xcodeValidArchs="arm64,x86_64" applicationCategory="public.app-category.games"
-               smallIcon="jqPxuh" bigIcon="jqPxuh">
+               smallIcon="Shhj0E" bigIcon="qamACY">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="SquarePine Demo" recommendedWarnings="LLVM"
-                       linkTimeOptimisation="1"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="SquarePine Demo" recommendedWarnings="LLVM"
-                       stripLocalSymbols="1"/>
+        <CONFIGURATION isDebug="1" name="Debug" recommendedWarnings="LLVM" linkTimeOptimisation="1"/>
+        <CONFIGURATION isDebug="0" name="Release" recommendedWarnings="LLVM" stripLocalSymbols="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_analytics" path="../../JUCE/modules"/>

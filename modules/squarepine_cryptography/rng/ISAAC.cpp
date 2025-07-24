@@ -71,7 +71,7 @@ uint32 ISAAC::generate()
 double ISAAC::generateNormalised() noexcept
 {
     const auto nextValue = generate();
-    return lerp ((double) 0.0, (double) (ULONG_MAX - 1ULL), (double) nextValue);
+    return std::lerp ((double) 0.0, (double) (ULONG_MAX - 1ULL), (double) nextValue);
 }
 
 //==============================================================================

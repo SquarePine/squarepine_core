@@ -5,7 +5,7 @@
 
     ID:                 squarepine_animation
     vendor:             SquarePine
-    version:            1.6.0
+    version:            1.7.0
     name:               SquarePine Animation
     description:        A grouping of reusable classes for controlling and managing animations.
     website:            https://www.squarepine.io

@@ -155,7 +155,7 @@ public:
     static float getRandomFloat (float min, float max)
     {
         const auto n = Random::getSystemRandom().nextFloat();
-        return lerp (min, max, n);
+        return std::lerp (min, max, n);
     }
 
     /** */

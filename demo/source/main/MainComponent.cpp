@@ -1,4 +1,5 @@
-MainComponent::MainComponent (SharedObjects& sharedObjs)
+MainComponent::MainComponent (SharedObjects& sharedObjs) :
+    sharedObjects (sharedObjs)
 {
     SQUAREPINE_CRASH_TRACER
 
@@ -68,6 +69,7 @@ MainComponent::MainComponent (SharedObjects& sharedObjs)
 
 MainComponent::~MainComponent()
 {
+    sharedObjects.commandManager.setFirstCommandTarget (nullptr);
 }
 
 //==============================================================================
@@ -108,6 +110,11 @@ void MainComponent::menuItemSelected (int menuItemId, int topLevelMenuIndex)
 
         activeDemo = demoToSelect;
 
+        sharedObjects.commandManager.clearCommands();
+        sharedObjects.commandManager.setFirstCommandTarget (activeDemo);
+        sharedObjects.commandManager.registerAllCommandsForTarget (activeDemo);
+        sharedObjects.commandManager.commandStatusChanged();
+
         addAndMakeVisible (activeDemo);
         resized();
     }
@@ -139,11 +146,11 @@ void MainComponent::resized()
         return bounds;
     }();
 
-    b = b.reduced (DemoBase::marginPx);
+    b = b.reduced (dims::marginPx);
 
     {
-        barArea = b.removeFromLeft (DemoBase::barSizePx * 2)
-                   .reduced (DemoBase::marginPx);
+        barArea = b.removeFromLeft (dims::barSizePx * 2)
+                   .reduced (dims::marginPx);
 
         auto tempBar = barArea;
         popupButton.setBounds (tempBar.removeFromTop (tempBar.getWidth()));

@@ -5,7 +5,7 @@ class MainComponent final : public juce::Component,
 {
 public:
     /** */
-    MainComponent (SharedObjects& sharedObjects);
+    MainComponent (SharedObjects&);
     /** */
     ~MainComponent() override;
 
@@ -28,6 +28,7 @@ public:
 private:
     //==============================================================================
     HighPerformanceRendererConfigurator rendererConfigurator;
+    SharedObjects& sharedObjects;
     OwnedArray<DemoBase> demos;
     DemoBase* activeDemo = nullptr;
 

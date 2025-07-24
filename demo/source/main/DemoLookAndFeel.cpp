@@ -8,6 +8,7 @@ DemoLookAndFeel::DemoLookAndFeel (SharedObjects& sharedObjs) :
     jassert (sharedObjects.defaultFamily != nullptr);
     setDefaultSansSerifTypefaceName (sharedObjects.defaultFamily->name);
     setDefaultSansSerifTypeface (sharedObjects.defaultFamily->regular.normal);
+    setUsingNativeAlertWindows (true);
 
     darkModeSettingChanged();
 }

@@ -27,7 +27,7 @@ public:
         setupButton (greenButton, TRANS ("Green"), Colours::green);
         setupButton (blueButton, TRANS ("Blue"), Colours::blue);
 
-        listbox.setRowHeight (barSizePx);
+        listbox.setRowHeight (dims::barSizePx);
         listbox.setModel (this);
         addAndMakeVisible (listbox);
 
@@ -37,22 +37,22 @@ public:
     //==============================================================================
     void resized() override
     {
-        auto b = getLocalBounds().reduced (marginPx);
+        auto b = getLocalBounds().reduced (dims::marginPx);
 
         {
-            auto lb = b.removeFromTop (jmin (b.getHeight(), (int) barSizePx));
-            auto w = (lb.getWidth() / 3) - (marginPx * 2);
+            auto lb = b.removeFromTop (jmin (b.getHeight(), (int) dims::barSizePx));
+            auto w = (lb.getWidth() / 3) - (dims::marginPx * 2);
 
             redButton.setBounds (lb.removeFromLeft (w));
-            lb.removeFromLeft (marginPx);
+            lb.removeFromLeft (dims::marginPx);
 
             blueButton.setBounds (lb.removeFromRight (w));
-            lb.removeFromRight (marginPx);
+            lb.removeFromRight (dims::marginPx);
 
             greenButton.setBounds (lb);
         }
 
-        b.removeFromTop (marginPx);
+        b.removeFromTop (dims::marginPx);
         listbox.setBounds (b);
     }
 

@@ -1,94 +1,29 @@
-#if SQUAREPINE_IS_DESKTOP
-
-/** This is just a generic and simplistic tray icon component,
-    instantiated on desktop systems only (which is the only place it's supported by JUCE).
-
-    @see MainWindow, juce::SystemTrayIconComponent
-*/
-class TrayIconComponent final : public SystemTrayIconComponent
-{
-public:
-    TrayIconComponent (ApplicationCommandManager& cm) :
-        commandManager (cm)
-    {
-        const auto image = SharedObjects::getWindowIcon();
-        setIconImage (image, image);
-    }
-
-    //==============================================================================
-    void mouseDown (const MouseEvent& e) override
-    {
-        lastEventMods = e.mods;
-    }
-
-    void mouseUp (const MouseEvent&) override
-    {
-        auto& desktop = Desktop::getInstance();
-
-        for (int i = desktop.getNumComponents(); --i >= 0;)
-            desktop.getComponent (i)->toFront (true);
-
-        // NB: by this point, the mouse buttons are... well, up/inactive.
-        if (lastEventMods.isPopupMenu()
-            && commandManager.getNumCommands() > 0)
-        {
-            PopupMenu pm;
-
-            pm.addCommandItem (&commandManager, WorkstationIds::preferences);
-            pm.addSeparator();
-            pm.addCommandItem (&commandManager, StandardApplicationCommandIDs::quit);
-
-            pm.showMenuAsync ({});
-        }
-
-        lastEventMods = {};
-    }
-
-private:
-    //==============================================================================
-    ApplicationCommandManager& commandManager;
-    ModifierKeys lastEventMods;
-
-    //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrayIconComponent)
-};
-
-#endif // SQUAREPINE_IS_DESKTOP
-
-//==============================================================================
+/** */
 class MainWindow final : public DocumentWindow
 {
 public:
     MainWindow (const String& name) :
         DocumentWindow (name, Colours::black, DocumentWindow::allButtons),
-        customLookAndFeel (sharedObjects),
-        mainComponent (sharedObjects)
+        customLookAndFeel (sharedObjects)
     {
-        googleAnalyticsReporter->startSession();
-
-        setUsingNativeTitleBar (true);
-        setOpaque (true);
-
         Desktop::getInstance().setDefaultLookAndFeel (&customLookAndFeel);
 
-       #if SQUAREPINE_IS_DESKTOP
-        trayIconComponent.reset (new TrayIconComponent (sharedObjects.commandManager));
-       #endif
+        splash = new SquarePineDemoSplashScreen();
 
-        setContentNonOwned (&mainComponent, true);
+        splash->onComplete = [ptr = SafePointer (this)]()
+        {
+            MessageManager::callAsync ([ptr]()
+            {
+                SQUAREPINE_CRASH_TRACER
+                if (ptr != nullptr)
+                {
+                    ptr->init();
+                    Process::makeForegroundProcess();
+                }
+            });
+        };
 
-       #if SQUAREPINE_IS_MOBILE
-        setFullScreen (true);
-       #else
-        setResizable (true, true);
-        centreWithSize (getWidth(), getHeight());
-       #endif
-
-       #if SQUAREPINE_USE_ICUESDK
-        corsair::globalSession->logInfo();
-       #endif
-
-        setVisible (true);
+        splash->run();
     }
 
     ~MainWindow() override
@@ -120,7 +55,38 @@ private:
     std::unique_ptr<SystemTrayIconComponent> trayIconComponent;
    #endif
 
-    MainComponent mainComponent;
+    std::unique_ptr<MainComponent> mainComponent;
+
+    SafePointer<SquarePineDemoSplashScreen> splash;
+
+    //==============================================================================
+    void init()
+    {
+        googleAnalyticsReporter->startSession();
+
+        setUsingNativeTitleBar (true);
+        setOpaque (true);
+
+       #if SQUAREPINE_IS_DESKTOP
+        trayIconComponent.reset (new TrayIconComponent (sharedObjects.commandManager));
+       #endif
+
+        mainComponent = std::make_unique<MainComponent> (sharedObjects);
+        setContentNonOwned (mainComponent.get(), true);
+
+       #if SQUAREPINE_IS_MOBILE
+        setFullScreen (true);
+       #else
+        setResizable (true, true);
+        centreWithSize (getWidth(), getHeight());
+       #endif
+
+       #if SQUAREPINE_USE_ICUESDK
+        corsair::globalSession->logInfo();
+       #endif
+
+        setVisible (true);
+    }
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)
@@ -143,17 +109,7 @@ public:
     /** @internal */
     std::unique_ptr<DocumentWindow> createWindow() const override
     {
-        String windowName;
-        windowName
-            << ProjectInfo::companyName
-            << " - " << getAppName()
-            << " - v" << getAppVersion();
-
-       #if JUCE_DEBUG
-        windowName << " [DEBUG]";
-       #endif
-
-        return std::make_unique<MainWindow> (windowName);
+        return std::make_unique<MainWindow> (makeMainWindowTitle (getAppName(), getAppVersion()));
     }
 
     String getLoggerFilePath() const override

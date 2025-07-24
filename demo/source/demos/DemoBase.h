@@ -1,6 +1,7 @@
 /** */
 class DemoBase : public Component,
-                 public LanguageHandler::Listener
+                 public LanguageHandler::Listener,
+                 public ApplicationCommandTarget
 {
 public:
     /** */
@@ -45,12 +46,24 @@ public:
         updateWithNewTranslations();
     }
 
-    //==============================================================================
-    enum
+    ApplicationCommandTarget* getNextCommandTarget() override
     {
-        marginPx    = 4,
-        barSizePx   = marginPx * 12
-    };
+        return ApplicationCommandManager::findTargetForComponent (getParentComponent());
+    }
+
+    void getAllCommands (Array<CommandID>& commands) override
+    {
+        commands.clear();
+    }
+
+    void getCommandInfo (CommandID, ApplicationCommandInfo&) override
+    {
+    }
+
+    bool perform (const InvocationInfo&) override
+    {
+        return true;
+    }
 
 protected:
     //==============================================================================
@@ -62,4 +75,51 @@ private:
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DemoBase)
+};
+
+//==============================================================================
+/** */
+class DemoBaseWithToolbars : public DemoBase
+{
+public:
+    /** */
+    DemoBaseWithToolbars (SharedObjects& sharedObjs,
+                          const String& untransName) :
+        DemoBase (sharedObjs, untransName)
+    {
+    }
+
+    //==============================================================================
+    virtual std::unique_ptr<Component> createHeaderComponent() const { return nullptr; }
+    virtual std::unique_ptr<Component> createFooterComponent() const { return nullptr; }
+
+    //==============================================================================
+    virtual void resizeBody (Rectangle<int> dimensions) = 0;
+
+    //==============================================================================
+    void resized() final
+    { 
+        if (headerComponent == nullptr)
+            headerComponent = createHeaderComponent();
+
+        if (footerComponent == nullptr)
+            footerComponent = createFooterComponent();
+
+        auto b = getLocalBounds();
+
+        if (headerComponent != nullptr)
+            headerComponent->setBounds (b.removeFromTop (dims::toolbarSizePx));
+
+        if (footerComponent != nullptr)
+            footerComponent->setBounds (b.removeFromBottom (dims::toolbarSizePx));
+
+        resizeBody (b);
+    }
+
+private:
+    //==============================================================================
+    std::unique_ptr<Component> headerComponent, footerComponent;
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DemoBaseWithToolbars)
 };

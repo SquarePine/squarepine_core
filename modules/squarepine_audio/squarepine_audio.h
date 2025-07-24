@@ -5,7 +5,7 @@
 
     ID:                 squarepine_audio
     vendor:             SquarePine
-    version:            1.6.0
+    version:            1.7.0
     name:               SquarePine Audio
     description:        A great backbone for any typical audio project.
     website:            https://www.squarepine.io
@@ -77,8 +77,6 @@
 #endif
 
 //==============================================================================
-#include "linkers/ZplaneHelpers.h"
-
 namespace juce
 {
     /** @returns true if the lhs is a duplicate of the rhs.

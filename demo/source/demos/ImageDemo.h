@@ -1,3 +1,48 @@
+//==============================================================================
+/** */
+class ImageLoadingJob final : public ThreadPoolJob
+{
+public:
+    /** Constructor. */
+    ImageLoadingJob (const URL& urlToLoad,
+                     std::shared_ptr<ImageFormatManager> imageFormatManagerToUse,
+                     const String& jobName = "ImageLoadingJob") :
+        ThreadPoolJob (jobName),
+        url (urlToLoad),
+        imageFormatManager (imageFormatManagerToUse)
+    {
+        jassert (url.isWellFormed());
+        jassert (imageFormatManager != nullptr);
+    }
+
+    //==============================================================================
+    std::function<void(Image, bool)> onComplete;
+
+    const URL& getURL() const noexcept { return url; }
+    const Image& getImage() const noexcept { return image; }
+
+    //==============================================================================
+    JobStatus runJob() override
+    {
+        image = imageFormatManager->loadFrom (url);
+
+        if (onComplete != nullptr)
+            onComplete (image, image.isValid());
+
+        return jobHasFinished;
+    }
+
+private:
+    //==============================================================================
+    const URL url;
+    Image image;
+    std::shared_ptr<ImageFormatManager> imageFormatManager;
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ImageLoadingJob)
+};
+
+//==============================================================================
 /** */
 class ImageDemo final : public DemoBase,
                         public FileDragAndDropTarget,
@@ -38,7 +83,7 @@ public:
 
                         jassert (newFileURL.isLocalFile());
 
-                        sp->setImage (newFileURL);
+                        sp->setImage (newFileURL, true);
                     });
                 }
             );
@@ -48,30 +93,20 @@ public:
         addAndMakeVisible (open);
     }
 
+    ~ImageDemo() override
+    {
+        if (imageLoadingJob != nullptr
+            && ! sharedObjects.threadPool->removeJob (imageLoadingJob.get(), true, 5000))
+        {
+            jassertfalse;
+        }
+    }
+
     //==============================================================================
-    /** Changes the currently displayed with the given one.
-        If the given image is null, the underlying image component will be cleared.
-    */
     void setImage (const Image& image)
     {
         imageComponent.setImage (image);
         repaint();
-    }
-
-    /** Changes the currently displayed with one from the given file.
-        If the given image fails to load, the underlying image component will be cleared.
-    */
-    void setImage (const File& file)
-    {
-        setImage (imageFormatManager->loadFrom (file));
-    }
-
-    /** Changes the currently displayed with one from the given URL.
-        If the given image fails to load, the underlying image component will be cleared.
-    */
-    void setImage (const URL& url)
-    {
-        setImage (imageFormatManager->loadFrom (url));
     }
 
     //==============================================================================
@@ -88,9 +123,9 @@ public:
     /** @internal */
     void resized() override
     {
-        auto b = getLocalBounds().reduced (marginPx);
+        auto b = getLocalBounds().reduced (dims::marginPx);
 
-        auto topBar = b.removeFromTop (barSizePx);
+        auto topBar = b.removeFromTop (dims::barSizePx);
         open.setBounds (topBar.removeFromLeft (192));
 
         imageComponent.setBounds (b);
@@ -118,7 +153,7 @@ public:
             const File file (path);
             if (file.existsAsFile() && imageFormatManager->findFormatForFile (file) != nullptr)
             {
-                setImage (file);
+                setImage (URL (file), true);
                 return;
             }
         }
@@ -139,10 +174,33 @@ public:
 
 private:
     //==============================================================================
+    struct AnimatedSpinner final : public Component,
+                                   private Timer
+    {
+        AnimatedSpinner()
+        {
+            setInterceptsMouseClicks (false, true);
+            startTimerHz (60);
+        }
+
+        void timerCallback() override { repaint(); }
+
+        void paint (Graphics& g) override
+        {
+            getLookAndFeel().drawSpinningWaitAnimation (g, Colours::darkgrey, 0, 0, getWidth(), getHeight());
+        }
+
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AnimatedSpinner)
+    };
+
     std::shared_ptr<ImageFormatManager> imageFormatManager;
     HighQualityImageComponent imageComponent;
     TextButton open;
     std::unique_ptr<FileChooser> fileChooser;
+    std::unique_ptr<ImageLoadingJob> imageLoadingJob;
+    URL lastURL;
+
+    std::unique_ptr<AnimatedSpinner> animatedSpinner;
 
     //==============================================================================
     static bool isPossiblyBase64 (const String& text)
@@ -157,6 +215,84 @@ private:
         }
 
         return true;
+    }
+
+    template <typename Callback>
+    static void callOnMessageThread (Callback&& callback)
+    {
+        if (MessageManager::getInstance()->isThisTheMessageThread())
+            callback();
+        else
+            MessageManager::callAsync (std::forward<Callback> (callback));
+    }
+
+    void startSpinnerAnimation()
+    {
+        animatedSpinner = std::make_unique<AnimatedSpinner>();
+        animatedSpinner->setBounds (getLocalBounds());
+        addAndMakeVisible (animatedSpinner.get());
+    }
+
+    void stopSpinnerAnimation()
+    {
+        animatedSpinner = nullptr;
+    }
+
+    bool waitForImageLoadingJobToComplete()
+    {
+        if (imageLoadingJob != nullptr)
+        {
+            imageLoadingJob->signalJobShouldExit();
+
+            if (sharedObjects.threadPool->removeJob (imageLoadingJob.get(), true, 5000))
+            {
+                imageLoadingJob = nullptr;
+            }
+        }
+
+        return imageLoadingJob == nullptr;
+    }
+
+    void setImage (const URL& url, bool async)
+    {
+        if (lastURL == url)
+            return;
+
+        lastURL = url;
+
+        if (async)
+            startLoadingAsync();
+        else
+            setImage (imageFormatManager->loadFrom (url));
+    }
+
+    void startLoadingAsync()
+    {
+        if (! waitForImageLoadingJobToComplete())
+            return;
+
+        setImage ({}); // Clear the image.
+        startSpinnerAnimation();
+
+        imageLoadingJob = std::make_unique<ImageLoadingJob> (lastURL, sharedObjects.imageFormatManager);
+
+        SafePointer sp (this);
+        imageLoadingJob->onComplete = [sp] (Image image, bool succeeded)
+        {
+            callOnMessageThread ([sp, image, succeeded]()
+            {
+                if (sp != nullptr)
+                {
+                    if (succeeded)
+                        sp->setImage (image);
+
+                    sp->stopSpinnerAnimation();
+                    sp->waitForImageLoadingJobToComplete();
+                }
+            }); 
+        };
+
+        sharedObjects.threadPool->addJob (imageLoadingJob.get(), false);
     }
 
     //==============================================================================

@@ -11,7 +11,7 @@ public:
     //==============================================================================
     void resized() override
     {
-        auto b = getLocalBounds().reduced (marginPx);
+        auto b = getLocalBounds().reduced (dims::marginPx);
 
         ignoreUnused (b);
     }

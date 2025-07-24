@@ -177,7 +177,7 @@ bool Meter::refresh()
         const auto lastLevel = channel.level;
         const auto lastMaxLevel = channel.maxLevel;
 
-        channel.level = lerp (lastLevel, levels[i], 0.9f);
+        channel.level = std::lerp (lastLevel, levels[i], 0.9f);
 
         if (needsMaxLevel)
         {
