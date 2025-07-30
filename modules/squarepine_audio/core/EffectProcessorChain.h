@@ -23,7 +23,7 @@
              a higher level function. On the bright side, the chain and
              the subsequent EffectProcessor instances will help you store
              and restore the bypassing state along with the mix level,
-             and the state of the plugin itse;f.
+             and the state of the plugin itself.
 
     @see EffectProcessor, EffectProcessorFactory
 */
@@ -82,8 +82,8 @@ public:
 
         @param fileOrIdentifier Plugin file or identifier within the KnownPluginList.
 
-        @returns a new effect processor. This will be nullptr if the index wasn't found
-        or if the plugin failed to load for some reason (eg: debugger is was detected).
+        @returns a new effect processor. This will be nullptr if the identifier wasn't found
+        or if the plugin failed to load for some reason (eg: debugger was detected).
     */
     EffectProcessor::Ptr add (const String& fileOrIdentifier);
 
@@ -96,7 +96,7 @@ public:
                  or there will be dangling pointers to the removed plugin!
 
         @returns a new effect processor. This will be nullptr if the index wasn't found
-        or if the plugin failed to load for some reason (eg: debugger is was detected).
+        or if the plugin failed to load for some reason (eg: debugger was detected).
     */
     EffectProcessor::Ptr insert (int destinationIndex, int pluginIndex);
 
@@ -105,11 +105,8 @@ public:
         @param destinationIndex Destination in the index of the array of plugins.
         @param fileOrIdentifier File or identifier that can be referenced within the KnownPluginList.
 
-        @warning Callers need to remove plugin editors associated with the current index
-                 or there will be dangling pointers to the removed plugin!
-
-        @returns a new effect processor. This will be nullptr if the index wasn't found
-        or if the plugin failed to load for some reason (eg: debugger is was detected).
+        @returns a new effect processor. This will be nullptr if the index wasn't valid, tge identifier wasn't found,
+        or if the plugin failed to load for some reason (eg: debugger was detected).
     */
     EffectProcessor::Ptr insert (int destinationIndex, const String& fileOrIdentifier);
 
@@ -121,8 +118,8 @@ public:
         @warning Callers need to remove plugin editors associated with the current index
                  or there will be dangling pointers to the removed plugin!
 
-        @returns a new effect processor. This will be nullptr if the index wasn't found
-        or if the plugin failed to load for some reason (eg: debugger is was detected).
+        @returns a new effect processor. This will be nullptr if the index wasn't valid
+        or if the plugin failed to load for some reason (eg: debugger was detected).
     */
     EffectProcessor::Ptr replace (int destinationIndex, int pluginIndex);
 
@@ -134,8 +131,8 @@ public:
         @warning Callers need to remove plugin editors associated with the current index
                  or there will be dangling pointers to the removed plugin!
 
-        @returns a new effect processor. This will be nullptr if the index wasn't found
-        or if the plugin failed to load for some reason (eg: debugger is was detected).
+        @returns a new effect processor. This will be nullptr if the index wasn't valid
+        or if the plugin failed to load for some reason (eg: debugger was detected).
     */
     EffectProcessor::Ptr replace (int destinationIndex, const String& fileOrIdentifier);
 
@@ -144,15 +141,13 @@ public:
 
         @param sourceIndex      Plugin index within the array of plugins.
         @param destinationIndex Destination in the index of the array of plugins.
-
-        @returns true if the action was successful.
     */
     void move (int sourceIndex, int destinationIndex);
 
     /** Swaps a pair of effects in the chain.
 
-        If either of the indexes passed in is out-of-range, nothing will happen,
-        otherwise the two effects at these positions will be exchanged.
+        If either of the indexes passed in are out-of-range, nothing will happen;
+        otherwise, the two effects at these positions will be exchanged.
     */
     void swap (int index1, int index2);
 
