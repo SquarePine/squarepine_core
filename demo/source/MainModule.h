@@ -22,6 +22,7 @@
 #include "demos/DemoBase.h"
 #include "demos/AnimationDemo.h"
 #include "demos/CodeEditorDemo.h"
+#include "demos/CRCDemo.h"
 #include "demos/iCUESDKDemo.h"
 #include "demos/EasingsDemo.h"
 #include "demos/EffectChainDemo.h"
@@ -30,6 +31,7 @@
 #include "demos/OpenGLDetailsDemo.h"
 #include "demos/ParticleSystemDemo.h"
 #include "demos/WinRTRGBDemo.h"
+#include "demos/UnitTestDemo.h"
 
 inline String makeMainWindowTitle (StringRef name, StringRef version)
 {

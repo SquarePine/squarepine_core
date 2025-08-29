@@ -87,6 +87,7 @@
         <FILE id="CfsYbc" name="AnimationDemo.h" compile="0" resource="0" file="source/demos/AnimationDemo.h"/>
         <FILE id="o8ngkO" name="CodeEditorDemo.h" compile="0" resource="0"
               file="source/demos/CodeEditorDemo.h"/>
+        <FILE id="BHFuPC" name="CRCDemo.h" compile="0" resource="0" file="source/demos/CRCDemo.h"/>
         <FILE id="mUqbF6" name="DemoBase.h" compile="0" resource="0" file="source/demos/DemoBase.h"/>
         <FILE id="IZHnpO" name="EasingsDemo.h" compile="0" resource="0" file="source/demos/EasingsDemo.h"/>
         <FILE id="MTl6Wo" name="EffectChainDemo.cpp" compile="0" resource="0"
@@ -103,6 +104,7 @@
               file="source/demos/ParticleSystemDemo.cpp"/>
         <FILE id="kOAePN" name="ParticleSystemDemo.h" compile="0" resource="0"
               file="source/demos/ParticleSystemDemo.h"/>
+        <FILE id="S0giDr" name="UnitTestDemo.h" compile="0" resource="0" file="source/demos/UnitTestDemo.h"/>
         <FILE id="SVoVfA" name="WinRTRGBDemo.h" compile="0" resource="0" file="source/demos/WinRTRGBDemo.h"/>
       </GROUP>
       <GROUP id="{B136827C-443D-9F46-D62C-F9F22179369A}" name="main">
@@ -130,7 +132,8 @@
                    cameraPermissionNeeded="1" androidVibratePermissionNeeded="1"
                    androidCustomAppBuildGradleContent="    buildTypes&#10;    {&#10;        release&#10;        {&#10;            minifyEnabled true&#10;            shrinkResources true&#10;            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'&#10;        }&#10;    }"
                    androidMinimumSDK="24" microphonePermissionNeeded="1" androidTargetSDK="36"
-                   androidManifestCustomXmlElements="&lt;manifest&gt;&#10;&lt;uses-permission android:name=&quot;android.permission.BATTERY_STATS&quot;/&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.audio.low_latency&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.accelerometer&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.ambient_temperature&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.barometer&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.compass&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.relative_humidity&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.gyroscope&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;/manifest&gt;">
+                   androidManifestCustomXmlElements="&lt;manifest&gt;&#10;&lt;uses-permission android:name=&quot;android.permission.BATTERY_STATS&quot;/&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.audio.low_latency&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.accelerometer&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.ambient_temperature&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.barometer&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.compass&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.relative_humidity&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;uses-feature android:name=&quot;android.hardware.sensor.gyroscope&quot; android:required=&quot;false&quot; /&gt;&#10;&lt;/manifest&gt;"
+                   gradleWrapperVersion="8.12.0" gradleVersion="9.0.0">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" recommendedWarnings="LLVM"/>
         <CONFIGURATION isDebug="0" name="Release" recommendedWarnings="LLVM" linkTimeOptimisation="1"/>
@@ -199,12 +202,13 @@
     <VS2022 targetFolder="builds/vs2022" smallIcon="Shhj0E" bigIcon="qamACY"
             extraDefs="_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING=1">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" characterSet="MultiByte"/>
+        <CONFIGURATION isDebug="1" name="Debug" characterSet="Unicode" intrinsicFunctions="1"/>
         <CONFIGURATION isDebug="0" name="Release" characterSet="Unicode" useRuntimeLibDLL="0"
-                       linkTimeOptimisation="1"/>
-        <CONFIGURATION isDebug="1" name="Debug" winArchitecture="ARM64" characterSet="Unicode"/>
+                       linkTimeOptimisation="1" intrinsicFunctions="1"/>
+        <CONFIGURATION isDebug="1" name="Debug" winArchitecture="ARM64" characterSet="Unicode"
+                       intrinsicFunctions="1"/>
         <CONFIGURATION isDebug="0" name="Release" characterSet="Unicode" useRuntimeLibDLL="0"
-                       winArchitecture="ARM64" linkTimeOptimisation="1"/>
+                       winArchitecture="ARM64" linkTimeOptimisation="1" intrinsicFunctions="1"/>
         <CONFIGURATION isDebug="1" name="Debug" winArchitecture="Win32" characterSet="Unicode"/>
         <CONFIGURATION isDebug="0" name="Release" characterSet="Unicode" useRuntimeLibDLL="0"
                        winArchitecture="Win32" linkTimeOptimisation="1"/>

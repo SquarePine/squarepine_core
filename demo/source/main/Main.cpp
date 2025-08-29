@@ -6,24 +6,34 @@ public:
         DocumentWindow (name, Colours::black, DocumentWindow::allButtons),
         customLookAndFeel (sharedObjects)
     {
+        SQUAREPINE_CRASH_TRACER
+
         Desktop::getInstance().setDefaultLookAndFeel (&customLookAndFeel);
 
-        splash = new SquarePineDemoSplashScreen();
+        const bool canShowSplash = false;
 
-        splash->onComplete = [ptr = SafePointer (this)]()
+        if (canShowSplash)
         {
-            MessageManager::callAsync ([ptr]()
-            {
-                SQUAREPINE_CRASH_TRACER
-                if (ptr != nullptr)
-                {
-                    ptr->init();
-                    Process::makeForegroundProcess();
-                }
-            });
-        };
+            splash = new SquarePineDemoSplashScreen();
 
-        splash->run();
+            splash->onComplete = [ptr = SafePointer (this)]()
+            {
+                MessageManager::callAsync ([ptr]()
+                {
+                    SQUAREPINE_CRASH_TRACER
+                    if (ptr != nullptr)
+                    {
+                        ptr->init();
+                    }
+                });
+            };
+
+            splash->run();
+        }
+        else
+        {
+            init();
+        }
     }
 
     ~MainWindow() override
@@ -86,6 +96,7 @@ private:
        #endif
 
         setVisible (true);
+        Process::makeForegroundProcess();
     }
 
     //==============================================================================

@@ -1,17 +1,4 @@
 template<typename IntegralType>
-CRC<IntegralType>::CRC (Type polynomial, Type initialValue, Type xorOutValue,
-                        bool shouldReflectIn, bool shouldReflectOut) noexcept :
-    poly (polynomial),
-    xorIn (initialValue),
-    xorOut (xorOutValue),
-    reflectIn (shouldReflectIn),
-    reflectOut (shouldReflectOut),
-    crc (initialValue)
-{
-    populateLookupTable();
-}
-
-template<typename IntegralType>
 CRC<IntegralType>::Type CRC<IntegralType>::getCheckValue() const
 {
     CRC<Type> test (poly, xorIn, xorOut, reflectIn, reflectOut);
@@ -39,7 +26,7 @@ template<typename IntegralType>
 CRC<IntegralType>& CRC<IntegralType>::processByte (uint8 data) noexcept
 {
     const auto dataConv = reflectIn
-                            ? static_cast<Type> (reflect (data))
+                            ? static_cast<Type> (reflect<uint8> (data))
                             : static_cast<Type> (data);
 
     if constexpr (numBits == 8)
@@ -103,9 +90,8 @@ template<typename IntegralType>
 CRC<IntegralType>& CRC<IntegralType>::finalise() noexcept
 {
     if (reflectOut)
-        crc = reflect (crc);
+        crc = reflect<Type> (crc);
 
-    constexpr auto zero = static_cast<Type> (0);
     if (xorOut != zero)
         crc ^= xorOut;
 
@@ -115,14 +101,17 @@ CRC<IntegralType>& CRC<IntegralType>::finalise() noexcept
 template<typename IntegralType>
 void CRC<IntegralType>::populateLookupTable()
 {
-    constexpr auto one     = static_cast<Type> (1);
     constexpr auto bitMask = static_cast<Type> (one << (numBits - one));
 
     // iterate over all possible input byte values 0 - 255
     for (size_t dividend = 0; dividend < 256; ++dividend)
     {
-        // move dividend byte into MSB of CRC
-        auto curByte = (Type) dividend << numBitsToShift;
+        auto curByte = static_cast<Type> (dividend);
+        
+        // For 16/32/64-bit CRC, shift the byte into the MSB position
+        if constexpr (numBits != 8)
+            curByte <<= numBitsToShift;
+
         for (uint8 bit = 0; bit < 8; ++bit)
         {
             const bool test = (curByte & bitMask) != 0;

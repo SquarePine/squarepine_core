@@ -1,9 +1,11 @@
 #if SQUAREPINE_COMPILE_UNIT_TESTS
 
-template<typename Type>
+template<typename UnderlyingType>
 class RNGUnitTestBase : public UnitTest
 {
 public:
+    using Type = UnderlyingType;
+
     RNGUnitTestBase (const String& name) :
         UnitTest (name, "RNG")
     {

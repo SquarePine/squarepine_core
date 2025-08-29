@@ -11,7 +11,15 @@ public:
         logo = SharedObjects::getMainLogoSVG();
         Desktop::getInstance().addDarkModeSettingListener (this);
         setInterceptsMouseClicks (false, false);
-        makeVisible (512, 256, false, false);
+
+        const bool shouldBeFullscreen =
+       #if SQUAREPINE_IS_MOBILE
+        true;
+       #else
+        false;
+       #endif
+
+        makeVisible (512, 256, false, shouldBeFullscreen);
     }
 
     ~SquarePineDemoSplashScreen() override

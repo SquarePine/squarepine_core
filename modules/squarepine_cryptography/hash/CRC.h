@@ -9,6 +9,8 @@ struct CRC final
     using Type                              = std::make_unsigned_t<std::remove_cvref_t<std::remove_pointer_t<IntegralType>>>;
     /** The total number of bits needed for this CRC. */
     static inline constexpr auto numBits    = static_cast<Type> (std::numeric_limits<Type>::digits);
+    static inline constexpr auto one        = static_cast<Type> (1);
+    static inline constexpr auto zero       = static_cast<Type> (0);
     /** An std::bitset that houses the proper amount of bits to support the CRC value. */
     using BitSet                            = std::bitset<numBits>;
 
@@ -18,15 +20,32 @@ struct CRC final
         @param polynomial       Generator polynomial value to use.
         @param initialValue     The value used to initialise the CRC value.
                                 If you call reset(), the CRC will be set to this value.
+                                This is also known as the XOR-in value.
         @param xorOutValue      The final XOR value is XORed to the final CRC value.
                                 This is done after the 'Result reflected' step.
         @param shouldReflectIn  If this value is true, each input byte is reflected before being used in the CRC calculation.
                                 Reflected means that the bits of the input byte are used in reverse order.
         @param shouldReflectOut If this value is true, the final CRC value is reflected before being returned.
                                 The reflection is done over the entirety of CRC value's bits.
+
+        @note This constructor is defined in the header file because Android/NDK
+              fails to build with it being templated and defined in the implementation
+              file, for whatever reason. All other platforms seem fine.
     */
-    CRC (Type polynomial, Type initialValue, Type xorOutValue,
-         bool shouldReflectIn, bool shouldReflectOut) noexcept;
+    CRC (Type polynomial,
+         Type initialValue = zero,
+         Type xorOutValue = zero,
+         bool shouldReflectIn = false,
+         bool shouldReflectOut = false) noexcept :
+        poly (polynomial),
+        xorIn (initialValue),
+        xorOut (xorOutValue),
+        reflectIn (shouldReflectIn),
+        reflectOut (shouldReflectOut),
+        crc (initialValue)
+    {
+        populateLookupTable();
+    }
 
     //==============================================================================
     /** Resets the CRC to the initial, aka XOR-In, value. */
@@ -48,19 +67,36 @@ struct CRC final
     /** Processes a single byte into the CRC.
         This is where the bulk of the work happens.
     */
-    CRC& processByte (uint8 data) noexcept;
+    CRC& processByte (uint8) noexcept;
 
     /** Processes an arbitrary pointer to data. */
     CRC& process (const uint8* data, size_t numBytes) noexcept;
 
     /** Processes a MemoryBlock. */
-    CRC& process (const MemoryBlock& data) noexcept;
+    CRC& process (const MemoryBlock&) noexcept;
+
+    /** Processes a HeapBlock. */
+    template<typename OtherType>
+    CRC& process (const HeapBlock<OtherType>& data, size_t numBytes) noexcept
+    {
+        return process (data.getData(), numBytes);
+    }
+
+    /** Processes a CopyableHeapBlock. */
+    template<typename OtherType>
+    CRC& process (const CopyableHeapBlock<OtherType>& data, size_t numBytes) noexcept
+    {
+        return process (data.getData(), numBytes);
+    }
 
     /** Processes an entire File. */
-    CRC& process (const File& file);
+    CRC& process (const File&);
 
     /** Processes a String. */
-    CRC& processString (const String& data);
+    CRC& processString (const String&);
+
+    /** Processes a StringArray. */
+    CRC& processString (const StringArray&);
 
     /** You must call this before getting the actual CRC value.
 

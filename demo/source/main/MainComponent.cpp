@@ -25,6 +25,7 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
         demos.add (comp);
     };
 
+    addDemo (new CRCDemo (sharedObjs));
     addDemo (new EaseListComponent (sharedObjs));
     addDemo (new ImageDemo (sharedObjs));
     addDemo (new AnimationDemo (sharedObjs));
@@ -45,6 +46,7 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
    #endif
 
     addDemo (new CodeEditorDemo (sharedObjs));
+    addDemo (new UnitTestsDemo (sharedObjs));
     addDemo (new SettingsComponent (sharedObjs));
 
     popupButton.onClick = [this, ptr = SafePointer (this)]()
