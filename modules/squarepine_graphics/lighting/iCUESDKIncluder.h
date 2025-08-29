@@ -13,7 +13,7 @@
         #include "iCUESDK/include/iCUESDK/iCUESDK.h"
 
         //==============================================================================
-        /** @returns an 'ok' result on sucess and a 'fail' result otherwise. */
+        /** @returns an 'ok' result on success and a 'fail' result otherwise. */
         inline [[nodiscard]] juce::Result toResult (CorsairError code)
         {
             switch (code)

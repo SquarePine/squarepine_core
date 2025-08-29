@@ -3,7 +3,7 @@
     @param img
     @param amount       Amount to darken outside of vignette. 0 no darkening. 1 is black.
     @param radius       Size of vignette. 1 size of image. 0 is 0 size.
-    @param falloff      Relative size of inner boundry of vignette 0,1
+    @param falloff      Relative size of inner boundary of vignette 0,1
     @param threadPool
 */
 void applyVignette (Image&, float amount, float radius, float falloff, ThreadPool* threadPool = nullptr);

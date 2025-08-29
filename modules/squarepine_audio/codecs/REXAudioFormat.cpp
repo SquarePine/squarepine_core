@@ -150,7 +150,7 @@ namespace REXError
                        + TRANS ("In order to work with rx2 files, please download the latest \"REX shared library\" installer from propellerheads.se");
 
             case noError:
-                return TRANS ("An unknown error occured with the Propellerheads REX format!")
+                return TRANS ("An unknown error occurred with the Propellerheads REX format!")
                        + "\n\n"
                        + TRANS ("Please try using the latest \"REX shared library\" installer from propellerheads.se");
 
