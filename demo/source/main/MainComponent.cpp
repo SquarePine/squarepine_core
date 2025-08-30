@@ -25,6 +25,7 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
         demos.add (comp);
     };
 
+    addDemo (new MarkdownDemo (sharedObjs));
     addDemo (new CRCDemo (sharedObjs));
     addDemo (new EaseListComponent (sharedObjs));
     addDemo (new ImageDemo (sharedObjs));

@@ -1,25 +1,64 @@
 template<typename IntegralType>
-CRC<IntegralType>::Type CRC<IntegralType>::getCheckValue() const
+CRC<IntegralType>& CRC<IntegralType>::process (const uint8* data, size_t numBytes) noexcept
 {
-    CRC<Type> test (poly, xorIn, xorOut, reflectIn, reflectOut);
-    return test.processString (getCheckString()).finalise().get();
+    jassert (data != nullptr && numBytes > 0);
+
+    if (data != nullptr)
+        for (size_t i = 0; i < numBytes; ++i)
+            processByte (data[i]);
+
+    return *this;
 }
 
 template<typename IntegralType>
-CRC<IntegralType>& CRC<IntegralType>::reset() noexcept      { crc = xorIn; return *this; }
-
-template<typename IntegralType>
-[[nodiscard]] String CRC<IntegralType>::toHexString() const { return "0x" + String::toHexString (crc); }
-
-template<typename IntegralType>
-[[nodiscard]] String CRC<IntegralType>::toBinString() const { return "0b" + String (toBitSet().to_string()); }
-
-template<typename IntegralType>
-[[nodiscard]] String CRC<IntegralType>::toOctString() const
+CRC<IntegralType>& CRC<IntegralType>::process (const MemoryBlock& data) noexcept
 {
-    std::ostringstream str;
-    str << std::oct << crc;
-    return "0o" + String (str.str());
+    return process (static_cast<const uint8*> (data.getData()), data.getSize());
+}
+
+template<typename IntegralType>
+CRC<IntegralType>& CRC<IntegralType>::process (const File& file)
+{
+    if (FileInputStream fis (file); fis.openedOk())
+    {
+        MemoryBlock data;
+        fis.readIntoMemoryBlock (data);
+        process (data);
+    }
+    else
+    {
+        jassertfalse;
+    }
+
+    return *this;
+}
+
+template<typename IntegralType>
+CRC<IntegralType>& CRC<IntegralType>::processString (const String& data)
+{
+    return process (reinterpret_cast<const uint8*> (data.toRawUTF8()),
+                    data.getNumBytesAsUTF8());
+}
+
+template<typename IntegralType>
+CRC<IntegralType>& CRC<IntegralType>::processString (const StringArray& data)
+{
+    for (const auto& s : data)
+        processString (s);
+
+    return *this;
+}
+
+template<typename IntegralType>
+CRC<IntegralType>& CRC<IntegralType>::finalise() noexcept
+{
+    if (reflectOut)
+        crc = reflect<Type> (crc);
+
+    if (xorOut != zero)
+        crc ^= xorOut;
+
+    return *this;
 }
 
 template<typename IntegralType>
@@ -49,56 +88,6 @@ CRC<IntegralType>& CRC<IntegralType>::processByte (uint8 data) noexcept
 }
 
 template<typename IntegralType>
-CRC<IntegralType>& CRC<IntegralType>::process (const uint8* data, size_t numBytes) noexcept
-{
-    jassert (data != nullptr && numBytes > 0);
-
-    if (data != nullptr)
-        for (size_t i = 0; i < numBytes; ++i)
-            processByte (data[i]);
-
-    return *this;
-}
-
-template<typename IntegralType>
-CRC<IntegralType>& CRC<IntegralType>::process (const MemoryBlock& data) noexcept
-{
-    return process (static_cast<const uint8*> (data.getData()), data.getSize());
-}
-
-template<typename IntegralType>
-CRC<IntegralType>& CRC<IntegralType>::process (const File& file)
-{
-    if (FileInputStream fis (file); fis.openedOk())
-    {
-        MemoryBlock data;
-        fis.readIntoMemoryBlock (data);
-        process (data);
-    }
-
-    return *this;
-}
-
-template<typename IntegralType>
-CRC<IntegralType>& CRC<IntegralType>::processString (const String& data)
-{
-    return process (reinterpret_cast<const uint8*> (data.toRawUTF8()),
-                    data.getNumBytesAsUTF8());
-}
-
-template<typename IntegralType>
-CRC<IntegralType>& CRC<IntegralType>::finalise() noexcept
-{
-    if (reflectOut)
-        crc = reflect<Type> (crc);
-
-    if (xorOut != zero)
-        crc ^= xorOut;
-
-    return *this;
-}
-
-template<typename IntegralType>
 void CRC<IntegralType>::populateLookupTable()
 {
     constexpr auto bitMask = static_cast<Type> (one << (numBits - one));
@@ -123,3 +112,10 @@ void CRC<IntegralType>::populateLookupTable()
         table[dividend] = (Type) curByte;
     }
 }
+
+//==============================================================================
+// Explicit template instantiations for the types we use
+template struct CRC<uint8>;
+template struct CRC<uint16>;
+template struct CRC<uint32>;
+template struct CRC<uint64>;

@@ -137,6 +137,9 @@ Image ImageFormatManager::loadFrom (const URL& url)
     if (url.isLocalFile())
         return loadFrom (url.getLocalFile());
 
+    if (auto inputStream = url.createInputStream (URL::InputStreamOptions (URL::ParameterHandling::inAddress)))
+        return loadFrom (*inputStream);
+
     return {};
 }
 

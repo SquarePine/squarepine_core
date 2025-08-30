@@ -21,6 +21,7 @@ namespace sp
     #include "components/ComponentViewer.cpp"
     #include "components/GoogleAnalyticsAttachment.cpp"
     #include "components/HighPerformanceRendererConfigurator.cpp"
+    #include "components/MarkdownComponent.cpp"
     #include "components/ValueTreeEditor.cpp"
     #include "images/BlendingEffects.cpp"
     #include "images/BMPImageFormat.cpp"

@@ -49,7 +49,7 @@ struct CRC final
 
     //==============================================================================
     /** Resets the CRC to the initial, aka XOR-In, value. */
-    CRC& reset() noexcept;
+    CRC& reset() noexcept                               { crc = xorIn; return *this; }
 
     /** @returns the CRC calculated thus far.
 
@@ -109,26 +109,25 @@ struct CRC final
     /** @returns an hexadecimal representation of the CRC value.
         This will look something like "0x1234abcd".
     */
-    [[nodiscard]] String toHexString() const;
+    [[nodiscard]] String toHexString() const    { return "0x" + String::toHexString (crc); }
 
     /** @returns a binary representation of the CRC value.
         This will look something like "0b00000001".
     */
-    [[nodiscard]] String toBinString() const;
-
-    /** @returns an octal representation of the CRC value.
-        This will look something like "0o00000001".
-    */
-    [[nodiscard]] String toOctString() const;
+    [[nodiscard]] String toBinString() const    { return "0b" + String (toBitSet().to_string()); }
 
     //==============================================================================
     /** @returns the standard check, or test, string.
         This is used to help quickly assert that things are in order.
     */
-    static String getCheckString()                      { return "123456789"; }
+    static String getCheckString() { return "123456789"; }
 
     /** @returns the CRC value as expected by the check string. */
-    Type getCheckValue() const;
+    Type getCheckValue() const
+    {
+        CRC<Type> test (poly, xorIn, xorOut, reflectIn, reflectOut);
+        return test.processString (getCheckString()).finalise().get();
+    }
 
 private:
     //==============================================================================

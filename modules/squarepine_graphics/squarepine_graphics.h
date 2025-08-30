@@ -198,6 +198,7 @@ namespace sp
     #include "components/GoogleAnalyticsAttachment.h"
     #include "components/JavascriptEditor.h"
     #include "components/HighPerformanceRendererConfigurator.h"
+    #include "components/MarkdownComponent.h"
     #include "components/ValueTreeEditor.h"
     #include "images/BlendingEffects.h"
     #include "images/BMPImageFormat.h"
