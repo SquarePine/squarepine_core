@@ -121,7 +121,7 @@ public:
         In other words, the first index should be the left channel's peak,
         the next value should be for the right channel, and so on (as needed).
     */
-    virtual Array<float> getChannelLevels() const = 0;
+    virtual const Array<float>& getChannelLevels() const = 0;
 
     //==============================================================================
     /** */

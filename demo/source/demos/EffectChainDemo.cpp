@@ -38,8 +38,22 @@ EffectRowComponent::EffectRowComponent (EffectChainComponent& ecc) :
     name.setJustificationType (Justification::centredLeft);
     name.setInterceptsMouseClicks (false, false);
 
+    meter.setMeterModel (this);
+    meter.setInterceptsMouseClicks (false, false);
+
     addAndMakeVisible (active);
     addAndMakeVisible (name);
+    addAndMakeVisible (meter);
+
+    meterTimer.callback = [this]()
+    {
+        updateChannelLevels();
+
+        if (meter.refresh())
+            repaint();
+    };
+
+    meterTimer.startTimerHz (60);
 }
 
 EffectRowComponent& EffectRowComponent::setIndex (int newIndex)
@@ -104,6 +118,8 @@ void EffectRowComponent::resized()
     auto b = getLocalBounds();
 
     const auto sq = b.getHeight();
+
+    meter.setBounds (b.removeFromLeft (sq));
 
     if (active.isVisible())
         active.setBounds (b.removeFromLeft (sq * 3));
@@ -222,6 +238,14 @@ void EffectRowComponent::mouseDoubleClick (const MouseEvent& e)
         editorWindow->addToDesktop();
         editorWindow->setVisible (true);
     }
+}
+
+void EffectRowComponent::updateChannelLevels()
+{
+    if (effect != nullptr && index >= 0)
+        owner.effectChain.getChannelLevels (index, channelLevels);
+    else
+        channelLevels.clearQuick();
 }
 
 //==============================================================================

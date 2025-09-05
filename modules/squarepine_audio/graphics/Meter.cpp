@@ -158,14 +158,7 @@ bool Meter::refresh()
     }
 
     const auto numChans = std::min (levels.size(), channels.size());
-    const auto chanWidthPx = [&]()
-    {
-        auto v = roundToIntAccurate ((double) getWidth() / (double) numChans);
-        v -= 2;
-        jassert (v > 2);
-        return v;
-    }();
-
+    const auto chanWidthPx = roundToIntAccurate ((double) getWidth() / (double) numChans);
     const auto hPx = getHeight();
 
     bool areLevelsDifferent = channels.getFirst().meterArea.getWidth() != chanWidthPx;

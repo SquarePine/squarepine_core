@@ -53,7 +53,8 @@ private:
 
 //==============================================================================
 /** */
-class EffectRowComponent final : public Component
+class EffectRowComponent final : public Component,
+                                 public MeterModel
 {
 public:
     /** */
@@ -80,6 +81,8 @@ public:
     void mouseDown (const MouseEvent&) override;
     /** @internal */
     void mouseDoubleClick (const MouseEvent&) override;
+    /** @internal */
+    const Array<float>& getChannelLevels() const override { return channelLevels; }
 
 private:
     //==============================================================================
@@ -90,6 +93,12 @@ private:
     ToggleButton active;
     Label name;
     SafePointer<EditorWindow> editorWindow;
+    Meter meter;
+    Array<float> channelLevels;
+    OffloadedTimer meterTimer;
+
+    //==============================================================================
+    void updateChannelLevels();
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EffectRowComponent)
