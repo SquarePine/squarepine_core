@@ -216,15 +216,15 @@ public:
         showAnimatingBall.setToggleState (true, dontSendNotification);
         addAndMakeVisible (showAnimatingBall);
 
-        ballAnimator.start();
-        updater.addAnimator (ballAnimator);
+        ballAnimator = std::make_unique<Animator> (makeBuilder().build());
+        updater.addAnimator (*ballAnimator);
+        ballAnimator->start();
 
         updateWithNewTranslations();
     }
 
     ~EaseListComponent() override
     {
-        updater.removeAnimator (ballAnimator);
         showAnimatingBall.removeListener (&dashSwitchAttachment);
     }
 
@@ -349,7 +349,7 @@ private:
     OwnedArray<Generator> generators;
     VBlankAnimatorUpdater updater { this };
 
-    Animator ballAnimator = makeBuilder().build();
+    std::unique_ptr<Animator> ballAnimator;
 
     //==============================================================================
     void addGenerator (const CubicBezier& cb, const String& name)
