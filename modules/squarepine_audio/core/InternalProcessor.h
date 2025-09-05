@@ -2,14 +2,14 @@
     don't typically expose to the user (or at least not in the same way
     you would expose usual plugin formats via the usual UX).
     That being said, you could use an InternalProcessor as basis
-    for a user-facing plugin, though it's with little added benefit.
+    for a user-facing plugin if it's more convenient for you.
 
     This class fills out typically unused methods for you,
     adds a bypass parameter by default (which is optional on construction),
     and gives some finely tuned control over the creation of a PluginDescription.
 
     It also extends itself with an AudioProcessorValueTreeState,
-    giving you more control and less boilerplate that you would
+    giving you even more control and less boilerplate that you would
     usually find yourself writing for fully fledged plugins,
     or for more flexible control with small internal plugins.
 
@@ -22,6 +22,8 @@
     For an assortment of extremely useful internal processors,
     have a look at EffectProcessorChain, LevelsProcessor,
     MuteProcessor, AudioTransportProcessor, and SimpleEQProcessor.
+
+    @see EffectProcessorChain, SquarePineAudioPluginFormat, AudioBufferView
 */
 class InternalProcessor : public AudioPluginInstance
 {
