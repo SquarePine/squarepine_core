@@ -21,17 +21,15 @@
     @see Wagner, W., & Pruß, A. (2002). The IAPWS formulation 1995 for the thermodynamic properties of ordinary water substance for general and scientific use.
  */
 
-/** Represents the different phases of water.
-
-    This enumeration defines the four primary states of water based on
+/** Represents the four primary states of of water based on
     temperature and pressure conditions according to the water phase diagram.
  */
 enum class WaterPhase
 {
-    solid,          // Ice phase (below freezing point)
-    liquid,         // Liquid water phase (between freezing and boiling points)
-    gas,            // Water vapour/steam phase (above boiling point)
-    supercritical   // Supercritical fluid phase (above critical temperature and pressure)
+    solid,          // Ice phase (below freezing point).
+    liquid,         // Liquid water phase (between freezing and boiling points).
+    gas,            // Water vapour/steam phase (above boiling point).
+    supercritical   // Supercritical fluid phase (above critical temperature and pressure).
 };
 
 /** @returns a localised string representation of the water phase. */
@@ -79,13 +77,13 @@ public:
         @note This is a linear approximation valid for moderate pressure ranges.
         @note At standard atmospheric pressure (101325 Pa), returns 0°C.
      */
-    static double getFreezingPointCelsius (double pressurePa)
+    static constexpr double getFreezingPointCelsius (Pressure pressure) noexcept
     {
         constexpr auto slope = -7.4e-8;     // K/Pa near 1 atm
-        constexpr auto Pref = kPaPerAtm;    // Left here in case configuration is necessary.
+        constexpr auto pref = kPaPerAtm;    // Left here in case configuration is necessary.
         constexpr auto TrefC = 0.0;         // Left here in case configuration is necessary.
 
-        return TrefC + slope * (pressurePa - kPaPerAtm);
+        return TrefC + slope * (pressure - pref);
     }
 
     /** Calculates the boiling point of water at a given pressure using Wagner correlation.
@@ -105,37 +103,38 @@ public:
         @note Valid pressure range: 611.657 Pa (triple point) to 22.064×10⁶ Pa (critical point).
         @note Uses bisection method for numerical solution.
      */
-    static std::optional<double> getBoilingPointCelsius (double pressurePa,
+    static std::optional<double> getBoilingPointCelsius (Pressure pressure,
                                                          double tolK = 1e-5,
                                                          int maxIters = 100)
     {
-        if (pressurePa < Ptriple || pressurePa >= Pc)
+        if (pressure < Ptriple || pressure >= Pc)
             return std::nullopt;
 
         auto lo = Ttriple;
         auto hi = Tc - 1e-6;
-        auto PloOpt = saturationPressurePa_Wagner (lo);
-        auto PhiOpt = saturationPressurePa_Wagner (hi);
-        if (!PloOpt || !PhiOpt)
+
+        const auto PloOpt = saturationPressurePa_Wagner (lo);
+        const auto PhiOpt = saturationPressurePa_Wagner (hi);
+        if (! PloOpt || ! PhiOpt)
             return std::nullopt;
 
-        auto Plo = *PloOpt;
-        auto Phi = *PhiOpt;
+        const auto Plo = *PloOpt;
+        const auto Phi = *PhiOpt;
 
-        if (!(Plo <= pressurePa && pressurePa <= Phi))
+        if (! (Plo <= pressure && pressure <= Phi))
             return std::nullopt;
 
         for (int i = 0; i < maxIters && (hi - lo) > tolK; ++i)
         {
-            auto mid = 0.5 * (lo + hi);
-            auto PmidOpt = saturationPressurePa_Wagner(mid);
+            const auto mid = 0.5 * (lo + hi);
+            const auto PmidOpt = saturationPressurePa_Wagner(mid);
 
-            if (!PmidOpt)
+            if (! PmidOpt)
                 return std::nullopt;
 
-            auto Pmid = *PmidOpt;
-            if (Pmid < pressurePa) lo = mid;
-            else                   hi = mid;
+            const auto Pmid = *PmidOpt;
+            if (Pmid < pressure)    lo = mid;
+            else                    hi = mid;
         }
 
         const auto T_K = 0.5 * (lo + hi);
@@ -164,22 +163,22 @@ public:
         @see getFreezingPointCelsius()
         @see getBoilingPointCelsius()
      */
-    static WaterPhase getWaterPhase (double tempC, double pressurePa)
+    static WaterPhase getWaterPhase (double tempC, Pressure pressure)
     {
-        if (pressurePa < Ptriple)
+        if (pressure < Ptriple)
             return (tempC < (Ttriple - 273.15))
                     ? WaterPhase::solid
                     : WaterPhase::gas;
 
-        if (pressurePa >= Pc && (tempC + 273.15) >= Tc)
+        if (pressure >= Pc && (tempC + 273.15) >= Tc)
             return WaterPhase::supercritical;
 
-        const auto TfC = getFreezingPointCelsius (pressurePa);
+        const auto TfC = getFreezingPointCelsius (pressure);
         if (tempC < TfC)
             return WaterPhase::solid;
 
-        const auto TbOpt = getBoilingPointCelsius (pressurePa);
-        if (!TbOpt)
+        const auto TbOpt = getBoilingPointCelsius (pressure);
+        if (! TbOpt)
             return (tempC >= (Tc - 273.15))
                     ? WaterPhase::supercritical
                     : WaterPhase::liquid;
@@ -222,12 +221,12 @@ private:
             return std::nullopt;
 
         // Wagner correlation coefficients (empirically determined)
-        constexpr auto a = -7.85951783;     // Wagner coefficient a
-        constexpr auto b = 1.84408259;      // Wagner coefficient b
-        constexpr auto c = -11.7866497;     // Wagner coefficient c
-        constexpr auto d = 22.6807411;      // Wagner coefficient d
-        constexpr auto e = -15.9618719;     // Wagner coefficient e
-        constexpr auto f = 1.80122502;      // Wagner coefficient f
+        constexpr auto a = -7.85951783;
+        constexpr auto b = 1.84408259; 
+        constexpr auto c = -11.7866497;
+        constexpr auto d = 22.6807411; 
+        constexpr auto e = -15.9618719;
+        constexpr auto f = 1.80122502; 
 
         const auto tau = 1.0 - T_K / Tc;
         const auto poly = a * tau

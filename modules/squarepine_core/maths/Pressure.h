@@ -25,29 +25,30 @@ public:
 
     //==============================================================================
     /** @returns the value in Pascals. */
-    constexpr double get() const noexcept               { return pascals; }
+    [[nodiscard]] constexpr operator double() const noexcept                { return pascals; }
+
     /** @returns the value in kPa. */
-    constexpr double toKiloPascals() const noexcept     { return pascals / 1000.0; }
+    [[nodiscard]] constexpr double toKiloPascals() const noexcept           { return pascals / 1000.0; }
     /** @returns the value in mmHg. */
-    constexpr double toMillimetersHg() const noexcept   { return pascals * 0.00750062; }
+    [[nodiscard]] constexpr double toMillimetersHg() const noexcept         { return pascals * 0.00750062; }
     /** @returns the value in atm. */
-    constexpr double toAtmospheres() const noexcept     { return pascals / 101325.0; }
+    [[nodiscard]] constexpr double toAtmospheres() const noexcept           { return pascals / 101325.0; }
     /** @returns the value in bar. */
-    constexpr double toBar() const noexcept             { return pascals / 100000.0; }
+    [[nodiscard]] constexpr double toBar() const noexcept                   { return pascals / 100000.0; }
     /** @returns the value in PSI. */
-    constexpr double toPSI() const noexcept             { return pascals * 0.000145038; }
+    [[nodiscard]] constexpr double toPSI() const noexcept                   { return pascals * 0.000145038; }
 
     //==============================================================================
     /** @returns a pressure value in Pascals from the provided pressure in kPa. */
-    static Pressure fromKiloPascals (double value) noexcept     { return Pressure (value * 1000.0); }
+    [[nodiscard]] static Pressure fromKiloPascals (double value) noexcept   { return Pressure (value * 1000.0); }
     /** @returns a pressure value in Pascals from the provided pressure in mmHg. */
-    static Pressure fromMillimetersHg (double value) noexcept   { return Pressure (value * 133.322); }
+    [[nodiscard]] static Pressure fromMillimetersHg (double value) noexcept { return Pressure (value * 133.322); }
     /** @returns a pressure value in Pascals from the provided pressure in atm. */
-    static Pressure fromAtmospheres (double value) noexcept     { return Pressure (value * 101325.0); }
+    [[nodiscard]] static Pressure fromAtmospheres (double value) noexcept   { return Pressure (value * 101325.0); }
     /** @returns a pressure value in Pascals from the provided pressure in bar. */
-    static Pressure fromBar (double value) noexcept             { return Pressure (value * 100000.0); }
+    [[nodiscard]] static Pressure fromBar (double value) noexcept           { return Pressure (value * 100000.0); }
     /** @returns a pressure value in Pascals from the provided pressure in PSI. */
-    static Pressure fromPSI (double value) noexcept             { return Pressure (value * 6894.76); }
+    [[nodiscard]] static Pressure fromPSI (double value) noexcept           { return Pressure (value * 6894.76); }
 
 private:
     //==============================================================================
