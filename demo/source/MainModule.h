@@ -26,6 +26,7 @@
 #include "demos/iCUESDKDemo.h"
 #include "demos/EasingsDemo.h"
 #include "demos/EffectChainDemo.h"
+#include "demos/FigmaClientDemo.h"
 #include "demos/ImageDemo.h"
 #include "demos/MarkdownDemo.h"
 #include "demos/MediaDeviceListerDemo.h"

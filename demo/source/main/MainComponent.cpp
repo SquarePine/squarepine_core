@@ -29,6 +29,7 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
     addDemo (new CRCDemo (sharedObjs));
     addDemo (new EaseListComponent (sharedObjs));
     addDemo (new ImageDemo (sharedObjs));
+    addDemo (new FigmaClientDemo (sharedObjs));
     addDemo (new AnimationDemo (sharedObjs));
     addDemo (new ParticleSystemDemo (sharedObjs));
     addDemo (new EffectChainDemo (sharedObjs));

@@ -3,6 +3,7 @@
 #include "core/SharedObjects.cpp"
 #include "demos/AnimationDemo.cpp"
 #include "demos/EffectChainDemo.cpp"
+#include "demos/FigmaClientDemo.cpp"
 #include "demos/ParticleSystemDemo.cpp"
 #include "main/DemoLookAndFeel.cpp"
 #include "main/MainComponent.cpp"

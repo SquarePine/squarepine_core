@@ -94,6 +94,10 @@
               file="source/demos/EffectChainDemo.cpp"/>
         <FILE id="KagqFb" name="EffectChainDemo.h" compile="0" resource="0"
               file="source/demos/EffectChainDemo.h"/>
+        <FILE id="ndT6eG" name="FigmaClientDemo.cpp" compile="0" resource="0"
+              file="source/demos/FigmaClientDemo.cpp"/>
+        <FILE id="KmImnB" name="FigmaClientDemo.h" compile="0" resource="0"
+              file="source/demos/FigmaClientDemo.h"/>
         <FILE id="brHreQ" name="iCUESDKDemo.h" compile="0" resource="0" file="source/demos/iCUESDKDemo.h"/>
         <FILE id="vSHEQC" name="ImageDemo.h" compile="0" resource="0" file="source/demos/ImageDemo.h"/>
         <FILE id="uzQ1sq" name="MarkdownDemo.h" compile="0" resource="0" file="source/demos/MarkdownDemo.h"/>

@@ -212,6 +212,7 @@ namespace sp
     #include "lighting/WinRTRGB.h"
     #include "lookandfeels/Windows10LookAndFeel.h"
     //#include "tokenisers/JavascriptCodeTokeniser.h"
+    #include "parsers/FigmaClient.h"
     #include "utilities/Fonts.h"
     #include "utilities/Resolution.h"
 }
