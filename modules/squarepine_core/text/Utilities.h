@@ -1,8 +1,7 @@
-#pragma once
-
-/** @returns a string representing a given price, formatted as per the user's locale.
+//==============================================================================
+/** @returns a string representing a given price in dollars/euros/yen/pounds, formatted as per the user's locale.
 */
-inline String createLocaleFormattedPrice (double value)
+inline String createLocaleFormattedPrice (double value, const std::locale& localeToUse = std::locale (""))
 {
     value *= 100.0; // NB: std::put_money operates on a cents basis. https://stackoverflow.com/a/50476453/1907103
 
@@ -11,7 +10,7 @@ inline String createLocaleFormattedPrice (double value)
     const auto poundSymbol  = String::fromUTF8 ("\xc2\xa3");
 
     std::stringstream ss;
-    ss.imbue (std::locale (""));
+    ss.imbue (localeToUse);
     ss << std::showbase << std::put_money ((long double) value);
 
     return String (ss.str())
@@ -27,26 +26,11 @@ inline String createLocaleFormattedPrice (double value)
     - In en-CA (Canadian English):  1,010,103.6666666
     - In fr-CA (Canadian French):   1 010 103,6666666
 */
-inline String createLocaleFormattedValue (double value)
+template<typename PrimitiveType>
+inline String createLocaleFormattedValue (PrimitiveType value, const std::locale& localeToUse = std::locale (""))
 {
     std::stringstream ss;
-    ss.imbue (std::locale (""));
-    ss << std::fixed << value;
-
-    return String (ss.str());
-}
-
-/** @returns a string representing the value, formatted as per the user's locale.
-
-    For the value "One Million & Ten Thousand One Hundred & Three and Two Thirds":
-    - In en-CA (Canadian English):  1,010,103.6666666
-    - In fr-CA (Canadian French):   1 010 103,6666666
-*/
-template<typename IntegralType>
-inline String createLocaleFormattedValue (IntegralType value)
-{
-    std::stringstream ss;
-    ss.imbue (std::locale (""));
+    ss.imbue (localeToUse);
     ss << std::fixed << value;
 
     return String (ss.str());
@@ -108,48 +92,48 @@ inline bool containsSubstring (const StringArray& source, const String& substrin
 //==============================================================================
 /** @returns an upper-case version of the given character.
 
-    JUCE's juce::String doesn't properly convert casing,
+    @note JUCE's juce::String doesn't properly convert casing,
     what with it not supporting extended Latin codepoints
     and other languages, hence the need for this function.
 */
-juce_wchar toUpperCase (juce_wchar character) noexcept;
+juce_wchar toUpperCase (juce_wchar) noexcept;
 
 /** @returns a lower-case version of the given character.
 
-    JUCE's juce::String doesn't properly convert casing,
+    @note JUCE's juce::String doesn't properly convert casing,
     what with it not supporting extended Latin codepoints
     and other languages, hence the need for this function.
 */
-juce_wchar toLowerCase (juce_wchar character) noexcept;
+juce_wchar toLowerCase (juce_wchar) noexcept;
 
 /** @returns true if the given character is upper-case.
 
-    JUCE's juce::String doesn't properly convert casing,
+    @note JUCE's juce::String doesn't properly convert casing,
     what with it not supporting extended Latin codepoints
     and other languages, hence the need for this function.
 */
-bool isUpperCase (juce_wchar character) noexcept;
+bool isUpperCase (juce_wchar) noexcept;
 
 /** @returns true if the given character is lower-case.
 
-    JUCE's juce::String doesn't properly convert casing,
+    @note JUCE's juce::String doesn't properly convert casing,
     what with it not supporting extended Latin codepoints
     and other languages, hence the need for this function.
 */
-bool isLowerCase (juce_wchar character) noexcept;
+bool isLowerCase (juce_wchar) noexcept;
 
 /** @returns an upper-case version of the given juce::String.
 
-    JUCE's juce::String doesn't properly convert casing,
+    @note JUCE's juce::String doesn't properly convert casing,
     what with it not supporting extended Latin codepoints
     and other languages, hence the need for this function.
 */
-String toUpperCase (const String& source);
+String toUpperCase (const String&);
 
 /** @returns a lower-case version of the given juce::String.
 
-    JUCE's juce::String doesn't properly convert casing,
+    @note JUCE's juce::String doesn't properly convert casing,
     what with it not supporting extended Latin codepoints
     and other languages, hence the need for this function.
 */
-String toLowerCase (const String& source);
+String toLowerCase (const String&);
