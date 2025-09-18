@@ -358,11 +358,8 @@ public:
     int getNumRows() override   { return dataUnits.size(); }
     /** @internal */
     int getNumRows() const      { return dataUnits.size(); }
-
     /** @internal */
-    void paintRowBackground (Graphics& g, int rowNumber, int width, int height, bool rowIsSelected) override
-    {
-    }
+    void paintRowBackground (Graphics&, int, int, int, bool) override { }
 
     /** @internal */
     void paintCell (Graphics& g, int rowNumber, int columnId, int width, int height, bool rowIsSelected) override
@@ -472,8 +469,8 @@ private:
     /** Adds a test case to the data units array */
     void addTestCase (int numBits, uint64 poly, uint64 xorIn, uint64 xorOut, bool refIn, bool refOut)
     {
-        auto* unit = dataUnits.add (new CRCDataUnit());
-        unit->configure (numBits, poly, xorIn, xorOut, refIn, refOut);
+        if (auto* unit = dataUnits.add (new CRCDataUnit()))
+            unit->configure (numBits, poly, xorIn, xorOut, refIn, refOut);
     }
 
     //==============================================================================
