@@ -15,10 +15,16 @@ public:
     MovingAccumulator() noexcept = default;
 
     /** Creates a copy of another MovingAccumulator. */
-    MovingAccumulator (const MovingAccumulator& other) noexcept = default;
+    MovingAccumulator (const MovingAccumulator&) noexcept = default;
 
     /** Copies another MovingAccumulator into this one. */
-    MovingAccumulator& operator= (const MovingAccumulator& other) noexcept = default;
+    MovingAccumulator& operator= (const MovingAccumulator&) noexcept = default;
+
+    /** Creates a move of another MovingAccumulator. */
+    MovingAccumulator (MovingAccumulator&&) noexcept = default;
+
+    /** Moves another MovingAccumulator into this one. */
+    MovingAccumulator& operator= (MovingAccumulator&&) noexcept = default;
 
     /** Destructor. */
     ~MovingAccumulator() noexcept = default;
