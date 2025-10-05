@@ -5,16 +5,19 @@ public:
     InternalPerform (ArrayIterationUnroller& o) :
         owner (o)
     {
-        jumpTable[0] = &InternalPerform::singles;
-        jumpTable[1] = &InternalPerform::pairs;
-        jumpTable[2] = &InternalPerform::triples;
-        jumpTable[3] = &InternalPerform::quads;
-        jumpTable[4] = &InternalPerform::quints;
-        jumpTable[5] = &InternalPerform::sexts;
-        jumpTable[6] = &InternalPerform::septs;
-        jumpTable[7] = &InternalPerform::octs;
-        jumpTable[8] = &InternalPerform::nonuples;
-        jumpTable[9] = &InternalPerform::decas;
+        jumpTable =
+        {
+            std::bind (&InternalPerform::singles, this, std::placeholders::_1),
+            std::bind (&InternalPerform::pairs, this, std::placeholders::_1),
+            std::bind (&InternalPerform::triples, this, std::placeholders::_1),
+            std::bind (&InternalPerform::quads, this, std::placeholders::_1),
+            std::bind (&InternalPerform::quints, this, std::placeholders::_1),
+            std::bind (&InternalPerform::sexts, this, std::placeholders::_1),
+            std::bind (&InternalPerform::septs, this, std::placeholders::_1),
+            std::bind (&InternalPerform::octs, this, std::placeholders::_1),
+            std::bind (&InternalPerform::nonuples, this, std::placeholders::_1),
+            std::bind (&InternalPerform::decas, this, std::placeholders::_1)
+        };
     }
 
     //==============================================================================
@@ -94,13 +97,9 @@ public:
     }
 
     //==============================================================================
-    /** This will iterate through the array with a jump table */
-    void runBranched (int index, int offset)
-    {
-        (this->*jumpTable[index]) (offset);
-    }
+    /** Typedef for creating a member-function-pointer array. */
+    using MethodPointer = std::function<void (int)>;
 
-    //==============================================================================
     /** This will perform an iteration with the specified increment.
 
         Be sure to specify the correct method to the increment!
@@ -108,7 +107,7 @@ public:
         @param[out] remainder   The remainder of elements that need to be iterated through.
         @param increment        The amount of items to process and therefore to increment by.
     */
-    template <void (InternalPerform::*unrollMethod) (int index)>
+    template <auto unrollMethod>
     void callMethodWithIncrement (int& remainder, int increment)
     {
         // Find out how many blocks of "increment" elements we can iterate through:
@@ -124,12 +123,7 @@ public:
 private:
     //==============================================================================
     ArrayIterationUnroller& owner;
-
-    //==============================================================================
-    /** Typedef for creating a member-function-pointer array. */
-    typedef void (InternalPerform::*MethodPointer) (int);
-
-    MethodPointer jumpTable[10]; // NB: Do NOT make this static - this will not work in a multi-threaded environment!
+    std::array<MethodPointer, 10> jumpTable;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (InternalPerform)
@@ -140,10 +134,6 @@ ArrayIterationUnroller::ArrayIterationUnroller (int arraySize) :
     sizeOfArray (arraySize)
 {
     jassert (sizeOfArray >= 0);
-}
-
-ArrayIterationUnroller::~ArrayIterationUnroller()
-{
 }
 
 //==============================================================================
@@ -179,18 +169,19 @@ void ArrayIterationUnroller::run()
 
     auto remainder = sizeOfArray;
 
-   #if SQUAREPINE_ARRAY_ITERATION_UNROLLER_CHECK_BIG_NUMS
     while (remainder >= 100)
         perf.callMethodWithIncrement<&InternalPerform::hundred> (remainder, 100);
-   #endif
 
     while (remainder >= 20)
         perf.callMethodWithIncrement<&InternalPerform::twenty> (remainder, 20);
 
-    if (remainder >= 10)
+    while (remainder >= 10)
         perf.callMethodWithIncrement<&InternalPerform::decas> (remainder, 10);
 
-    if (remainder > 0)
-        perf.runBranched (remainder - 1, sizeOfArray - remainder);
+    while (remainder >= 2)
+        perf.callMethodWithIncrement<&InternalPerform::pairs> (remainder, 2);
+
+    while (remainder > 0)
+        perf.callMethodWithIncrement<&InternalPerform::singles> (remainder, 1);
    #endif
 }

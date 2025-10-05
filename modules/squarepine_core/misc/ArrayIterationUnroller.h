@@ -13,24 +13,26 @@ class ArrayIterationUnroller
 public:
     /** Constructor.
 
-        @param arraySize
+        @param arraySize The number of elements.
     */
     ArrayIterationUnroller (int arraySize = 0);
 
     /** Destructor. */
-    virtual ~ArrayIterationUnroller();
+    virtual ~ArrayIterationUnroller() = default;
 
     //==============================================================================
     /** Call this to begin performing whatever it is you need in your subclass!
 
         This will simply try to minimise the amount of run-throughs
-        by iterating through an array in blocks of 10.
+        by iterating through ranges of blocks of indices in one fell swoop.
     */
     void run();
 
 protected:
     //==============================================================================
-    /** */
+    /** Changes the size of the unroller.
+        Don't forget to do this if you set the initial size to 0 in the constructor!
+    */
     void resize (int newSize);
 
     /** Perform whatever task it is you need to be done quickly in this method.
