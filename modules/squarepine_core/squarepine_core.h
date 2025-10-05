@@ -143,6 +143,17 @@
     #define SQUAREPINE_USE_GOOGLE_ANALYTICS 1
 #endif
 
+/** Config: SQUAREPINE_USE_GOOGLE_API
+
+    Enable or disable using Google API Manager for accessing
+    Google's core services including Sheets, Docs, Gmail, and Calendar APIs.
+
+    By default this is on.
+*/
+#ifndef SQUAREPINE_USE_GOOGLE_API
+    #define SQUAREPINE_USE_GOOGLE_API 1
+#endif
+
 /** Config: SQUAREPINE_LOG_GOOGLE_ANALYTICS
 
     Enables or disables the logging of Google Analytics events.
@@ -294,6 +305,7 @@ namespace sp
     #include "misc/Threading.h"
     #include "misc/Utilities.h"
     #include "networking/GoogleAnalyticsReporter.h"
+    #include "networking/GoogleAPIManager.h"
     #include "networking/NetworkCache.h"
     #include "networking/NetworkConnectivityChecker.h"
     #include "networking/OAuth2.h"

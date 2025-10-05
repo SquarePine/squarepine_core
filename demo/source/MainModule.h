@@ -23,6 +23,7 @@
 #include "demos/AnimationDemo.h"
 #include "demos/CodeEditorDemo.h"
 #include "demos/CRCDemo.h"
+#include "demos/GoogleAPIDemo.h"
 #include "demos/iCUESDKDemo.h"
 #include "demos/EasingsDemo.h"
 #include "demos/EffectChainDemo.h"

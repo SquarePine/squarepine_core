@@ -59,6 +59,7 @@ namespace sp
     #include "networking/NetworkConnectivityChecker.cpp"
 
     //==============================================================================
+    #include "networking/GoogleAPIManager.cpp"
     #include "networking/OAuth2.cpp"
     #include "networking/Product.cpp"
     #include "networking/User.cpp"
