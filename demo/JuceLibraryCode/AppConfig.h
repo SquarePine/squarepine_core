@@ -40,6 +40,8 @@
 #define JUCE_MODULE_AVAILABLE_juce_graphics                       1
 #define JUCE_MODULE_AVAILABLE_juce_gui_basics                     1
 #define JUCE_MODULE_AVAILABLE_juce_gui_extra                      1
+#define JUCE_MODULE_AVAILABLE_juce_javascript                     1
+#define JUCE_MODULE_AVAILABLE_juce_midi_ci                        1
 #define JUCE_MODULE_AVAILABLE_juce_opengl                         1
 #define JUCE_MODULE_AVAILABLE_juce_osc                            1
 #define JUCE_MODULE_AVAILABLE_juce_product_unlocking              1
@@ -123,7 +125,7 @@
 #endif
 
 //==============================================================================
-// juce_audio_processors flags:
+// juce_audio_processors_headless flags:
 
 #ifndef    JUCE_PLUGINHOST_VST
  //#define JUCE_PLUGINHOST_VST 0

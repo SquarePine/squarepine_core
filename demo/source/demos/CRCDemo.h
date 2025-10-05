@@ -362,7 +362,7 @@ public:
     void paintRowBackground (Graphics&, int, int, int, bool) override { }
 
     /** @internal */
-    void paintCell (Graphics& g, int rowNumber, int columnId, int width, int height, bool rowIsSelected) override
+    void paintCell (Graphics& g, int rowNumber, int columnId, int width, int height, bool) override
     {
         SQUAREPINE_CRASH_TRACER
 

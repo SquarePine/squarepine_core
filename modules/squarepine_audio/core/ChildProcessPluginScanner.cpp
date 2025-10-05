@@ -160,10 +160,10 @@ void ChildProcessPluginScanner::performScanInChildProcess (const String& fileOrI
     }
 
     AudioPluginFormatManager pluginFormatManager;
-    pluginFormatManager.addDefaultFormats();
+	addHeadlessDefaultFormatsToManager (pluginFormatManager);
 
     for (auto i = customFormats.size(); --i >= 0;)
-        pluginFormatManager.addFormat (customFormats.removeAndReturn (i));
+        pluginFormatManager.addFormat (rawToUniquePtr (customFormats.removeAndReturn (i)));
 
     for (auto i = 0; i < pluginFormatManager.getNumFormats(); ++i)
     {

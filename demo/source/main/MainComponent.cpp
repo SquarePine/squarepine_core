@@ -34,6 +34,10 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
     addDemo (new EffectChainDemo (sharedObjs));
     addDemo (new MediaDeviceListerDemo (sharedObjs));
 
+   #if SQUAREPINE_USE_GOOGLE_API
+    addDemo (new GoogleAPIDemo (sharedObjs));
+   #endif
+
    #if SQUAREPINE_USE_ICUESDK
     addDemo (new iCUESDKDemo (sharedObjs));
    #endif

@@ -6,9 +6,9 @@ public:
     DemoEffectFactory (KnownPluginList& kpl) :
         EffectProcessorFactory (kpl)
     {
-        auto* effectFormat = new SquarePineAudioPluginFormat();
+        auto effectFormat = std::make_unique<SquarePineAudioPluginFormat>();
         effectFormat->addEffectPluginDescriptionsTo (kpl);
-        apfm.addFormat (effectFormat);
+        apfm.addFormat (std::move (effectFormat));
     }
 
     //==============================================================================
