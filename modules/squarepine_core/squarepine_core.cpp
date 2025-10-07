@@ -41,37 +41,37 @@ namespace sp
        #endif
     }
 
-    #include "debugging/CrashStackTracer.cpp"
-    #include "misc/ArrayIterationUnroller.cpp"
-    #include "misc/CodeBeautifiers.cpp"
-    #include "misc/CommandHelpers.cpp"
-    #include "misc/FPUFlags.cpp"
-    #include "misc/MainThreadLogger.cpp"
-    #include "networking/GoogleAnalyticsReporter.cpp"
-    #include "networking/NetworkCache.cpp"
+    #include "debugging/squarepine_CrashStackTracer.cpp"
+    #include "misc/squarepine_ArrayIterationUnroller.cpp"
+    #include "misc/squarepine_CodeBeautifiers.cpp"
+    #include "misc/squarepine_CommandHelpers.cpp"
+    #include "misc/squarepine_FPUFlags.cpp"
+    #include "misc/squarepine_MainThreadLogger.cpp"
+    #include "networking/squarepine_GoogleAnalyticsReporter.cpp"
+    #include "networking/squarepine_NetworkCache.cpp"
 
     //==============================================================================
     double getCurrentSystemRSSI();
     NetworkConnectivityChecker::NetworkType getCurrentSystemNetworkType();
 
-    #include "networking/NetworkConnectivityCheckerPosix.cpp"
-    #include "networking/NetworkConnectivityCheckerWindows.cpp"
-    #include "networking/NetworkConnectivityChecker.cpp"
+    #include "networking/squarepine_NetworkConnectivityCheckerPosix.cpp"
+    #include "networking/squarepine_NetworkConnectivityCheckerWindows.cpp"
+    #include "networking/squarepine_NetworkConnectivityChecker.cpp"
 
     //==============================================================================
-    #include "networking/OAuth2.cpp"
-    #include "networking/Product.cpp"
-    #include "networking/User.cpp"
-    #include "networking/WebServiceUtilities.cpp"
-    #include "networking/WooCommerce.cpp"
-    #include "text/LanguageCodes.cpp"
-    #include "text/CountryCodes.cpp"
-    #include "text/LanguageHandler.cpp"
-    #include "text/Utilities.cpp"
-    #include "valuetree/JSONToValueTree.cpp"
+    #include "networking/squarepine_OAuth2.cpp"
+    #include "networking/squarepine_Product.cpp"
+    #include "networking/squarepine_User.cpp"
+    #include "networking/squarepine_WebServiceUtilities.cpp"
+    #include "networking/squarepine_WooCommerce.cpp"
+    #include "text/squarepine_LanguageCodes.cpp"
+    #include "text/squarepine_CountryCodes.cpp"
+    #include "text/squarepine_LanguageHandler.cpp"
+    #include "text/squarepine_Utilities.cpp"
+    #include "valuetree/squarepine_JSONToValueTree.cpp"
 
-    #include "unittests/AllocatorUnitTests.cpp"
-    #include "unittests/AngleUnitTests.cpp"
-    #include "unittests/MathsUnitTests.cpp"
-    #include "unittests/SquarePineCoreUnitTestGatherer.cpp"
+    #include "unittests/squarepine_AllocatorUnitTests.cpp"
+    #include "unittests/squarepine_AngleUnitTests.cpp"
+    #include "unittests/squarepine_MathsUnitTests.cpp"
+    #include "unittests/squarepine_SquarePineCoreUnitTestGatherer.cpp"
 }

@@ -1,12 +1,10 @@
 /** This is an amalgamation of a variety of standard animation easing functions,
-    alongside some convenient standard audio waveform functions.
+    alongside some convenient standard audio waveform functions, interfaced
+    the same way (via a normalised weight value of ~0.0 to ~1.0, depending on the function).
 
-    The said audio waveform functions are provided with
-    a similar API in mind in that the easing functions,
-    which are effectively complex interpolation functions,
-    require a weight instead of a phase.
-
-    The purpose of all of these functions is to act as a normalised function.
+    The said audio waveform functions  are effectively complex interpolation functions,
+    requiring a weight instead of a phase. Be warned: these are intended for UI purposes!
+    If you intend to use them for audio, YMMV and you're certainly on your own!
 */
 namespace ease
 {

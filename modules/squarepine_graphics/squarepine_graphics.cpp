@@ -11,29 +11,28 @@
     #include <android/api-level.h>
 #endif
 
-#include "lighting/iCUESDKLinker.cpp"
+#include "lighting/squarepine_iCUESDKLinker.cpp"
+#include "lighting/squarepine_WinRTRGB.cpp"
 
 namespace sp
 {
     using namespace juce;
 
-    #include "application/SimpleApplication.cpp"
-    #include "components/ComponentViewer.cpp"
-    #include "components/GoogleAnalyticsAttachment.cpp"
-    #include "components/HighPerformanceRendererConfigurator.cpp"
-    #include "components/MarkdownComponent.cpp"
-    #include "components/ValueTreeEditor.cpp"
-    #include "images/BlendingEffects.cpp"
-    #include "images/BMPImageFormat.cpp"
-    #include "images/DrawableHelpers.cpp"
-    #include "images/ImageEffects.cpp"
-    #include "images/ImageFormatManager.cpp"
-    #include "images/Resizer.cpp"
-    #include "images/StackBlurEffects.cpp"
-    #include "images/SVGParser.cpp"
-    #include "images/TGAImageFormat.cpp"
-    #include "lookandfeels/Windows10LookAndFeel.cpp"
-   // #include "tokenisers/JavascriptCodeTokeniser.cpp"
+    #include "application/squarepine_SimpleApplication.cpp"
+    #include "components/squarepine_ComponentViewer.cpp"
+    #include "components/squarepine_GoogleAnalyticsAttachment.cpp"
+    #include "components/squarepine_HighPerformanceRendererConfigurator.cpp"
+    #include "components/squarepine_MarkdownComponent.cpp"
+    #include "components/squarepine_ValueTreeEditor.cpp"
+    #include "images/squarepine_BlendingEffects.cpp"
+    #include "images/squarepine_BMPImageFormat.cpp"
+    #include "images/squarepine_DrawableHelpers.cpp"
+    #include "images/squarepine_ImageEffects.cpp"
+    #include "images/squarepine_ImageFormatManager.cpp"
+    #include "images/squarepine_Resizer.cpp"
+    #include "images/squarepine_StackBlurEffects.cpp"
+    #include "images/squarepine_SVGParser.cpp"
+    #include "images/squarepine_TGAImageFormat.cpp"
+    #include "lookandfeels/squarepine_Windows10LookAndFeel.cpp"
+   // #include "tokenisers/squarepine_JavascriptCodeTokeniser.cpp"
 }
-
-#include "lighting/WinRTRGB.cpp"

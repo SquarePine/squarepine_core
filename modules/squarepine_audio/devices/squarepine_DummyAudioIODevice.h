@@ -1,5 +1,7 @@
 /** Use this class for doing things like faking an audio device
-    when needing a placeholder driver or rendering to an audio to a file.
+    when needing a placeholder driver for whatever reason.
+
+    I've used this as a stand-in to RCA driver issues among other things.
 */
 class DummyAudioIODevice final : public AudioIODevice,
                                  public Thread

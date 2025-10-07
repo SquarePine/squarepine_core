@@ -82,7 +82,7 @@ TextLayout Windows10LookAndFeel::layoutTooltipText (const String& text, Colour t
     return tl;
 }
 
-juce::Rectangle<float> Windows10LookAndFeel::getTooltipBoundsFloat (const String& tipText, Point<int> screenPos, juce::Rectangle<int> parentArea) const
+juce::Rectangle<float> Windows10LookAndFeel::getTooltipBoundsFloat (const String& tipText, juce::Point<int> screenPos, juce::Rectangle<int> parentArea) const
 {
     const auto tl = layoutTooltipText (tipText, Colours::black);
 
@@ -91,7 +91,7 @@ juce::Rectangle<float> Windows10LookAndFeel::getTooltipBoundsFloat (const String
             .constrainedWithin (parentArea.toFloat());
 }
 
-juce::Rectangle<int> Windows10LookAndFeel::getTooltipBounds (const String& tipText, Point<int> screenPos, juce::Rectangle<int> parentArea)
+juce::Rectangle<int> Windows10LookAndFeel::getTooltipBounds (const String& tipText, juce::Point<int> screenPos, juce::Rectangle<int> parentArea)
 {
     return getTooltipBoundsFloat (tipText, screenPos, parentArea)
             .getSmallestIntegerContainer();

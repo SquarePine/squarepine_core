@@ -5,7 +5,7 @@ public:
     Snapshot() = default;
     ~Snapshot() override = default;
 
-    void update (Component* c, Point<int> pos, int zoom_)
+    void update (Component* c, juce::Point<int> pos, int zoom_)
     {
         zoom = zoom_;
 
@@ -117,7 +117,7 @@ public:
             startTimer (30);
     }
 
-    static Component* findComponentAtScreenPos (Component& p, Point<int> screenPos)
+    static Component* findComponentAtScreenPos (Component& p, juce::Point<int> screenPos)
     {
         if (p.getScreenBounds().contains (screenPos))
         {

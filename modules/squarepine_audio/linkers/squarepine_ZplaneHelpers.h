@@ -90,8 +90,8 @@
         }
     } // zplane
 
-    #include "AuftaktIncluder.h"
-    #include "ElastiqueIncluder.h"
+    #include "squarepine_AuftaktIncluder.h"
+    #include "squarepine_ElastiqueIncluder.h"
 
     JUCE_END_IGNORE_WARNINGS_GCC_LIKE
 

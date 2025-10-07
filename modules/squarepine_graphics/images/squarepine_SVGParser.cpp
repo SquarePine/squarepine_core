@@ -519,13 +519,13 @@ std::unique_ptr<Drawable> SVGState::parseSVGElement (const XmlPath& xml)
     if (newState.width <= 0) newState.width = 100;
     if (newState.height <= 0) newState.height = 100;
 
-    Point<float> viewboxXY;
+    juce::Point<float> viewboxXY;
 
     if (xml->hasAttribute ("viewBox"))
     {
         auto viewBoxAtt = xml->getStringAttribute ("viewBox");
         auto viewParams = viewBoxAtt.getCharPointer();
-        Point<float> vwh;
+        juce::Point<float> vwh;
 
         if (parseCoords (viewParams, viewboxXY, true)
             && parseCoords (viewParams, vwh, true)
@@ -566,7 +566,7 @@ void SVGState::parsePathString (Path& path, const String& pathString) const
 {
     auto d = pathString.getCharPointer().findEndOfWhitespace();
 
-    Point<float> subpathStart, last, last2, p1, p2, p3;
+    juce::Point<float> subpathStart, last, last2, p1, p2, p3;
     juce_wchar currentCommand = 0, previousCommand = 0;
     bool isRelative = true;
     bool carryOn = true;
@@ -961,11 +961,11 @@ void SVGState::parsePolygon (const XmlPath& xml, bool isPolyline, Path& path) co
 {
     const auto pointsAtt = xml->getStringAttribute ("points");
     auto points = pointsAtt.getCharPointer();
-    Point<float> p;
+    juce::Point<float> p;
 
     if (parseCoords (points, p, true))
     {
-        Point<float> first (p), last;
+        juce::Point<float> first (p), last;
 
         path.startNewSubPath (first);
 
@@ -1233,7 +1233,7 @@ FillType SVGState::getGradientFillType (const XmlPath& fillXml,
                                    dy + gradientHeight * getCoordLength (fillXml->getStringAttribute ("cy", "50%"), 1.0f));
 
         const auto radius = getCoordLength (fillXml->getStringAttribute ("r", "50%"), gradientWidth);
-        gradient.point2 = gradient.point1 + Point<float> (radius, 0.0f);
+        gradient.point2 = gradient.point1 + juce::Point<float> (radius, 0.0f);
 
         // TODO xxx (the fx, fy focal point isn't handled properly here..)
     }
@@ -1272,8 +1272,8 @@ FillType SVGState::getGradientFillType (const XmlPath& fillXml,
     {
         // Transform the perpendicular vector into the new coordinate space for the gradient.
         // This vector is now the slope of the linear gradient as it should appear in the new coord space
-        const auto perpendicular = Point<float> (gradient.point2.y - gradient.point1.y,
-                                                    gradient.point1.x - gradient.point2.x)
+        const auto perpendicular = juce::Point<float> (gradient.point2.y - gradient.point1.y,
+                                                       gradient.point1.x - gradient.point2.x)
                                     .transformedBy (gradientTransform.withAbsoluteTranslation (0, 0));
 
         const auto newGradPoint1 = gradient.point1.transformedBy (gradientTransform);
@@ -1612,13 +1612,13 @@ bool SVGState::parseCoord (String::CharPointerType& s, float& value, bool allowU
     return true;
 }
 
-bool SVGState::parseCoords (String::CharPointerType& s, Point<float>& p, bool allowUnits) const
+bool SVGState::parseCoords (String::CharPointerType& s, juce::Point<float>& p, bool allowUnits) const
 {
     return parseCoord (s, p.x, allowUnits, true)
         && parseCoord (s, p.y, allowUnits, false);
 }
 
-bool SVGState::parseCoordsOrSkip (String::CharPointerType& s, Point<float>& p, bool allowUnits) const
+bool SVGState::parseCoordsOrSkip (String::CharPointerType& s, juce::Point<float>& p, bool allowUnits) const
 {
     if (parseCoords (s, p, allowUnits))
         return true;

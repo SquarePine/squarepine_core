@@ -730,7 +730,7 @@ Colour MarkdownComponent::getColourForElement (const MarkdownElement& element) c
 }
 
 //==============================================================================
-const MarkdownComponent::MarkdownElement* MarkdownComponent::findElementAt (Point<float> position) const
+const MarkdownComponent::MarkdownElement* MarkdownComponent::findElementAt (juce::Point<float> position) const
 {
     for (const auto* element : parsedElements)
         if (auto* found = findElementAtRecursive (*element, position))
@@ -739,7 +739,7 @@ const MarkdownComponent::MarkdownElement* MarkdownComponent::findElementAt (Poin
     return nullptr;
 }
 
-const MarkdownComponent::MarkdownElement* MarkdownComponent::findElementAtRecursive (const MarkdownElement& element, Point<float> position) const
+const MarkdownComponent::MarkdownElement* MarkdownComponent::findElementAtRecursive (const MarkdownElement& element, juce::Point<float> position) const
 {
     if (element.bounds.contains (position))
     {

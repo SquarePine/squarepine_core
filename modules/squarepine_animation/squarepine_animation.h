@@ -24,12 +24,12 @@ namespace sp
 {
     using namespace juce;
 
-    #include "maths/CubicBezier.h"
-    #include "maths/Easing.h"
-    #include "maths/Spline.h"
-    #include "controllers/Timeline.h"
-    #include "controllers/TimelineGroup.h"
-    #include "particles/ParticleSystem.h"
+    #include "maths/squarepine_CubicBezier.h"
+    #include "maths/squarepine_Easing.h"
+    #include "maths/squarepine_Spline.h"
+    #include "controllers/squarepine_Timeline.h"
+    #include "controllers/squarepine_TimelineGroup.h"
+    #include "particles/squarepine_ParticleSystem.h"
 }
 
 #endif //SQUAREPINE_ANIMATION_H

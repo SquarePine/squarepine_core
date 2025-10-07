@@ -67,7 +67,7 @@ TextLayout DemoLookAndFeel::layoutTooltipText (const String& text, Colour textCo
     return tl;
 }
 
-Rectangle<float> DemoLookAndFeel::getTooltipBoundsFloat (const String& tipText, Point<int> screenPos, Rectangle<int> parentArea) const
+Rectangle<float> DemoLookAndFeel::getTooltipBoundsFloat (const String& tipText, juce::Point<int> screenPos, juce::Rectangle<int> parentArea) const
 {
     const auto tl = layoutTooltipText (tipText, Colours::black);
 
@@ -76,7 +76,7 @@ Rectangle<float> DemoLookAndFeel::getTooltipBoundsFloat (const String& tipText, 
             .constrainedWithin (parentArea.toFloat());
 }
 
-Rectangle<int> DemoLookAndFeel::getTooltipBounds (const String& tipText, Point<int> screenPos, Rectangle<int> parentArea)
+Rectangle<int> DemoLookAndFeel::getTooltipBounds (const String& tipText, juce::Point<int> screenPos, juce::Rectangle<int> parentArea)
 {
     return getTooltipBoundsFloat (tipText, screenPos, parentArea)
             .getSmallestIntegerContainer();

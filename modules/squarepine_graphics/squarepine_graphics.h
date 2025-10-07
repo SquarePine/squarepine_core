@@ -59,7 +59,7 @@
 #endif
 
 //==============================================================================
-#include "lighting/iCUESDKIncluder.h"
+#include "lighting/squarepine_iCUESDKIncluder.h"
 
 //==============================================================================
 namespace sp
@@ -191,29 +191,29 @@ namespace sp
     }
 
     //==============================================================================
-    #include "application/SimpleApplication.h"
-    #include "components/PropertyComponents.h"
-    #include "components/ComponentViewer.h"
-    #include "components/ComponentWindow.h"
-    #include "components/GoogleAnalyticsAttachment.h"
-    #include "components/JavascriptEditor.h"
-    #include "components/HighPerformanceRendererConfigurator.h"
-    #include "components/MarkdownComponent.h"
-    #include "components/ValueTreeEditor.h"
-    #include "images/BlendingEffects.h"
-    #include "images/BMPImageFormat.h"
-    #include "images/DrawableHelpers.h"
-    #include "images/ImageEffects.h"
-    #include "images/ImageFormatManager.h"
-    #include "images/Resizer.h"
-    #include "images/SVGParser.h"
-    #include "images/TGAImageFormat.h"
+    #include "application/squarepine_SimpleApplication.h"
+    #include "components/squarepine_PropertyComponents.h"
+    #include "components/squarepine_ComponentViewer.h"
+    #include "components/squarepine_ComponentWindow.h"
+    #include "components/squarepine_GoogleAnalyticsAttachment.h"
+    #include "components/squarepine_JavascriptEditor.h"
+    #include "components/squarepine_HighPerformanceRendererConfigurator.h"
+    #include "components/squarepine_MarkdownComponent.h"
+    #include "components/squarepine_ValueTreeEditor.h"
+    #include "images/squarepine_BlendingEffects.h"
+    #include "images/squarepine_BMPImageFormat.h"
+    #include "images/squarepine_DrawableHelpers.h"
+    #include "images/squarepine_ImageEffects.h"
+    #include "images/squarepine_ImageFormatManager.h"
+    #include "images/squarepine_Resizer.h"
+    #include "images/squarepine_SVGParser.h"
+    #include "images/squarepine_TGAImageFormat.h"
     //#include "images/WebPImageFormat.h"
-    #include "lighting/WinRTRGB.h"
-    #include "lookandfeels/Windows10LookAndFeel.h"
+    #include "lighting/squarepine_WinRTRGB.h"
+    #include "lookandfeels/squarepine_Windows10LookAndFeel.h"
     //#include "tokenisers/JavascriptCodeTokeniser.h"
-    #include "utilities/Fonts.h"
-    #include "utilities/Resolution.h"
+    #include "utilities/squarepine_Fonts.h"
+    #include "utilities/squarepine_Resolution.h"
 }
 
 #endif //SQUAREPINE_GRAPHICS_H

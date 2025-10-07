@@ -17,7 +17,7 @@
 #define AVIR_FLOAT8_AVX_INCLUDED
 
 #include <immintrin.h>
-#include "avir_dil.h"
+#include "squarepine_avir_dil.h"
 
 namespace avir {
 

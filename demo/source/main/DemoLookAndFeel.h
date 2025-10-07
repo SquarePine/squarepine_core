@@ -170,7 +170,7 @@ public:
     /** @internal */
     Typeface::Ptr getTypefaceForFont (const Font& f) override;
     /** @internal */
-    Rectangle<int> getTooltipBounds (const String&, Point<int>, Rectangle<int>) override;
+    Rectangle<int> getTooltipBounds (const String&, juce::Point<int>, juce::Rectangle<int>) override;
     /** @internal */
     void drawTooltip (Graphics&, const String&, int, int) override;
     /** @internal */
@@ -248,7 +248,7 @@ private:
 
     //==============================================================================
     TextLayout layoutTooltipText (const String& text, Colour textColour) const;
-    Rectangle<float> getTooltipBoundsFloat (const String& tipText, Point<int> screenPos, Rectangle<int> parentArea) const;
+    Rectangle<float> getTooltipBoundsFloat (const String& tipText, juce::Point<int> screenPos, juce::Rectangle<int> parentArea) const;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DemoLookAndFeel)

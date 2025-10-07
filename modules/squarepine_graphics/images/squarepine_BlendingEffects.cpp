@@ -1,5 +1,5 @@
 template<class PixelType, uint8 (*blendFunc) (uint8, uint8)>
-void applyBlend (Image& dest, const Image& source, float alpha, Point<int> position, ThreadPool* threadPool)
+void applyBlend (Image& dest, const Image& source, float alpha, juce::Point<int> position, ThreadPool* threadPool)
 {
     const auto rcLower = dest.getBounds();
     const auto rcUpper = source.getBounds().withPosition (position);
@@ -82,7 +82,7 @@ void applyBlend (Image& dest, const Image& source, float alpha, Point<int> posit
 }
 
 template<class Type>
-void applyBlend (Image& dest, const Image& source, BlendMode mode, float alpha, Point<int> position, ThreadPool* threadPool)
+void applyBlend (Image& dest, const Image& source, BlendMode mode, float alpha, juce::Point<int> position, ThreadPool* threadPool)
 {
     switch (mode)
     {
@@ -222,7 +222,7 @@ void applyBlend (Image& dest, BlendMode mode, Colour c, ThreadPool* threadPool)
     }
 }
 
-void applyBlend (Image& dest, const Image& source, BlendMode mode, float alpha, Point<int> position, ThreadPool* threadPool)
+void applyBlend (Image& dest, const Image& source, BlendMode mode, float alpha, juce::Point<int> position, ThreadPool* threadPool)
 {
     if (source.getFormat() != dest.getFormat())
     {

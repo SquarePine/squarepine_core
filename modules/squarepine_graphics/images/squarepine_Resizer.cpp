@@ -25,17 +25,17 @@
                                          "-Wnontrivial-memcall",
                                          "-Wcast-align")
 
-    #include "avir/avir.h"
+    #include "avir/squarepine_avir.h"
 
     #define AVIR_USE_SSE (JUCE_INTEL || __SSE__ || __SSE2__ || __SSE3__)
     #define AVIR_USE_AVX (__AVX__ || __AVX2__)
 
    #if AVIR_USE_AVX
-    #include "avir/avir_float8_avx.h"
+    #include "avir/squarepine_avir_float8_avx.h"
    #endif
 
    #if AVIR_USE_SSE
-    #include "avir/avir_float4_sse.h"
+    #include "avir/squarepine_avir_float4_sse.h"
    #endif
 
     JUCE_END_IGNORE_WARNINGS_MSVC

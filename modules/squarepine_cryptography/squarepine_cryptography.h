@@ -19,21 +19,21 @@
 #include <squarepine_core/squarepine_core.h>
 
 //==============================================================================
-#include "rng/Hashing.h"
+#include "rng/squarepine_Hashing.h"
 
 //==============================================================================
 namespace sp
 {
     using namespace juce;
 
-    #include "hash/CRC.h"
+    #include "hash/squarepine_CRC.h"
     //#include "hash/SHA1.h"
     //#include "hash/SHA2.h"
-    #include "hash/FNV.h"
-    #include "rng/BlumBlumShub.h"
-    #include "rng/ISAAC.h"
-    #include "rng/Xorshift.h"
-    #include "unittests/SquarePineCryptographyUnitTestGatherer.h"
+    #include "hash/squarepine_FNV.h"
+    #include "rng/squarepine_BlumBlumShub.h"
+    #include "rng/squarepine_ISAAC.h"
+    #include "rng/squarepine_Xorshift.h"
+    #include "unittests/squarepine_SquarePineCryptographyUnitTestGatherer.h"
 }
 
 #endif // SQUAREPINE_CRYPTOGRAPHY_H

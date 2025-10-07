@@ -315,8 +315,8 @@ private:
 
     //==============================================================================
     bool parseCoord (String::CharPointerType& s, float& value, bool allowUnits, bool isX) const;
-    bool parseCoords (String::CharPointerType& s, Point<float>& p, bool allowUnits) const;
-    bool parseCoordsOrSkip (String::CharPointerType& s, Point<float>& p, bool allowUnits) const;
+    bool parseCoords (String::CharPointerType& s, juce::Point<float>& p, bool allowUnits) const;
+    bool parseCoordsOrSkip (String::CharPointerType& s, juce::Point<float>& p, bool allowUnits) const;
 
     float getCoordLength (const String& s, float sizeForProportions) const noexcept;
     float getCoordLength (const XmlPath& xml, const char* attName, const float sizeForProportions) const noexcept;
