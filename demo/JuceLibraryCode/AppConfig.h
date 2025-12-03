@@ -20,7 +20,7 @@
 
 // [END_USER_CODE_SECTION]
 
-#define JUCE_PROJUCER_VERSION 0x8000a
+#define JUCE_PROJUCER_VERSION 0x8000b
 
 //==============================================================================
 #define JUCE_MODULE_AVAILABLE_juce_analytics                      1
@@ -67,6 +67,10 @@
 
 #ifndef    JUCE_ASIO
  //#define JUCE_ASIO 0
+#endif
+
+#ifndef    JUCE_ASIO_USE_EXTERNAL_SDK
+ //#define JUCE_ASIO_USE_EXTERNAL_SDK 0
 #endif
 
 #ifndef    JUCE_WASAPI
