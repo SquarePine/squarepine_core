@@ -5,6 +5,7 @@
 class EffectProcessorFactory
 {
 public:
+    //==============================================================================
     /** Shorthand for creating shared EffectProcessorFactory instances. */
     using Ptr = std::shared_ptr<EffectProcessorFactory>;
 

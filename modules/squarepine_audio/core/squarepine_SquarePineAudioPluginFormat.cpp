@@ -20,7 +20,7 @@ public:
         std::unique_ptr<AudioPluginInstance> api (new ClassName());
 
         addPlugin (pluginCreationMap, descriptions, api->getPluginDescription(),
-                   &createInstance<ClassName>); //N.B.: The lacking parentheses are entirely intentional!
+                   &createInstance<ClassName>); // N.B.: The lacking parentheses are entirely intentional!
     }
 
     static void addGraphPlugins (PluginCreationMap& pluginCreationMap,
