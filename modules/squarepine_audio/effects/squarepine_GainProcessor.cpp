@@ -1,3 +1,4 @@
+//==============================================================================
 namespace
 {
     String toStringFromGainValue (float value, int)
@@ -20,12 +21,9 @@ GainProcessor::GainProcessor (NormalisableRange<float> gainRange) :
                                                         .withCategory (AudioParameterFloatAttributes::Category::outputGain)
                                                         .withLabel (getName())
                                                         .withStringFromValueFunction (toStringFromGainValue));
-
     gainParameter = vp.get();
     gainParameter->addListener (this);
-
     layout.add (std::move (vp));
-
     setGain (getGain());
     resetAPVTSWithLayout (std::move (layout));
 }

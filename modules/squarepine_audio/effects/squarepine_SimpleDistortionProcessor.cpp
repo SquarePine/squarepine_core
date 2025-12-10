@@ -1,29 +1,29 @@
 //==============================================================================
-class SimpleDistortionProcessor::AmountParameter final : public AudioParameterFloat
+namespace
 {
-public:
-    AmountParameter() noexcept :
-        AudioParameterFloat ("AmountId", TRANS ("Amount"), 0.0f, 1.0f, 0.6f)
+    String toStringFromDistortionAmountValue (float value, int maximumStringLength)
     {
+        auto s = String (static_cast<int> (value * 100.0f))
+                    .substring (0, maximumStringLength - 1);
+        s << "%";
+        return s;
     }
-
-    int getNumSteps() const override { return 100; }
-    String getLabel() const override { return "%"; }
-
-    String getText (float v, int maximumStringLength) const override
-    {
-        return String (static_cast<int> (v * 100.0f)).substring (0, maximumStringLength);
-    }
-
-private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AmountParameter)
-};
+}
 
 //==============================================================================
 SimpleDistortionProcessor::SimpleDistortionProcessor() :
-    amountParam (new AmountParameter())
+    InternalProcessor (false)
 {
-    AudioProcessor::addParameter (amountParam);
+    auto layout = createDefaultParameterLayout();
+
+    auto ap = std::make_unique<AudioParameterFloat> (ParameterID ("amount", 1), TRANS ("Amount"),
+                                                     NormalisableRange<float> (0.0f, 100.0f, 1.0f), 75.0f,
+                                                     AudioParameterFloatAttributes()
+                                                        .withLabel (TRANS ("Amount"))
+                                                        .withStringFromValueFunction (toStringFromDistortionAmountValue));
+    amountParameter = ap.get();
+    layout.add (std::move (ap));
+    resetAPVTSWithLayout (std::move (layout));
 }
 
 //==============================================================================
@@ -39,7 +39,7 @@ void SimpleDistortionProcessor::process (juce::AudioBuffer<FloatType>& buffer)
         return;
 
     using DistFuncs = DistortionFunctions<FloatType>;
-    const auto d = static_cast<FloatType> (amountParam->get());
+    const auto d = static_cast<FloatType> (amountParameter->get());
     DistFuncs::perform (buffer, DistFuncs::sigmoid, d, static_cast<FloatType> (100));
 }
 

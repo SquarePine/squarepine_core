@@ -76,7 +76,7 @@ public:
     /** @returns a direct Value to a property inside the APVTS.
 
         If no APVTS is present, or if the Value wasn't found,
-        this will return an empty Value.
+        this will return an empty (ie: void) Value.
     */
     [[nodiscard]] Value getPropertyAsValue (const Identifier&,
                                             UndoManager* undoManager = nullptr,

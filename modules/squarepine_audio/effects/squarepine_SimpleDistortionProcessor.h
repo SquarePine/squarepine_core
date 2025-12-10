@@ -21,8 +21,7 @@ public:
 
 private:
     //==============================================================================
-    class AmountParameter;
-    AmountParameter* amountParam = nullptr;
+    AudioParameterFloat* amountParameter = nullptr;
 
     //==============================================================================
     template<typename FloatType>
