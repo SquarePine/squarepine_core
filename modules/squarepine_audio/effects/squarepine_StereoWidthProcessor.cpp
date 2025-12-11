@@ -72,28 +72,35 @@ void StereoWidthProcessor::process (juce::AudioBuffer<FloatType>& buffer,
         return;
     }
 
-    const auto val = value.getNextValue();
-    if (approximatelyEqual (val, static_cast<FloatType> (defaultValue)))
-        return; // Nothing to do!
+    if (! value.isSmoothing()
+        && capproximatelyEqual (static_cast<FloatType> (value.getTargetValue()),
+                                static_cast<FloatType> (fullFieldValue)))
+    {
+        return; // Nothing to do.
+    }
 
-    constexpr auto one      = static_cast<FloatType> (1);
-    constexpr auto two      = static_cast<FloatType> (2);
-    const auto localWidth   = val * two;
-    const auto coeffM       = one / std::max (one + localWidth, two);
-    const auto coeffS       = localWidth * coeffM;
-
-    auto* leftChannel       = buffer.getWritePointer (0);
-    auto* rightChannel      = buffer.getWritePointer (1);
+    auto* left = buffer.getWritePointer (0);
+    auto* right = buffer.getWritePointer (1);
 
     for (int i = 0; i < numSamples; ++i)
     {
-        const auto sampleLeft = leftChannel[i];
-        const auto sampleRight = rightChannel[i];
+        constexpr auto half = FloatType (0.5);
 
-        const auto mid = coeffM * (sampleLeft + sampleRight);
-        const auto side = coeffS * (sampleRight - sampleLeft);
+        const auto w    = value.getNextValue();
+        const auto L    = left[i];
+        const auto R    = right[i];
+        const auto mid  = (L + R) * half;
+        const auto side = (L - R) * half;
 
-        leftChannel[i] = mid - side;
-        rightChannel[i] = mid + side;
+        left[i]  = mid + w * side;
+        right[i] = mid - w * side;
+
+        // Avoid summed clipping:
+        if (w > fullFieldValue)
+        {
+            const auto scale = fullFieldValue / w;
+            left[i]  *= scale;
+            right[i] *= scale;
+        }
     }
 }

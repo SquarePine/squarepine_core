@@ -17,14 +17,17 @@ public:
     [[nodiscard]] float getWidth() const noexcept;
 
     //==============================================================================
-    /** */
+    /** Mono collapse. */
     static constexpr float minimumValue = 0.0f;
 
-    /** */
-    static constexpr float defaultValue = 0.2f;
+    /** Full width; applies the original stereo field. */
+    static constexpr float fullFieldValue = 1.0f;
 
-    /** */
-    static constexpr float maximumValue = 1.0f;
+    /** Gentle widerning. */
+    static constexpr float defaultValue = 1.2f;
+
+    /** Super wide field. */
+    static constexpr float maximumValue = 2.0f;
 
     //==============================================================================
     CREATE_INLINE_CLASS_IDENTIFIER (stereoWidth)
