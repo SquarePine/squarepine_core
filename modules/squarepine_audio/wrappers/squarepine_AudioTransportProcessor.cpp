@@ -71,6 +71,16 @@ void AudioTransportProcessor::clear()
     source.reset();
 }
 
+bool AudioTransportProcessor::isClear() const
+{
+    return source == nullptr;
+}
+
+bool AudioTransportProcessor::hasSource() const
+{
+    return ! isClear();
+}
+
 //==============================================================================
 void AudioTransportProcessor::setSource (PositionableAudioSource* const s,
                                          bool transportOwnsSource,
@@ -136,12 +146,12 @@ void AudioTransportProcessor::prepareToPlay (const double newSampleRate, const i
 
 void AudioTransportProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    buffer.clear();
+    process (buffer, midiMessages);
+}
 
-    if (isSuspended() || isBypassed())
-        return;
-
-    audioSourceProcessor.processBlock (buffer, midiMessages);
+void AudioTransportProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiMessages)
+{
+    process (buffer, midiMessages);
 }
 
 void AudioTransportProcessor::releaseResources()

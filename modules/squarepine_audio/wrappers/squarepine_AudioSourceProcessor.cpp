@@ -17,6 +17,13 @@ void AudioSourceProcessor::prepareToPlay (const double newSampleRate, const int 
 
     if (audioSource != nullptr)
         audioSource->prepareToPlay (estimatedSamplesPerBlock, newSampleRate);
+
+    const auto numChans = jmax (2, getTotalNumInputChannels(), getTotalNumOutputChannels());
+
+    if (isUsingDoublePrecision())
+        doubleFloatConv.setSize (numChans, estimatedSamplesPerBlock, false, true, false);
+    else
+        doubleFloatConv.setSize (0, 0, false, true, false);
 }
 
 void AudioSourceProcessor::releaseResources()
@@ -38,4 +45,12 @@ void AudioSourceProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiB
         info.buffer = &buffer;
         audioSource->getNextAudioBlock (info);
     }
+}
+
+void AudioSourceProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer& midiMessages)
+{
+    buffer.clear();
+    doubleFloatConv.makeCopyOf (buffer, true);
+    processBlock (doubleFloatConv, midiMessages);
+    buffer.makeCopyOf (doubleFloatConv);
 }

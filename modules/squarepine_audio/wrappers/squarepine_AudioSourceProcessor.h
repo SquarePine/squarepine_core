@@ -30,12 +30,17 @@ public:
     /** @internal */
     void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
     /** @internal */
+    void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
+    /** @internal */
+    bool supportsDoublePrecisionProcessing() const override { return true; }
+    /** @internal */
     void releaseResources() override;
 
 private:
     //==============================================================================
     OptionalScopedPointer<AudioSource> audioSource;
     AudioSourceChannelInfo info;
+    juce::AudioBuffer<float> doubleFloatConv;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioSourceProcessor)

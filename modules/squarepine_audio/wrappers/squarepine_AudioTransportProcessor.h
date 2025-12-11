@@ -47,6 +47,12 @@ public:
     */
     void clear();
 
+    /** @returns true if no source is present. */
+    [[nodiscard]] bool isClear() const;
+
+    /** @returns true if a source is present. */
+    [[nodiscard]] bool hasSource() const;
+
     //==============================================================================
     /** Changes the current time to that of the specified seconds. */
     void setCurrentTime (double seconds);
@@ -129,6 +135,10 @@ public:
     /** @internal */
     void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
     /** @internal */
+    void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
+    /** @internal */
+    bool supportsDoublePrecisionProcessing() const override { return true; }
+    /** @internal */
     void releaseResources() override;
 
 private:
@@ -140,6 +150,18 @@ private:
     AudioSourceProcessor audioSourceProcessor;
     AudioTransportSource* transport = nullptr;
     OptionalScopedPointer<PositionableAudioSource> source;
+
+    //==============================================================================
+    template<typename SampleType>
+    void process (juce::AudioBuffer<SampleType>& buffer, MidiBuffer& midiMessages)
+    {
+        buffer.clear();
+
+        if (isSuspended() || isBypassed())
+            return;
+
+        audioSourceProcessor.processBlock (buffer, midiMessages);
+    }
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioTransportProcessor)
