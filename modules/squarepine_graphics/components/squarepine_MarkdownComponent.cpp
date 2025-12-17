@@ -857,13 +857,18 @@ std::unique_ptr<Drawable> MarkdownComponent::loadImage (const String& imageUrl, 
     // Check if it's likely a web/non-local URL:
     if (imageUrl.startsWithIgnoreCase ("http"))
     {
+        int statusCode = 200;
+        const auto options = URL::InputStreamOptions (URL::ParameterHandling::inAddress)
+                                .withStatusCode (&statusCode)
+                                .withConnectionTimeoutMs (3000);
+
         // Try loading as a web image:
-        if (auto inputStream = url.createInputStream (URL::InputStreamOptions (URL::ParameterHandling::inAddress)))
+        if (auto inputStream = url.createInputStream (options))
             if (const auto image = ImageFileFormat::loadFrom (*inputStream); image.isValid())
                 return std::make_unique<DrawableImage> (image);
 
         // Try loading as a web SVG:
-        if (auto inputStream = url.createInputStream (URL::InputStreamOptions (URL::ParameterHandling::inAddress)))
+        if (auto inputStream = url.createInputStream (options))
         {
             const auto svgData = inputStream->readEntireStreamAsString();
             if (svgData.isNotEmpty())
