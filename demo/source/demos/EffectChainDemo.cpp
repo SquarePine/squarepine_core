@@ -178,7 +178,26 @@ void EffectRowComponent::mouseDown (const MouseEvent& e)
         menu.addSeparator();
         menu.addItem (deleteId, TRANS ("Delete"));
 
-        menu.showMenuAsync ({}, [this, numEffects, types] (int result)
+        enum { progMenuIdBase = 0xffff };
+        int numPrograms = 0;
+        if (effect != nullptr)
+        {
+            auto plug = effect->getPlugin();
+            numPrograms = plug->getNumPrograms();
+            if (numPrograms > 0)
+            {
+                PopupMenu programMenu;
+                for (int i = 0; i < numPrograms; ++i)
+                    programMenu.addItem (progMenuIdBase + i,
+                                         plug->getProgramName (i), true,
+                                         plug->getCurrentProgram() == i);
+
+                menu.addSeparator();
+                menu.addSubMenu (TRANS ("Program"), programMenu);
+            }
+        }
+
+        menu.showMenuAsync ({}, [this, numEffects, types, numPrograms] (int result)
         {
             switch (result)
             {
@@ -191,6 +210,13 @@ void EffectRowComponent::mouseDown (const MouseEvent& e)
 
                 default:
                 {
+                    const auto progIndex = result - progMenuIdBase;
+                    if (numPrograms > 0 && progIndex >= 0)
+                    {
+                        effect->getPlugin()->setCurrentProgram (progIndex);
+                        return;
+                    }
+
                     result = KnownPluginList::getIndexChosenByMenu (types, result);
                     if (result < 0)
                         return;

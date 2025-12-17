@@ -3,22 +3,15 @@ class DemoEffectFactory final : public EffectProcessorFactory
 {
 public:
     /** */
-    DemoEffectFactory (KnownPluginList& kpl) :
-        EffectProcessorFactory (kpl)
+    DemoEffectFactory (AudioPluginFormatManager& apfm, KnownPluginList& kpl) :
+        EffectProcessorFactory (apfm, kpl)
     {
         auto effectFormat = std::make_unique<SquarePineAudioPluginFormat>();
         effectFormat->addEffectPluginDescriptionsTo (kpl);
         apfm.addFormat (std::move (effectFormat));
     }
 
-    //==============================================================================
-    /** @internal */
-    const AudioPluginFormatManager& getAudioPluginFormatManager() const override { return apfm; }
-
 private:
-    //==============================================================================
-    AudioPluginFormatManager apfm;
-
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DemoEffectFactory)
 };
@@ -243,8 +236,9 @@ private:
     using NodePtr = AudioProcessorGraph::Node::Ptr;
 
     // Audio bits:
+    AudioPluginFormatManager audioPluginFormatManager;
     KnownPluginList knownPluginList;
-    EffectProcessorFactory::Ptr factory { std::make_shared<DemoEffectFactory> (knownPluginList) };
+    EffectProcessorFactory::Ptr factory { std::make_shared<DemoEffectFactory> (audioPluginFormatManager, knownPluginList) };
 
     std::unique_ptr<AudioFormatReaderSource> readerSource;
     TimeSliceThread readAheadThread { "FancyReadAheadThread" };

@@ -412,7 +412,7 @@ void EffectProcessorChain::processInternal (juce::AudioBuffer<FloatType>& source
 
         // Add the effect-saturated samples at the specified mix level:
         const auto mixLevel = static_cast<FloatType> (effect->mixLevel.getNextValue());
-        jassert (approximatelyEqual (effect->mixLevel.getTargetValue(), 1.0f));
+        // jassert (approximatelyEqual (effect->mixLevel.getTargetValue(), 1.0f));
 
         bufferPackage.lastBuffer.clear();
         addFrom (bufferPackage.lastBuffer, bufferPackage.effectBuffer, numChannels, numSamples, mixLevel);

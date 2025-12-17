@@ -14,14 +14,21 @@ public:
 
         @param knownPluginList The list of plugins to refer to.
     */
-    EffectProcessorFactory (KnownPluginList&);
+    EffectProcessorFactory (AudioPluginFormatManager&, KnownPluginList&);
 
     /** Destructor. */
     virtual ~EffectProcessorFactory();
 
     //==============================================================================
     /** */
+    [[nodiscard]] const AudioPluginFormatManager& getAudioPluginFormatManager() const noexcept { return audioPluginFormatManager; }
+    /** */
+    [[nodiscard]] AudioPluginFormatManager& getAudioPluginFormatManager() noexcept { return audioPluginFormatManager; }
+
+    /** */
     [[nodiscard]] const KnownPluginList& getKnownPluginList() const noexcept { return knownPluginList; }
+    /** */
+    [[nodiscard]] KnownPluginList& getKnownPluginList() noexcept { return knownPluginList; }
 
     //==============================================================================
     /** */
@@ -30,7 +37,7 @@ public:
     /** */
     [[nodiscard]] PluginDescription createPluginDescription (const String& fileOrIdentifier) const;
 
-    /** Provided to help templated function - Just returns the description */
+    /** Provided to help templated functions - Just returns the description */
     [[nodiscard]] PluginDescription createPluginDescription (const PluginDescription&) const;
 
     //==============================================================================
@@ -58,11 +65,8 @@ public:
 
 protected:
     //==============================================================================
+    AudioPluginFormatManager& audioPluginFormatManager;
     KnownPluginList& knownPluginList;
-
-    //==============================================================================
-    /** */
-    virtual const AudioPluginFormatManager& getAudioPluginFormatManager() const = 0;
 
 private:
     //==============================================================================

@@ -1,4 +1,5 @@
-EffectProcessorFactory::EffectProcessorFactory (KnownPluginList& kpl) :
+EffectProcessorFactory::EffectProcessorFactory (AudioPluginFormatManager& apfm, KnownPluginList& kpl) :
+    audioPluginFormatManager (apfm),
     knownPluginList (kpl)
 {
 }
@@ -40,7 +41,7 @@ AudioPluginPtr EffectProcessorFactory::createPlugin (const PluginDescription& de
     Logger::writeToLog ("EffectProcessorFactory: creating plugin " + description.createIdentifierString());
 
     String errorMessage;
-    return getAudioPluginFormatManager().createPluginInstance (description, 44100.0, 256, errorMessage);
+    return audioPluginFormatManager.createPluginInstance (description, 44100.0, 256, errorMessage);
 }
 
 AudioPluginPtr EffectProcessorFactory::createPlugin (const int listIndex) const
@@ -61,8 +62,7 @@ void EffectProcessorFactory::createPluginAsync (const PluginDescription& descrip
     if (description.isInstrument)
         return;
 
-    const_cast<AudioPluginFormatManager&> (getAudioPluginFormatManager())
-        .createPluginInstanceAsync (description, 44100.0, 256,
+   audioPluginFormatManager.createPluginInstanceAsync (description, 44100.0, 256,
             [&] (std::unique_ptr<AudioPluginInstance> api, const String& s)
             {
                 if (callback != nullptr)

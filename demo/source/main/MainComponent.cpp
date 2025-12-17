@@ -25,13 +25,13 @@ MainComponent::MainComponent (SharedObjects& sharedObjs) :
         demos.add (comp);
     };
 
+    addDemo (new EffectChainDemo (sharedObjs));
     addDemo (new MarkdownDemo (sharedObjs));
     addDemo (new CRCDemo (sharedObjs));
     addDemo (new EaseListComponent (sharedObjs));
     addDemo (new ImageDemo (sharedObjs));
     addDemo (new AnimationDemo (sharedObjs));
     addDemo (new ParticleSystemDemo (sharedObjs));
-    addDemo (new EffectChainDemo (sharedObjs));
     addDemo (new MediaDeviceListerDemo (sharedObjs));
 
    #if SQUAREPINE_USE_GOOGLE_API

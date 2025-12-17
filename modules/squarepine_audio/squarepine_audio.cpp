@@ -66,7 +66,7 @@ namespace sp
     #include "effects/squarepine_SimpleReverbProcessor.cpp"
     #include "effects/squarepine_StereoWidthProcessor.cpp"
     #include "effects/squarepine_GainProcessor.cpp"
-    #include "graphics/squarepine_GraphObserver.cpp"
+    #include "graphics/squarepine_AudioProcessorGraphEditor.cpp"
     #include "graphics/squarepine_Meter.cpp"
     #include "graphics/squarepine_ProgramAudioProcessorEditor.cpp"
     #include "music/squarepine_Chord.cpp"
