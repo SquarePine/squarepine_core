@@ -7,10 +7,22 @@ public:
 
     //==============================================================================
     /** */
-    void setBitDepth (int newBitDepth);
+    void setBitDepth (int);
 
     /** */
     [[nodiscard]] int getBitDepth() const noexcept;
+
+    /** */
+    void setDownsampleFactor (int);
+
+    /** */
+    [[nodiscard]] int getDownsampleFactor() const noexcept;
+
+    /** */
+    void setDrive (float);
+
+    /** */
+    [[nodiscard]] float getDrive() const noexcept;
 
     //==============================================================================
     /** @internal */
@@ -20,17 +32,76 @@ public:
     /** @internal */
     bool supportsDoublePrecisionProcessing() const override { return true; }
     /** @internal */
+    void prepareToPlay (double, int) override;
+    /** @internal */
     void processBlock (juce::AudioBuffer<float>&, MidiBuffer&) override;
     /** @internal */
     void processBlock (juce::AudioBuffer<double>&, MidiBuffer&) override;
 
+    /** @internal */
+    int getNumPrograms() override;
+    /** @internal */
+    int getCurrentProgram() override;
+    /** @internal */
+    void setCurrentProgram (int) override;
+    /** @internal */
+    const String getProgramName (int) override;
+    /** @internal */
+    void changeProgramName (int, const String&) override {}
+
 private:
     //==============================================================================
-    AudioParameterInt* bitDepth = new AudioParameterInt (ParameterID ("bitDepth", 1), "Bit-Depth", 1, 16, 8);
+    struct Preset final
+    {
+        Preset() = default;
+
+        Preset (const String& s, float b, float ds, float d) :
+            name (s),
+            bitDepth (b),
+            downsample (ds),
+            drive (d)
+        {
+        }
+
+        Preset (const Preset&) = default;
+        Preset (Preset&&) = default;
+        ~Preset() = default;
+        Preset& operator= (const Preset&) = default;
+        Preset& operator= (Preset&&) = default;
+
+        String name;
+        float bitDepth = {},
+              downsample = {},
+              drive = {};
+    };
+
+    template<typename FloatType>
+    struct ChannelState
+    {
+        int holdCounter = 0;
+        FloatType heldSample = {};
+    };
+
+    int programIndex = 0;
+    std::vector<Preset> presets;
+
+    AudioParameterFloat* bitDepthParam = nullptr;
+    AudioParameterFloat* downsampleFactorParam = nullptr;
+    AudioParameterFloat* driveParam = nullptr;
+
+    Array<ChannelState<float>> floatStates;
+    Array<ChannelState<double>> doubleStates;
 
     //==============================================================================
+    void setCurrentProgramDirectly (int);
+
     template<typename FloatType>
-    void process (juce::AudioBuffer<FloatType>&);
+    static FloatType crush (FloatType sample, ChannelState<FloatType>& state,
+                            FloatType levels, FloatType makeup,
+                            FloatType drive, int dsFactor);
+
+    template<typename FloatType>
+    void process (juce::AudioBuffer<FloatType>& buffer, Array<ChannelState<FloatType>>& states);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BitCrusherProcessor)

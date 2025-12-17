@@ -1,113 +1,142 @@
+BitCrusherProcessor::BitCrusherProcessor() :
+    InternalProcessor (false)
+{
+    presets =
+    {
+        { NEEDS_TRANS ("CleanPass"), 16.0f, 1.0f, 1.0f },
+        { NEEDS_TRANS ("PixelPulse"), 8.0f, 12.0f, 2.5f },
+        { NEEDS_TRANS ("PocketConsole"), 5.0f, 16.0f, 3.0f },
+        { NEEDS_TRANS ("Lofi"), 10.0f, 4.0f, 6.0f },
+        { NEEDS_TRANS ("WoodgrainFury"), 4.0f, 32.0f, 6.0f },
+        { NEEDS_TRANS ("BrokenDAC"), 3.0f, 64.0f, 10.0f },
+        { NEEDS_TRANS ("AliasBoi"), 4.0f, 72.0f, 10.0f }
+    };
+
+    auto layout = createDefaultParameterLayout();
+
+    auto addFloatParam = [&] (StringRef id, StringRef name,
+                              float start, float end, float defaultValue,
+                              float interval, float skew)
+    {
+        auto newParam = std::make_unique<AudioParameterFloat> (id, name,
+                                                               NormalisableRange<float> (start, end, interval, skew),
+                                                               defaultValue);
+        auto* np = newParam.get();
+        layout.add (std::move (newParam));
+        return np;
+    };
+
+    bitDepthParam           = addFloatParam ("depth", NEEDS_TRANS ("Depth"), 4.0f, 16.0f, 8.0f, 1.0f, 0.4f);
+    downsampleFactorParam   = addFloatParam ("downsampleFactor", NEEDS_TRANS ("Downsample Factor"),  1.0f, 128.0f, 8.0f, 1.0f, 0.4f);
+    driveParam              = addFloatParam ("drive", NEEDS_TRANS ("Drive"), 1.0f, 20.0f, 2.5f, 0.001f, 0.5f);
+
+    resetAPVTSWithLayout (std::move (layout));
+
+    setCurrentProgramDirectly (1);
+}
+
 //==============================================================================
-#if 0 && ! DOXYGEN
-    //These are some bits of code that could be useful someday...
+int BitCrusherProcessor::getNumPrograms()       { return std::max (1, (int) presets.size()); }
+int BitCrusherProcessor::getCurrentProgram()    { return programIndex; }
 
-    /** Obtain the maximum value, pre-negative a number of bits to the */
-    inline float getMaxValueForNumBits (int numBits) noexcept
-    {
-        BigInteger biggy;
-        biggy.setRange (0, numBits - 1, true);
+void BitCrusherProcessor::setCurrentProgramDirectly (int index)
+{
+    programIndex = index;
+    const auto& p = presets[index];
+    setBitDepth ((int) p.bitDepth);
+    setDownsampleFactor ((int) p.downsample);
+    setDrive ((float) p.drive);
+}
 
-        return (float) biggy.toInteger() * 0.5f; //Halved to offset, making the middle-most number 0 dBFS
-    }
+void BitCrusherProcessor::setCurrentProgram (int index)
+{
+    // Don't check if programIndex is already set;
+    // doing this allows "resetting" to the program.
+    if (isPositiveAndBelow (index, (int) presets.size()))
+        setCurrentProgramDirectly (index);
+}
 
-    /** Discrete sample bit-conversion algorithm */
-    inline float reduceSample (float sample, int bitDepth) noexcept
-    {
-        return (float) std::clamp (getMaxValueForNumBits (bitDepth) * sample, -maxValue, maxValue);
-    }
+const String BitCrusherProcessor::getProgramName (int index) 
+{
+    if (isPositiveAndBelow (index, (int) presets.size()))
+        return TRANS (presets[index].name);
 
-    inline constexpr float compressSample (float sample, float scale) noexcept
-    {
-        return sample * scale;
-    }
+    return {};
+}
 
-    // Ye olde...
-    m = (float) (1 << (localBitDepth - 1));
-    M = 1.0f / (float) m;
+//==============================================================================
+void BitCrusherProcessor::prepareToPlay (const double sampleRate, const int estimatedSamplesPerBlock)
+{
+    InternalProcessor::prepareToPlay (sampleRate, estimatedSamplesPerBlock);
 
-    for (int i = numChannels; --i >= 0;)
-        for (int f = numSamples; --f >= 0;)
-            dest[i][f] = (float) ((float) src[i][f] * m * M);
+    const auto tc = jmax (2, getTotalNumInputChannels(), getTotalNumOutputChannels());
+    floatStates.resize (tc);
+    doubleStates.resize (tc);
+}
+
+void BitCrusherProcessor::setBitDepth (int v)                   { bitDepthParam->operator= ((float) v); }
+int BitCrusherProcessor::getBitDepth() const noexcept           { return (int) bitDepthParam->get(); }
+void BitCrusherProcessor::setDownsampleFactor (int v)           { downsampleFactorParam->operator= ((float) v); }
+int BitCrusherProcessor::getDownsampleFactor() const noexcept   { return (int) downsampleFactorParam->get(); }
+void BitCrusherProcessor::setDrive (float v)                    { driveParam->operator= (v); }
+float BitCrusherProcessor::getDrive() const noexcept            { return driveParam->get(); }
+
+//==============================================================================
+void BitCrusherProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)  { process<float> (buffer, floatStates); }
+void BitCrusherProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer&) { process<double> (buffer, doubleStates); }
 
 template<typename FloatType>
-inline FloatType decimate (FloatType input, int keepBits)
+FloatType BitCrusherProcessor::crush (FloatType sample, ChannelState<FloatType>& state,
+                                      FloatType levels, FloatType makeup,
+                                      FloatType drive, int dsFactor)
 {
-    const auto quantum = std::pow (static_cast<FloatType> (2), (FloatType) keepBits);
-    return std::floor (input * quantum) / quantum;
-}
-#endif
+    // Pre-gain + saturation
+    sample = juce::dsp::FastMathApproximations::tanh (sample * drive);
 
-//==============================================================================
-inline double crushToNBit (double sample, int bitDepth)
-{
-    constexpr auto one = 1.0;
-    constexpr auto two = 2.0;
+    // Sample-rate reduction (ZOH)
+    if (--state.holdCounter <= 0)
+    {
+        state.heldSample = sample;
+        state.holdCounter = dsFactor; // precomputed int >= 1
+    }
 
-    const auto bd = bitDepth;
-    auto s = 0.0;
+    // Bit depth reduction
+    // levels = 1 << bits
+    sample = std::round (state.heldSample * levels) / levels;
 
-	if (sample >= 1.0)
-       s = std::pow (two, bd - 1) - one;
-	else if (sample <= -1.0)
-       s = std::pow (-two, bd - 1);
-    else
-       s = std::floor (sample * -std::pow (-two, bd - one));
+    // Makeup gain
+    sample *= makeup; // 1 / sqrt(drive)
 
-    // NB: Deliberately quantising with casts here!
-	return (double) (int) s;
-}
-
-inline double crushBit (double sample, int bitDepth)
-{
-/*
-    auto mixAmount = std::lerp (1.0, 32.0, static_cast<double> (bitDepth) / 32.0) / 32.0;
-
-    mixAmount *= 0.08;
-
-    mixAmount = 0.0;
-
-    sample = (sample * (1.0 - mixAmount))
-           + (DistortionFunctions::hyperbolicTangentSoftClipping (sample) * mixAmount);
-*/
-    sample = crushToNBit (sample, bitDepth);
-	sample /= -std::pow (-2.0, (double) bitDepth - 1.0);
     return sample;
 }
 
-//==============================================================================
-BitCrusherProcessor::BitCrusherProcessor()
-{
-    AudioProcessor::addParameter (bitDepth);
-}
-
-//==============================================================================
-void BitCrusherProcessor::setBitDepth (int newBitDepth)
-{
-    bitDepth->operator= (newBitDepth);
-}
-
-int BitCrusherProcessor::getBitDepth() const noexcept
-{
-    return bitDepth->get();
-}
-
-//==============================================================================
-void BitCrusherProcessor::processBlock (juce::AudioBuffer<float>& buffer, MidiBuffer&)  { process (buffer); }
-void BitCrusherProcessor::processBlock (juce::AudioBuffer<double>& buffer, MidiBuffer&) { process (buffer); }
-
 template<typename FloatType>
-void BitCrusherProcessor::process (juce::AudioBuffer<FloatType>& buffer)
+void BitCrusherProcessor::process (juce::AudioBuffer<FloatType>& buffer, Array<ChannelState<FloatType>>& states)
 {
-    if (isBypassed())
-        return;
-
-    const auto localBitDepth = bitDepth->get();
-
-    if (buffer.hasBeenCleared() || localBitDepth >= 16)
+    const auto numChannels = buffer.getNumChannels();
+    const auto numSamples = buffer.getNumSamples();
+    if (isBypassed()
+        || numChannels <= 0
+        || numSamples <= 0
+        || buffer.hasBeenCleared())
         return; // Nothing to do here.
 
-    for (auto channel : AudioBufferView (buffer))
-        for (auto& sample : channel)
-            sample = (FloatType) crushBit ((double) sample, localBitDepth);
+    const auto localBitDepth = getBitDepth();
+    const auto localDrive = (FloatType) getDrive();
+    const auto localDownsampleFactor = getDownsampleFactor();
+    const auto levels = FloatType (1 << localBitDepth);
+    const auto makeup = FloatType (1) / std::sqrt (localDrive);
+
+    auto chans = buffer.getArrayOfWritePointers();
+
+    for (int i = 0; i < numChannels; ++i)
+    {
+        if (auto chan = chans[i])
+        {
+            auto& state = states.getReference (i);
+            for (int f = 0; f < numSamples; ++f)
+                chan[f] = crush (chan[f], state, levels, makeup, localDrive, localDownsampleFactor);
+        }
+    }
 }
+
