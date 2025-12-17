@@ -2,6 +2,12 @@
 
 The [modules will be moving in 2026 to GitLab](https://gitlab.com/squarepine/squarepinemodules), with a [license update to ISC](https://gitlab.com/squarepine/squarepinemodules/-/blob/main/LICENSE).
 
+The intent is to:
+
+* Remove dead code.
+* Start fresh.
+* Make the license flexible again.
+
 # SquarePine Modules
 
 The SquarePine Modules provide a vast array of tools in the [format of JUCE/C++ modules](https://github.com/juce-framework/JUCE/blob/develop/docs/JUCE%20Module%20Format.md). From animation and easing, cryptopgraphy,  networking, and  codecs and audio effects, hopefully you will find something of use!
