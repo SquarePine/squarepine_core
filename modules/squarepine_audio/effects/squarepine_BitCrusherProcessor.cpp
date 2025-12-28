@@ -42,7 +42,7 @@ int BitCrusherProcessor::getCurrentProgram()    { return programIndex; }
 void BitCrusherProcessor::setCurrentProgramDirectly (int index)
 {
     programIndex = index;
-    const auto& p = presets[index];
+    const auto& p = presets[(PresetContainerSizeType) index];
     setBitDepth ((int) p.bitDepth);
     setDownsampleFactor ((int) p.downsample);
     setDrive ((float) p.drive);
@@ -59,7 +59,7 @@ void BitCrusherProcessor::setCurrentProgram (int index)
 const String BitCrusherProcessor::getProgramName (int index) 
 {
     if (isPositiveAndBelow (index, (int) presets.size()))
-        return TRANS (presets[index].name);
+        return TRANS (presets[(PresetContainerSizeType) index].name);
 
     return {};
 }

@@ -82,6 +82,9 @@ private:
         FloatType heldSample = {};
     };
 
+    using PresetContainerType = std::vector<Preset>;
+    using PresetContainerSizeType = std::vector<Preset>::size_type;
+
     int programIndex = 0;
     std::vector<Preset> presets;
 
