@@ -91,7 +91,7 @@ bool AudioProcessorGraphEditor::isOnTouchDevice()
 }
 
 //==============================================================================
-void AudioProcessorGraphEditor::setNodePosition (NodeID nodeID, Point<double> pos)
+void AudioProcessorGraphEditor::setNodePosition (NodeID nodeID, juce::Point<double> pos)
 {
     if (auto* n = graph.getNodeForId (nodeID))
     {
@@ -100,7 +100,7 @@ void AudioProcessorGraphEditor::setNodePosition (NodeID nodeID, Point<double> po
     }
 }
 
-Point<double> AudioProcessorGraphEditor::getNodePosition (NodeID nodeID) const
+juce::Point<double> AudioProcessorGraphEditor::getNodePosition (NodeID nodeID) const
 {
     if (auto* n = graph.getNodeForId (nodeID))
         return { static_cast<double> (n->properties["x"]),
@@ -185,7 +185,7 @@ void AudioProcessorGraphEditor::mouseDrag (const MouseEvent& e)
         stopTimer();
 }
 
-void AudioProcessorGraphEditor::createNewPlugin (Point<int> position)
+void AudioProcessorGraphEditor::createNewPlugin (juce::Point<int> position)
 {
     // graph.addPlugin (desc, position.toDouble() / Point<double> ((double) getWidth(), (double) getHeight()));
 }
@@ -209,7 +209,7 @@ AudioProcessorGraphEditor::ConnectorComponent* AudioProcessorGraphEditor::getCom
     return nullptr;
 }
 
-AudioProcessorGraphEditor::PinComponent* AudioProcessorGraphEditor::findPinAt (Point<float> pos) const
+AudioProcessorGraphEditor::PinComponent* AudioProcessorGraphEditor::findPinAt (juce::Point<float> pos) const
 {
     for (auto* fc : nodeViews)
     {
