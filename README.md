@@ -7,6 +7,7 @@ The intent is to:
 * Remove dead code.
 * Start fresh.
 * Make the license flexible again.
+* Prepare it for [JUCE's new Marketplace](https://marketplace.juce.com/products).
 
 # SquarePine Modules
 
