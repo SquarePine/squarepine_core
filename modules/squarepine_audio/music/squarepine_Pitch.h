@@ -28,7 +28,7 @@ public:
 
     //==============================================================================
     /** Creates a pitch from a given MIDI note number e.g. 69. */
-    static Pitch fromMIDINote (int midiNote) noexcept       { return midiNoteToFrequency (midiNote); }
+    static Pitch fromMIDINote (int midiNote) noexcept       { return MidiMessage::getMidiNoteInHertz (midiNote); }
 
     /** Creates a pitch from a given note name e.g. A#3.
 

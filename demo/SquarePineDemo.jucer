@@ -96,6 +96,7 @@
               file="source/demos/EffectChainDemo.h"/>
         <FILE id="brHreQ" name="iCUESDKDemo.h" compile="0" resource="0" file="source/demos/iCUESDKDemo.h"/>
         <FILE id="vSHEQC" name="ImageDemo.h" compile="0" resource="0" file="source/demos/ImageDemo.h"/>
+        <FILE id="Hzxday" name="ListViewDemo.h" compile="0" resource="0" file="source/demos/ListViewDemo.h"/>
         <FILE id="uzQ1sq" name="MarkdownDemo.h" compile="0" resource="0" file="source/demos/MarkdownDemo.h"/>
         <FILE id="S1SGkR" name="MediaDeviceListerDemo.h" compile="0" resource="0"
               file="source/demos/MediaDeviceListerDemo.h"/>

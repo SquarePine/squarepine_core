@@ -73,7 +73,7 @@ public:
 
     //==============================================================================
     /** */
-    void setAlgorithm (Algorithm newAlgorithmToChoose);
+    void setAlgorithm (Algorithm);
     /** */
     [[nodiscard]] Algorithm getAlgorithm() const noexcept { return algorithm; }
 

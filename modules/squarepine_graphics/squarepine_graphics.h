@@ -199,6 +199,7 @@ namespace sp
     #include "components/squarepine_JavascriptEditor.h"
     #include "components/squarepine_HighPerformanceRendererConfigurator.h"
     #include "components/squarepine_MarkdownComponent.h"
+    #include "components/squarepine_ListView.h"
     #include "components/squarepine_ValueTreeEditor.h"
     #include "images/squarepine_BlendingEffects.h"
     #include "images/squarepine_BMPImageFormat.h"

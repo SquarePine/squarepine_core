@@ -329,16 +329,12 @@ template<typename Type>
 [[nodiscard]] inline double pitchRatioToSemitones (Type pitchRatio) noexcept      { return pitchRatioToSemitones (static_cast<double> (pitchRatio)); }
 
 //============================================================================
-/** @returns a MIDI note converted from a frequency (in Hz). */
+/** @returns a MIDI note converted from a frequency (in Hz).
+
+    @see juce::MidiMessage::getMidiNoteInHertz for the other way around.
+*/
 [[nodiscard]] inline int frequencyToMIDINote (double frequencyHz) noexcept
 {
     const auto pitchRatio = std::max (0.0, frequencyHz / 440.0);
     return roundToInt (69.0 + pitchRatioToSemitones (pitchRatio));
-}
-
-/** @returns a frequency (in Hz) converted from a MIDI note. */
-[[nodiscard]] inline double midiNoteToFrequency (int midiNoteNumber) noexcept
-{
-    const auto semitones = std::max (0, midiNoteNumber);
-    return 440.0 * semitonesToPitchRatio (static_cast<double> (semitones) - 69.0);
 }
